@@ -141,5 +141,6 @@ brew install composer
 -   Bootstrap 5 & Font Awesome Snippets (HansUXdev.bootstrap5-snippets)
 -   JavaScript Snippet Pack (akamud.vscode-javascript-snippet-pack)
 -   Laravel Extension Pack (onecentlin.laravel-extension-pack)
+-   Laravel Goto View (ctf0.laravel-goto-view)
 -   Thunder Client (rangav.vscode-thunder-client)
 -   Database Client (cweijan.vscode-database-client2)
