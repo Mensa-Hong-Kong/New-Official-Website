@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'layouts.app')->name('index');
-Route::post('register', [UserController::class, 'create'])->name('authentication.register');
+Route::post('register', [UserController::class, 'create'])->name('register');
 Route::post('register', [UserController::class, 'store']);
