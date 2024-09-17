@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserHasEmail::class);
     }
+
+    public function mobiles()
+    {
+        return $this->hasMany(UserHasMobile::class);
+    }
 }
