@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-4">
                 <label for="validationMiddleName" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="validationMiddleName" max="255" value="{{ old('middle_name') }}" placeholder="middle name" name="family_name">
+                <input type="text" class="form-control" id="validationMiddleName" max="255" value="{{ old('middle_name') }}" placeholder="middle name" name="midden_name">
                 <div id="middleNameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
