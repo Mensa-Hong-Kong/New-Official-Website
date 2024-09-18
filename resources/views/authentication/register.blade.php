@@ -25,14 +25,14 @@
             </div>
             <div class="col-md-4">
                 <label for="validationPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="validationPassword" min="8" max="16" value="{{ old('password') }}" placeholder="password" name="password" required>
+                <input type="password" class="form-control" id="validationPassword" min="8" max="16" placeholder="password" name="password" required>
                 <div id="passwordFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="validationConfirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="validationConfirmPassword" min="8" max="16" value="{{ old('password') }}" placeholder="confirm password" name="password_confirmation" required>
+                <input type="password" class="form-control" id="validationConfirmPassword" min="8" max="16" placeholder="confirm password" name="password_confirmation" required>
                 <div id="confirmPasswordFeedback" class="valid-feedback">
                     Looks good!
                 </div>
