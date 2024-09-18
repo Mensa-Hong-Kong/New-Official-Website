@@ -100,7 +100,11 @@
                 <input type="tel" class="form-control" id="validationMobile" minlength="5" maxlength="15" placeholder="85298765432" name="mobile" value="{{ old('mobile') }}" required />
                 <div id="mobileFeedback" class="valid-feedback"></div>
             </div>
-            <input type="submit" class="form-control btn btn-primary">
+            <input type="submit" id="submitButton" class="form-control btn btn-primary" value="Submit">
+            <button class="form-control btn btn-primary" id="submittingButton" type="button" disabled hidden>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Submitting...
+            </button>
         </form>
     </section>
 @endsection
