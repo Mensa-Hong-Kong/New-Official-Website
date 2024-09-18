@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ClearInputHistory from "@/clearInputHistory";
 
 const form = document.getElementById('form');
 const username = document.getElementById('validationUsername');
@@ -25,6 +26,14 @@ const email = document.getElementById('validationEmail');
 const emailFeedback = document.getElementById('emailFeedback');
 const mobile = document.getElementById('validationMobile');
 const mobileFeedback = document.getElementById('mobileFeedback');
+
+new ClearInputHistory([
+    username,  password,  confirmPassword,
+    familyName,  middleName, givenName,
+    passportType,  passportNumber,
+    gender, birthday,
+    email, mobile,
+]);
 
 const feedbacks = [
     usernameFeedback, passwordFeedback, confirmPasswordFeedback,
