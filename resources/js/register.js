@@ -50,6 +50,7 @@ function hasError() {
         if(feedback.className == 'invalid-feedback') {
             return true;
         }
+        console.log(feedback);
     }
     return false;
 }
@@ -173,10 +174,12 @@ form.addEventListener(
                     mobile: mobile.value,
                 }).then(function (response) {
                     console.log(response);
+                    window.location.href = '/';
                 }).catch(function (error) {
                     console.log(error);
                     switch(error.status) {
                         case 422:
+                            form.classList.remove('was-validated');
                             for(let key in error.response.data.errors) {
                                 let value = error.response.data.errors[key];
                                 let feedback;
@@ -199,6 +202,9 @@ form.addEventListener(
                                     case 'passport_type_id':
                                         feedback = passportTypeFeedback;
                                         break;
+                                    case 'passport_number':
+                                        feedback = passportNumberFeedback;
+                                        break;
                                     case 'gender':
                                         feedback = genderFeedback;
                                         break;
@@ -219,6 +225,7 @@ form.addEventListener(
                                     alert('undefine feedback key');
                                 }
                             }
+                            break;
                     }
                     submittingButton.hidden = true;
                     submitButton.hidden = false;
