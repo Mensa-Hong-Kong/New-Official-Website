@@ -29,7 +29,6 @@ class UserController extends Controller
 
     public function store(RegisterRequest $request)
     {
-        return ['success'];
         try{
             DB::beginTransaction();
             $gender = Gender::firstOrCreate(['name' => $request->gender]);
