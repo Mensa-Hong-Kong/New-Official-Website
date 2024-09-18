@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title')Mensa</title>
     @vite('resources/sass/app.scss')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -40,6 +41,7 @@
         @yield('main')
     </main>
     @vite('resources/js/app.js')
+    @stack('after footer')
 </body>
 
 </html>

@@ -13,7 +13,7 @@
                 <li>Mobile number include country code without "+" and "-"</li>
             </ol>
         </div>
-        <form method="POST" class="row g-3" id="form">
+        <form method="POST" class="row g-3" id="form" novalidate>
             @csrf
             <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
             <div class="col-md-4">
@@ -104,3 +104,7 @@
         </form>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/register.js')
+@endpush
