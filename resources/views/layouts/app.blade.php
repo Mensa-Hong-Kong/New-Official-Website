@@ -25,13 +25,19 @@
                     </ul>
                     <hr class="my-3">
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a href="{{ route('register') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'register',
-                            ])>Register</a>
-                        </li>
+                        @auth
+                            <li class="nav-item">
+                                <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a href="{{ route('register') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'register',
+                                ])>Register</a>
+                            </li>
+                        @endauth
                     </ul>
                 </div>
             </div>
