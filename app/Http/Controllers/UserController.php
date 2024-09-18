@@ -18,7 +18,7 @@ class UserController extends Controller
             'passportTypes', PassportType::all()
                 ->pluck('name','id')
                 ->toArray()
-        );
+        )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
     public function store()
