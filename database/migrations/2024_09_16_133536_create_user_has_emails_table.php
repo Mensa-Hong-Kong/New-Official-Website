@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_has_emails', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('email')->unique();
+            $table->string('email', 320)->unique();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
