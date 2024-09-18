@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
-
+use App\Models\User;
+use App\Models\UserHasEmail;
+use App\Models\UserHasMobile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class UserController extends Controller
 {
@@ -24,6 +29,47 @@ class UserController extends Controller
 
     public function store(RegisterRequest $request)
     {
-        // ...
+        return ['success'];
+        try{
+            DB::beginTransaction();
+            $gender = Gender::firstOrCreate(['name' => $request->gender]);
+            $user = User::create([
+                'username' => $request->username,
+                'password' => $request->password,
+                'family_name' => $request->family_name,
+                'midden_name' => $request->midden_name,
+                'given_name' => $request->given_name,
+                'passport_type_id' => $request->passport_type_id,
+                'passport_number' => $request->passport_number,
+                'gender_id' => $gender->id,
+                'birthday' => $request->birthday,
+            ]);
+            if($request->email) {
+                UserHasEmail::create([
+                    'user_id' => $user->id,
+                    'email'=> $request->email,
+                ]);
+            }
+            if($request->mobile) {
+                UserHasMobile::create([
+                    'user_id' => $user->id,
+                    'mobile'=> $request->mobile,
+                ]);
+            }
+            DB::commit();
+        } catch(Exception $e) {
+            try{
+                DB::rollBack();
+            } catch(Exception $e) {}
+            throw $e;
+        }
+        Auth::loginUsingId($user->id);
+        return ['success'];
+    }
+
+    public function logout()
+    {
+        auth()->logout();
+        return redirect()->route('index');
     }
 }
