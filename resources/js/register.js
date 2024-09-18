@@ -1,5 +1,5 @@
 import axios from 'axios';
-import ClearInputHistory from "@/clearInputHistory";
+import ClearInputHistory from "./clearInputHistory";
 
 const form = document.getElementById('form');
 const username = document.getElementById('validationUsername');
@@ -54,8 +54,8 @@ function hasError() {
 
 form.addEventListener(
     'submit', function (event) {
-        event.preventDefault()
-        event.stopPropagation()
+        event.preventDefault();
+        event.stopPropagation();
         form.classList.remove('was-validated');
         for(let feedback of feedbacks) {
             feedback.className = 'valid-feedback';
@@ -64,32 +64,33 @@ form.addEventListener(
         if(username.validity.valueMissing) {
             usernameFeedback.className = 'invalid-feedback';
             usernameFeedback.innerText = 'The username field is required';
-        } else if(username.validity.rangeUnderflow) {
+        } else if(username.validity.tooShort) {
+            console.log(123);
             usernameFeedback.className = 'invalid-feedback';
-            usernameFeedback.innerText = `The username must be at least ${username.min} characters`;
-        } else if(username.validity.rangeOverflow) {
+            usernameFeedback.innerText = `The username must be at least ${username.minLength} characters`;
+        } else if(username.validity.tooLong) {
             usernameFeedback.className = 'invalid-feedback';
-            usernameFeedback.innerText = `The username not be greater than ${username.max} characters`;
+            usernameFeedback.innerText = `The username not be greater than ${username.maxLength} characters`;
         }
         if(password.validity.valueMissing) {
             passwordFeedback.className = 'invalid-feedback';
             passwordFeedback.innerText = 'The password field is required';
-        } else if(password.validity.rangeUnderflow) {
+        } else if(password.validity.tooShort) {
             passwordFeedback.className = 'invalid-feedback';
-            passwordFeedback.innerText = `The password must be at least ${password.min} characters`;
-        } else if(password.validity.rangeOverflow) {
+            passwordFeedback.innerText = `The password must be at least ${password.minLength} characters`;
+        } else if(password.validity.tooLong) {
             passwordFeedback.className = 'invalid-feedback';
-            passwordFeedback.innerText = `The password not be greater than ${password.max} characters`;
+            passwordFeedback.innerText = `The password not be greater than ${password.maxLength} characters`;
         }
         if(password.validity.valueMissing) {
             confirmPasswordFeedback.className = 'invalid-feedback';
             confirmPasswordFeedback.innerText = 'The password field is required';
-        } else if(password.validity.rangeUnderflow) {
+        } else if(password.validity.tooShort) {
             confirmPasswordFeedback.className = 'invalid-feedback';
-            confirmPasswordFeedback.innerText = `The password must be at least ${confirmPassword.min} characters`;
-        } else if(password.validity.rangeOverflow) {
+            confirmPasswordFeedback.innerText = `The password must be at least ${confirmPassword.minLength} characters`;
+        } else if(password.validity.tooLong) {
             confirmPasswordFeedback.className = 'invalid-feedback';
-            confirmPasswordFeedback.innerText = `The password not be greater than ${confirmPassword.max} characters`;
+            confirmPasswordFeedback.innerText = `The password not be greater than ${confirmPassword.maxLength} characters`;
         }
         if(password.value != confirmPasswordFeedback.value) {
             passwordFeedback.className = 'invalid-feedback';
@@ -100,20 +101,20 @@ form.addEventListener(
         if(familyName.validity.valueMissing) {
             familyNameFeedback.className = 'invalid-feedback';
             familyNameFeedback.innerText = 'The family name field is required';
-        } else if(familyName.validity.rangeOverflow) {
+        } else if(familyName.validity.tooLong) {
             familyNameFeedback.className = 'invalid-feedback';
-            familyNameFeedback.innerText = `The family name not be greater than ${familyName.max} characters`;
+            familyNameFeedback.innerText = `The family name not be greater than ${familyName.maxLength} characters`;
         }
-        if(middleName.value && middleName.validity.rangeOverflow) {
+        if(middleName.value && middleName.validity.tooLong) {
             middleNameFeedback.className = 'invalid-feedback';
-            middleNameFeedback.innerText = `The middle name not be greater than ${middleName.max} characters`;
+            middleNameFeedback.innerText = `The middle name not be greater than ${middleName.maxLength} characters`;
         }
         if(givenName.validity.valueMissing) {
             givenNameFeedback.className = 'invalid-feedback';
             givenNameFeedback.innerText = 'The given name field is required';
-        } else if(givenName.validity.rangeOverflow) {
+        } else if(givenName.validity.tooLong) {
             givenNameFeedback.className = 'invalid-feedback';
-            givenNameFeedback.innerText = `The given name not be greater than ${givenName.max} characters`;
+            givenNameFeedback.innerText = `The given name not be greater than ${givenName.maxLength} characters`;
         }
         if(passportType.validity.valueMissing) {
             passportTypeFeedback.className = 'invalid-feedback';
@@ -122,19 +123,19 @@ form.addEventListener(
         if(passportNumber.validity.valueMissing) {
             passportNumberFeedback.className = 'invalid-feedback';
             passportNumberFeedback.innerText = 'The passport number field is required';
-        } else if(passportNumber.validity.rangeUnderflow) {
+        } else if(passportNumber.validity.tooShort) {
             passportNumberFeedback.className = 'invalid-feedback';
-            passportNumberFeedback.innerText = `The passport number must be at least ${passportNumber.min} characters`;
-        } else if(passportNumber.validity.rangeOverflow) {
+            passportNumberFeedback.innerText = `The passport number must be at least ${passportNumber.minLength} characters`;
+        } else if(passportNumber.validity.tooLong) {
             passportNumberFeedback.className = 'invalid-feedback';
-            passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.max} characters`;
+            passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.maxLength} characters`;
         }
         if(gender.validity.valueMissing) {
             genderFeedback.className = 'invalid-feedback';
             genderFeedback.innerText = 'The gender field is required';
-        } else if(gender.validity.rangeOverflow) {
+        } else if(gender.validity.tooLong) {
             genderFeedback.className = 'invalid-feedback';
-            genderFeedback.innerText = `The gender not be greater than ${gender.max} characters`;
+            genderFeedback.innerText = `The gender not be greater than ${gender.maxLength} characters`;
         }
         if(birthday.validity.valueMissing) {
             birthdayFeedback.className = 'invalid-feedback';
@@ -144,9 +145,9 @@ form.addEventListener(
             birthdayFeedback.innerText = `The birthday not be greater than ${birthday.max} characters`;
         }
         if(email.value) {
-            if(email.validity.rangeOverflow) {
+            if(email.validity.tooLong) {
                 emailFeedback.className = 'invalid-feedback';
-                emailFeedback.innerText = `The email not be greater than ${email.max} characters`;
+                emailFeedback.innerText = `The email not be greater than ${email.maxLength} characters`;
             } else if(email.validity.typeMismatch) {
                 emailFeedback.className = 'invalid-feedback';
                 emailFeedback.innerText = `The email must be a valid email address`;
