@@ -61,7 +61,7 @@
             <div class="col-md-4">
                 <label for="validationPassportType" class="form-label">Passport Type</label>
                 <select class="form-select" id="validationPassportType" name="passport_type_id" required>
-                    <option selected disabled>Please select passport type</option>
+                    <option value="" selected disabled>Please select passport type</option>
                     @foreach ($passportTypes as $key => $value)
                         <option value="{{ $key }}">{{ $value }}</option>
                     @endforeach
