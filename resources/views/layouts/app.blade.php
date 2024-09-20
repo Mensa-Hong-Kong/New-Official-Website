@@ -46,8 +46,42 @@
     <main style="height: 100%">
         @yield('main')
     </main>
+    <div class="modal alert" id="alert" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="alertMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
     @vite('resources/js/app.js')
     @stack('after footer')
+    <script>
+        function bootstrapAlert(message) {
+            document.getElementById('alertMessage').innerText = message;
+            document.addEventListener("DOMContentLoaded", (event) => {
+                new bootstrap.Modal(document.getElementById('alert')).show();
+            });
+        }
+    </script>
+    @error('message')
+        <script>
+            bootstrapAlert('{{ $message }}');
+        </script>
+    @enderror
+    @session('success')
+        <script>
+            bootstrapAlert('{{ $value }}');
+        </script>
+    @endsession
 </body>
 
 </html>
