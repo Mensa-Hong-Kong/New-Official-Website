@@ -63,7 +63,6 @@
         </div>
     </div>
     @vite('resources/js/app.js')
-    @stack('after footer')
     <script>
         function bootstrapAlert(message) {
             document.getElementById('alertMessage').innerText = message;
@@ -82,6 +81,7 @@
             bootstrapAlert('{{ $value }}');
         </script>
     @endsession
+    @stack('after footer')
 </body>
 
 </html>
