@@ -1,7 +1,7 @@
 app:
   env: testing
   key: base64:veah1v161ldkP86bDuDKifxZUK3hCaDLinf+JsJ+xOY=
-  debuf: true
+  debug: false
   url: localhost
 database:
   mensa:

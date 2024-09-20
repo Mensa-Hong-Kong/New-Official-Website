@@ -14,5 +14,5 @@ ansible-galaxy install -r requirements.yml
 
 ```shell
 cd ansible
-ansible-playbook -i environments/test/hosts.yml playbooks/phpunit.yml
+ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
 ```
