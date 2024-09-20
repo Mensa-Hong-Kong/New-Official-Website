@@ -293,15 +293,15 @@ form.addEventListener(
                                     alert('undefine feedback key');
                                 }
                             }
+                            for(let input of inputs) {
+                                if(!input.classList.contains('is-invalid')) {
+                                    input.classList.add('is-valid');
+                                }
+                            }
+                            submittingButton.hidden = true;
+                            submitButton.hidden = false;
                             break;
                     }
-                    for(let input of inputs) {
-                        if(!input.classList.contains('is-invalid')) {
-                            input.classList.add('is-valid');
-                        }
-                    }
-                    submittingButton.hidden = true;
-                    submitButton.hidden = false;
                 });
             }
         }
