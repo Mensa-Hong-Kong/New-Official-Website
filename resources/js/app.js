@@ -1,3 +1,4 @@
 import './bootstrap';
-import '../../node_modules/bootstrap/dist/js/bootstrap.bundle';
+import bootstrap from '../../node_modules/bootstrap/js/index.umd';
+window.bootstrap = bootstrap;
 window.token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
