@@ -66,19 +66,21 @@
     <script>
         function bootstrapAlert(message) {
             document.getElementById('alertMessage').innerText = message;
-            document.addEventListener("DOMContentLoaded", (event) => {
-                new bootstrap.Modal(document.getElementById('alert')).show();
-            });
+            new bootstrap.Modal(document.getElementById('alert')).show();
         }
     </script>
     @error('message')
         <script>
-            bootstrapAlert('{{ $message }}');
+            document.addEventListener("DOMContentLoaded", (event) => {
+                bootstrapAlert('{{ $message }}');
+            });
         </script>
     @enderror
     @session('success')
         <script>
-            bootstrapAlert('{{ $value }}');
+            document.addEventListener("DOMContentLoaded", (event) => {
+                bootstrapAlert('{{ $value }}');
+            });
         </script>
     @endsession
     @stack('after footer')
