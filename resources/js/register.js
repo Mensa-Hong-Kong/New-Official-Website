@@ -68,41 +68,41 @@ function validation() {
     if(username.validity.valueMissing) {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
-        usernameFeedback.innerText = 'The username field is required';
+        usernameFeedback.innerText = 'The username field is required.';
     } else if(username.validity.tooShort) {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
-        usernameFeedback.innerText = `The username must be at least ${username.minLength} characters`;
+        usernameFeedback.innerText = `The username must be at least ${username.minLength} characters.`;
     } else if(username.validity.tooLong) {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
-        usernameFeedback.innerText = `The username not be greater than ${username.maxLength} characters`;
+        usernameFeedback.innerText = `The username not be greater than ${username.maxLength} characters.`;
     }
     if(password.validity.valueMissing) {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = 'The password field is required';
+        passwordFeedback.innerText = 'The password field is required.';
     } else if(password.validity.tooShort) {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = `The password must be at least ${password.minLength} characters`;
+        passwordFeedback.innerText = `The password must be at least ${password.minLength} characters.`;
     } else if(password.validity.tooLong) {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = `The password not be greater than ${password.maxLength} characters`;
+        passwordFeedback.innerText = `The password not be greater than ${password.maxLength} characters.`;
     }
     if(confirmPassword.validity.valueMissing) {
         confirmPassword.classList.add('is-invalid');
         confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = 'The password field is required';
+        confirmPasswordFeedback.innerText = 'The password field is required.';
     } else if(confirmPassword.validity.tooShort) {
         confirmPassword.classList.add('is-invalid');
         confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = `The password must be at least ${confirmPassword.minLength} characters`;
+        confirmPasswordFeedback.innerText = `The password must be at least ${confirmPassword.minLength} characters.`;
     } else if(confirmPassword.validity.tooLong) {
         confirmPassword.classList.add('is-invalid');
         confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = `The password not be greater than ${confirmPassword.maxLength} characters`;
+        confirmPasswordFeedback.innerText = `The password not be greater than ${confirmPassword.maxLength} characters.`;
     }
     if(password.value != confirmPassword.value) {
         password.classList.add('is-invalid');
@@ -113,86 +113,86 @@ function validation() {
     if(familyName.validity.valueMissing) {
         familyName.classList.add('is-invalid');
         familyNameFeedback.className = 'invalid-feedback';
-        familyNameFeedback.innerText = 'The family name field is required';
+        familyNameFeedback.innerText = 'The family name field is required.';
     } else if(familyName.validity.tooLong) {
         familyName.classList.add('is-invalid');
         familyNameFeedback.className = 'invalid-feedback';
-        familyNameFeedback.innerText = `The family name not be greater than ${familyName.maxLength} characters`;
+        familyNameFeedback.innerText = `The family name not be greater than ${familyName.maxLength} characters.`;
     }
     if(middleName.value && middleName.validity.tooLong) {
         middleName.classList.add('is-invalid');
         middleNameFeedback.className = 'invalid-feedback';
-        middleNameFeedback.innerText = `The middle name not be greater than ${middleName.maxLength} characters`;
+        middleNameFeedback.innerText = `The middle name not be greater than ${middleName.maxLength} characters.`;
     }
     if(givenName.validity.valueMissing) {
         givenName.classList.add('is-invalid');
         givenNameFeedback.className = 'invalid-feedback';
-        givenNameFeedback.innerText = 'The given name field is required';
+        givenNameFeedback.innerText = 'The given name field is required.';
     } else if(givenName.validity.tooLong) {
         givenName.classList.add('is-invalid');
         givenNameFeedback.className = 'invalid-feedback';
-        givenNameFeedback.innerText = `The given name not be greater than ${givenName.maxLength} characters`;
+        givenNameFeedback.innerText = `The given name not be greater than ${givenName.maxLength} characters.`;
     }
     if(passportType.validity.valueMissing) {
         passportType.classList.add('is-invalid');
         passportTypeFeedback.className = 'invalid-feedback';
-        passportTypeFeedback.innerText = 'The passport type field is required';
+        passportTypeFeedback.innerText = 'The passport type field is required.';
     }
     if(passportNumber.validity.valueMissing) {
         passportNumber.classList.add('is-invalid');
         passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = 'The passport number field is required';
+        passportNumberFeedback.innerText = 'The passport number field is required.';
     } else if(passportNumber.validity.tooShort) {
         passportNumber.classList.add('is-invalid');
         passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = `The passport number must be at least ${passportNumber.minLength} characters`;
+        passportNumberFeedback.innerText = `The passport number must be at least ${passportNumber.minLength} characters.`;
     } else if(passportNumber.validity.tooLong) {
         passportNumber.classList.add('is-invalid');
         passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.maxLength} characters`;
+        passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.maxLength} characters.`;
     }
     if(gender.validity.valueMissing) {
         gender.classList.add('is-invalid');
         genderFeedback.className = 'invalid-feedback';
-        genderFeedback.innerText = 'The gender field is required';
+        genderFeedback.innerText = 'The gender field is required.';
     } else if(gender.validity.tooLong) {
         gender.classList.add('is-invalid');
         genderFeedback.className = 'invalid-feedback';
-        genderFeedback.innerText = `The gender not be greater than ${gender.maxLength} characters`;
+        genderFeedback.innerText = `The gender not be greater than ${gender.maxLength} characters.`;
     }
     if(birthday.validity.valueMissing) {
         birthday.classList.add('is-invalid');
         birthdayFeedback.className = 'invalid-feedback';
-        birthdayFeedback.innerText = 'The birthday field is required';
+        birthdayFeedback.innerText = 'The birthday field is required.';
     } else if(birthday.validity.rangeOverflow) {
         birthday.classList.add('is-invalid');
         birthdayFeedback.className = 'invalid-feedback';
-        birthdayFeedback.innerText = `The birthday not be greater than ${birthday.max} characters`;
+        birthdayFeedback.innerText = `The birthday not be greater than ${birthday.max} characters.`;
     }
     if(email.value) {
         if(email.validity.tooLong) {
             email.classList.add('is-invalid');
             emailFeedback.className = 'invalid-feedback';
-            emailFeedback.innerText = `The email not be greater than ${email.maxLength} characters`;
+            emailFeedback.innerText = `The email not be greater than ${email.maxLength} characters.`;
         } else if(email.validity.typeMismatch) {
             email.classList.add('is-invalid');
             emailFeedback.className = 'invalid-feedback';
-            emailFeedback.innerText = `The email must be a valid email address`;
+            emailFeedback.innerText = `The email must be a valid email address.`;
         }
     }
     if(mobile.value) {
         if(mobile.validity.tooShort) {
             mobile.classList.add('is-invalid');
             mobileFeedback.className = 'invalid-feedback';
-            mobileFeedback.innerText = `The mobile must be at least ${mobile.minLength} characters`;
+            mobileFeedback.innerText = `The mobile must be at least ${mobile.minLength} characters.`;
         } else if(mobile.validity.tooLong) {
             mobile.classList.add('is-invalid');
             mobileFeedback.className = 'invalid-feedback';
-            mobileFeedback.innerText = `The mobile not be greater than ${mobile.maxLength} characters`;
+            mobileFeedback.innerText = `The mobile not be greater than ${mobile.maxLength} characters.`;
         } else if(mobile.validity.typeMismatch) {
             mobile.classList.add('is-invalid');
             mobileFeedback.className = 'invalid-feedback';
-            mobileFeedback.innerText = `The email must be a valid email address`;
+            mobileFeedback.innerText = `The email must be a valid email address.`;
         }
     }
     for(let input of inputs) {
