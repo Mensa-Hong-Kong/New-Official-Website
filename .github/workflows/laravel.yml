@@ -1,0 +1,81 @@
+name: laravel
+run-name: Mensa Hong Kong
+on:
+  push:
+    branches-ignore:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.31
+        env:
+          MYSQL_DATABASE: "mensa"
+          MYSQL_ROOT_PASSWORD: "password"
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ hashFiles('composer.lock') }}
+
+      - uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ hashFiles('package-lock.json') }}
+
+      - name: setup mysql
+        shell: bash
+        run: ./docker/mysql/github_action.sh
+        env:
+          MYSQL_ROOT_PASSWORD: password
+
+      - name: install composer dependencies
+        run: composer install
+
+      - name: npm install
+        run: npm install
+
+      - name: build assets
+        run: npm run build
+
+      - name: render migration dot env
+        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
+        working-directory: ./ansible
+
+      - name: run migrations with seeders
+        run: php artisan migrate --seed
+
+      - name: render dot env
+        run: ansible-playbook -i environments/test/hosts.yml playbooks/phpunit.yml
+        working-directory: ./ansible
+
+      - name: run test suite
+        run: php artisan test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ hashFiles('composer.lock') }}
+
+      - name: install composer dependencies
+        run: composer install
+
+      - name: lint
+        run: ./vendor/bin/pint -v --test
