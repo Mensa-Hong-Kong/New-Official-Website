@@ -14,8 +14,10 @@ jobs:
       mysql:
         image: mysql:8.0.31
         env:
-          MYSQL_DATABASE: "mensa"
           MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_DATABASE: "mensa"
+          MYSQL_USER: "mensa"
+          MYSQL_PASSWORD: "password"
         ports:
           - 3306:3306
         options: >-
