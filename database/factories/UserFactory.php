@@ -25,7 +25,7 @@ class UserFactory extends Factory
                 $prefixes = [
                     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                     'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'W', 'Y', 'Z',
-                    'XA', 'XB', 'XC', 'XD', 'XE', 'XF', 'XG', 'XH'
+                    'XA', 'XB', 'XC', 'XD', 'XE', 'XF', 'XG', 'XH',
                 ];
                 $passportNumber = fake()->randomElement($prefixes).fake()->randomNumber(7, true);
                 break;
@@ -33,6 +33,7 @@ class UserFactory extends Factory
                 $passportNumber = fake()->randomNumber(8, true);
                 break;
         }
+
         return [
             'username' => Str::random(8),
             'password' => static::$password ??= Hash::make('password'),

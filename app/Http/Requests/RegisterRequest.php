@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'passport_number' => [
                 'required', 'regex:/^[A-Z0-9]+$/', 'min:8', 'max:18',
                 Rule::unique(User::class, 'passport_number')
-                    ->where('passport_type_id', $this->passport_type_id)
+                    ->where('passport_type_id', $this->passport_type_id),
             ],
             'gender' => 'required|string|max:255',
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),

@@ -20,4 +20,4 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [UserController::class, 'store']);
 });
 
-Route::any('logout', [UserController::class,'logout'])->name('logout');
+Route::any('logout', [UserController::class, 'logout'])->name('logout');
