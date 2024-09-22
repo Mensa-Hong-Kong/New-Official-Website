@@ -21,7 +21,7 @@ class RegisterRequest extends FormRequest
             'username' => 'required|string|min:8|max:16|unique:'.User::class.',username',
             'password' => 'required|string|min:8|max:16|confirmed',
             'family_name' => 'required|string|max:255',
-            'midden_name' => 'nullable|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
             'given_name' => 'required|string|max:255',
             'passport_type_id' => 'required|integer|exists:'.PassportType::class.',id',
             'passport_number' => [

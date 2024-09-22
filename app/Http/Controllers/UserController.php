@@ -37,7 +37,7 @@ class UserController extends Controller
                 'username' => $request->username,
                 'password' => $request->password,
                 'family_name' => $request->family_name,
-                'midden_name' => $request->midden_name,
+                'middle_name' => $request->middle_name,
                 'given_name' => $request->given_name,
                 'passport_type_id' => $request->passport_type_id,
                 'passport_number' => $request->passport_number,

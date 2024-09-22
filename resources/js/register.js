@@ -233,9 +233,9 @@ function failCallback(error) {
                 input = familyName;
                 feedback = familyNameFeedback;
                 break;
-            case 'midden_name':
+            case 'middle_name':
                 input = middleName;
-                feedback = middenNameFeedback;
+                feedback = middleNameFeedback;
                 break;
             case 'given_name':
                 input = givenName;

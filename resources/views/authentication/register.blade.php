@@ -9,7 +9,7 @@
                     Example 1: A123456(7) should type A1234567
                     Example 1: 1234567(8) should type 12345678
                 </li>
-                <li>The family name, midden name, given name and gender must match passport</li>
+                <li>The family name, middle name, given name and gender must match passport</li>
                 <li>Mobile number include country code without "+" and "-"</li>
             </ol>
         </div>
@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-4">
                 <label for="validationMiddleName" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name') }}" placeholder="middle name" name="midden_name">
+                <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name') }}" placeholder="middle name" name="middle_name">
                 <div id="middleNameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
