@@ -72,11 +72,11 @@ function validation() {
     } else if(username.validity.tooShort) {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
-        usernameFeedback.innerText = `The username must be at least ${username.minLength} characters.`;
+        usernameFeedback.innerText = `The username field must be at least ${username.minLength} characters.`;
     } else if(username.validity.tooLong) {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
-        usernameFeedback.innerText = `The username not be greater than ${username.maxLength} characters.`;
+        usernameFeedback.innerText = `The username field must not be greater than ${username.maxLength} characters.`;
     }
     if(password.validity.valueMissing) {
         password.classList.add('is-invalid');
@@ -85,11 +85,11 @@ function validation() {
     } else if(password.validity.tooShort) {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = `The password must be at least ${password.minLength} characters.`;
+        passwordFeedback.innerText = `The password field must be at least ${password.minLength} characters.`;
     } else if(password.validity.tooLong) {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = `The password not be greater than ${password.maxLength} characters.`;
+        passwordFeedback.innerText = `The password field must not be greater than ${password.maxLength} characters.`;
     }
     if(confirmPassword.validity.valueMissing) {
         confirmPassword.classList.add('is-invalid');
