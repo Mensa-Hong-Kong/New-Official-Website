@@ -20,7 +20,7 @@ class User extends Authenticatable
         'gender_id',
         'passport_type_id',
         'passport_number',
-        'birthdat',
+        'birthday',
     ];
 
     protected $hidden = [
