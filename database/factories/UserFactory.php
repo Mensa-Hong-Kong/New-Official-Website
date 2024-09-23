@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Gender;
 use App\Models\PassportType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -41,7 +42,7 @@ class UserFactory extends Factory
             'given_name' => fake('zh_TW')->firstName(),
             'passport_type_id' => $passportType->id,
             'passport_number' => $passportNumber,
-            'gender_id' => fake()->randomElement(['Male', 'Female']),
+            'gender_id' => Gender::inRandomOrder()->first()->id,
             'birthday' => fake()->date(),
             'remember_token' => Str::random(10),
         ];
