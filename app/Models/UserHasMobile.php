@@ -31,7 +31,7 @@ class UserHasMobile extends Model
         return $this->morphOne(VerifyCode::class, 'contact', 'type', 'type_id', 'id');
     }
 
-    public function sendVerifyEmail()
+    public function sendVerifyWhatsapp()
     {
         $uuid = Str::random(32);
         $this->verifyCode()->create(['verify_code' => $uuid]);
@@ -42,7 +42,7 @@ class UserHasMobile extends Model
     {
         static::created(
             function () {
-                $this->sendVerifyEmail();
+                $this->sendVerifyWhatsapp();
             })
         ;
     }
