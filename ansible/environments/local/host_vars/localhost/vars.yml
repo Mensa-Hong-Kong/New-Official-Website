@@ -11,3 +11,8 @@ database:
     name: mensa
     user: root
     password: password
+twilio:
+  auth:
+    sid: AC1a2ae0f510f993e28f85d3a02b879d72
+    token: 2940f5326395d7adcea9cbd425017db3
+  whatsapp_number: '+14155238886'
