@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\MobileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +20,17 @@ Route::view('/', 'layouts.app')->name('index');
 Route::middleware('guest')->group(function () {
     Route::get('register', [UserController::class, 'create'])->name('register');
     Route::post('register', [UserController::class, 'store']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/emails/{email}/verification', [EmailController::class,'verification'])
+        ->middleware('throttle:6,1')
+        ->name('email.verification');
+    Route::get('/emails/verify/{email}/{verify_code}', [EmailController::class,'verify'])->name('email.verify');
+    Route::post('/mobiles/{mobile}/verification', [MobileController::class,'verification'])
+        ->middleware('throttle:6,1')
+        ->name('mobile.verification');
+    Route::get('/mobiles/verify/{mobile}/{verify_code}', [MobileController::class,'verify'])->name('mobile.verify');
 });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
