@@ -204,7 +204,7 @@ function validation() {
 }
 
 function successCallback(response) {
-    window.location.href = '/';
+    window.location.href = '/profile';
 }
 
 function failCallback(error) {
