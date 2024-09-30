@@ -75,4 +75,19 @@ class UserController extends Controller
 
         return redirect()->route('index');
     }
+
+    public function show()
+    {
+        // ...
+    }
+
+    public function update()
+    {
+        // ...
+    }
+
+    public function destroy()
+    {
+        // ...
+    }
 }

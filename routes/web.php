@@ -21,3 +21,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
+Route::middleware('auth')->group(function () {
+    Route::singleton('profile', UserController::class)
+        ->except('edit')
+        ->destroyable();
+});
