@@ -63,7 +63,7 @@
                 <select class="form-select" id="validationPassportType" name="passport_type_id" required>
                     <option value="" selected disabled>Please select passport type</option>
                     @foreach ($passportTypes as $key => $value)
-                        <option value="{{ $key }}">{{ $value }}</option>
+                        <option value="{{ $key }}" @selected($key == old('passport_type_id'))>{{ $value }}</option>
                     @endforeach
                 </select>
                 <div id="passportTypeFeedback" class="valid-feedback">
@@ -72,7 +72,7 @@
             </div>
             <div class="col-md-4">
                 <label for="validationPassportNumber">Passport Number</label>
-                <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" placeholder="passport_number" name="passport_number" required />
+                <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" value="{{ old('passport_number') }}" placeholder="passport_number" name="passport_number" required />
                 <div id="passportNumberFeedback" class="valid-feedback"></div>
             </div>
             <div class="col-md-4"></div>
