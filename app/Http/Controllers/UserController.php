@@ -80,10 +80,8 @@ class UserController extends Controller
 
     public function show(Request $request)
     {
-        $user = $request->user();
-
         return view('profile')
-            ->with('user', $user)
+            ->with('user', $request->user())
             ->with(
                 'genders', Gender::all()
                     ->pluck('name', 'id')
