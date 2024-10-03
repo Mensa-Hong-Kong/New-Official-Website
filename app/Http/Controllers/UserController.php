@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\Profile\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
@@ -93,9 +94,33 @@ class UserController extends Controller
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
-    public function update()
+    public function update(UpdateRequest $request)
     {
-        // ...
+        $user = $request->user();
+        if($request->password != '' && ! $user->checkPassword($request->password)) {
+            return response([
+                'errors' => ['password' => 'The provided password is incorrect.']
+            ], 422);
+        }
+        $gender = Gender::firstOrCreate(['name' => $request->gender]);
+        $update = [
+            'username' => $request->username,
+            'family_name' => $request->family_name,
+            'middle_name' => $request->middle_name,
+            'given_name' => $request->given_name,
+            'passport_type_id' => $request->passport_type_id,
+            'passport_number' => $request->passport_number,
+            'gender_id' => $gender->id,
+            'birthday' => $request->birthday,
+        ];
+        if($request->new_password) {
+            $update['password'] = $request->new_password;
+        }
+        $user->update($update);
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $return = array_diff_key($update, array_flip($unsetKeys));
+        $return['gender'] = $request->gender;
+        return $return;
     }
 
     public function destroy()
