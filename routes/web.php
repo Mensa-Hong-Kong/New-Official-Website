@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'layouts.app')->name('index');
 Route::middleware('guest')->group(function () {
+    Route::view('login', 'login')->name('login');
     Route::get('register', [UserController::class, 'create'])->name('register');
     Route::post('register', [UserController::class, 'store']);
 });
