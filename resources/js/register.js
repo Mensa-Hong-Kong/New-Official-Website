@@ -6,8 +6,7 @@ const username = document.getElementById('validationUsername');
 const usernameFeedback = document.getElementById('usernameFeedback');
 const password = document.getElementById('validationPassword');
 const passwordFeedback = document.getElementById('passwordFeedback');
-const confirmPassword = document.getElementById('validationConfirmPassword');
-const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
+const confirmPassword = document.getElementById('confirmPassword');
 const familyName = document.getElementById('validationFamilyName');
 const familyNameFeedback = document.getElementById('familyNameFeedback');
 const middleName = document.getElementById('validationMiddleName');
@@ -40,7 +39,7 @@ var inputs = [
 new ClearInputHistory(inputs);
 
 const feedbacks = [
-    usernameFeedback, passwordFeedback, confirmPasswordFeedback,
+    usernameFeedback, passwordFeedback,
     familyNameFeedback, middleNameFeedback, givenNameFeedback,
     passportTypeFeedback, passportNumberFeedback,
     genderFeedback, birthdayFeedback,
@@ -77,6 +76,10 @@ function validation() {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
         usernameFeedback.innerText = `The username field must not be greater than ${username.maxLength} characters.`;
+    } else if(password.value != confirmPassword.value) {
+        password.classList.add('is-invalid');
+        confirmPassword.classList.add('is-invalid');
+        passwordFeedback.innerText = 'The password confirmation does not match.';
     }
     if(password.validity.valueMissing) {
         password.classList.add('is-invalid');
@@ -90,25 +93,6 @@ function validation() {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
         passwordFeedback.innerText = `The password field must not be greater than ${password.maxLength} characters.`;
-    }
-    if(confirmPassword.validity.valueMissing) {
-        confirmPassword.classList.add('is-invalid');
-        confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = 'The password field is required.';
-    } else if(confirmPassword.validity.tooShort) {
-        confirmPassword.classList.add('is-invalid');
-        confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = `The password must be at least ${confirmPassword.minLength} characters.`;
-    } else if(confirmPassword.validity.tooLong) {
-        confirmPassword.classList.add('is-invalid');
-        confirmPasswordFeedback.className = 'invalid-feedback';
-        confirmPasswordFeedback.innerText = `The password not be greater than ${confirmPassword.maxLength} characters.`;
-    }
-    if(password.value != confirmPassword.value) {
-        password.classList.add('is-invalid');
-        confirmPassword.classList.add('is-invalid');
-        passwordFeedback.className = 'invalid-feedback';
-        passwordFeedback.innerText = 'The password confirmation does not match.';
     }
     if(familyName.validity.valueMissing) {
         familyName.classList.add('is-invalid');
@@ -216,7 +200,6 @@ function failCallback(error) {
         feedback.innerText = 'Looks good!'
     }
     for(let key in error.response.data.errors) {
-        console.log(key);
         let value = error.response.data.errors[key];
         let feedback;
         let input;

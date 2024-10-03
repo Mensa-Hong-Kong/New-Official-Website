@@ -31,11 +31,8 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label for="validationConfirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="validationConfirmPassword" minlength="8" maxlength="16" placeholder="confirm password" name="password_confirmation" required>
-                <div id="confirmPasswordFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" minlength="8" maxlength="16" placeholder="confirm password" name="password_confirmation" required>
             </div>
             <div class="col-md-4">
                 <label for="validationFamilyName" class="form-label">Family Name</label>
