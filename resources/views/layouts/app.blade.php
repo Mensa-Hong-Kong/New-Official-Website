@@ -27,6 +27,13 @@
                     <ul class="navbar-nav">
                         @auth
                             <li class="nav-item">
+                                <a href="{{ route('profile.show') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'profile.show',
+                                ])>Profile</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
                             </li>
                         @else
