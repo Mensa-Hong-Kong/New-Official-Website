@@ -66,7 +66,7 @@ class UserController extends Controller
         }
         Auth::loginUsingId($user->id);
 
-        return ['success'];
+        return redirect()->route('profile.show');
     }
 
     public function logout()
