@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\Profile\UpdateRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
@@ -81,6 +81,7 @@ class UserController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
+
         return view('profile')
             ->with('user', $user)
             ->with(
@@ -97,9 +98,9 @@ class UserController extends Controller
     public function update(UpdateRequest $request)
     {
         $user = $request->user();
-        if($request->password != '' && ! $user->checkPassword($request->password)) {
+        if ($request->password != '' && ! $user->checkPassword($request->password)) {
             return response([
-                'errors' => ['password' => 'The provided password is incorrect.']
+                'errors' => ['password' => 'The provided password is incorrect.'],
             ], 422);
         }
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
@@ -113,13 +114,14 @@ class UserController extends Controller
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
         ];
-        if($request->new_password) {
+        if ($request->new_password) {
             $update['password'] = $request->new_password;
         }
         $user->update($update);
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
         $return['gender'] = $request->gender;
+
         return $return;
     }
 
