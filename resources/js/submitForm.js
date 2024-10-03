@@ -14,6 +14,9 @@ export default function submitForm(action, method="post", data, successCallback 
         }
     }).catch(function (error) {
         switch(error.status) {
+            case 302:
+                // header will auto redirect. need not to handle
+                break;
             case 401:
                 bootstrapAlert('Unauthorized, please login first');
                 break;
