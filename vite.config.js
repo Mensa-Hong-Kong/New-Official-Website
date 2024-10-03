@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.scss',
                 'resources/js/app.js',
                 'resources/js/register.js',
+                'resources/js/profile.js'
             ],
             refresh: true,
         }),

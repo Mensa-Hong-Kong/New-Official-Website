@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserHasEmail;
 use App\Models\UserHasMobile;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -76,9 +77,20 @@ class UserController extends Controller
         return redirect()->route('index');
     }
 
-    public function show()
+    public function show(Request $request)
     {
-        // ...
+        $user = $request->user();
+        return view('profile')
+            ->with('user', $user)
+            ->with(
+                'genders', Gender::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
+                'passportTypes', PassportType::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
     public function update()
