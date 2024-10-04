@@ -14,7 +14,7 @@ class ShowTest extends TestCase
     {
         $response = $this->get(route('profile.show'));
 
-        $response->assertUnauthorized();
+        $response->assertRedirectToRoute('login');
     }
 
     public function testHappyCase(): void

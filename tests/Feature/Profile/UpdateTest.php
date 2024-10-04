@@ -36,7 +36,7 @@ class UpdateTest extends TestCase
     {
         $response = $this->put(route('profile.update'));
 
-        $response->assertRedirectToRoute('logib');
+        $response->assertRedirectToRoute('login');
     }
 
     public function testUsernameIsNotString()
