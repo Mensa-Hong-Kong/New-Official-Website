@@ -76,10 +76,6 @@ function validation() {
         username.classList.add('is-invalid');
         usernameFeedback.className = 'invalid-feedback';
         usernameFeedback.innerText = `The username field must not be greater than ${username.maxLength} characters.`;
-    } else if(password.value != confirmPassword.value) {
-        password.classList.add('is-invalid');
-        confirmPassword.classList.add('is-invalid');
-        passwordFeedback.innerText = 'The password confirmation does not match.';
     }
     if(password.validity.valueMissing) {
         password.classList.add('is-invalid');
@@ -93,6 +89,10 @@ function validation() {
         password.classList.add('is-invalid');
         passwordFeedback.className = 'invalid-feedback';
         passwordFeedback.innerText = `The password field must not be greater than ${password.maxLength} characters.`;
+    } else if(password.value != confirmPassword.value) {
+        password.classList.add('is-invalid');
+        confirmPassword.classList.add('is-invalid');
+        passwordFeedback.innerText = 'The password confirmation does not match.';
     }
     if(familyName.validity.valueMissing) {
         familyName.classList.add('is-invalid');
@@ -193,7 +193,7 @@ function successCallback(response) {
 
 function failCallback(error) {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
     }
     for(let feedback of feedbacks) {
         feedback.className = 'valid-feedback';
