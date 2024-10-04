@@ -331,7 +331,7 @@ class RegisterTest extends TestCase
         $data = $this->happyCase;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithoutMobileAndEmailAndWithMiddleNameHappyCase()
@@ -340,7 +340,7 @@ class RegisterTest extends TestCase
         $data['middle_name'] = 'Tai Man';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithoutMiddleNameAndEmailAndWithMobileHappyCase()
@@ -349,7 +349,7 @@ class RegisterTest extends TestCase
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithoutMiddleNameAndMobileAndWithEmailHappyCase()
@@ -358,7 +358,7 @@ class RegisterTest extends TestCase
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithMiddleNameAndMobileAndWithoutEmailHappyCase()
@@ -368,7 +368,7 @@ class RegisterTest extends TestCase
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithMiddleNameAndEmailAndWithoutMobileHappyCase()
@@ -378,7 +378,7 @@ class RegisterTest extends TestCase
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithEmailAndMobileAndWithoutMiddleNameHappyCase()
@@ -389,7 +389,7 @@ class RegisterTest extends TestCase
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 
     public function testWithMiddleAndEmailAndMobileNameHappyCase()
@@ -399,6 +399,6 @@ class RegisterTest extends TestCase
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
-        $response->assertJson(['success']);
+        $response->assertRedirectToRoute('profile.show');
     }
 }

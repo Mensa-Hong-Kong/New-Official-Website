@@ -18,52 +18,49 @@
             <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
             <div class="col-md-4">
                 <label for="validationUsername" class="form-label">Usermame</label>
-                <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username') }}" placeholder="username" required>
+                <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username') }}" placeholder="username" required />
                 <div id="usernameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="validationPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" name="password" required>
+                <input type="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" name="password" required />
                 <div id="passwordFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
-                <label for="validationConfirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="validationConfirmPassword" minlength="8" maxlength="16" placeholder="confirm password" name="password_confirmation" required>
-                <div id="confirmPasswordFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" minlength="8" maxlength="16" placeholder="confirm password" name="password_confirmation" required />
             </div>
             <div class="col-md-4">
                 <label for="validationFamilyName" class="form-label">Family Name</label>
-                <input type="text" class="form-control" id="validationFamilyName" maxlength="255" value="{{ old('family_name') }}" placeholder="family name" name="family_name" required>
+                <input type="text" class="form-control" id="validationFamilyName" maxlength="255" value="{{ old('family_name') }}" placeholder="family name" name="family_name" required />
                 <div id="familyNameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="validationMiddleName" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name') }}" placeholder="middle name" name="middle_name">
+                <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name') }}" placeholder="middle name" name="middle_name" />
                 <div id="middleNameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="validationGivenName" class="form-label">Given Name</label>
-                <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name') }}" placeholder="given name" name="given_name" required>
+                <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name') }}" placeholder="given name" name="given_name" required />
                 <div id="givenNameFeedback" class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="validationPassportType" class="form-label">Passport Type</label>
-                <select class="form-select" id="validationPassportType" name="passport_type_id" required>
+                <select class="form-select" id="validationPassportType" name="passport_type_id" required />
                     <option value="" selected disabled>Please select passport type</option>
                     @foreach ($passportTypes as $key => $value)
-                        <option value="{{ $key }}">{{ $value }}</option>
+                        <option value="{{ $key }}" @selected($key == old('passport_type_id'))>{{ $value }}</option>
                     @endforeach
                 </select>
                 <div id="passportTypeFeedback" class="valid-feedback">
@@ -72,13 +69,13 @@
             </div>
             <div class="col-md-4">
                 <label for="validationPassportNumber">Passport Number</label>
-                <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" placeholder="passport_number" name="passport_number" required />
+                <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" value="{{ old('passport_number') }}" placeholder="passport_number" name="passport_number" required />
                 <div id="passportNumberFeedback" class="valid-feedback"></div>
             </div>
             <div class="col-md-4"></div>
             <div class="col-md-4">
                 <label for="validationGender" class="form-label">Gender</label>
-                <input type="text" class="form-control" id="validationGender" list="genders" maxlength="255" value="{{ old('genders') }}" placeholder="genders" name="genders" required>
+                <input type="text" class="form-control" id="validationGender" list="genders" maxlength="255" value="{{ old('genders') }}" placeholder="genders" name="genders" required />
                 <div id="genderFeedback" class="valid-feedback">
                     Looks good!
                 </div>
