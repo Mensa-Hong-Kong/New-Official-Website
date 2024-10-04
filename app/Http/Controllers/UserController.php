@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Profile\UpdateRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
 use App\Models\UserHasEmail;
 use App\Models\UserHasMobile;
+use App\Models\UserLoginLog;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +68,7 @@ class UserController extends Controller
             }
             throw $e;
         }
-        Auth::loginUsingId($user->id);
+        Auth::login($user);
 
         return redirect()->route('profile.show');
     }
@@ -76,6 +78,38 @@ class UserController extends Controller
         auth()->logout();
 
         return redirect()->route('index');
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $user = User::with([
+                'loginLogs' => function($query) {
+                    $query->where('status', false)
+                        ->where('login_at', '>=', now()->subDay());
+                }
+            ])->firstWhere('username', $request->username);
+        if($user) {
+            if($user->loginLogs->count() >= 10) {
+                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['login_at'];
+                return response([
+                    'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
+                ], 422);
+            }
+            $log = [
+                'user_id' => $user->id,
+                'login_at' => now(),
+            ];
+            if($user->checkPassword($request->password)) {
+                $log['status'] = true;
+                UserLoginLog::create($log);
+                Auth::login($user, $request->remember_me);
+                return redirect()->intended(route('profile.show'));
+            }
+            UserLoginLog::create($log);
+        }
+        return response([
+            'errors' => ['failed' => 'The provided username or password is incorrect.'],
+        ], 422);
     }
 
     public function show(Request $request)
