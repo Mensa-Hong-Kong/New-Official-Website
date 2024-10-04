@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PassportType;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Profile\UpdateRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\Profile\UpdateRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
@@ -83,14 +83,15 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         $user = User::with([
-                'loginLogs' => function($query) {
-                    $query->where('status', false)
-                        ->where('login_at', '>=', now()->subDay());
-                }
-            ])->firstWhere('username', $request->username);
-        if($user) {
-            if($user->loginLogs->count() >= 10) {
+            'loginLogs' => function ($query) {
+                $query->where('status', false)
+                    ->where('login_at', '>=', now()->subDay());
+            },
+        ])->firstWhere('username', $request->username);
+        if ($user) {
+            if ($user->loginLogs->count() >= 10) {
                 $firstInRangeLoginFailedTime = $user['loginLogs'][0]['login_at'];
+
                 return response([
                     'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
                 ], 422);
@@ -99,14 +100,16 @@ class UserController extends Controller
                 'user_id' => $user->id,
                 'login_at' => now(),
             ];
-            if($user->checkPassword($request->password)) {
+            if ($user->checkPassword($request->password)) {
                 $log['status'] = true;
                 UserLoginLog::create($log);
                 Auth::login($user, $request->remember_me);
+
                 return redirect()->intended(route('profile.show'));
             }
             UserLoginLog::create($log);
         }
+
         return response([
             'errors' => ['failed' => 'The provided username or password is incorrect.'],
         ], 422);

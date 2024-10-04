@@ -68,6 +68,7 @@ class LoginTest extends TestCase
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
     }
+
     public function testMissingPassword()
     {
         $data['username'] = '12345678';
@@ -125,7 +126,7 @@ class LoginTest extends TestCase
         ])->create();
         $data = [
             'username' => '87654321',
-            'password'=> '12345678',
+            'password' => '12345678',
         ];
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
@@ -136,7 +137,7 @@ class LoginTest extends TestCase
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [
             'username' => $user->username,
-            'password'=> '87654321',
+            'password' => '87654321',
         ];
         $this->assertEquals(0, $user->loginLogs->count());
         $response = $this->post(route('login'), $data);
@@ -157,18 +158,20 @@ class LoginTest extends TestCase
         UserLoginLog::insert($insert);
         $data = [
             'username' => $user->username,
-            'password'=> '12345678',
+            'password' => '12345678',
         ];
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['throttle' => "Too many failed login attempts. Please try again later than {$loginAt}."]);
     }
 
-    private function hasRememberWebCooky(array $cookyJar): bool {
+    private function hasRememberWebCooky(array $cookyJar): bool
+    {
         foreach ($cookyJar as $cooky) {
             if (Str::startsWith($cooky->getName(), 'remember_web_')) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -177,7 +180,7 @@ class LoginTest extends TestCase
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [
             'username' => $user->username,
-            'password'=> '12345678',
+            'password' => '12345678',
         ];
         $response = $this->post(route('login'), $data);
         $response->assertValid();
@@ -191,7 +194,7 @@ class LoginTest extends TestCase
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [
             'username' => $user->username,
-            'password'=> '12345678',
+            'password' => '12345678',
             'remember_me' => true,
         ];
         $response = $this->post(route('login'), $data);
