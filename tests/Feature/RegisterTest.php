@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\UserContact;
+use App\Notifications\VerifyContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -21,6 +24,13 @@ class RegisterTest extends TestCase
         'gender' => 'Male',
         'birthday' => '1997-07-01',
     ];
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Notification::fake();
+    }
 
     public function testView(): void
     {
@@ -350,6 +360,10 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 12345678);
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 
     public function testWithoutMiddleNameAndMobileAndWithEmailHappyCase()
@@ -359,6 +373,10 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 'example@gamil.com');
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 
     public function testWithMiddleNameAndMobileAndWithoutEmailHappyCase()
@@ -369,6 +387,10 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 12345678);
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 
     public function testWithMiddleNameAndEmailAndWithoutMobileHappyCase()
@@ -379,6 +401,10 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 'example@gamil.com');
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 
     public function testWithEmailAndMobileAndWithoutMiddleNameHappyCase()
@@ -389,6 +415,14 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 12345678);
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
+        $contact = UserContact::firstWhere('contact', 'example@gamil.com');
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 
     public function testWithMiddleAndEmailAndMobileNameHappyCase()
@@ -400,5 +434,13 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserContact::firstWhere('contact', 12345678);
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
+        $contact = UserContact::firstWhere('contact', 'example@gamil.com');
+        Notification::assertSentTo(
+            [$contact], VerifyContact::class
+        );
     }
 }
