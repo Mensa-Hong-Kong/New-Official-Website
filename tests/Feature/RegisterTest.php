@@ -374,7 +374,7 @@ class RegisterTest extends TestCase
     public function testWithMiddleNameAndEmailAndWithoutMobileHappyCase()
     {
         $data = $this->happyCase;
-        $data['mobile'] = 12345678;
+        $data['middle_name'] = 'Tai Man';
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
@@ -384,7 +384,6 @@ class RegisterTest extends TestCase
     public function testWithEmailAndMobileAndWithoutMiddleNameHappyCase()
     {
         $data = $this->happyCase;
-        $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
@@ -395,6 +394,7 @@ class RegisterTest extends TestCase
     public function testWithMiddleAndEmailAndMobileNameHappyCase()
     {
         $data = $this->happyCase;
+        $data['mobile'] = 12345678;
         $data['middle_name'] = 'Tai Man';
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
