@@ -10,7 +10,7 @@ use App\Models\PassportType;
 use App\Models\User;
 use App\Models\UserHasEmail;
 use App\Models\UserHasMobile;
-use App\Models\UserLoginLog;
+use App\Models\LoginLog;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -102,12 +102,12 @@ class UserController extends Controller
             ];
             if ($user->checkPassword($request->password)) {
                 $log['status'] = true;
-                UserLoginLog::create($log);
+                LoginLog::create($log);
                 Auth::login($user, $request->remember_me);
 
                 return redirect()->intended(route('profile.show'));
             }
-            UserLoginLog::create($log);
+            LoginLog::create($log);
         }
 
         return response([

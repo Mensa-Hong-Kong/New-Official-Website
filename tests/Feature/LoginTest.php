@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\UserLoginLog;
+use App\Models\LoginLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -142,7 +142,7 @@ class LoginTest extends TestCase
         $this->assertEquals(0, $user->loginLogs->count());
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
-        $countLoginLogs = UserLoginLog::where('user_id', $user->id)
+        $countLoginLogs = LoginLog::where('user_id', $user->id)
             ->count();
         $this->assertEquals(1, $countLoginLogs);
     }
@@ -155,7 +155,7 @@ class LoginTest extends TestCase
             'user_id' => $user->id,
             'login_at' => $loginAt,
         ]);
-        UserLoginLog::insert($insert);
+        LoginLog::insert($insert);
         $data = [
             'username' => $user->username,
             'password' => '12345678',

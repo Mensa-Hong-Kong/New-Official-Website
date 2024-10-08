@@ -60,6 +60,6 @@ class User extends Authenticatable
 
     public function loginLogs()
     {
-        return $this->hasMany(UserLoginLog::class);
+        return $this->hasMany(LoginLog::class);
     }
 }

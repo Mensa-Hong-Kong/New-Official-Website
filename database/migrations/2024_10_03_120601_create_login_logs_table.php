@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_login_logs', function (Blueprint $table) {
+        Schema::create('login_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->dateTime('login_at');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_login_logs');
+        Schema::dropIfExists('login_logs');
     }
 };
