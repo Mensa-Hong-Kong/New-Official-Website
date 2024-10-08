@@ -51,14 +51,14 @@ class UserController extends Controller
             if ($request->email) {
                 UserContact::create([
                     'user_id' => $user->id,
-                    'type_id' => ContactType::firstWhere('email')->id,
+                    'type_id' => ContactType::firstWhere('name', 'email')->id,
                     'contact' => $request->email,
                 ]);
             }
             if ($request->mobile) {
                 UserContact::create([
                     'user_id' => $user->id,
-                    'type_id' => ContactType::firstWhere('mobile')->id,
+                    'type_id' => ContactType::firstWhere('name', 'mobile')->id,
                     'contact' => $request->mobile,
                 ]);
             }
