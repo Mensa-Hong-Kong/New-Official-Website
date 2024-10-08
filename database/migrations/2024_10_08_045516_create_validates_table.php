@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('validatable_type');
             $table->unsignedBigInteger('validatable_id');
-            $table->string('verify_code');
+            $table->string('code');
             $table->unsignedTinyInteger('tried_time')->default(0);
             $table->boolean('status')->default(false);
             $table->dateTime('expiry_at')->nullable();

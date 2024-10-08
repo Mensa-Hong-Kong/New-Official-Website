@@ -13,7 +13,7 @@ class Validate extends Model
     protected $fillable = [
         'validatable_type',
         'validatable_id',
-        'verify_code',
+        'code',
         'tried_time',
         'status',
         'expiry_at',
