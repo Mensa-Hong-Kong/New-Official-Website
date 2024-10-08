@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\Profile\UpdateRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\ContactType;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
-use App\Models\UserHasEmail;
-use App\Models\UserHasMobile;
+use App\Models\UserContact;
 use App\Models\LoginLog;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,15 +49,17 @@ class UserController extends Controller
                 'birthday' => $request->birthday,
             ]);
             if ($request->email) {
-                UserHasEmail::create([
+                UserContact::create([
                     'user_id' => $user->id,
-                    'email' => $request->email,
+                    'type_id' => ContactType::firstWhere('email')->id,
+                    'contact' => $request->email,
                 ]);
             }
             if ($request->mobile) {
-                UserHasMobile::create([
+                UserContact::create([
                     'user_id' => $user->id,
-                    'mobile' => $request->mobile,
+                    'type_id' => ContactType::firstWhere('mobile')->id,
+                    'contact' => $request->mobile,
                 ]);
             }
             DB::commit();
