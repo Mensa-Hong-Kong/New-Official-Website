@@ -18,6 +18,11 @@ class UserContact extends Model
         'is_display',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function type(){
         return $this->belongsTo(ContactType::class, 'type_id');
     }
