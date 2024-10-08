@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(LoginLog::class);
     }
+
+    public function contacts()
+    {
+        return $this->hasMany(UserContact::class);
+    }
 }
