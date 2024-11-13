@@ -15,8 +15,9 @@
 2. follow terminal output to set shellenv to zprofile
 
 ```shell
-(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+echo >> /Users/tszyuloveyou/.zprofile
+echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/tszyuloveyou/.zprofile
+eval "$(/usr/local/bin/brew shellenv)"
 ```
 
 ### NVM
@@ -75,56 +76,24 @@ pyenv install 3.11.4
 pyenv global 3.11.4
 ```
 
-### PhpEnv
-
-1. install:
-
-```shell
-git clone git@github.com:phpenv/phpenv.git ~/.phpenv
-git clone https://github.com/php-build/php-build $(phpenv root)/plugins/php-build
-```
-
-2. add to ~/.zprofile
-
-```shell
-export PATH="$HOME/.phpenv/bin:$PATH"
-eval "$(phpenv init -)"
-
-export LDFLAGS="-L/usr/local/opt/jpeg/lib"
-export CPPFLAGS="-I/usr/local/opt/jpeg/include"
-export PATH="/usr/local/opt/jpeg/bin:$PATH"
-export PKG_CONFIG_PATH="/usr/local/opt/jpeg/lib/pkgconfig"
-```
-
-### Packages to Install for php 8.1.25
-
--   bzip2
--   libpng
--   libjpeg
--   libiconv
--   icu4c
--   oniguruma
--   tidy-html5
--   libzip
-
-commend:
-
-```shell
-brew install {package}
-```
-
 ### php 8.1.25
 
-1. install:
+1. first time install:
 
 ```shell
-PHP_BUILD_CONFIGURE_OPTS="--with-bz2=$(brew --prefix bzip2) --with-iconv=$(brew --prefix libiconv)" phpenv install 8.1.25
-phpenv global 8.1.25
+brew install php@8.1
+brew link php@8.1
 ```
 
-### php 8.1.25
+2. change new php version
 
-1. install:
+```shell
+brew unlink php@8.0
+brew install php@8.1
+brew link php@8.1
+```
+
+### Composer
 
 ```shell
 brew install composer
