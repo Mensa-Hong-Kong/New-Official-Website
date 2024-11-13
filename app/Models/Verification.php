@@ -6,19 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class VerifyCode extends Model
+class Verification extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'type',
-        'type_id',
-        'verify_code',
+        'verifiable_type',
+        'verifiable_id',
+        'code',
+        'verified_at',
+        'expired_at',
     ];
 
 
-    public function contact(): MorphTo
+    public function verifiable(): MorphTo
     {
-        return $this->morphTo('verifyCode', 'type', 'type_id');
+        return $this->morphTo();
     }
 }

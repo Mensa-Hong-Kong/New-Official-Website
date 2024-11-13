@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('verify_codes', function (Blueprint $table) {
+        Schema::create('verifications', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->unsignedBigInteger('type_id');
-            $table->uuid('verify_code');
+            $table->string('verifiable_type');
+            $table->unsignedBigInteger('verifiable_id');
+            $table->string('code');
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('expired_at')->nullable();
             $table->timestamps();
         });
     }

@@ -77,7 +77,7 @@ class User extends Authenticatable
     {
         return $this->defaultMobile->mobile;
     }
-  
+
     public function checkPassword($password)
     {
         return Hash::check($password, $this->password);
@@ -85,6 +85,6 @@ class User extends Authenticatable
 
     public function loginLogs()
     {
-        return $this->hasMany(UserLoginLog::class);\
+        return $this->hasMany(UserLoginLog::class);
     }
 }

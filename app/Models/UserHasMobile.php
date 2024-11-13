@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
+use App\Concern\Models\Verifiable;
 use App\Notifications\VerifyMobile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
 class UserHasMobile extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Verifiable;
 
     protected $fillable = [
         'user_id',
@@ -25,16 +24,11 @@ class UserHasMobile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function verifyCode(): MorphOne
-    {
-        return $this->morphOne(VerifyCode::class, 'contact', 'type', 'type_id', 'id');
-    }
-
     public function sendVerifyWhatsapp()
     {
-        $uuid = Str::random(32);
-        $this->verifyCode()->create(['verify_code' => $uuid]);
-        $this->notify(new VerifyMobile($this->id, $uuid));
+        $code = Str::random(32);
+        $this->verifications()->create(['code' => $code]);
+        $this->notify(new VerifyMobile($this->id, $code));
     }
 
     protected static function booted(): void
