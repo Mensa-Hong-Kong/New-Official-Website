@@ -17,7 +17,6 @@ class UserHasEmail extends Model
     protected $fillable = [
         'user_id',
         'email',
-        'verified_at',
         'is_default',
     ];
 

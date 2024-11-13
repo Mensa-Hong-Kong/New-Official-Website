@@ -17,7 +17,6 @@ class UserHasMobile extends Model
     protected $fillable = [
         'user_id',
         'mobile',
-        'verified_at',
         'is_default',
     ];
 

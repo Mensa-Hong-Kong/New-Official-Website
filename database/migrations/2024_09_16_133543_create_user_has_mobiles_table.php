@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('mobile')->unique();
-            $table->dateTime('verified_at')->nullable();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
