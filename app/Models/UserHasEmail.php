@@ -27,18 +27,9 @@ class UserHasEmail extends Model
 
     public function sendVerifyEmail()
     {
-        $uuid = Str::random(32);
-        $this->verifications()->create(['verify_code' => $uuid]);
-        $this->notify(new VerifyEmail($this->id, $uuid));
-    }
-
-    protected static function booted(): void
-    {
-        static::created(
-            function () {
-                $this->sendVerifyEmail();
-            })
-        ;
+        $code = Str::random(6);
+        $this->verifications()->create(['verify_code' => $code]);
+        $this->notify(new VerifyEmail($code));
     }
 
     public function routeNotificationForMail(Notification $notification): array

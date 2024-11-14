@@ -16,7 +16,6 @@ class VerifyMobile extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        private $mobileID,
         private $verifyCode
     ) {}
 
@@ -35,11 +34,7 @@ class VerifyMobile extends Notification implements ShouldQueue
      */
     public function toWhatsApp(object $notifiable)
     {
-        $link = route('verify.mobile', [
-            'mobile_id' => $this->mobileID,
-            'verify_code' => $this->verifyCode,
-        ]);
         return (new WhatsAppMessage)
-            ->content("Click the link below to verify your mobile number. $link");
+            ->content("Your verify code is {$this->verifyCode}");
     }
 }

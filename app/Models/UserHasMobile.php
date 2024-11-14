@@ -26,18 +26,9 @@ class UserHasMobile extends Model
 
     public function sendVerifyWhatsapp()
     {
-        $code = Str::random(32);
+        $code = Str::random(6);
         $this->verifications()->create(['code' => $code]);
-        $this->notify(new VerifyMobile($this->id, $code));
-    }
-
-    protected static function booted(): void
-    {
-        static::created(
-            function () {
-                $this->sendVerifyWhatsapp();
-            })
-        ;
+        $this->notify(new VerifyMobile($code));
     }
 
     public function routeNotificationForWhatsApp()

@@ -15,7 +15,6 @@ class VerifyEmail extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        private $emailID,
         private $verifyCode
     ) {}
 
@@ -36,10 +35,6 @@ class VerifyEmail extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('Verify Email Address')
-            ->line('Click the button below to verify your email address.')
-            ->action('Verify Email Address', route('verify.email', [
-                'email_id' => $this->emailID,
-                'verify_code' => $this->verifyCode,
-            ]));
+            ->line("Your verify code is {$this->verifyCode}");
     }
 }
