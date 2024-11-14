@@ -3,6 +3,3 @@
 
 - src: ansistrano.rollback
   version: 3.1.0
-
-- src: googlecloudplatform.google_cloud_ops_agents
-  version: master

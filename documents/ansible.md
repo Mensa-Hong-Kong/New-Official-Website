@@ -2,8 +2,6 @@
 
 ## Installation
 
-You should have the correct [Python version](https://github.com/Alta-Multimedia-Limited/alta-hk-legacy/blob/main/ansible/.python-version) installed.
-
 ```shell
 cd ansible
 pip install -r requirements.txt
