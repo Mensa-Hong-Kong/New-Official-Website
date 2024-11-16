@@ -18,9 +18,17 @@ class Verification extends Model
         'expired_at',
     ];
 
+    protected $casts = [
+        'verified_at' => 'datetime',
+    ];
 
     public function verifiable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function isTimeoutCode(): bool
+    {
+        return $this->created_at >= now()->subMinutes(5);
     }
 }

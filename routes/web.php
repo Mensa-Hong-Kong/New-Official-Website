@@ -26,13 +26,13 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/emails/{email}/verification', [EmailController::class,'verification'])
-        ->middleware('throttle:6,1')
+        ->middleware('throttle:1,1')
         ->name('email.verification');
-    Route::get('/emails/verify/{email}/{verify_code}', [EmailController::class,'verify'])->name('email.verify');
+    Route::match(['put', 'patch'], '/emails/{email}/verify', [EmailController::class,'verification'])->name('email.verify');
     Route::post('/mobiles/{mobile}/verification', [MobileController::class,'verification'])
-        ->middleware('throttle:6,1')
+        ->middleware('throttle:1,1')
         ->name('mobile.verification');
-    Route::get('/mobiles/verify/{mobile}/{verify_code}', [MobileController::class,'verify'])->name('mobile.verify');
+    Route::match(['put', 'patch'], '/mobiles/{mobile}/verify', [MobileController::class,'verify'])->name('mobile.verify');
 });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
