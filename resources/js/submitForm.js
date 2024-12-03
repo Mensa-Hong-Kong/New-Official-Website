@@ -17,7 +17,7 @@ export default function submitForm(action, method="post", data, successCallback 
         switch(error.status) {
             case 401:
                 bootstrapAlert('Unauthorized, please login first');
-                window.location.href = `${windows.location.origin}/login`;
+                window.location.pathname = '/login';
                 break;
             case 403:
                 bootstrapAlert('Sorry, you have no permission');
