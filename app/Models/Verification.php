@@ -13,7 +13,9 @@ class Verification extends Model
     protected $fillable = [
         'verifiable_type',
         'verifiable_id',
+        'tried_time',
         'code',
+        'closed_at',
         'verified_at',
         'expired_at',
     ];
@@ -29,6 +31,6 @@ class Verification extends Model
 
     public function isTimeoutCode(): bool
     {
-        return $this->created_at >= now()->subMinutes(5);
+        return now() >= $this->closed_at;
     }
 }
