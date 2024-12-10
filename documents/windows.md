@@ -97,8 +97,8 @@ git clone https://github.com/php-build/php-build $(phpenv root)/plugins/php-buil
 #### Install PHP
 
 ```shell
-PHP_BUILD_CONFIGURE_OPTS="--with-pgsql=/usr/include/postgresql --with-pdo-pgsql=/usr/include/postgresql --with-freetype" phpenv install 8.1.25
-phpenv global 8.1.25
+PHP_BUILD_CONFIGURE_OPTS="--with-pgsql=/usr/include/postgresql --with-pdo-pgsql=/usr/include/postgresql --with-freetype" phpenv install 8.3.14
+phpenv global 8.3.14
 ```
 
 #### PHP Composer
@@ -181,3 +181,4 @@ nvm install --lts
 -   Laravel Extension Pack (onecentlin.laravel-extension-pack)
 -   Laravel Goto View (ctf0.laravel-goto-view)
 -   Thunder Client (rangav.vscode-thunder-client)
+-   Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss)

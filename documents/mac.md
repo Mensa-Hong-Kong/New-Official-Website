@@ -76,21 +76,21 @@ pyenv install 3.11.4
 pyenv global 3.11.4
 ```
 
-### php 8.1.25
+### php 8.2
 
 1. first time install:
 
 ```shell
-brew install php@8.1
-brew link php@8.1
+brew install php@8.2
+brew link php@8.2
 ```
 
 2. change new php version
 
 ```shell
-brew unlink php@8.0
-brew install php@8.1
-brew link php@8.1
+brew unlink php@8.1
+brew install php@8.2
+brew link php@8.2
 ```
 
 ### Composer
@@ -113,3 +113,4 @@ brew install composer
 -   Laravel Goto View (ctf0.laravel-goto-view)
 -   Thunder Client (rangav.vscode-thunder-client)
 -   Database Client (cweijan.vscode-database-client2)
+-   Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss)
