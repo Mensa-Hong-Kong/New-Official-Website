@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest
                     ->ignore($this->user()),
             ],
             'gender' => 'required|string|max:255',
-            'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
+            'birthday' => 'bail|required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
         ];
     }
 
