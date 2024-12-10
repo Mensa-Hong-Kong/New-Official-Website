@@ -8,8 +8,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
-use App\Models\UserHasEmail;
-use App\Models\UserHasMobile;
+use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
 use Exception;
 use Illuminate\Http\Request;
@@ -34,40 +33,34 @@ class UserController extends Controller
 
     public function store(RegisterRequest $request)
     {
-        try {
-            DB::beginTransaction();
-            $gender = Gender::firstOrCreate(['name' => $request->gender]);
-            $user = User::create([
-                'username' => $request->username,
-                'password' => $request->password,
-                'family_name' => $request->family_name,
-                'middle_name' => $request->middle_name,
-                'given_name' => $request->given_name,
-                'passport_type_id' => $request->passport_type_id,
-                'passport_number' => $request->passport_number,
-                'gender_id' => $gender->id,
-                'birthday' => $request->birthday,
+        DB::beginTransaction();
+        $gender = Gender::firstOrCreate(['name' => $request->gender]);
+        $user = User::create([
+            'username' => $request->username,
+            'password' => $request->password,
+            'family_name' => $request->family_name,
+            'middle_name' => $request->middle_name,
+            'given_name' => $request->given_name,
+            'passport_type_id' => $request->passport_type_id,
+            'passport_number' => $request->passport_number,
+            'gender_id' => $gender->id,
+            'birthday' => $request->birthday,
+        ]);
+        if ($request->email) {
+            UserHasContact::create([
+                'user_id' => $user->id,
+                'type' => 'email',
+                'contact' => $request->email,
             ]);
-            if ($request->email) {
-                UserHasEmail::create([
-                    'user_id' => $user->id,
-                    'email' => $request->email,
-                ]);
-            }
-            if ($request->mobile) {
-                UserHasMobile::create([
-                    'user_id' => $user->id,
-                    'mobile' => $request->mobile,
-                ]);
-            }
-            DB::commit();
-        } catch (Exception $e) {
-            try {
-                DB::rollBack();
-            } catch (Exception $e) {
-            }
-            throw $e;
         }
+        if ($request->mobile) {
+            UserHasContact::create([
+                'user_id' => $user->id,
+                'type' => 'mobile',
+                'contact' => $request->mobile,
+            ]);
+        }
+        DB::commit();
         Auth::login($user);
 
         return redirect()->route('profile.show');
@@ -117,6 +110,9 @@ class UserController extends Controller
 
     public function show(Request $request)
     {
+        $contacts = UserHasContact::where('user_id', $request->id)
+            ->get()
+            ->keyBy('type');
         return view('profile')
             ->with('user', $request->user())
             ->with(
@@ -127,7 +123,8 @@ class UserController extends Controller
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
                     ->toArray()
-            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
+            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'))
+            ->with('contacts', $contacts);
     }
 
     public function update(UpdateRequest $request)

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -44,31 +43,50 @@ class User extends Authenticatable
         return $this->belongsTo(PassportType::class);
     }
 
+    public function contacts()
+    {
+        return $this->hasMany(UserHasContact::class);
+    }
+
     public function emails()
     {
-        return $this->hasMany(UserHasEmail::class);
+        return $this->hasMany(UserHasContact::class)
+            ->where('type', 'email');
     }
 
     public function defaultEmail()
     {
-        return $this->hasOne(UserHasEmail::class)
-            ->whereNotNull('verified_at')
-            ->where('is_default', true);
+        return $this->hasOne(UserHasContact::class)
+            ->where('type', 'email')
+            ->where('is_default', true)
+            ->whereHas(
+                'verifications', function($query) {
+                    $query->whereNull('expired_at')
+                        ->whereNotNull('verified_at');
+                }
+            );
     }
 
     public function mobiles()
     {
-        return $this->hasMany(UserHasMobile::class);
+        return $this->hasMany(UserHasContact::class)
+            ->where('type', 'mobile');
     }
 
     public function defaultMobile()
     {
-        return $this->hasOne(UserHasEmail::class)
-            ->whereNotNull('verified_at')
-            ->where('is_default', true);
+        return $this->hasOne(UserHasContact::class)
+            ->where('type', 'mobile')
+            ->where('is_default', true)
+            ->whereHas(
+                'verifications', function($query) {
+                    $query->whereNull('expired_at')
+                        ->whereNotNull('verified_at');
+                }
+            );
     }
 
-    public function routeNotificationForMail(Notification $notification): array
+    public function routeNotificationForMail(): array
     {
         return [$this->defaultEmail->email => $this->given_name];
     }

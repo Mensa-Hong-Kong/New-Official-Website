@@ -29,8 +29,8 @@ class Verification extends Model
         return $this->morphTo();
     }
 
-    public function isTimeoutCode(): bool
+    public function isTriedTooManyTime(): bool
     {
-        return now() >= $this->closed_at;
+        return $this->tried_time >= 5;
     }
 }

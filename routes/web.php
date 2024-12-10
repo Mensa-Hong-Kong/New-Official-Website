@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\EmailController;
-use App\Http\Controllers\MobileController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,20 +23,11 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [UserController::class, 'login']);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::post('/emails/{email}/verification', [EmailController::class,'verification'])
-        ->middleware('throttle:1,1')
-        ->name('email.verification');
-    Route::match(['put', 'patch'], '/emails/{email}/verify', [EmailController::class,'verification'])->name('email.verify');
-    Route::post('/mobiles/{mobile}/verification', [MobileController::class,'verification'])
-        ->middleware('throttle:1,1')
-        ->name('mobile.verification');
-    Route::match(['put', 'patch'], '/mobiles/{mobile}/verify', [MobileController::class,'verify'])->name('mobile.verify');
-});
-
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
         ->except('edit')
         ->destroyable();
+    Route::get('/contacts/{contact}/send-verify-code', [ContactController::class,'sendVerifyCode']);
+    Route::post('/contacts/{contact}/verify', [ContactController::class,'verify']);
 });
