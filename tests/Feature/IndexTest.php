@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class IndexTest extends TestCase
 {
-    public function testViewCanShow(): void
+    public function test_view_can_show(): void
     {
         $response = $this->get(route('index'));
 
