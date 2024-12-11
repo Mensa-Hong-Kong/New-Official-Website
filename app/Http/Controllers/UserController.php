@@ -8,8 +8,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
-use App\Models\UserHasEmail;
-use App\Models\UserHasMobile;
+use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,15 +48,17 @@ class UserController extends Controller
                 'birthday' => $request->birthday,
             ]);
             if ($request->email) {
-                UserHasEmail::create([
+                UserHasContact::create([
                     'user_id' => $user->id,
-                    'email' => $request->email,
+                    'type' => 'email',
+                    'contact' => $request->email,
                 ]);
             }
             if ($request->mobile) {
-                UserHasMobile::create([
+                UserHasContact::create([
                     'user_id' => $user->id,
-                    'mobile' => $request->mobile,
+                    'type' => 'mobile',
+                    'contact' => $request->mobile,
                 ]);
             }
             DB::commit();
