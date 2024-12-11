@@ -65,7 +65,7 @@ jobs:
         working-directory: ./ansible
 
       - name: run test suite
-        run: php artisan test
+        run: XDEBUG_MODE=off php artisan test
   lint:
     runs-on: ubuntu-latest
     steps:
