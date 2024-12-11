@@ -43,14 +43,9 @@ class User extends Authenticatable
         return $this->belongsTo(PassportType::class);
     }
 
-    public function emails()
+    public function contacts()
     {
-        return $this->hasMany(UserHasEmail::class);
-    }
-
-    public function mobiles()
-    {
-        return $this->hasMany(UserHasMobile::class);
+        return $this->hasMany(UserHasContact::class);
     }
 
     public function checkPassword($password)
