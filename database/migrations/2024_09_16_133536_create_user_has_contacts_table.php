@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_has_mobiles', function (Blueprint $table) {
+        Schema::create('user_has_contacts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('mobile')->unique();
-            $table->dateTime('verified_at')->nullable();
+            $table->enum('type', ['email', 'mobile']);
+            $table->string('contact', 320);
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_has_mobiles');
+        Schema::dropIfExists('user_has_contacts');
     }
 };
