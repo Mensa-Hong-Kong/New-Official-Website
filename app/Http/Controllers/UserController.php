@@ -121,11 +121,12 @@ class UserController extends Controller
         $user = $request->user();
         $contacts = [
             'emails' => [],
-            'mobiles'=> [],
+            'mobiles' => [],
         ];
-        foreach($user->contacts as $contact) {
+        foreach ($user->contacts as $contact) {
             $contacts[$contact->type.'s'][] = $contact;
         }
+
         return view('profile')
             ->with('user', $user)
             ->with(
