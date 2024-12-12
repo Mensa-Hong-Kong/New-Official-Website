@@ -37,13 +37,13 @@
                                 <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
                             </li>
                         @else
-                        <li class="nav-item">
-                            <a href="{{ route('login') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'login',
-                            ])>Login</a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="{{ route('login') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'login',
+                                ])>Login</a>
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('register') }}" @class([
                                     'nav-link',
