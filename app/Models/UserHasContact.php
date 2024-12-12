@@ -11,6 +11,7 @@ class UserHasContact extends Model
 
     protected $fillable = [
         'user_id',
+        'type',
         'contact',
         'is_default',
     ];
