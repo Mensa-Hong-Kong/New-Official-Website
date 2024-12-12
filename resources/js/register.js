@@ -188,7 +188,7 @@ function validation() {
 }
 
 function successCallback(response) {
-    // ...
+    window.location.href = response.request.responseURL;
 }
 
 function failCallback(error) {
@@ -199,62 +199,64 @@ function failCallback(error) {
         feedback.className = 'valid-feedback';
         feedback.innerText = 'Looks good!'
     }
-    for(let key in error.response.data.errors) {
-        let value = error.response.data.errors[key];
-        let feedback;
-        let input;
-        switch(key) {
-            case 'username':
-                input = username;
-                feedback = usernameFeedback;
-                break;
-            case 'password':
-                input = password;
-                feedback = passwordFeedback;
-                break;
-            case 'family_name':
-                input = familyName;
-                feedback = familyNameFeedback;
-                break;
-            case 'middle_name':
-                input = middleName;
-                feedback = middleNameFeedback;
-                break;
-            case 'given_name':
-                input = givenName;
-                feedback = givenNameFeedback;
-                break;
-            case 'passport_type_id':
-                input = passportType;
-                feedback = passportTypeFeedback;
-                break;
-            case 'passport_number':
-                input = passportNumber;
-                feedback = passportNumberFeedback;
-                break;
-            case 'gender':
-                input = gender;
-                feedback = genderFeedback;
-                break;
-            case 'birthday':
-                input = birthday;
-                feedback = birthdayFeedback;
-                break;
-            case 'email':
-                input = email;
-                feedback = emailFeedback;
-                break;
-            case 'mobile':
-                input = mobile;
-                feedback = mobileFeedback;
-                break;
-        }
-        if(feedback) {
-            input.classList.add('is-invalid');
-            feedback.className = "invalid-feedback";
-            feedback.innerText = value;
-        } else {
-            alert('undefine feedback key');
+    if(error.status == 422) {
+        for(let key in error.response.data.errors) {
+            let value = error.response.data.errors[key];
+            let feedback;
+            let input;
+            switch(key) {
+                case 'username':
+                    input = username;
+                    feedback = usernameFeedback;
+                    break;
+                case 'password':
+                    input = password;
+                    feedback = passwordFeedback;
+                    break;
+                case 'family_name':
+                    input = familyName;
+                    feedback = familyNameFeedback;
+                    break;
+                case 'middle_name':
+                    input = middleName;
+                    feedback = middleNameFeedback;
+                    break;
+                case 'given_name':
+                    input = givenName;
+                    feedback = givenNameFeedback;
+                    break;
+                case 'passport_type_id':
+                    input = passportType;
+                    feedback = passportTypeFeedback;
+                    break;
+                case 'passport_number':
+                    input = passportNumber;
+                    feedback = passportNumberFeedback;
+                    break;
+                case 'gender':
+                    input = gender;
+                    feedback = genderFeedback;
+                    break;
+                case 'birthday':
+                    input = birthday;
+                    feedback = birthdayFeedback;
+                    break;
+                case 'email':
+                    input = email;
+                    feedback = emailFeedback;
+                    break;
+                case 'mobile':
+                    input = mobile;
+                    feedback = mobileFeedback;
+                    break;
+            }
+            if(feedback) {
+                input.classList.add('is-invalid');
+                feedback.className = "invalid-feedback";
+                feedback.innerText = value;
+            } else {
+                alert('undefine feedback key');
+            }
         }
     }
     for(let input of inputs) {

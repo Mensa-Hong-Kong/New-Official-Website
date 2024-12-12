@@ -70,7 +70,7 @@ function validation() {
 }
 
 function successCallback(response) {
-    // ...
+    window.location.href = response.request.responseURL;
 }
 
 function failCallback(error) {
@@ -81,33 +81,35 @@ function failCallback(error) {
         feedback.className = 'valid-feedback';
         feedback.innerText = 'Looks good!'
     }
-    for(let key in error.response.data.errors) {
-        let value = error.response.data.errors[key];
-        switch(key) {
-            case 'username':
-                username.classList.add('is-invalid');
-                usernameFeedback.className = "invalid-feedback";
-                usernameFeedback.innerText = value;
-                break;
-            case 'password':
-                password.classList.add('is-invalid');
-                passwordFeedback.className = "invalid-feedback";
-                passwordFeedback.innerText = value;
-                break;
-            case 'failed':
-                for(let input of inputs) {
-                    input.classList.add('is-invalid');
-                }
-                loginFeedback.hidden = false;
-                loginFeedback.innerText = value;
-                break;
-            case 'throttle':
-                loginFeedback.hidden = false;
-                loginFeedback.innerText = value;
-                break;
-            default:
-                alert('undefine feedback key');
-                break;
+    if(error.status == 422) {
+        for(let key in error.response.data.errors) {
+            let value = error.response.data.errors[key];
+            switch(key) {
+                case 'username':
+                    username.classList.add('is-invalid');
+                    usernameFeedback.className = "invalid-feedback";
+                    usernameFeedback.innerText = value;
+                    break;
+                case 'password':
+                    password.classList.add('is-invalid');
+                    passwordFeedback.className = "invalid-feedback";
+                    passwordFeedback.innerText = value;
+                    break;
+                case 'failed':
+                    for(let input of inputs) {
+                        input.classList.add('is-invalid');
+                    }
+                    loginFeedback.hidden = false;
+                    loginFeedback.innerText = value;
+                    break;
+                case 'throttle':
+                    loginFeedback.hidden = false;
+                    loginFeedback.innerText = value;
+                    break;
+                default:
+                    alert('undefine feedback key');
+                    break;
+            }
         }
     }
     for(let input of inputs) {

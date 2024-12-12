@@ -330,58 +330,60 @@ function failCallback(error) {
         feedback.className = 'valid-feedback';
         feedback.innerText = 'Looks good!'
     }
-    for(let key in error.response.data.errors) {
-        let value = error.response.data.errors[key];
-        let feedback;
-        let input;
-        switch(key) {
-            case 'username':
-                input = usernameInput;
-                feedback = usernameFeedback;
-                break;
-            case 'password':
-                input = passwordInput;
-                feedback = passwordFeedback;
-                break;
-            case 'new_password':
-                input = newPasswordInput;
-                feedback = passwordFeedback;
-                break;
-            case 'family_name':
-                input = familyNameInput;
-                feedback = familyNameFeedback;
-                break;
-            case 'middle_name':
-                input = middleNameInput;
-                feedback = middleNameFeedback;
-                break;
-            case 'given_name':
-                input = givenNameInput;
-                feedback = givenNameFeedback;
-                break;
-            case 'passport_type_id':
-                input = passportTypeInput;
-                feedback = passportTypeFeedback;
-                break;
-            case 'passport_number':
-                input = passportNumberInput;
-                feedback = passportNumberFeedback;
-                break;
-            case 'gender':
-                input = genderInput;
-                feedback = genderFeedback;
-                break;
-            case 'birthday':
-                input = birthdayInput;
-                feedback = birthdayFeedback;
-                break;
-        }
-        if(feedback) {
-            input.classList.add('is-invalid');
-            feedback.className = "invalid-feedback";
-            feedback.innerText = value;
-        } else {
-            alert('undefine feedback key');
+    if(error.status == 422) {
+        for(let key in error.response.data.errors) {
+            let value = error.response.data.errors[key];
+            let feedback;
+            let input;
+            switch(key) {
+                case 'username':
+                    input = usernameInput;
+                    feedback = usernameFeedback;
+                    break;
+                case 'password':
+                    input = passwordInput;
+                    feedback = passwordFeedback;
+                    break;
+                case 'new_password':
+                    input = newPasswordInput;
+                    feedback = passwordFeedback;
+                    break;
+                case 'family_name':
+                    input = familyNameInput;
+                    feedback = familyNameFeedback;
+                    break;
+                case 'middle_name':
+                    input = middleNameInput;
+                    feedback = middleNameFeedback;
+                    break;
+                case 'given_name':
+                    input = givenNameInput;
+                    feedback = givenNameFeedback;
+                    break;
+                case 'passport_type_id':
+                    input = passportTypeInput;
+                    feedback = passportTypeFeedback;
+                    break;
+                case 'passport_number':
+                    input = passportNumberInput;
+                    feedback = passportNumberFeedback;
+                    break;
+                case 'gender':
+                    input = genderInput;
+                    feedback = genderFeedback;
+                    break;
+                case 'birthday':
+                    input = birthdayInput;
+                    feedback = birthdayFeedback;
+                    break;
+            }
+            if(feedback) {
+                input.classList.add('is-invalid');
+                feedback.className = "invalid-feedback";
+                feedback.innerText = value;
+            } else {
+                alert('undefine feedback key');
+            }
         }
     }
     for(let input of inputs) {
