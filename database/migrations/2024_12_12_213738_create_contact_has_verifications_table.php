@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('verificationss', function (Blueprint $table) {
+        Schema::create('contact_has_verifications', function (Blueprint $table) {
             $table->id();
-            $table->string('verifiable_type');
-            $table->unsignedBigInteger('verifiable_id');
+            $table->unsignedBigInteger('contact_id');
             $table->string('code');
             $table->unsignedTinyInteger('tried_time')->default(0);
             $table->dateTime('closed_at');
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('verificationss');
+        Schema::dropIfExists('contact_has_verifications');
     }
 };

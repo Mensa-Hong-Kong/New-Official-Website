@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Verification extends Model
+class ContactHasVerification extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'verifiable_type',
-        'verifiable_id',
+        'contact_id',
         'tried_time',
         'code',
         'closed_at',

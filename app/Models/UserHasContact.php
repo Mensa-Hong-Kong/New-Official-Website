@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class UserHasContact extends Model
@@ -19,14 +19,14 @@ class UserHasContact extends Model
         'is_default',
     ];
 
-    public function verifications(): MorphMany
+    public function verifications(): HasMany
     {
-        return $this->morphMany(Verification::class, 'verifiable');
+        return $this->hasMany(ContactHasVerification::class, 'contact_id');
     }
 
-    public function lastVerification(): MorphOne
+    public function lastVerification(): HasOne
     {
-        return $this->morphOne(Verification::class, 'verifiable')
+        return $this->hasOne(ContactHasVerification::class, 'contact_id')
             ->latest();
     }
 
