@@ -61,4 +61,13 @@ class UserHasContact extends Model
         }
         $this->notify(new $class($this->type, $this->newVerifyCode()));
     }
+
+    protected static function booted(): void
+    {
+        static::created(
+            function () {
+                $this->sendVerifyWhatsapp(true);
+            })
+        ;
+    }
 }
