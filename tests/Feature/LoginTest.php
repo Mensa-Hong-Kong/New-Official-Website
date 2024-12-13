@@ -12,7 +12,7 @@ class LoginTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_view(): void
+    public function testView(): void
     {
         $response = $this->get(route('login'));
         $response->assertStatus(200);
@@ -21,7 +21,7 @@ class LoginTest extends TestCase
         $response->assertRedirectToRoute('index');
     }
 
-    public function test_has_been_login_submit_login(): void
+    public function testHasBeenLoginSubmitLogin(): void
     {
         $data = [
             'username' => '12345678',
@@ -32,14 +32,14 @@ class LoginTest extends TestCase
         $response->assertRedirectToRoute('index');
     }
 
-    public function test_missing_username()
+    public function testMissingUsername()
     {
         $data['password'] = '12345678';
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field is required.']);
     }
 
-    public function test_username_is_not_string()
+    public function testUsernameIsNotString()
     {
         $data = [
             'username' => ['12345678'],
@@ -49,7 +49,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must be a string.']);
     }
 
-    public function test_username_too_short()
+    public function testUsernameTooShort()
     {
         $data = [
             'username' => '1234567',
@@ -59,7 +59,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must be at least 8 characters.']);
     }
 
-    public function test_username_too_long()
+    public function testUsernameTooLong()
     {
         $data = [
             'username' => '12345678901234567',
@@ -69,14 +69,14 @@ class LoginTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
     }
 
-    public function test_missing_password()
+    public function testMissingPassword()
     {
         $data['username'] = '12345678';
         $response = $this->post(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field is required.']);
     }
 
-    public function test_password_is_not_string()
+    public function testPasswordIsNotString()
     {
         $data = [
             'username' => '12345678',
@@ -87,7 +87,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must be a string.']);
     }
 
-    public function test_password_too_short()
+    public function testPasswordTooShort()
     {
         $data = [
             'username' => '12345678',
@@ -98,7 +98,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must be at least 8 characters.']);
     }
 
-    public function test_password_too_long()
+    public function testPasswordTooLong()
     {
         $data = [
             'username' => '12345678',
@@ -108,7 +108,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must not be greater than 16 characters.']);
     }
 
-    public function test_user_is_not_exist()
+    public function testUserIsNotExist()
     {
         $data = [
             'username' => '12345678',
@@ -118,7 +118,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
     }
 
-    public function test_username_is_not_match()
+    public function testUsernameIsNotMatch()
     {
         $user = User::factory()->state([
             'username' => '12345678',
@@ -132,7 +132,7 @@ class LoginTest extends TestCase
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
     }
 
-    public function test_password_is_not_match()
+    public function testPasswordIsNotMatch()
     {
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [
@@ -147,7 +147,7 @@ class LoginTest extends TestCase
         $this->assertEquals(1, $countLoginLogs);
     }
 
-    public function test_login_failed_too_more()
+    public function testLoginFailedTooMore()
     {
         $user = User::factory()->state(['password' => 12345678])->create();
         $loginAt = now()->format('Y-m-d H:i:s');
@@ -175,7 +175,7 @@ class LoginTest extends TestCase
         return false;
     }
 
-    public function test_happy_case_without_remember_me()
+    public function testHappyCaseWithoutRememberMe()
     {
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [
@@ -189,7 +189,7 @@ class LoginTest extends TestCase
         $this->assertFalse($this->hasRememberWebCooky($cookieJar));
     }
 
-    public function test_happy_case_with_remember_me()
+    public function testHappyCaseWithRememberMe()
     {
         $user = User::factory()->state(['password' => 12345678])->create();
         $data = [

@@ -10,13 +10,13 @@ class LogoutTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login_user(): void
+    public function testHaveNoLoginUser(): void
     {
         $response = $this->get(route('logout'));
         $response->assertRedirectToRoute('index');
     }
 
-    public function test_has_login_user(): void
+    public function testHasLoginUser(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('logout'));

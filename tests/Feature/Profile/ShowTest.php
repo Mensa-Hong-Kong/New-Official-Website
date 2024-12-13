@@ -10,14 +10,14 @@ class ShowTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_unauthorized(): void
+    public function testUnauthorized(): void
     {
         $response = $this->get(route('profile.show'));
 
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_happy_case(): void
+    public function testHappyCase(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show'));
