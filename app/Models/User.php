@@ -57,4 +57,40 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserLoginLog::class);
     }
+
+    public function defaultEmail()
+    {
+        return $this->hasOne(UserHasContact::class)
+            ->where('type', 'email')
+            ->where('is_default', true)
+            ->whereHas(
+                'verifications', function($query) {
+                    $query->whereNull('expired_at')
+                        ->whereNotNull('verified_at');
+                }
+            );
+    }
+
+    public function defaultMobile()
+    {
+        return $this->hasOne(UserHasContact::class)
+            ->where('type', 'mobile')
+            ->where('is_default', true)
+            ->whereHas(
+                'verifications', function($query) {
+                    $query->whereNull('expired_at')
+                        ->whereNotNull('verified_at');
+                }
+            );
+    }
+
+    public function routeNotificationForMail(): array
+    {
+        return [$this->defaultEmail->contact => $this->given_name];
+    }
+
+    public function routeNotificationForWhatsApp()
+    {
+        return $this->defaultMobile->contact;
+    }
 }
