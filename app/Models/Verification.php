@@ -25,4 +25,9 @@ class Verification extends Model
         'verified_at' => 'datetime',
         'expired_at' => 'datetime',
     ];
+
+    public function verifiable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }
