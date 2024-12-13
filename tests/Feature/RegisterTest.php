@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\UserHasContact;
+use App\Notifications\VerifyContactByqueuea;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -358,6 +360,13 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'mobile',
+            'contact' => $data['mobile'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 
     public function test_without_middle_name_and_mobile_and_with_email_happy_case()
@@ -367,6 +376,13 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'email',
+            'contact' => $data['email'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 
     public function test_with_middle_name_and_mobile_and_without_email_happy_case()
@@ -377,36 +393,85 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'mobile',
+            'contact' => $data['mobile'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 
     public function test_with_middle_name_and_email_and_without_mobile_happy_case()
     {
         $data = $this->happyCase;
-        $data['mobile'] = 12345678;
+        $data['middle_name'] = 'Tai Man';
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'mobile',
+            'contact' => $data['mobile'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
+        $contact = UserHasContact::firstWhere([
+            'type' => 'email',
+            'contact' => $data['email'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 
     public function test_with_email_and_mobile_and_without_middle_name_happy_case()
     {
         $data = $this->happyCase;
-        $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'mobile',
+            'contact' => $data['mobile'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
+        $contact = UserHasContact::firstWhere([
+            'type' => 'email',
+            'contact' => $data['email'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 
     public function test_with_middle_and_email_and_mobile_name_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
+        $data['mobile'] = 12345678;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
+        $contact = UserHasContact::firstWhere([
+            'type' => 'mobile',
+            'contact' => $data['mobile'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
+        $contact = UserHasContact::firstWhere([
+            'type' => 'email',
+            'contact' => $data['email'],
+        ]);
+        Notification::assertSentTo(
+            [$contact], VerifyContactByqueuea::class
+        );
     }
 }
