@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -21,6 +22,13 @@ class RegisterTest extends TestCase
         'gender' => 'Male',
         'birthday' => '1997-07-01',
     ];
+
+    public function setUp(): void
+    {
+        parent::setup();
+
+        Notification::fake();
+    }
 
     public function test_view(): void
     {
