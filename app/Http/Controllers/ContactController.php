@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserHasContact;
+use App\Http\Requests\Contact\VerifyRequest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -78,7 +79,7 @@ class ContactController extends Controller implements HasMiddleware
         return ['message' => 'The verify code sent!'];
     }
 
-    public function verify(Request $request, UserHasContact $contact)
+    public function verify(VerifyRequest $request, UserHasContact $contact)
     {
         if($contact->code != strtoupper($request->code)) {
             $contact->lastVerification->increment('tried_time');
