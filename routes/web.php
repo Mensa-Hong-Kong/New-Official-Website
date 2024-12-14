@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
         ->except('edit')
         ->destroyable();
+    Route::get('send-verify-code', [ContactController::class, 'sendVerifyCode']);
+    Route::post('verify', [ContactController::class, 'verify']);
 });
