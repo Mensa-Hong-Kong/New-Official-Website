@@ -9,7 +9,7 @@ class ClearUnusedVerifiyCode
     public function __invoke()
     {
         ContactHasVerification::whereNull('verified_at')
-            ->where('closed_at', '<', now()->subDay())
+            ->where('closed_at', '<', now()->subMonths(3))
             ->delete();
     }
 }
