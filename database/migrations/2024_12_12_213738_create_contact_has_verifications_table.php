@@ -19,6 +19,8 @@ return new class extends Migration
             $table->dateTime('closed_at');
             $table->dateTime('verified_at')->nullable();
             $table->dateTime('expired_at')->nullable();
+            $table->string('creator_id');
+            $table->string('creator_ip');
             $table->timestamps();
         });
     }

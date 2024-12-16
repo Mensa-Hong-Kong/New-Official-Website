@@ -33,10 +33,10 @@ class ContactController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
                     if ($contact->isRequestTooFast()) {
-                        abort(429, 'For each contact each minute only can get 1 time verify code, please again later.');
+                        abort(429, 'For each user and ip each minute only can get 1 time verify code, please again later.');
                     }
                     if ($contact->isRequestTooManyTime()) {
-                        abort(429, 'For each contact each day only can send 5 verify code, please again on tomorrow.');
+                        abort(429, "For each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow.");
                     }
 
                     return $next($request);
@@ -58,7 +58,7 @@ class ContactController extends Controller implements HasMiddleware
                     }
                     if ($error != '') {
                         if ($contact->isRequestTooManyTime()) {
-                            $error .= ', this contact have sent 5 time verify code and each contact each day only can try 5 verify code, please again on tomorrow.';
+                            $error .= ", this contact have sent 5 time verify code and each user and ip each day only can try 5 {$contact->type} verify code, please again on tomorrow.";
                         } else {
                             $error .= ', the new verify code sent.';
                             $contact->sendVerifyCode();
@@ -84,29 +84,27 @@ class ContactController extends Controller implements HasMiddleware
 
     public function verify(VerifyRequest $request, UserHasContact $contact)
     {
+        $error = '';
+        DB::beginTransaction();
         if ($contact->lastVerification->code != strtoupper($request->code)) {
-            DB::beginTransaction();
             $contact->lastVerification->increment('tried_time');
             $error = 'The verify code is incorrect';
             if ($contact->lastVerification->isTriedTooManyTime()) {
                 $error .= ', the verify code tried 5 time';
-                if ($contact->isRequestTooManyTime()) {
-                    $error .= ', this contact have sent 5 time verify code and each contact each day only can try 5 verify code, please again on tomorrow';
+                if ($contact->isRequestTooManyTime($request->ip())) {
+                    $error .= ', this contact have sent 5 time verify code and each user and ip each day only can try 5 verify code, please again on tomorrow';
                 } else {
                     $error .= ', the new verify code sent';
                     $contact->sendVerifyCode();
                 }
             }
-            DB::commit();
-
-            return response([
-                'errors' => ['failed' => "$error."],
-            ], 422);
+            $content = ['errors' => ['failed' => "$error."]];
+        } else {
+            $contact->lastVerification->update(['verified_at' => now()]);
+            $content = ['success' => "The {$contact->type} verifiy success."];
         }
-        $contact->lastVerification->update(['verified_at' => now()]);
+        DB::commit();
 
-        return response([
-            'success' => "The {$contact->type} verifiy success.",
-        ], 200);
+        return response($content, $error == '' ? 200 : 422);
     }
 }

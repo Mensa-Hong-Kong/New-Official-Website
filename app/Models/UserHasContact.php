@@ -51,6 +51,8 @@ class UserHasContact extends Model
             'contact_id' => $this->id,
             'code' => $code,
             'closed_at' => now()->addMinutes(5),
+            'user_id' => $this->user_id,
+            'user_ip' => request()->ip(),
         ]);
 
         return $code;
@@ -69,8 +71,36 @@ class UserHasContact extends Model
     {
         static::created(
             function (UserHasContact $contact) {
-                $contact->sendVerifyCode(true);
-            });
+                $type = ucfirst($contact->type);
+                if (! $contact->user->{"default$type"}) {
+                    $contact->sendVerifyCode(true);
+                }
+            }
+        );
+        static::updating(
+            function (UserHasContact $contact) {
+                $type = ucfirst($contact->tpye);
+                if (! $contact->user->{"default$type"}) {
+                    $contact->update(['is_default' => true]);
+                    $contactIDs = ContactHasVerification::whereHas(
+                        'contact', function ($query) use ($contact) {
+                            $query->where('tpye', $contact->type)
+                                ->where('contact', $contact->contact)
+                                ->where('user_id', '!=', $contact->user_id);
+                        }
+                    )->whereNull('expired_at')
+                        ->get('contact_id')
+                        ->pluck('contact_id')
+                        ->toArray();
+                    if (count($contactIDs)) {
+                        UserHasContact::whereIn('id', $contactIDs)
+                            ->update(['is_default' => false]);
+                        ContactHasVerification::whereIn('contact_id', $contactIDs)
+                            ->update(['expired_at' => now()]);
+                    }
+                }
+            }
+        );
     }
 
     public function isVerified(): bool
@@ -85,8 +115,13 @@ class UserHasContact extends Model
 
     public function isRequestTooManyTime(): bool
     {
-        return ContactHasVerification::where('contact_id', $this->id)
+        $contact = $this;
+
+        return ContactHasVerification::where('type', $this->type)
             ->where('created_at', '>=', now()->subDay())
-            ->count() >= 5;
+            ->where(function ($query) use ($contact) {
+                $query->where('user_id', $contact->user_id)
+                    ->orWhere('user_ip', request()->ip());
+            })->count() >= 5;
     }
 }

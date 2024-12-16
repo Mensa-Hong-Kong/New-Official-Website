@@ -11,11 +11,13 @@ class ContactHasVerification extends Model
 
     protected $fillable = [
         'contact_id',
-        'tried_time',
         'code',
+        'tried_time',
         'closed_at',
         'verified_at',
         'expired_at',
+        'creator_id',
+        'creator_ip',
     ];
 
     protected $casts = [

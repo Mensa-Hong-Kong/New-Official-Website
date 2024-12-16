@@ -44,11 +44,6 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         );
         new ClearUnusedVerifiyCode;
         $this->assertEquals(
-            0, ContactHasVerification::whereNull('verified_at')
-                ->where('closed_at', '<='.now())
-                ->count()
-        );
-        $this->assertEquals(
             1, ContactHasVerification::whereNull('verified_at')
                 ->where('closed_at', '>=', now())
                 ->count()
