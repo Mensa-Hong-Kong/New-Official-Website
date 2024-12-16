@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class UserHasContact extends Model
@@ -30,23 +31,24 @@ class UserHasContact extends Model
     public function lastVerification(): HasOne
     {
         return $this->hasOne(ContactHasVerification::class, 'contact_id')
-            ->latest();
+            ->latest('id');
     }
 
     public function routeNotificationForMail(): array
     {
-        return [$this->email => $this->user->given_name];
+        return [$this->contact => $this->user->given_name];
     }
 
     public function routeNotificationForWhatsApp()
     {
-        return $this->mobile;
+        return $this->contact;
     }
 
     public function newVerifyCode()
     {
-        $code = Str::random(6);
+        $code = App::environment('testing') ? '123456' : Str::random(6);
         ContactHasVerification::create([
+            'contact_id' => $this->id,
             'code' => $code,
             'closed_at' => now()->addMinutes(5),
         ]);
@@ -65,9 +67,26 @@ class UserHasContact extends Model
     protected static function booted(): void
     {
         static::created(
-            function () {
-                $this->sendVerifyWhatsapp(true);
+            function (UserHasContact $contact) {
+                $contact->sendVerifyCode(true);
             })
         ;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->lastVerification && $this->lastVerification->verified_at && ! $this->lastVerification->expired_at;
+    }
+
+    public function isRequestTooFast()
+    {
+        return $this->lastVerification && $this->lastVerification->created_at > now()->subMinute();
+    }
+
+    public function isRequestTooManyTime(): bool
+    {
+        return ContactHasVerification::where('contact_id', $this->id)
+            ->where('created_at', '>=', now()->subDay())
+            ->count() >= 5;
     }
 }

@@ -25,8 +25,14 @@ class ContactHasVerification extends Model
         'expired_at' => 'datetime',
     ];
 
-    public function verifiable(): MorphTo
+    public function isClosed()
     {
-        return $this->morphTo();
+        return now() > $this->closed_at;
     }
+
+    public function isTriedTooManyTime()
+    {
+        return $this->tried_time >= 5;
+    }
+
 }
