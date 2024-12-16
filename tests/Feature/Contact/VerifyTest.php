@@ -111,7 +111,7 @@ class VerifyTest extends TestCase
                 ['code' => '123456']
             );
         $response->assertStatus(422);
-        $response->assertInvalid(['failed' => "The verify code expired, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
+        $response->assertInvalid(['failed' => "The verify code expired, your account and ip have sent 5 time {$this->contact->type} verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -151,7 +151,7 @@ class VerifyTest extends TestCase
                 route('verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => "The verify code tried more than 5 times, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow."]);
+        $response->assertInvalid(['failed' => "The verify code tried more than 5 times, your account and ip have sent 5 time {$contact->type} verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
             [$contact], VerifyContact::class
         );
@@ -240,7 +240,7 @@ class VerifyTest extends TestCase
                 route('verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
-        $response->assertInvalid(['failed' => "The verify code is incorrect, the verify code tried 5 time, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
+        $response->assertInvalid(['failed' => "The verify code is incorrect, the verify code tried 5 time, your account and ip have sent 5 time {$this->contact->type} verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
         );
