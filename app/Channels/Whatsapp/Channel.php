@@ -7,6 +7,7 @@ use Twilio\Rest\Client;
 class Channel
 {
     public $twilio;
+
     public $from;
 
     public function __construct()

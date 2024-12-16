@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ContactHasVerification extends Model
 {
@@ -34,5 +33,4 @@ class ContactHasVerification extends Model
     {
         return $this->tried_time >= 5;
     }
-
 }

@@ -6,7 +6,8 @@ use App\Models\ContactHasVerification;
 
 class ClearUnusedVerifiyCode
 {
-    public function __invoke() {
+    public function __invoke()
+    {
         ContactHasVerification::whereNull('verified_at')
             ->where('closed_at', '<', now()->subDay())
             ->delete();

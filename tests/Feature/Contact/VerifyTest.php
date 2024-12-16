@@ -15,9 +15,10 @@ class VerifyTest extends TestCase
     use RefreshDatabase;
 
     private $user;
+
     private $contact;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setup();
         Queue::fake();
@@ -26,7 +27,7 @@ class VerifyTest extends TestCase
         $this->contact = UserHasContact::factory()->create();
     }
 
-    public function testHaveNoLogin()
+    public function test_have_no_login()
     {
         $response = $this->post(
             route('verify', ['contact' => $this->contact]),
@@ -35,7 +36,7 @@ class VerifyTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function testUserContactIsNotZirself()
+    public function test_user_contact_is_not_zirself()
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
@@ -46,7 +47,7 @@ class VerifyTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function testTheContactHasBeenVerified()
+    public function test_the_contact_has_been_verified()
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -58,7 +59,7 @@ class VerifyTest extends TestCase
         $response->assertSee("The {$this->contact->type} verified.");
     }
 
-    public function testHaveNoVerifyCodeRecord()
+    public function test_have_no_verify_code_record()
     {
         $this->contact->lastVerification()->delete();
         // return to zero
@@ -75,7 +76,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testVerifyCodeExpiredAndNotRequestTooManyTime()
+    public function test_verify_code_expired_and_not_request_too_many_time()
     {
         $this->contact->lastVerification()->update(['closed_at' => now()->subSecond()]);
         // return to zero
@@ -84,14 +85,14 @@ class VerifyTest extends TestCase
             ->post(
                 route('verify', ['contact' => $this->contact]),
                 ['code' => '123456']
-        );
+            );
         $response->assertInvalid(['failed' => 'The verify code expired, the new verify code sent.']);
         Notification::assertSentTo(
             [$this->contact], VerifyContact::class
         );
     }
 
-    public function testVerifyCodeExpiredAndRequestTooManyTime()
+    public function test_verify_code_expired_and_request_too_many_time()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
@@ -111,7 +112,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testTriedTooManyTimeAndNotRequestTooManyTime()
+    public function test_tried_too_many_time_and_not_request_too_many_time()
     {
         $this->contact->lastVerification()->update(['tried_time' => 5]);
         // return to zero
@@ -127,7 +128,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testTriedTooManyTimeAndRequestTooManyTime()
+    public function test_tried_too_many_time_and_request_too_many_time()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
@@ -147,14 +148,14 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testMissingCode()
+    public function test_missing_code()
     {
         $response = $this->actingAs($this->user)
             ->post(route('verify', ['contact' => $this->contact]));
         $response->assertInvalid(['code' => 'The code field is required.']);
     }
 
-    public function testCodeIsNotString()
+    public function test_code_is_not_string()
     {
         $response = $this->actingAs($this->user)
             ->post(
@@ -164,7 +165,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must be a string.']);
     }
 
-    public function testCodeSizeIsNotMatch()
+    public function test_code_size_is_not_match()
     {
         $response = $this->actingAs($this->user)
             ->post(
@@ -174,7 +175,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must be 6 characters.']);
     }
 
-    public function testCodeIsNotAlphaNumber()
+    public function test_code_is_not_alpha_number()
     {
         $response = $this->actingAs($this->user)
             ->post(
@@ -184,7 +185,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must only contain letters and numbers.']);
     }
 
-    public function testIncorrectVerifyCodeAndNotTriedTooManyTime()
+    public function test_incorrect_verify_code_and_not_tried_too_many_time()
     {
         // return to zero
         Notification::fake();
@@ -200,7 +201,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testIncorrectVerifyCodeAndTriedTooManyTimeAndNotRequestTooManyTime()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_not_request_too_many_time()
     {
         $this->contact->lastVerification()->update(['tried_time' => 4]);
         // return to zero
@@ -216,7 +217,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testIncorrectVerifyCodeAndTriedTooManyTimeAndRequestTooManyTime()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
@@ -236,7 +237,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function testHappyCase()
+    public function test_happy_case()
     {
         $response = $this->actingAs($this->user)
             ->post(

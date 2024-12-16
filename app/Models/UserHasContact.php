@@ -52,13 +52,14 @@ class UserHasContact extends Model
             'code' => $code,
             'closed_at' => now()->addMinutes(5),
         ]);
+
         return $code;
     }
 
     public function sendVerifyCode($shouldQueuea = false)
     {
         $class = VerifyContact::class;
-        if($shouldQueuea) {
+        if ($shouldQueuea) {
             $class = VerifyContactByQueuea::class;
         }
         $this->notify(new $class($this->type, $this->newVerifyCode()));
@@ -69,8 +70,7 @@ class UserHasContact extends Model
         static::created(
             function (UserHasContact $contact) {
                 $contact->sendVerifyCode(true);
-            })
-        ;
+            });
     }
 
     public function isVerified(): bool

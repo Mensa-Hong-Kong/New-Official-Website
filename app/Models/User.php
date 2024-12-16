@@ -64,7 +64,7 @@ class User extends Authenticatable
             ->where('type', 'email')
             ->where('is_default', true)
             ->whereHas(
-                'verifications', function($query) {
+                'verifications', function ($query) {
                     $query->whereNull('expired_at')
                         ->whereNotNull('verified_at');
                 }
@@ -77,7 +77,7 @@ class User extends Authenticatable
             ->where('type', 'mobile')
             ->where('is_default', true)
             ->whereHas(
-                'verifications', function($query) {
+                'verifications', function ($query) {
                     $query->whereNull('expired_at')
                         ->whereNotNull('verified_at');
                 }

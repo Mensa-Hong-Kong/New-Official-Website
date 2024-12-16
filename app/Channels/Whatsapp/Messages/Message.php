@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Channels\WhatsApp\Messages;
 
 class Message

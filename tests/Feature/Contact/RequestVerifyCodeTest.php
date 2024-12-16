@@ -15,9 +15,10 @@ class RequestVerifyCodeTest extends TestCase
     use RefreshDatabase;
 
     private $user;
+
     private $contact;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setup();
         Queue::fake();
@@ -26,20 +27,20 @@ class RequestVerifyCodeTest extends TestCase
         $this->contact = UserHasContact::factory()->create();
     }
 
-    public function testHaveNoLogin()
+    public function test_have_no_login()
     {
         $response = $this->get(route('send-verify-code', ['contact' => $this->contact]));
         $response->assertRedirectToRoute('login');
     }
 
-    public function testUserContactIsNotZirself()
+    public function test_user_contact_is_not_zirself()
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('send-verify-code', ['contact' => $this->contact]));
         $response->assertForbidden();
     }
 
-    public function testTheContactHasBeenVerified()
+    public function test_the_contact_has_been_verified()
     {
         $this->contact->lastVerification
             ->update(['verified_at' => now()]);
@@ -48,14 +49,14 @@ class RequestVerifyCodeTest extends TestCase
         $response->assertSee("The {$this->contact->type} verified.");
     }
 
-    public function testRequestTooFast()
+    public function test_request_too_fast()
     {
         $response = $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $this->contact]));
         $response->assertTooManyRequests();
         // $response->assertSee('For each contact each minute only can get 1 time verify code, please again later.');
     }
 
-    public function testRequestTooManyTime()
+    public function test_request_too_many_time()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
@@ -70,7 +71,7 @@ class RequestVerifyCodeTest extends TestCase
         // $response->assertSee('For each contact each day only can send 5 verify code, please again on tomorrow.');
     }
 
-    public function testHappyCase()
+    public function test_happy_case()
     {
         $this->contact->lastVerification
             ->fillable(['created_at'])

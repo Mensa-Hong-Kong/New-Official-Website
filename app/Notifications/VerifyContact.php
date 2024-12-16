@@ -2,8 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Channels\Whatsapp\Template;
 use App\Channels\Whatsapp\Messages\VerificationCode;
+use App\Channels\Whatsapp\Template;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -24,7 +24,7 @@ class VerifyContact extends Notification
      */
     public function via(object $notifiable): array
     {
-        switch($this->type) {
+        switch ($this->type) {
             case 'email':
                 return ['email'];
             case 'mobile':

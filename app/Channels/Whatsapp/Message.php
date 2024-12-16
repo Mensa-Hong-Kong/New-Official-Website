@@ -12,9 +12,9 @@ class Message extends Channel
 
         $to = $notifiable->routeNotificationFor('WhatsApp');
 
-        return $this->twilio->messages->create('whatsapp:' . $to, [
-            "from" => 'whatsapp:' . $this->from,
-            "body" => $message->content,
+        return $this->twilio->messages->create('whatsapp:'.$to, [
+            'from' => 'whatsapp:'.$this->from,
+            'body' => $message->content,
         ]);
     }
 }

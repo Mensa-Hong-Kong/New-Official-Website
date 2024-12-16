@@ -15,18 +15,18 @@ class ClearUnusedVerifiyCodeTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setup();
     }
 
-    public function testHaveNoVerifiyCode()
+    public function test_have_no_verifiy_code()
     {
         $this->assertEquals(0, ContactHasVerification::count());
         new ClearUnusedVerifiyCode;
     }
 
-    public function testHasVerifiyCodeAndHaveNoUnusedVerifiyCode()
+    public function test_has_verifiy_code_and_have_no_unused_verifiy_code()
     {
         User::factory()->create();
         Queue::fake();
@@ -34,7 +34,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         UserHasContact::factory()->create();
         $this->assertEquals(
             0, ContactHasVerification::whereNull('verified_at')
-                ->where('closed_at', '<=' .now())
+                ->where('closed_at', '<='.now())
                 ->count()
         );
         $this->assertEquals(
@@ -45,7 +45,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         new ClearUnusedVerifiyCode;
         $this->assertEquals(
             0, ContactHasVerification::whereNull('verified_at')
-                ->where('closed_at', '<=' .now())
+                ->where('closed_at', '<='.now())
                 ->count()
         );
         $this->assertEquals(
@@ -55,7 +55,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         );
     }
 
-    public function testHasUnusedVerifiyCodeAndHaveNoVerifiyCode()
+    public function test_has_unused_verifiy_code_and_have_no_verifiy_code()
     {
         User::factory()->create();
         Queue::fake();
@@ -67,7 +67,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         $this->assertEquals(0, ContactHasVerification::count());
     }
 
-    public function testHasUnusedVerifiyCodeAndHasNoVerifiyCode()
+    public function test_has_unused_verifiy_code_and_has_no_verifiy_code()
     {
         User::factory()->create();
         Queue::fake();

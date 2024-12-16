@@ -32,13 +32,13 @@ class UpdateTest extends TestCase
         ])->create();
     }
 
-    public function testUnauthorized(): void
+    public function test_unauthorized(): void
     {
         $response = $this->put(route('profile.update'));
         $response->assertRedirectToRoute('login');
     }
 
-    public function testUsernameIsNotString()
+    public function test_username_is_not_string()
     {
         $data = $this->happyCase;
         $data['username'] = ['12345678'];
@@ -47,7 +47,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must be a string.']);
     }
 
-    public function testUsernameTooShort()
+    public function test_username_too_short()
     {
         $data = $this->happyCase;
         $data['username'] = '1234567';
@@ -56,7 +56,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must be at least 8 characters.']);
     }
 
-    public function testUsernameTooLong()
+    public function test_username_too_long()
     {
         $data = $this->happyCase;
         $data['username'] = '12345678901234567';
@@ -65,7 +65,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
     }
 
-    public function testWithChangeUsernameMissingPassword()
+    public function test_with_change_username_missing_password()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -73,7 +73,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field is required when you change the username or password.']);
     }
 
-    public function testWithChangePasswordMissingPassword()
+    public function test_with_change_password_missing_password()
     {
         $data = $this->happyCase;
         $data['new_password'] = '98765432';
@@ -82,7 +82,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field is required when you change the username or password.']);
     }
 
-    public function testPasswordIsNotString()
+    public function test_password_is_not_string()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -91,7 +91,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must be a string.']);
     }
 
-    public function testPasswordTooShort()
+    public function test_password_too_short()
     {
         $data = $this->happyCase;
         $data['password'] = '1234567';
@@ -99,7 +99,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must be at least 8 characters.']);
     }
 
-    public function testPasswordTooLong()
+    public function test_password_too_long()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678901234567';
@@ -107,7 +107,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must not be greater than 16 characters.']);
     }
 
-    public function testNewPasswordIsNotString()
+    public function test_new_password_is_not_string()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -117,7 +117,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['new_password' => 'The new password field must be a string.']);
     }
 
-    public function testNewPasswordTooShort()
+    public function test_new_password_too_short()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -127,7 +127,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['new_password' => 'The new password field must be at least 8 characters.']);
     }
 
-    public function testNewPasswordTooLong()
+    public function test_new_password_too_long()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -137,7 +137,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['new_password' => 'The new password field must not be greater than 16 characters.']);
     }
 
-    public function testConfirmNewPasswordNotMatch()
+    public function test_confirm_new_password_not_match()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -147,7 +147,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['new_password' => 'The new password field confirmation does not match.']);
     }
 
-    public function testMissingFamilyName()
+    public function test_missing_family_name()
     {
         $data = $this->happyCase;
         unset($data['family_name']);
@@ -155,7 +155,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field is required.']);
     }
 
-    public function testFamilyNameIsNotString()
+    public function test_family_name_is_not_string()
     {
         $data = $this->happyCase;
         $data['family_name'] = ['Chan'];
@@ -163,7 +163,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field must be a string.']);
     }
 
-    public function testFamilyNameTooLong()
+    public function test_family_name_too_long()
     {
         $data = $this->happyCase;
         $data['family_name'] = str_repeat('a', 256);
@@ -171,7 +171,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field must not be greater than 255 characters.']);
     }
 
-    public function testMiddleNameIsMotString()
+    public function test_middle_name_is_mot_string()
     {
         $data = $this->happyCase;
         $data['middle_name'] = ['Chan'];
@@ -179,7 +179,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['middle_name' => 'The middle name field must be a string.']);
     }
 
-    public function testMiddleNameTooLong()
+    public function test_middle_name_too_long()
     {
         $data = $this->happyCase;
         $data['middle_name'] = str_repeat('a', 256);
@@ -187,7 +187,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['middle_name' => 'The middle name field must not be greater than 255 characters.']);
     }
 
-    public function testMissingGivenName()
+    public function test_missing_given_name()
     {
         $data = $this->happyCase;
         unset($data['given_name']);
@@ -195,7 +195,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field is required.']);
     }
 
-    public function testGivenNameIsNotString()
+    public function test_given_name_is_not_string()
     {
         $data = $this->happyCase;
         $data['given_name'] = ['Diamond'];
@@ -203,7 +203,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field must be a string.']);
     }
 
-    public function testGivenNameTooLong()
+    public function test_given_name_too_long()
     {
         $data = $this->happyCase;
         $data['given_name'] = str_repeat('a', 256);
@@ -211,7 +211,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field must not be greater than 255 characters.']);
     }
 
-    public function testMissingPassportTypeId()
+    public function test_missing_passport_type_id()
     {
         $data = $this->happyCase;
         unset($data['passport_type_id']);
@@ -219,7 +219,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type field is required.']);
     }
 
-    public function testPassportTypeIdIsNotInteger()
+    public function test_passport_type_id_is_not_integer()
     {
         $data = $this->happyCase;
         $data['passport_type_id'] = 'abc';
@@ -227,7 +227,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type id field must be an integer.']);
     }
 
-    public function testPassportTypeidIsNotExist()
+    public function test_passport_typeid_is_not_exist()
     {
         $data = $this->happyCase;
         $data['passport_type_id'] = 0;
@@ -235,7 +235,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The selected passport type is invalid.']);
     }
 
-    public function testMissingPassportNumber()
+    public function test_missing_passport_number()
     {
         $data = $this->happyCase;
         unset($data['passport_number']);
@@ -243,7 +243,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field is required.']);
     }
 
-    public function testPassportNumberFormatNotMatch()
+    public function test_passport_number_format_not_match()
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567$';
@@ -251,7 +251,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field format is invalid.']);
     }
 
-    public function testPassportNumberTooShort()
+    public function test_passport_number_too_short()
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567';
@@ -259,7 +259,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must be at least 8 characters.']);
     }
 
-    public function testPassportNumberTooLong()
+    public function test_passport_number_too_long()
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567890123456789';
@@ -267,7 +267,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must not be greater than 18 characters.']);
     }
 
-    public function testPassportNumberIsUsed()
+    public function test_passport_number_is_used()
     {
         $user = User::factory()->create();
         $data = $this->happyCase;
@@ -277,7 +277,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number has already been taken.']);
     }
 
-    public function testMissingGender()
+    public function test_missing_gender()
     {
         $data = $this->happyCase;
         unset($data['gender']);
@@ -285,7 +285,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['gender' => 'The gender field is required.']);
     }
 
-    public function testGenderTooLong()
+    public function test_gender_too_long()
     {
         $data = $this->happyCase;
         $data['gender'] = str_repeat('a', 256);
@@ -293,7 +293,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['gender' => 'The gender field must not be greater than 255 characters.']);
     }
 
-    public function testMissingBirthday()
+    public function test_missing_birthday()
     {
         $data = $this->happyCase;
         unset($data['birthday']);
@@ -309,7 +309,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => 'The birthday field must be a valid date.']);
     }
 
-    public function testBirthdayTooClose()
+    public function test_birthday_too_close()
     {
         $data = $this->happyCase;
         $data['birthday'] = now()->subYears(2)->addDay()->format('Y-m-d');
@@ -318,7 +318,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function testWithoutChangeUsernameAndNewPasswordAndMiddleHappyCase()
+    public function test_without_change_username_and_new_password_and_middle_happy_case()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
@@ -328,7 +328,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithChangeUsernameWithoutNewPasswordAndMiddleHappyCase()
+    public function test_with_change_username_without_new_password_and_middle_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -340,7 +340,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithNewPasswordWithoutChangeUsernameAndMiddleHappyCase()
+    public function test_with_new_password_without_change_username_and_middle_happy_case()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -353,7 +353,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithMiddleWithoutChangeUsernameAndNewPasswordHappyCase()
+    public function test_with_middle_without_change_username_and_new_password_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
@@ -364,7 +364,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithChangeUsernameAndNewPasswordWithoutMiddleHappyCase()
+    public function test_with_change_username_and_new_password_without_middle_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -378,7 +378,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithChangeUsernameAndMiddleWithoutNewPasswordHappyCase()
+    public function test_with_change_username_and_middle_without_new_password_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -391,7 +391,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithNewPasswordAndMiddleWithoutChangeUsernameHappyCase()
+    public function test_with_new_password_and_middle_without_change_username_happy_case()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -405,7 +405,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function testWithChangeUsernameAndNewPasswordAndMiddleHappyCase()
+    public function test_with_change_username_and_new_password_and_middle_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
