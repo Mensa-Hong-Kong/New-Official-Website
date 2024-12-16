@@ -85,7 +85,7 @@ class RequestVerifyCodeTest extends TestCase
             ->fillable(['created_at', 'user_ip'])
             ->update([
                 'created_at' => now()->subMinute(),
-                'creator_ip' => 'xxx.xxx.xxx.xxx'
+                'creator_ip' => 'xxx.xxx.xxx.xxx',
             ]);
         $this->assertEquals($this->user->id, $this->contact->user_id);
         $response = $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $this->contact]));

@@ -101,7 +101,7 @@ class VerifyTest extends TestCase
         $this->contact->lastVerification
             ->update([
                 'closed_at' => now()->subMinute(),
-                'creator_ip' => 'xxx.xxx.xxx.xxx'
+                'creator_ip' => 'xxx.xxx.xxx.xxx',
             ]);
         // return to zero
         Notification::fake();
