@@ -80,6 +80,7 @@ class ContactController extends Controller implements HasMiddleware
     public function verify(VerifyRequest $request, UserHasContact $contact)
     {
         if($contact->lastVerification->code != strtoupper($request->code)) {
+            DB::beginTransaction();
             $contact->lastVerification->increment('tried_time');
             $error = 'The verify code is incorrect';
             if($contact->lastVerification->isTriedTooManyTime()) {
@@ -91,6 +92,7 @@ class ContactController extends Controller implements HasMiddleware
                     $contact->sendVerifyCode();
                 }
             }
+            DB::commit();
             return response([
                 'errors' => ['failed' => "$error."],
             ], 422);
