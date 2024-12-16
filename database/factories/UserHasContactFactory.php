@@ -11,8 +11,6 @@ use Illuminate\Support\Arr;
  */
 class UserHasContactFactory extends Factory
 {
-    protected static ?string $password;
-
     public function definition(): array
     {
         $user = User::inRandomOrder()->first();
@@ -32,5 +30,25 @@ class UserHasContactFactory extends Factory
             'type' => $contactType,
             'contact' => $contact,
         ];
+    }
+
+    public function email(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => 'email',
+                'contact' => fake()->email(),
+            ];
+        });
+    }
+
+    public function mobile(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => 'mobile',
+                'contact' => fake()->phoneNumber(),
+            ];
+        });
     }
 }
