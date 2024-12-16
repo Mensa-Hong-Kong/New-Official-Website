@@ -153,9 +153,10 @@ class LoginTest extends TestCase
         $loginAt = now()->format('Y-m-d H:i:s');
         $insert = array_fill(0, 10, [
             'user_id' => $user->id,
-            'login_at' => $loginAt,
+            'created_at' => $loginAt,
         ]);
-        UserLoginLog::insert($insert);
+        (new UserLoginLog)->fillable(['user_id', 'created_at'])
+            ->insert($insert);
         $data = [
             'username' => $user->username,
             'password' => '12345678',

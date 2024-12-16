@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('user_login_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->dateTime('login_at');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });
