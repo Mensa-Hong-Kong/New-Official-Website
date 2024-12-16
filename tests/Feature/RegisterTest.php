@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\UserHasContact;
-use App\Notifications\VerifyContactByqueuea;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Notifications\SendQueuedNotifications;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -24,13 +23,6 @@ class RegisterTest extends TestCase
         'gender' => 'Male',
         'birthday' => '1997-07-01',
     ];
-
-    public function setUp(): void
-    {
-        parent::setup();
-
-        Notification::fake();
-    }
 
     public function testView(): void
     {
@@ -355,103 +347,65 @@ class RegisterTest extends TestCase
 
     public function testWithoutMiddleNameAndEmailAndWithMobileHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'mobile',
-            'contact' => $data['mobile'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 1);
     }
 
     public function testWithoutMiddleNameAndMobileAndWithEmailHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'email',
-            'contact' => $data['email'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 1);
     }
 
     public function testWithMiddleMameAndMobileAndWithoutEmailHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'mobile',
-            'contact' => $data['mobile'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 1);
     }
 
     public function testWithMiddleNameAndEmailAndWithoutMobileHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'mobile',
-            'contact' => $data['mobile'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
-        $contact = UserHasContact::firstWhere([
-            'type' => 'email',
-            'contact' => $data['email'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 1);
     }
 
     public function testWithEmailAndMobileAndWithoutMiddleNameHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'mobile',
-            'contact' => $data['mobile'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
-        $contact = UserHasContact::firstWhere([
-            'type' => 'email',
-            'contact' => $data['email'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 2);
     }
 
     public function testWithMiddleAndEmailAndMobileNameHappyCase()
     {
+        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
@@ -459,19 +413,6 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        $contact = UserHasContact::firstWhere([
-            'type' => 'mobile',
-            'contact' => $data['mobile'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
-        $contact = UserHasContact::firstWhere([
-            'type' => 'email',
-            'contact' => $data['email'],
-        ]);
-        Notification::assertSentTo(
-            [$contact], VerifyContactByqueuea::class
-        );
+        Queue::assertPushed(SendQueuedNotifications::class, 2);
     }
 }

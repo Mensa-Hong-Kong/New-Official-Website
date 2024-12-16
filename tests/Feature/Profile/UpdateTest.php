@@ -35,7 +35,6 @@ class UpdateTest extends TestCase
     public function testUnauthorized(): void
     {
         $response = $this->put(route('profile.update'));
-
         $response->assertRedirectToRoute('login');
     }
 
