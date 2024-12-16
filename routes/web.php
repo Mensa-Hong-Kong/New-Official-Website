@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
         ->except('edit')
         ->destroyable();
-    Route::get('send-verify-code', [ContactController::class, 'sendVerifyCode']);
-    Route::post('verify', [ContactController::class, 'verify']);
+    Route::get('send-verify-code/{contact}', [ContactController::class, 'sendVerifyCode'])
+        ->name('send-verify-code');
+    Route::post('verify/{contact}', [ContactController::class, 'verify'])
+        ->name('verify');
 });
