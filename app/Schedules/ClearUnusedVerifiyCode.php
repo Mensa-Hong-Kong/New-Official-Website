@@ -4,11 +4,11 @@ namespace App\Schedules;
 
 use App\Models\ContactHasVerification;
 
-class ClearClosedOverOneDayNonVerifiedCode
+class ClearUnusedVerifiyCode
 {
     public function __invoke() {
-        ContactHasVerification::where('closed_at', '<=', now()->subDay())
-            ->whereNull('verified_at')
+        ContactHasVerification::whereNull('verified_at')
+            ->where('closed_at', '<', now()->subDay())
             ->delete();
     }
 }
