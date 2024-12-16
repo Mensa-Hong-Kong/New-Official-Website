@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('contact_has_verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('contact_id');
+            $table->enum('type', ['email', 'mobile']);
             $table->string('code');
             $table->unsignedTinyInteger('tried_time')->default(0);
             $table->dateTime('closed_at');

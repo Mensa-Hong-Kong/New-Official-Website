@@ -92,13 +92,17 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_verify_code_expired_and_request_too_many_time()
+    public function test_verify_code_expired_and_request_too_many_time_in_same_user_and_diff_ip()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
-        $this->contact->lastVerification()->update(['closed_at' => now()->subSecond()]);
+        $this->contact->lastVerification
+            ->update([
+                'closed_at' => now()->subMinute(),
+                'creator_ip' => 'xxx.xxx.xxx.xxx'
+            ]);
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
@@ -106,7 +110,8 @@ class VerifyTest extends TestCase
                 route('verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => 'The verify code expired, this contact have sent 5 time verify code and each contact each day only can try 5 verify code, please again on tomorrow.']);
+        $response->assertStatus(422);
+        $response->assertInvalid(['failed' => "The verify code expired, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -128,23 +133,27 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_tried_too_many_time_and_request_too_many_time()
+    public function test_tried_too_many_time_and_request_too_many_time_in_same_ip_and_diff_user()
     {
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->lastVerification()->update(['tried_time' => 5]);
+        $user = User::factory()->create();
+        $contact = UserHasContact::factory()
+            ->{$this->contact->type}()
+            ->state(['user_id' => $user->id])
+            ->create();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['tried_time' => 5]);
         // return to zero
         Notification::fake();
-        $response = $this->actingAs($this->user)
+        $response = $this->actingAs($user)
             ->post(
-                route('verify', ['contact' => $this->contact]),
+                route('verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => 'The verify code tried more than 5 times, this contact have sent 5 time verify code and each contact each day only can try 5 verify code, please again on tomorrow.']);
+        $response->assertInvalid(['failed' => "The verify code tried more than 5 times, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
-            [$this->contact], VerifyContact::class
+            [$contact], VerifyContact::class
         );
     }
 
@@ -231,13 +240,13 @@ class VerifyTest extends TestCase
                 route('verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
-        $response->assertInvalid(['failed' => 'The verify code is incorrect, the verify code tried 5 time, this contact have sent 5 time verify code and each contact each day only can try 5 verify code, please again on tomorrow.']);
+        $response->assertInvalid(['failed' => "The verify code is incorrect, the verify code tried 5 time, this contact have sent 5 time verify code and each user and ip each day only can send 5 {$this->contact->type} verify code, please again on tomorrow."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
         );
     }
 
-    public function test_happy_case()
+    public function test_happy_case_have_no_default_contact()
     {
         $response = $this->actingAs($this->user)
             ->post(
@@ -247,5 +256,32 @@ class VerifyTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
         $this->assertTrue($this->contact->refresh()->isVerified());
+        $type = ucfirst($this->contact->type);
+        $this->assertEquals(
+            $this->contact->id,
+            $this->user->refresh()->{"default{$type}"}->id ?? ''
+        );
+    }
+
+    public function test_happy_case_has_default_contact()
+    {
+        $contact = UserHasContact::factory()
+            ->{$this->contact->type}()
+            ->create();
+        $contact->lastVerification->update(['verified_at' => now()]);
+        $contact->update(['is_default' => true]);
+        $response = $this->actingAs($this->user)
+            ->post(
+                route('verify', ['contact' => $this->contact]),
+                ['code' => '123456']
+            );
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
+        $this->assertTrue($this->contact->refresh()->isVerified());
+        $type = ucfirst($this->contact->type);
+        $this->assertEquals(
+            $contact->id,
+            $this->user->refresh()->{"default{$type}"}->id
+        );
     }
 }

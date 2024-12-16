@@ -56,16 +56,38 @@ class RequestVerifyCodeTest extends TestCase
         // $response->assertSee('For each contact each minute only can get 1 time verify code, please again later.');
     }
 
-    public function test_request_too_many_time()
+    public function test_request_too_many_time_in_same_ip_and_diff_user()
+    {
+        $user = User::factory()->create();
+        $contact = UserHasContact::factory()
+            ->{$this->contact->type}()
+            ->state(['user_id' => $user->id])
+            ->create();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->lastVerification->fillable(['created_at'])
+            ->update(['created_at' => now()->subMinute()]);
+        $response = $this->actingAs($user)->get(route(
+            'send-verify-code', ['contact' => $contact]
+        ));
+        $response->assertTooManyRequests();
+        // $response->assertSee('For each contact each day only can send 5 verify code, please again on tomorrow.');
+    }
+
+    public function test_request_too_many_time_in_same_user_and_diff_ip()
     {
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
         $this->contact->sendVerifyCode();
         $this->contact->lastVerification
-            ->fillable(['created_at'])
-            ->update(['created_at' => now()->subMinute()]);
-        $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $this->contact]));
+            ->fillable(['created_at', 'user_ip'])
+            ->update([
+                'created_at' => now()->subMinute(),
+                'creator_ip' => 'xxx.xxx.xxx.xxx'
+            ]);
+        $this->assertEquals($this->user->id, $this->contact->user_id);
         $response = $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $this->contact]));
         $response->assertTooManyRequests();
         // $response->assertSee('For each contact each day only can send 5 verify code, please again on tomorrow.');

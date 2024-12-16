@@ -23,6 +23,11 @@ class UserHasContact extends Model
         'is_default',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function verifications(): HasMany
     {
         return $this->hasMany(ContactHasVerification::class, 'contact_id');
@@ -49,10 +54,11 @@ class UserHasContact extends Model
         $code = App::environment('testing') ? '123456' : Str::random(6);
         ContactHasVerification::create([
             'contact_id' => $this->id,
+            'type' => $this->type,
             'code' => $code,
             'closed_at' => now()->addMinutes(5),
-            'user_id' => $this->user_id,
-            'user_ip' => request()->ip(),
+            'creator_id' => $this->user_id,
+            'creator_ip' => request()->ip(),
         ]);
 
         return $code;
@@ -72,32 +78,8 @@ class UserHasContact extends Model
         static::created(
             function (UserHasContact $contact) {
                 $type = ucfirst($contact->type);
-                if (! $contact->user->{"default$type"}) {
+                if (is_null($contact->user->{"default$type"})) {
                     $contact->sendVerifyCode(true);
-                }
-            }
-        );
-        static::updating(
-            function (UserHasContact $contact) {
-                $type = ucfirst($contact->tpye);
-                if (! $contact->user->{"default$type"}) {
-                    $contact->update(['is_default' => true]);
-                    $contactIDs = ContactHasVerification::whereHas(
-                        'contact', function ($query) use ($contact) {
-                            $query->where('tpye', $contact->type)
-                                ->where('contact', $contact->contact)
-                                ->where('user_id', '!=', $contact->user_id);
-                        }
-                    )->whereNull('expired_at')
-                        ->get('contact_id')
-                        ->pluck('contact_id')
-                        ->toArray();
-                    if (count($contactIDs)) {
-                        UserHasContact::whereIn('id', $contactIDs)
-                            ->update(['is_default' => false]);
-                        ContactHasVerification::whereIn('contact_id', $contactIDs)
-                            ->update(['expired_at' => now()]);
-                    }
                 }
             }
         );
@@ -120,8 +102,8 @@ class UserHasContact extends Model
         return ContactHasVerification::where('type', $this->type)
             ->where('created_at', '>=', now()->subDay())
             ->where(function ($query) use ($contact) {
-                $query->where('user_id', $contact->user_id)
-                    ->orWhere('user_ip', request()->ip());
+                $query->where('creator_id', $contact->user_id)
+                    ->orWhere('creator_ip', request()->ip());
             })->count() >= 5;
     }
 }

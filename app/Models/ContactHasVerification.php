@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContactHasVerification extends Model
 {
@@ -11,6 +12,7 @@ class ContactHasVerification extends Model
 
     protected $fillable = [
         'contact_id',
+        'type',
         'code',
         'tried_time',
         'closed_at',
@@ -25,6 +27,11 @@ class ContactHasVerification extends Model
         'verified_at' => 'datetime',
         'expired_at' => 'datetime',
     ];
+
+    public function contact()
+    {
+        return $this->belongsTo(UserHasContact::class, 'contact_id');
+    }
 
     public function isClosed()
     {

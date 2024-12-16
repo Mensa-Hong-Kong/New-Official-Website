@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Contact\VerifyRequest;
+use App\Models\ContactHasVerification;
 use App\Models\UserHasContact;
 use Closure;
 use Illuminate\Http\Request;
@@ -58,7 +59,7 @@ class ContactController extends Controller implements HasMiddleware
                     }
                     if ($error != '') {
                         if ($contact->isRequestTooManyTime()) {
-                            $error .= ", this contact have sent 5 time verify code and each user and ip each day only can try 5 {$contact->type} verify code, please again on tomorrow.";
+                            $error .= ", this contact have sent 5 time verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow.";
                         } else {
                             $error .= ', the new verify code sent.';
                             $contact->sendVerifyCode();
@@ -91,8 +92,8 @@ class ContactController extends Controller implements HasMiddleware
             $error = 'The verify code is incorrect';
             if ($contact->lastVerification->isTriedTooManyTime()) {
                 $error .= ', the verify code tried 5 time';
-                if ($contact->isRequestTooManyTime($request->ip())) {
-                    $error .= ', this contact have sent 5 time verify code and each user and ip each day only can try 5 verify code, please again on tomorrow';
+                if ($contact->isRequestTooManyTime()) {
+                    $error .= ", this contact have sent 5 time verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow";
                 } else {
                     $error .= ', the new verify code sent';
                     $contact->sendVerifyCode();
@@ -101,6 +102,33 @@ class ContactController extends Controller implements HasMiddleware
             $content = ['errors' => ['failed' => "$error."]];
         } else {
             $contact->lastVerification->update(['verified_at' => now()]);
+            if (is_null(
+                $contact->user->{'default'.ucfirst($contact->type)}
+            )) {
+                $contact->update(['is_default' => true]);
+                UserHasContact::where('type', $contact->tyoe)
+                    ->where('id', '!=', $contact->id)
+                    ->where('user_id', $contact->user_id)
+                    ->update(['is_default' => false]);
+                $contactIDs = ContactHasVerification::whereNull('expired_at')
+                    ->where('type', $contact->type)
+                    ->where('creator_id', '!=', $contact->user_id)
+                    ->whereHas(
+                        'contact', function ($query) use ($contact) {
+                            $query->where('contact', $contact->contact);
+                        }
+                    )
+                    ->get('contact_id')
+                    ->pluck('contact_id')
+                    ->toArray();
+                if (count($contactIDs)) {
+                    UserHasContact::whereIn('id', $contactIDs)
+                        ->update(['is_default' => false]);
+                    ContactHasVerification::whereNull('expired_at')
+                        ->whereIn('contact_id', $contactIDs)
+                        ->update(['expired_at' => now()]);
+                }
+            }
             $content = ['success' => "The {$contact->type} verifiy success."];
         }
         DB::commit();
