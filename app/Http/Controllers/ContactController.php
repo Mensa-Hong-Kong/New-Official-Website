@@ -39,7 +39,7 @@ class ContactController extends Controller implements HasMiddleware
                     if ($contact->isRequestTooManyTime()) {
                         abort(429, "For each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.");
                     }
-                    if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                    if ($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
                         abort(429, "For each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.");
                     }
 
@@ -63,7 +63,7 @@ class ContactController extends Controller implements HasMiddleware
                     if ($error != '') {
                         if ($contact->isRequestTooManyTime()) {
                             $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.";
-                        } else if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                        } elseif ($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
                             $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.";
                         } else {
                             $error .= ', the new verify code sent.';
@@ -99,7 +99,7 @@ class ContactController extends Controller implements HasMiddleware
                 $error .= ', the verify code tried 5 time';
                 if ($contact->isRequestTooManyTime()) {
                     $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual";
-                } else if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                } elseif ($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
                     $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual";
                 } else {
                     $error .= ', the new verify code sent';
