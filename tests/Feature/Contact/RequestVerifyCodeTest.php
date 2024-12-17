@@ -53,7 +53,7 @@ class RequestVerifyCodeTest extends TestCase
     {
         $response = $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $this->contact]));
         $response->assertTooManyRequests();
-        // $response->assertSee('For each contact each minute only can get 1 time verify code, please again later.');
+        // $response->assertSee('For each contact each minute only can get 1 time verify code, please try again later.');
     }
 
     public function test_request_too_many_time_in_same_contact_and_diff_user()
@@ -74,7 +74,7 @@ class RequestVerifyCodeTest extends TestCase
             'send-verify-code', ['contact' => $contact]
         ));
         $response->assertTooManyRequests();
-        // $response->assertSee("For each {$contact->type} each day only can send 5 verify code, please again on tomorrow or contact us to verify by manual.);
+        // $response->assertSee("For each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.);
     }
 
     public function test_request_too_many_time_in_same_user_and_diff_contact()
@@ -90,7 +90,7 @@ class RequestVerifyCodeTest extends TestCase
             ->update(['created_at' => now()->subMinute()]);
         $response = $this->actingAs($this->user)->get(route('send-verify-code', ['contact' => $contact]));
         $response->assertTooManyRequests();
-        // $response->assertSee('For each user each day only can send 5 {$contact->type} verify code, please again on tomorrow or contact us to verify by manual.');
+        // $response->assertSee('For each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.');
     }
 
     public function test_happy_case()
