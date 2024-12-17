@@ -37,7 +37,10 @@ class ContactController extends Controller implements HasMiddleware
                         abort(429, 'For each user and ip each minute only can get 1 time verify code, please again later.');
                     }
                     if ($contact->isRequestTooManyTime()) {
-                        abort(429, "For each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow.");
+                        abort(429, "For each {$contact->type} each day only can send 5 verify code, please again on tomorrow or contact us to verify by manual.");
+                    }
+                    if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                        abort(429, "For each user each day only can send 5 {$contact->type} verify code, please again on tomorrow or contact us to verify by manual.");
                     }
 
                     return $next($request);
@@ -59,7 +62,9 @@ class ContactController extends Controller implements HasMiddleware
                     }
                     if ($error != '') {
                         if ($contact->isRequestTooManyTime()) {
-                            $error .= ", your account and ip have sent 5 time {$contact->type} verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow.";
+                            $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please again on tomorrow or contact us to verify by manual.";
+                        } else if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                            $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please again on tomorrow or contact us to verify by manual.";
                         } else {
                             $error .= ', the new verify code sent.';
                             $contact->sendVerifyCode();
@@ -93,7 +98,9 @@ class ContactController extends Controller implements HasMiddleware
             if ($contact->lastVerification->isTriedTooManyTime()) {
                 $error .= ', the verify code tried 5 time';
                 if ($contact->isRequestTooManyTime()) {
-                    $error .= ", your account and ip have sent 5 time {$contact->type} verify code and each user and ip each day only can send 5 {$contact->type} verify code, please again on tomorrow";
+                    $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please again on tomorrow or contact us to verify by manual";
+                } else if($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
+                    $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please again on tomorrow or contact us to verify by manual";
                 } else {
                     $error .= ', the new verify code sent';
                     $contact->sendVerifyCode();

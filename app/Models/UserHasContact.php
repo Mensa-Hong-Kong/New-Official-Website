@@ -54,6 +54,7 @@ class UserHasContact extends Model
         $code = App::environment('testing') ? '123456' : Str::random(6);
         ContactHasVerification::create([
             'contact_id' => $this->id,
+            'contact' => $this->contact,
             'type' => $this->type,
             'code' => $code,
             'closed_at' => now()->addMinutes(5),
@@ -97,13 +98,9 @@ class UserHasContact extends Model
 
     public function isRequestTooManyTime(): bool
     {
-        $contact = $this;
-
         return ContactHasVerification::where('type', $this->type)
+            ->where('contact', $this->contact)
             ->where('created_at', '>=', now()->subDay())
-            ->where(function ($query) use ($contact) {
-                $query->where('creator_id', $contact->user_id)
-                    ->orWhere('creator_ip', request()->ip());
-            })->count() >= 5;
+            ->count() >= 5;
     }
 }

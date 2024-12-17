@@ -93,4 +93,12 @@ class User extends Authenticatable
     {
         return $this->defaultMobile->contact;
     }
+
+    public function isRequestTooManyTimeVerifyCode($contactType): bool
+    {
+        return ContactHasVerification::where('type', $contactType)
+            ->where('creator_id', $this->id)
+            ->where('created_at', '>=', now()->subDay())
+            ->count() >= 5;
+    }
 }

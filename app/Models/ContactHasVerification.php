@@ -11,6 +11,7 @@ class ContactHasVerification extends Model
 
     protected $fillable = [
         'contact_id',
+        'contact',
         'type',
         'code',
         'tried_time',

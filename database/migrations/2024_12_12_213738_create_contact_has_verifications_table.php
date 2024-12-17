@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('contact_has_verifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('contact_id');
+            $table->string('contact', 320);
             $table->enum('type', ['email', 'mobile']);
             $table->string('code');
             $table->unsignedTinyInteger('tried_time')->default(0);
             $table->dateTime('closed_at');
             $table->dateTime('verified_at')->nullable();
             $table->dateTime('expired_at')->nullable();
-            $table->string('creator_id');
+            $table->unsignedBigInteger('creator_id');
             $table->string('creator_ip');
             $table->timestamps();
         });
