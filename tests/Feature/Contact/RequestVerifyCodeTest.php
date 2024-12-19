@@ -29,14 +29,14 @@ class RequestVerifyCodeTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('contacts.send-verify-code', ['contact' => $this->contact]));
-        $response->assertRedirectToRoute('login');
+        $response = $this->getJson(route('contacts.send-verify-code', ['contact' => $this->contact]));
+        $response->assertUnauthorized();
     }
 
     public function test_user_contact_is_not_zirself()
     {
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->get(route('contacts.send-verify-code', ['contact' => $this->contact]));
+        $response = $this->actingAs($user)->getJson(route('contacts.send-verify-code', ['contact' => $this->contact]));
         $response->assertForbidden();
     }
 
@@ -44,16 +44,16 @@ class RequestVerifyCodeTest extends TestCase
     {
         $this->contact->lastVerification
             ->update(['verified_at' => now()]);
-        $response = $this->actingAs($this->user)->get(route('contacts.send-verify-code', ['contact' => $this->contact]));
+        $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $this->contact]));
         $response->assertGone();
-        // $response->assertSee("The {$this->contact->type} verified.");
+        $response->assertJson(['message' => "The {$this->contact->type} verified."]);
     }
 
     public function test_request_too_fast()
     {
-        $response = $this->actingAs($this->user)->get(route('contacts.send-verify-code', ['contact' => $this->contact]));
+        $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $this->contact]));
         $response->assertTooManyRequests();
-        // $response->assertSee('For each contact each minute only can get 1 time verify code, please try again later.');
+        $response->assertJson(['message' => 'For each contact each minute only can get 1 time verify code, please try again later.']);
     }
 
     public function test_request_too_many_time_in_same_contact_and_diff_user()
@@ -70,11 +70,11 @@ class RequestVerifyCodeTest extends TestCase
         $contact->sendVerifyCode();
         $contact->lastVerification->fillable(['created_at'])
             ->update(['created_at' => now()->subMinute()]);
-        $response = $this->actingAs($user)->get(route(
-            'send-verify-code', ['contact' => $contact]
+        $response = $this->actingAs($user)->getJson(route(
+            'contacts.send-verify-code', ['contact' => $contact]
         ));
         $response->assertTooManyRequests();
-        // $response->assertSee("For each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.);
+        $response->assertJson(['message' => "For each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual."]);
     }
 
     public function test_request_too_many_time_in_same_user_and_diff_contact()
@@ -88,9 +88,9 @@ class RequestVerifyCodeTest extends TestCase
         $contact->lastVerification
             ->fillable(['created_at', 'user_ip'])
             ->update(['created_at' => now()->subMinute()]);
-        $response = $this->actingAs($this->user)->get(route('contacts.send-verify-code', ['contact' => $contact]));
+        $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $contact]));
         $response->assertTooManyRequests();
-        // $response->assertSee('For each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.');
+        $response->assertJson(['message' => "For each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual."]);
     }
 
     public function test_happy_case()
@@ -100,7 +100,7 @@ class RequestVerifyCodeTest extends TestCase
             ->update(['created_at' => now()->subMinute()]);
         // return to zero
         Notification::fake();
-        $response = $this->actingAs($this->user)->get(route('contacts.send-verify-code', ['contact' => $this->contact]));
+        $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $this->contact]));
         $response->assertSuccessful();
         $response->assertJson(['success' => 'The verify code sent!']);
         Notification::assertSentTo(

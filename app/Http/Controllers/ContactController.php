@@ -34,7 +34,7 @@ class ContactController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
                     if ($contact->isRequestTooFast()) {
-                        abort(429, 'For each user and ip each minute only can get 1 time verify code, please try again later.');
+                        abort(429, 'For each contact each minute only can get 1 time verify code, please try again later.');
                     }
                     if ($contact->isRequestTooManyTime()) {
                         abort(429, "For each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.");
@@ -62,17 +62,16 @@ class ContactController extends Controller implements HasMiddleware
                     }
                     if ($error != '') {
                         if ($contact->isRequestTooManyTime()) {
-                            $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.";
+                            abort(410, "$error, include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.");
                         } elseif ($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
-                            $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.";
+                            abort(410, "$error, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.");
                         } else {
                             $error .= ', the new verify code sent.';
                             $contact->sendVerifyCode();
+                            return response([
+                                'errors' => ['failed' => $error],
+                            ], 422);
                         }
-
-                        return response([
-                            'errors' => ['failed' => $error],
-                        ], 422);
                     }
 
                     return $next($request);

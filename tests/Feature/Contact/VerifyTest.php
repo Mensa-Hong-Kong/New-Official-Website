@@ -29,18 +29,18 @@ class VerifyTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->post(
+        $response = $this->postJson(
             route('contacts.verify', ['contact' => $this->contact]),
             ['code' => '123456']
         );
-        $response->assertRedirectToRoute('login');
+        $response->assertUnauthorized();
     }
 
     public function test_user_contact_is_not_zirself()
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
@@ -51,12 +51,12 @@ class VerifyTest extends TestCase
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
         $response->assertGone();
-        // $response->assertSee("The {$this->contact->type} verified.");
+        $response->assertJson(['message' => "The {$this->contact->type} verified."]);
     }
 
     public function test_have_no_verify_code_record()
@@ -65,12 +65,12 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
         $response->assertNotFound();
-        // $response->assertSee("The verify request record is not found, the new verify code sent.");
+        $response->assertJson(['message' => 'The verify request record is not found, the new verify code sent.']);
         Notification::assertSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -82,7 +82,7 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
@@ -104,12 +104,12 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertStatus(422);
-        $response->assertInvalid(['failed' => "The verify code expired, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual."]);
+        $response->assertGone();
+        $response->assertJson(['message' => "The verify code expired, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -121,7 +121,7 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
@@ -147,11 +147,12 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => "The verify code tried more than 5 times, include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual."]);
+        $response->assertGone();
+        $response->assertJson(['message' => "The verify code tried more than 5 times, include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual."]);
         Notification::assertNotSentTo(
             [$contact], VerifyContact::class
         );
@@ -160,14 +161,14 @@ class VerifyTest extends TestCase
     public function test_missing_code()
     {
         $response = $this->actingAs($this->user)
-            ->post(route('contacts.verify', ['contact' => $this->contact]));
+            ->postJson(route('contacts.verify', ['contact' => $this->contact]));
         $response->assertInvalid(['code' => 'The code field is required.']);
     }
 
     public function test_code_is_not_string()
     {
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => ['123456']]
             );
@@ -177,7 +178,7 @@ class VerifyTest extends TestCase
     public function test_code_size_is_not_match()
     {
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '1234567']
             );
@@ -187,7 +188,7 @@ class VerifyTest extends TestCase
     public function test_code_is_not_alpha_number()
     {
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '!@#$%^']
             );
@@ -199,7 +200,7 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
@@ -216,7 +217,7 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
@@ -236,7 +237,7 @@ class VerifyTest extends TestCase
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
@@ -249,7 +250,7 @@ class VerifyTest extends TestCase
     public function test_happy_case_have_no_default_contact()
     {
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
@@ -271,7 +272,7 @@ class VerifyTest extends TestCase
         $contact->lastVerification->update(['verified_at' => now()]);
         $contact->update(['is_default' => true]);
         $response = $this->actingAs($this->user)
-            ->post(
+            ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
