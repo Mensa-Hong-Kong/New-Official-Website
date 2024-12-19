@@ -2,10 +2,15 @@ import axios from 'axios';
 const token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 export default function submitForm(action, method="post", data, successCallback = '', failCallback) {
     data['_token'] = token;
-    if(method != 'post') {
+    if(method != 'get' && method != 'post') {
         data['_method'] = method;
+        method = 'post';
     }
-    axios.post(action, data).then(function (response) {
+    axios({
+        method: method,
+        path: action,
+        data: data,
+    }).then(function (response) {
         if(successCallback != '') {
             successCallback(response);
         } else {
@@ -15,7 +20,7 @@ export default function submitForm(action, method="post", data, successCallback 
         switch(error.status) {
             case 401:
                 bootstrapAlert('Unauthorized, please login first');
-                window.location.reload();
+                window.location.pathname = '/login';
                 break;
             case 403:
                 bootstrapAlert('Sorry, you have no permission');
