@@ -55,7 +55,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
-        $response->assertGone();
+        $response->assertCreated();
         $response->assertJson(['message' => "The {$this->contact->type} verified."]);
     }
 
@@ -108,7 +108,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertGone();
+        $response->assertTooManyRequests();
         $response->assertJson(['message' => "The verify code expired, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual."]);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
@@ -151,7 +151,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $contact]),
                 ['code' => '123456']
             );
-        $response->assertGone();
+        $response->assertTooManyRequests();
         $response->assertJson(['message' => "The verify code tried more than 5 times, include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual."]);
         Notification::assertNotSentTo(
             [$contact], VerifyContact::class
