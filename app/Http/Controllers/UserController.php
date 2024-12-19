@@ -76,7 +76,7 @@ class UserController extends Controller
 
     public function logout()
     {
-        auth()->logout();
+        Auth::logout();
 
         return redirect()->route('index');
     }
@@ -86,21 +86,18 @@ class UserController extends Controller
         $user = User::with([
             'loginLogs' => function ($query) {
                 $query->where('status', false)
-                    ->where('login_at', '>=', now()->subDay());
+                    ->where('created_at', '>=', now()->subDay());
             },
         ])->firstWhere('username', $request->username);
         if ($user) {
             if ($user->loginLogs->count() >= 10) {
-                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['login_at'];
+                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['created_at'];
 
                 return response([
                     'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
                 ], 422);
             }
-            $log = [
-                'user_id' => $user->id,
-                'login_at' => now(),
-            ];
+            $log = ['user_id' => $user->id];
             if ($user->checkPassword($request->password)) {
                 $log['status'] = true;
                 UserLoginLog::create($log);

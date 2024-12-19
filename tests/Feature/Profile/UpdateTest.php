@@ -35,7 +35,6 @@ class UpdateTest extends TestCase
     public function test_unauthorized(): void
     {
         $response = $this->put(route('profile.update'));
-
         $response->assertRedirectToRoute('login');
     }
 
@@ -172,7 +171,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field must not be greater than 255 characters.']);
     }
 
-    public function test_middle_name_is_not_string()
+    public function test_middle_name_is_mot_string()
     {
         $data = $this->happyCase;
         $data['middle_name'] = ['Chan'];
@@ -228,7 +227,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type id field must be an integer.']);
     }
 
-    public function test_passport_type_id_is_not_exist()
+    public function test_passport_typeid_is_not_exist()
     {
         $data = $this->happyCase;
         $data['passport_type_id'] = 0;

@@ -13,7 +13,6 @@ class ShowTest extends TestCase
     public function test_unauthorized(): void
     {
         $response = $this->get(route('profile.show'));
-
         $response->assertRedirectToRoute('login');
     }
 
@@ -21,7 +20,6 @@ class ShowTest extends TestCase
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show'));
-
         $response->assertOk();
     }
 }

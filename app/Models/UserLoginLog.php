@@ -11,7 +11,7 @@ class UserLoginLog extends Authenticatable
 
     protected $fillable = [
         'user_id',
-        'login_at',
+        'login_ip',
         'status',
     ];
 }

@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="form-floating">
-                <input type="text" name="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" required />
+                <input type="password" name="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" required />
                 <label for="validationPassword">Password</label>
                 <div id="passwordFeedback" class="valid-feedback">
                     Looks good!
