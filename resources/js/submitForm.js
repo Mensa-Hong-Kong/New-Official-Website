@@ -25,6 +25,9 @@ export default function submitForm(action, method="post", data, successCallback 
             case 403:
                 bootstrapAlert('Sorry, you have no permission');
                 break;
+            case 410:
+                bootstrapAlert(error.response.data.message);
+                break;
             case 419:
                 bootstrapAlert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
                 break;
