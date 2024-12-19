@@ -8,7 +8,7 @@ export default function submitForm(action, method="post", data, successCallback 
     }
     axios({
         method: method,
-        path: action,
+        url: action,
         data: data,
     }).then(function (response) {
         if(successCallback != '') {
@@ -27,6 +27,9 @@ export default function submitForm(action, method="post", data, successCallback 
                 break;
             case 419:
                 bootstrapAlert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
+                break;
+            case 429:
+                bootstrapAlert(error.response.data.message);
                 break;
             case 422:
                 if(failCallback == '') {
