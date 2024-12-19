@@ -68,6 +68,7 @@ class ContactController extends Controller implements HasMiddleware
                         } else {
                             $error .= ', the new verify code sent.';
                             $contact->sendVerifyCode();
+
                             return response([
                                 'errors' => ['failed' => $error],
                             ], 422);
