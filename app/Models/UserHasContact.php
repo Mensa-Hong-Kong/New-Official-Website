@@ -65,25 +65,9 @@ class UserHasContact extends Model
         return $code;
     }
 
-    public function sendVerifyCode($shouldQueuea = false)
+    public function sendVerifyCode()
     {
-        $class = VerifyContact::class;
-        if ($shouldQueuea) {
-            $class = VerifyContactByQueuea::class;
-        }
-        $this->notify(new $class($this->type, $this->newVerifyCode()));
-    }
-
-    protected static function booted(): void
-    {
-        static::created(
-            function (UserHasContact $contact) {
-                $type = ucfirst($contact->type);
-                if (is_null($contact->user->{"default$type"})) {
-                    $contact->sendVerifyCode(true);
-                }
-            }
-        );
+        $this->notify(new VerifyContact($this->type, $this->newVerifyCode()));
     }
 
     public function isVerified(): bool

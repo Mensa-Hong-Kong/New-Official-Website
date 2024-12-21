@@ -3,9 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Notifications\SendQueuedNotifications;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -347,65 +346,84 @@ class RegisterTest extends TestCase
 
     public function test_without_middle_name_and_email_and_with_mobile_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 1);
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
     }
 
     public function test_without_middle_name_and_mobile_and_with_email_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 1);
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
     }
 
     public function test_with_middle_mame_and_mobile_and_without_email_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 1);
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
     }
 
     public function test_with_middle_name_and_email_and_without_mobile_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 1);
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
     }
 
     public function test_with_email_and_mobile_and_without_middle_name_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
         $data['email'] = 'example@gamil.com';
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 2);
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
     }
 
     public function test_with_middle_and_email_and_mobile_name_happy_case()
     {
-        Queue::fake();
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $data['mobile'] = 12345678;
@@ -413,6 +431,15 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(SendQueuedNotifications::class, 2);
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
     }
 }

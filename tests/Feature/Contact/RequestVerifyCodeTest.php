@@ -21,10 +21,10 @@ class RequestVerifyCodeTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        Queue::fake();
         Notification::fake();
         $this->user = User::factory()->create();
         $this->contact = UserHasContact::factory()->create();
+        $this->contact->sendVerifyCode();
     }
 
     public function test_have_no_login()
@@ -68,6 +68,7 @@ class RequestVerifyCodeTest extends TestCase
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
         $contact->lastVerification->fillable(['created_at'])
             ->update(['created_at' => now()->subMinute()]);
         $response = $this->actingAs($user)->getJson(route(
@@ -85,6 +86,7 @@ class RequestVerifyCodeTest extends TestCase
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
             ->state(['user_id' => $this->user->id])->create();
+        $contact->sendVerifyCode();
         $contact->lastVerification
             ->fillable(['created_at', 'user_ip'])
             ->update(['created_at' => now()->subMinute()]);

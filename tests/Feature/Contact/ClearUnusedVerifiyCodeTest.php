@@ -31,7 +31,8 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         User::factory()->create();
         Queue::fake();
         Notification::fake();
-        UserHasContact::factory()->create();
+        $contact = UserHasContact::factory()->create();
+        $contact->sendVerifyCode();
         $this->assertEquals(
             0, ContactHasVerification::whereNull('verified_at')
                 ->where('closed_at', '<='.now())
@@ -56,6 +57,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         Queue::fake();
         Notification::fake();
         $contact = UserHasContact::factory()->create();
+        $contact->sendVerifyCode();
         $contact->lastVerification
             ->update(['closed_at' => now()->subMonths(3)->subSecond()]);
         (new ClearUnusedVerifiyCode)();
@@ -68,6 +70,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         Queue::fake();
         Notification::fake();
         $contact = UserHasContact::factory()->create();
+        $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->lastVerification
             ->update(['closed_at' => now()->subMonths(3)->subSecond()]);

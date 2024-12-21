@@ -21,10 +21,10 @@ class VerifyTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        Queue::fake();
         Notification::fake();
         $this->user = User::factory()->create();
         $this->contact = UserHasContact::factory()->create();
+        $this->contact->sendVerifyCode();
     }
 
     public function test_have_no_login()
@@ -100,6 +100,7 @@ class VerifyTest extends TestCase
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
         $contact->lastVerification()->update(['closed_at' => now()->subSecond()]);
         // return to zero
         Notification::fake();
@@ -140,6 +141,7 @@ class VerifyTest extends TestCase
                 'type' => $this->contact->type,
                 'contact' => $this->contact->contact,
             ])->create();
+        $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -235,6 +237,7 @@ class VerifyTest extends TestCase
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
         $contact->lastVerification()->update(['tried_time' => 4]);
         // return to zero
         Notification::fake();
@@ -261,6 +264,7 @@ class VerifyTest extends TestCase
                 'type' => $this->contact->type,
                 'contact' => $this->contact->contact,
             ])->create();
+        $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -303,6 +307,7 @@ class VerifyTest extends TestCase
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
             ->create();
+        $contact->sendVerifyCode();
         $contact->lastVerification->update(['verified_at' => now()]);
         $contact->update(['is_default' => true]);
         $response = $this->actingAs($this->user)
