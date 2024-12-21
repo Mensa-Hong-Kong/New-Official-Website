@@ -131,7 +131,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_tried_too_many_time_and_request_too_many_time_in_same_ip_and_diff_user()
+    public function test_tried_too_many_time_and_request_too_many_time_in_same_contact_and_diff_user()
     {
         $user = User::factory()->create();
         $contact = UserHasContact::factory()
@@ -227,23 +227,57 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time_in_same_user_and_diff_contact()
     {
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->sendVerifyCode();
-        $this->contact->lastVerification()->update(['tried_time' => 4]);
+        $contact = UserHasContact::factory()
+            ->{$this->contact->type}()
+            ->state(['user_id' => $this->user->id])->create();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['tried_time' => 4]);
         // return to zero
         Notification::fake();
         $response = $this->actingAs($this->user)
             ->postJson(
-                route('contacts.verify', ['contact' => $this->contact]),
+                route('contacts.verify', ['contact' => $contact]),
                 ['code' => '234567']
             );
-        $response->assertInvalid(['failed' => "The verify code is incorrect, the verify code tried 5 time, include other user(s), this {$this->contact->type} have sent 5 times verify code and each {$this->contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual."]);
+        $response->assertInvalid([
+            'failed' => "The verify code is incorrect, the verify code tried 5 time, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.",
+            'isFailedTooMany' => true,
+        ]);
         Notification::assertNotSentTo(
-            [$this->contact], VerifyContact::class
+            [$contact], VerifyContact::class
+        );
+    }
+
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time()
+    {
+        $user = User::factory()->create();
+        $contact = UserHasContact::factory()
+            ->state([
+                'user_id' => $user->id,
+                'type' => $this->contact->type,
+                'contact' => $this->contact->contact,
+            ])->create();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['tried_time' => 4]);
+        // return to zero
+        Notification::fake();
+        $response = $this->actingAs($user)
+            ->postJson(
+                route('contacts.verify', ['contact' => $contact]),
+                ['code' => '234567']
+            );
+        $response->assertInvalid([
+            'failed' => "The verify code is incorrect, the verify code tried 5 time, include other user(s), this {$contact->type} have sent 5 times verify code and each {$this->contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.",
+            'isFailedTooMany' => true,
+        ]);
+        Notification::assertNotSentTo(
+            [$contact], VerifyContact::class
         );
     }
 

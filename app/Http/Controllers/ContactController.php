@@ -90,28 +90,31 @@ class ContactController extends Controller implements HasMiddleware
 
     public function verify(VerifyRequest $request, UserHasContact $contact)
     {
-        $error = '';
         DB::beginTransaction();
         if ($contact->lastVerification->code != strtoupper($request->code)) {
+            $isFailedTooMany = false;
             $contact->lastVerification->increment('tried_time');
             $error = 'The verify code is incorrect';
             if ($contact->lastVerification->isTriedTooManyTime()) {
                 $error .= ', the verify code tried 5 time';
                 if ($contact->isRequestTooManyTime()) {
                     $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual";
+                    $isFailedTooMany = true;
                 } elseif ($request->user()->isRequestTooManyTimeVerifyCode($contact->type)) {
                     $error .= ", your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual";
+                    $isFailedTooMany = true;
                 } else {
                     $error .= ', the new verify code sent';
                     $contact->sendVerifyCode();
                 }
             }
-            $content = ['errors' => ['failed' => "$error."]];
+            $content = ['errors' => [
+                'failed' => "$error.",
+                'isFailedTooMany' => $isFailedTooMany,
+            ]];
         } else {
             $contact->lastVerification->update(['verified_at' => now()]);
-            if (is_null(
-                $contact->user->{'default'.ucfirst($contact->type)}
-            )) {
+            if (is_null($contact->user->{'default'.ucfirst($contact->type)})) {
                 $contact->update(['is_default' => true]);
                 UserHasContact::where('type', $contact->tyoe)
                     ->where('id', '!=', $contact->id)
@@ -140,6 +143,6 @@ class ContactController extends Controller implements HasMiddleware
         }
         DB::commit();
 
-        return response($content, $error == '' ? 200 : 422);
+        return response($content, isset($error) ? 422 : 200);
     }
 }
