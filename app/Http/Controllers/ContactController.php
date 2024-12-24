@@ -70,7 +70,7 @@ class ContactController extends Controller implements HasMiddleware
                             $contact->sendVerifyCode();
 
                             return response([
-                                'errors' => ['failed' => $error],
+                                'errors' => ['code' => $error],
                             ], 422);
                         }
                     }
@@ -109,7 +109,7 @@ class ContactController extends Controller implements HasMiddleware
                 }
             }
             $content = ['errors' => [
-                'failed' => "$error.",
+                'code' => "$error.",
                 'isFailedTooMany' => $isFailedTooMany,
             ]];
         } else {

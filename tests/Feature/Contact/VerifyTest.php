@@ -86,7 +86,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => 'The verify code expired, the new verify code sent.']);
+        $response->assertInvalid(['code' => 'The verify code expired, the new verify code sent.']);
         Notification::assertSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -126,7 +126,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '123456']
             );
-        $response->assertInvalid(['failed' => 'The verify code tried more than 5 times, the new verify code sent.']);
+        $response->assertInvalid(['code' => 'The verify code tried more than 5 times, the new verify code sent.']);
         Notification::assertSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -206,7 +206,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
-        $response->assertInvalid(['failed' => 'The verify code is incorrect.']);
+        $response->assertInvalid(['code' => 'The verify code is incorrect.']);
         $this->assertEquals(1, $this->contact->lastVerification->tried_time);
         Notification::assertNotSentTo(
             [$this->contact], VerifyContact::class
@@ -223,7 +223,7 @@ class VerifyTest extends TestCase
                 route('contacts.verify', ['contact' => $this->contact]),
                 ['code' => '234567']
             );
-        $response->assertInvalid(['failed' => 'The verify code is incorrect, the verify code tried 5 time, the new verify code sent.']);
+        $response->assertInvalid(['code' => 'The verify code is incorrect, the verify code tried 5 time, the new verify code sent.']);
         Notification::assertSentTo(
             [$this->contact], VerifyContact::class
         );
@@ -247,7 +247,7 @@ class VerifyTest extends TestCase
                 ['code' => '234567']
             );
         $response->assertInvalid([
-            'failed' => "The verify code is incorrect, the verify code tried 5 time, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.",
+            'code' => "The verify code is incorrect, the verify code tried 5 time, your account have sent 5 {$contact->type} verify code and each user each day only can send 5 {$contact->type} verify code, please try again on tomorrow or contact us to verify by manual.",
             'isFailedTooMany' => true,
         ]);
         Notification::assertNotSentTo(
@@ -277,7 +277,7 @@ class VerifyTest extends TestCase
                 ['code' => '234567']
             );
         $response->assertInvalid([
-            'failed' => "The verify code is incorrect, the verify code tried 5 time, include other user(s), this {$contact->type} have sent 5 times verify code and each {$this->contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.",
+            'code' => "The verify code is incorrect, the verify code tried 5 time, include other user(s), this {$contact->type} have sent 5 times verify code and each {$this->contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual.",
             'isFailedTooMany' => true,
         ]);
         Notification::assertNotSentTo(
