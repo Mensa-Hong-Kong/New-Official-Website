@@ -1,4 +1,4 @@
-import submitForm from "./submitForm";
+import { post, get } from "./submitForm";
 
 const form = document.getElementById('form');
 
@@ -417,7 +417,7 @@ form.addEventListener(
                     passport_number: passportNumberInput.value,
                     birthday: birthdayInput.value,
                 }
-                submitForm(form.action, 'put', data, successCallback, failCallback);
+                post(form.action, 'put', data, successCallback, failCallback);
             }
         }
     }

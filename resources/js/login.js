@@ -1,5 +1,5 @@
 import ClearInputHistory from "./clearInputHistory";
-import submitForm from "./submitForm";
+import { post } from "./submitForm";
 
 const form = document.getElementById('form');
 const username = document.getElementById('validationUsername');
@@ -136,7 +136,7 @@ form.addEventListener(
                 if(rememberMe.checked) {
                     data['remember_me'] = true;
                 }
-                submitForm(form.action, 'post', data, successCallback, failCallback);
+                post(form.action, 'post', data, successCallback, failCallback);
             }
         }
     }
