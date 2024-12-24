@@ -114,31 +114,16 @@ class ContactController extends Controller implements HasMiddleware
             ]];
         } else {
             $contact->lastVerification->update(['verified_at' => now()]);
-            if (is_null($contact->user->{'default'.ucfirst($contact->type)})) {
-                $contact->update(['is_default' => true]);
-                UserHasContact::where('type', $contact->tyoe)
-                    ->where('id', '!=', $contact->id)
-                    ->where('user_id', $contact->user_id)
-                    ->update(['is_default' => false]);
-                $contactIDs = ContactHasVerification::whereNull('expired_at')
-                    ->where('type', $contact->type)
-                    ->where('creator_id', '!=', $contact->user_id)
-                    ->whereHas(
-                        'contact', function ($query) use ($contact) {
-                            $query->where('contact', $contact->contact);
-                        }
-                    )
-                    ->get('contact_id')
-                    ->pluck('contact_id')
-                    ->toArray();
-                if (count($contactIDs)) {
-                    UserHasContact::whereIn('id', $contactIDs)
-                        ->update(['is_default' => false]);
-                    ContactHasVerification::whereNull('expired_at')
-                        ->whereIn('contact_id', $contactIDs)
-                        ->update(['expired_at' => now()]);
-                }
-            }
+            UserHasContact::where('is_default', true)
+                ->where('contact', $contact->contact)
+                ->where('type', $contact->tyoe)
+                ->where('id', '!=', $contact->id)
+                ->update(['is_default' => false]);
+            ContactHasVerification::whereNull('expired_at')
+                ->whereNotNull('verified_at')
+                ->where('type', $contact->type)
+                ->where('contact_id', '!=', $contact->id)
+                ->update(['expired_at' => now()]);
             $content = ['success' => "The {$contact->type} verifiy success."];
         }
         DB::commit();
