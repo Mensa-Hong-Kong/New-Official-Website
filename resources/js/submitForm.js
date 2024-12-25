@@ -17,14 +17,23 @@ function failHandle(error, callback) {
         case 403:
             bootstrapAlert('Sorry, you have no permission');
             break;
+        case 403:
+            if(error.response.data.message) {
+                bootstrapAlert(error.response.data.message);
+            }
+            break;
         case 410:
-            bootstrapAlert(error.response.data.message);
+            if(error.response.data.message) {
+                bootstrapAlert(error.response.data.message);
+            }
             break;
         case 419:
             bootstrapAlert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
             break;
         case 429:
-            bootstrapAlert(error.response.data.message);
+            if(error.response.data.message) {
+                bootstrapAlert(error.response.data.message);
+            }
             break;
         case 422:
             if(callback == '') {
