@@ -39,7 +39,7 @@ return [
         'sid' => env('TWILIO_AUTH_SID'),
         'token' => env('TWILIO_AUTH_TOKEN'),
         'whatsapp' => [
-            'form' => env('TWILIO_WHATSAPP_FROM'),
+            'from' => env('TWILIO_WHATSAPP_FROM'),
             'templateIDs' => [
                 'verificationCode' => env('TWILIO_WHATSAPP_VERIFICATION_CODE_TEMPALTE_ID'),
             ],

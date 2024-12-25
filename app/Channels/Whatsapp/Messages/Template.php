@@ -4,13 +4,18 @@ namespace App\Channels\WhatsApp\Messages;
 
 abstract class Template
 {
-    public $templateID;
+    public string $templateID;
 
-    public $variables;
+    public string $variables;
 
-    public function variables($variables)
+    public function variables(array $variables)
     {
-        $this->variables = $variables;
+        if(count($variables)) {
+            $this->variables = json_encode(array_combine(
+                range(1, count($variables)),
+                $variables
+            ));
+        }
 
         return $this;
     }
