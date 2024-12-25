@@ -10,7 +10,7 @@ abstract class Template
 
     public function variables(array $variables)
     {
-        if(count($variables)) {
+        if (count($variables)) {
             $this->variables = json_encode(array_combine(
                 range(1, count($variables)),
                 $variables

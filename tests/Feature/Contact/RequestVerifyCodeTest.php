@@ -7,7 +7,6 @@ use App\Models\UserHasContact;
 use App\Notifications\VerifyContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class RequestVerifyCodeTest extends TestCase
