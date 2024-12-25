@@ -136,7 +136,7 @@ form.addEventListener(
                 if(rememberMe.checked) {
                     data['remember_me'] = true;
                 }
-                post(form.action, 'post', data, successCallback, failCallback);
+                post(form.action, successCallback, failCallback, 'post', data);
             }
         }
     }

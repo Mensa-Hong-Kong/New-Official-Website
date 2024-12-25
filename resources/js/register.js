@@ -289,7 +289,7 @@ form.addEventListener(
                     email: email.value,
                     mobile: mobile.value,
                 }
-                post(form.action, 'post', data, successCallback, failCallback);
+                post(form.action, successCallback, failCallback, 'post', data);
             }
         }
     }

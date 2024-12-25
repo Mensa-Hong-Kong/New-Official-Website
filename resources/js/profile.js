@@ -442,7 +442,7 @@ form.addEventListener(
                         passport_number: passportNumberInput.value,
                         birthday: birthdayInput.value,
                     }
-                    post(form.action, 'put', data, successCallback, failCallback);
+                    post(form.action, successCallback, failCallback, 'put', data);
                 } else {
                     enableSubmitting();
                 }
@@ -519,7 +519,6 @@ function requestNewVerifyCode(event) {
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
                 event.target.parentElement.dataset.requsetverifycodeurl,
-                {},
                 requestVerifyCodeSuccessCallback,
                 requestNewVerifyCodefailCallback
             );
@@ -594,9 +593,9 @@ function submitVerifyCode(event) {
                 let data = {code: document.getElementById('verifyCodeInput'+id).value}
                 post(
                     event.target.action,
-                    'post', data,
                     submitVerifyCodeSuccessCallback,
-                    submitVerifyCodeFailCallback
+                    submitVerifyCodeFailCallback,
+                    'post', data
                 );
             }
         } else {
@@ -644,13 +643,11 @@ function verifyContact(event) {
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
                 event.target.parentElement.dataset.requsetverifycodeurl,
-                {},
                 requestVerifyCodeSuccessCallback,
                 requestVerifyCodefailCallback
             );
         }
     }
-
 }
 
 document.querySelectorAll('.contactLoader').forEach(
