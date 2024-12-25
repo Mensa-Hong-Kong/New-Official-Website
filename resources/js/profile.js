@@ -463,11 +463,13 @@ function verified(id) {
     document.getElementById('submitVerifyCode'+id).remove();
     document.getElementById('cancelVerify'+id).remove();
     document.getElementById('submittingContactButton'+id).remove();
-    let verifyButton = document.getElementById('submittingContactButton'+id);
+    let verifyButton = document.getElementById('verifyContactButton'+id);
     verifyButton.classList.remove('submitButton');
     verifyButton.classList.remove('btn-primary');
     verifyButton.classList.add('btn-secondary');
     verifyButton.innerText = "Verified";
+    verifyButton.removeEventListener('click', verifyContact);
+    verifyButton.disabled = false;
     verifyButton.hidden = false;
 }
 
@@ -635,9 +637,9 @@ function requestVerifyCodefailCallback(error) {
 function verifyContact(event) {
     if(submitting == '') {
         let submitAt = Date.now();
-        submitting = 'verifyContact'.$submitAt;
+        submitting = 'verifyContact'+submitAt;
         disableSubmitting()
-        if(submitting == 'verifyContact'.$submitAt) {
+        if(submitting == 'verifyContact'+submitAt) {
             let id = event.target.id.replace('verifyContactButton', '');
             document.getElementById('verifyContactButton'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
@@ -653,20 +655,23 @@ function verifyContact(event) {
 document.querySelectorAll('.contactLoader').forEach(
     (loader) => {
         let id = loader.id.replace('contactLoader', '');
-        document.getElementById('verifyContactButton'+id).addEventListener(
-            'click', verifyContact
-        );
-        document.getElementById('requestNewVerifyCode'+id).addEventListener(
-            'click', requestNewVerifyCode
-        );
-        document.getElementById('verifyContactForm'+id).addEventListener(
-            'submit', submitVerifyCode
-        );
-        document.getElementById('cancelVerify'+id).addEventListener(
-            'click', cancelVerifyContact
-        );
+        let verifyContactButton = document.getElementById('verifyContactButton'+id)
+        if(verifyContactButton.classList.contains('submitButton')) {
+            verifyContactButton.addEventListener(
+                'click', verifyContact
+            );
+            document.getElementById('requestNewVerifyCode'+id).addEventListener(
+                'click', requestNewVerifyCode
+            );
+            document.getElementById('verifyContactForm'+id).addEventListener(
+                'submit', submitVerifyCode
+            );
+            document.getElementById('cancelVerify'+id).addEventListener(
+                'click', cancelVerifyContact
+            );
+        }
         loader.remove();
-        document.getElementById('verifyContactButton'+id).hidden = false;
+        verifyContactButton.hidden = false;
     }
 );
 
