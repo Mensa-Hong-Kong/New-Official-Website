@@ -12,7 +12,7 @@
                         Saving...
                     </button>
                     <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
-                    <button type="submit" class="btn btn-outline-primary" id="saveButton" hidden>Save</button>
+                    <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
                     <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
                 </h3>
                 <div class="alert alert-primary" id="editInfoRemind" role="alert" hidden>
@@ -114,19 +114,11 @@
         </article>
         <article>
             <h3 class="fw-bold mb-2"><i class="bi bi-envelope"></i> Email</h3>
-            @foreach ($contacts['emails'] ?? [] as $email)
-                <div class="row">
-                    <div class="col">{{ $email->contact }}</div>
-                </div>
-            @endforeach
+            @include('contacts', ['contacts' => $contacts['emails']])
         </article>
         <article>
             <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Mobile</h3>
-            @foreach ($contacts['mobiles'] ?? [] as $mobile)
-                <div class="row">
-                    <div class="col">{{ $mobile->contact }}</div>
-                </div>
-            @endforeach
+            @include('contacts', ['contacts' => $contacts['mobiles']])
         </article>
     </section>
 @endsection
