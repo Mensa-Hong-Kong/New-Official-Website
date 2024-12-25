@@ -6,9 +6,20 @@
         >
         <div class="col-md-3">{{ $contact->contact }}</div>
         <div class="col-md-2">
-            @if($contact->is_default)
+            <span
+                class="{{ $contact->type }}DefaultContact"
+                id="defaultContact{{ $contact->id }}"
+                data-type="{{ $contact->type }}"
+                @hidden(! $contact->is_default)>
                 Default
-            @endif
+            </span>
+            <form id="setDefault{{ $contact->id }}" class="{{ $contact->type }}SetDefault" method="POST"
+                action="{{ route('contacts.default', ['contact' => $contact]) }}" hidden>
+                @csrf
+                @method('put')
+                <button class="btn btn-primary submitButton">Set Default</button>
+            </form>
+            <button class="btn btn-primary" id="settingDefault{{ $contact->id }}" disabled hidden>Setting</button>
         </div>
         <div class="col-md-2">
             @if(! $contact->isVerified())
