@@ -4,7 +4,6 @@ namespace Tests\Feature\Contact;
 
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Notifications\VerifyContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -33,7 +32,6 @@ class SetDefaultTest extends TestCase
         ));
         $response->assertUnauthorized();
     }
-
 
     public function test_user_contact_is_not_zirself()
     {

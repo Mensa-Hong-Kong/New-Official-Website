@@ -159,6 +159,7 @@ class ContactController extends Controller implements HasMiddleware
             ->update(['is_default' => false]);
         $contact->update(['is_default' => true]);
         DB::commit();
+
         return ['success' => "The {$contact->type} changed to default!"];
     }
 }
