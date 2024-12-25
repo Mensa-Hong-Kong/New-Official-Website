@@ -95,7 +95,7 @@ class VerifyTest extends TestCase
     {
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
-            ->state(['user_id' => $this->user->id])->create();
+            ->create();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -232,7 +232,7 @@ class VerifyTest extends TestCase
     {
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
-            ->state(['user_id' => $this->user->id])->create();
+            ->create();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -296,7 +296,7 @@ class VerifyTest extends TestCase
         $this->assertTrue($this->contact->refresh()->isVerified());
     }
 
-    public function test_happy_case_has_othen_user_default_same_contact()
+    public function test_happy_case_has_othen_user_default_same_contact_type()
     {
         $user = User::factory()->create();
         $contact = UserHasContact::factory()
