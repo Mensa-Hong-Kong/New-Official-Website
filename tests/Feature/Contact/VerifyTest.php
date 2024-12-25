@@ -284,7 +284,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_happy_case_have_no_default_contact()
+    public function test_happy_case_have_no_othen_user_default_same_contact()
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -294,21 +294,20 @@ class VerifyTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
         $this->assertTrue($this->contact->refresh()->isVerified());
-        $type = ucfirst($this->contact->type);
-        $this->assertEquals(
-            $this->contact->id,
-            $this->user->refresh()->{"default{$type}"}->id ?? ''
-        );
     }
 
-    public function test_happy_case_has_default_contact()
+    public function test_happy_case_has_othen_user_default_same_contact()
     {
+        $user = User::factory()->create();
         $contact = UserHasContact::factory()
-            ->{$this->contact->type}()
-            ->create();
+            ->state([
+                'user_id' => $user->id,
+                'type' => $this->contact->type,
+                'contact' => $this->contact->contact,
+                'is_default' => true,
+            ])->create();
         $contact->sendVerifyCode();
         $contact->lastVerification->update(['verified_at' => now()]);
-        $contact->update(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
@@ -317,10 +316,7 @@ class VerifyTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
         $this->assertTrue($this->contact->refresh()->isVerified());
-        $type = ucfirst($this->contact->type);
-        $this->assertEquals(
-            $contact->id,
-            $this->user->refresh()->{"default{$type}"}->id
-        );
+        $this->assertFalse((bool) $contact->fresh()->is_default);
+        $this->assertFalse($contact->refresh()->isVerified());
     }
 }
