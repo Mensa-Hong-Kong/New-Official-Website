@@ -23,6 +23,13 @@ class ContactController extends Controller implements HasMiddleware
                     if ($contact->user_id != $user->id) {
                         abort(403);
                     }
+
+                    return $next($request);
+                }
+            )),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $contact = $request->route('contact');
                     if ($contact->isVerified()) {
                         abort($request->isMethod('post') ? 201 : 410, "The {$contact->type} verified.");
                     }
@@ -78,6 +85,19 @@ class ContactController extends Controller implements HasMiddleware
                     return $next($request);
                 }
             ))->only('verify'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $contact = $request->route('contact');
+                    if (! $contact->isVerified()) {
+                        abort(428, "The {$contact->type} is not verified, cannot set this contact to default, please verify first.");
+                    }
+                    if ($contact->is_default) {
+                        abort(201, "The {$contact->type} already is default.");
+                    }
+
+                    return $next($request);
+                }
+            ))->only('setDefault'),
         ];
     }
 
@@ -129,5 +149,16 @@ class ContactController extends Controller implements HasMiddleware
         DB::commit();
 
         return response($content, isset($error) ? 422 : 200);
+    }
+
+    public function setDefault(UserHasContact $contact)
+    {
+        DB::beginTransaction();
+        UserHasContact::where('type', $contact->type)
+            ->where('user_id', $contact->user_id)
+            ->update(['is_default' => false]);
+        $contact->update(['is_default' => true]);
+        DB::commit();
+        return ['success' => "The {$contact->type} changed to default!"];
     }
 }
