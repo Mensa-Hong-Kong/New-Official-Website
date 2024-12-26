@@ -68,7 +68,7 @@ class RequestVerifyCodeTest extends TestCase
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
-        $contact->lastVerification()
+        $contact->lastVerification
             ->fillable(['created_at'])
             ->update(['created_at' => now()->subMinute()]);
         $response = $this->actingAs($user)->getJson(route(
@@ -87,7 +87,7 @@ class RequestVerifyCodeTest extends TestCase
             ->{$this->contact->type}()
             ->state(['user_id' => $this->user->id])->create();
         $contact->sendVerifyCode();
-        $contact->lastVerification()
+        $contact->lastVerification
             ->fillable(['created_at', 'user_ip'])
             ->update(['created_at' => now()->subMinute()]);
         $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $contact]));
@@ -97,7 +97,7 @@ class RequestVerifyCodeTest extends TestCase
 
     public function test_happy_case()
     {
-        $this->contact->lastVerification()
+        $this->contact->lastVerification
             ->fillable(['created_at'])
             ->update(['created_at' => now()->subMinute()]);
         // return to zero

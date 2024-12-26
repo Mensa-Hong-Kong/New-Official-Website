@@ -72,7 +72,7 @@ class ClearUnusedVerifiyCodeTest extends TestCase
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
-        $contact->lastVerification()
+        $contact->lastVerification
             ->update(['closed_at' => now()->subMonths(3)->subSecond()]);
         (new ClearUnusedVerifiyCode)();
         $this->assertEquals(
