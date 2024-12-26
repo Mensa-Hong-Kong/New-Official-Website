@@ -43,14 +43,12 @@
             'btn-primary' => !$contact->isVerified(),
             'submitButton' => !$contact->isVerified(),
         ])>{{ $contact->isVerified() ? 'Verified' : 'Verify' }}</button>
-        @if(!$contact->isVerified())
-            <button class="btn btn-primary col-md-2 submitButton requestNewVerifyCodeButton" id="requestNewVerifyCode{{ $contact->id }}" hidden>
-                Send New Verify Code
-            </button>
-            <button class="btn btn-primary col-md-4" id="requestingContactButton{{ $contact->id }}" hidden disabled>Requesting</button>
-            <button class="btn btn-primary col-md-1 submitButton" id="submitVerifyCode{{ $contact->id }}" form="verifyContactForm{{ $contact->id }}" hidden>Submit</button>
-            <button class="btn btn-danger col-md-1" id="cancelVerify{{ $contact->id }}" hidden>Cancel</button>
-            <button class="btn btn-danger col-md-4" id="submittingContactButton{{ $contact->id }}" hidden disabled>Submitting</button>
-        @endif
+        <button class="btn btn-primary col-md-2 submitButton requestNewVerifyCodeButton" id="requestNewVerifyCode{{ $contact->id }}" hidden>
+            Send New Verify Code
+        </button>
+        <button class="btn btn-primary col-md-4" id="requestingContactButton{{ $contact->id }}" hidden disabled>Requesting</button>
+        <button class="btn btn-primary col-md-1 submitButton" id="submitVerifyCode{{ $contact->id }}" form="verifyContactForm{{ $contact->id }}" hidden>Submit</button>
+        <button class="btn btn-danger col-md-1" id="cancelVerify{{ $contact->id }}" hidden>Cancel</button>
+        <button class="btn btn-danger col-md-4" id="submittingContactButton{{ $contact->id }}" hidden disabled>Submitting</button>
     </div>
 @endforeach
