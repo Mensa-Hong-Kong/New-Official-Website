@@ -137,7 +137,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid([$contact->type => "The {$contact->type} has already been taken."]);
     }
 
-    public function test_happy_case_when_contact_have_no_change_and_origin_is_default()
+    public function test_happy_case_when_contact_have_no_change_and_origin_is_default_and_is_verified()
     {
         $contact = UserHasContact::factory()
             ->state(['is_default' => true])
@@ -149,13 +149,20 @@ class UpdateTest extends TestCase
                 route(
                     'contacts.update',
                     ['contact' => $contact]
-                ), [$contact->type => $contact->contact]
+                ), [$contact->type => "$contact->contact"]
             );
+        $type = ucfirst($contact->type);
+        $this->assertEquals(
+            $contact->id,
+            $this->user->{"default$type"}->id
+        );
+        $this->assertTrue($contact->isVerified());
         $response->assertSuccessful();
         $response->assertJson([
             'success' => "The {$contact->type} update success!",
-            'contact' => $contact->contact,
-            'is_default' => true,
+            'contact' => "$contact->contact",
+            "default_{$contact->type}_id" => $contact->id,
+            'is_verified' => true
         ]);
         $this->assertNull($contact->lastVerification->expired_at);
     }
@@ -186,7 +193,8 @@ class UpdateTest extends TestCase
         $response->assertJson([
             'success' => "The {$contact->type} update success!",
             'contact' => $newContact,
-            'is_default' => false,
+            "default_{$contact->type}_id" => null,
+            'is_verified' => false,
         ]);
         $this->assertNotNull($contact->lastVerification->expired_at);
     }

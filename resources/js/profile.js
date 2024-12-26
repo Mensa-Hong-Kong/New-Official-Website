@@ -684,12 +684,7 @@ function verifyContact(event) {
     }
 }
 
-function setDefaultSuccessCallback(response) {
-    bootstrapAlert(
-        response.status == 201 ?
-        response.data.message : response.data.success
-    );
-    let id = urlGetContactID(response.request.responseURL);
+function showDefaul(id) {
     document.getElementById('settingDefault'+id).hidden = true;
     let defaultContact = document.getElementById('defaultContact'+id);
     let type = defaultContact.dataset.type;
@@ -705,6 +700,14 @@ function setDefaultSuccessCallback(response) {
         );
     }
     defaultContact.hidden = false;
+}
+
+function setDefaultSuccessCallback(response) {
+    bootstrapAlert(
+        response.status == 201 ?
+        response.data.message : response.data.success
+    );
+    showDefaul(urlGetContactID(response.request.responseURL))
     enableSubmitting();
 }
 
@@ -799,8 +802,18 @@ function updateContactSuccessCallback(response) {
     document.getElementById('contact'+id).innerText = response.data.contact;
     let input = document.getElementById('contactInput'+id);
     input.dataset.value = response.data.contact;
-    if(! response.data.is_default) {
+    if(
+        ! response.data.is_verified &&
+        ! document.getElementById('verifyContactButton'+id)
+            .classList.contains('submitButton')
+    ) {
         enableVerifyButton(id);
+    }
+    if(
+        response.data[`default_${input.type}_id`] != id &&
+        ! document.getElementById('defaultContact'+id).hidden
+    ) {
+        showDefaul(response.data[`default_${input.type}_id`]);
     }
     document.getElementById('savingContact'+id).hidden = true;
     closeEdit(id);
