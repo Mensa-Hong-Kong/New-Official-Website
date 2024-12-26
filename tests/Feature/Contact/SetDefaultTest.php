@@ -55,7 +55,7 @@ class SetDefaultTest extends TestCase
 
     public function test_the_contact_already_is_default()
     {
-        $this->contact->lastVerification->update(['verified_at' => now()]);
+        $this->contact->lastVerification()->update(['verified_at' => now()]);
         $this->contact->update(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
@@ -66,7 +66,7 @@ class SetDefaultTest extends TestCase
 
     public function test_happy_case_user_have_no_default_contact()
     {
-        $this->contact->lastVerification->update(['verified_at' => now()]);
+        $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
                 'contacts.default', ['contact' => $this->contact]
@@ -78,7 +78,7 @@ class SetDefaultTest extends TestCase
 
     public function test_happy_case_user_has_default_contact()
     {
-        $this->contact->lastVerification->update(['verified_at' => now()]);
+        $this->contact->lastVerification()->update(['verified_at' => now()]);
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
             ->state(['is_default' => true])

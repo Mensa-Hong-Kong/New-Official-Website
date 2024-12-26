@@ -307,7 +307,7 @@ class VerifyTest extends TestCase
                 'is_default' => true,
             ])->create();
         $contact->sendVerifyCode();
-        $contact->lastVerification->update(['verified_at' => now()]);
+        $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
