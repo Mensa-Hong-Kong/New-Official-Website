@@ -183,7 +183,7 @@ class ContactController extends Controller implements HasMiddleware
             'success' => "The {$contact->type} update success!",
             'contact' => $contact->contact,
             "default_{$contact->type}_id" => $request->user()->{"default$type"}->id ?? null,
-            'is_verified' => $contact->isVerified(),
+            'is_verified' => $contact->refresh()->isVerified(),
         ];
     }
 
