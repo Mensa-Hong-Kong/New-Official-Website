@@ -162,4 +162,24 @@ class ContactController extends Controller implements HasMiddleware
 
         return ['success' => "The {$contact->type} changed to default!"];
     }
+
+    public function update(Request $request, UserHasContact $contact)
+    {
+        if($request->{$contact->type} != $contact->contact) {
+            DB::beginTransaction();
+            $contact->update([
+                'contact' => $request->{$contact->type},
+                'is_default' => false,
+            ]);
+            if($contact->isVerified()) {
+                $contact->lastVerification->update(['expired_at' => now()]);
+            }
+            DB::commit();
+        }
+        return [
+            'success' => "The {$contact->type} update success!",
+            'contact' => $contact->contact,
+            'is_default' => $contact->is_default,
+        ];
+    }
 }
