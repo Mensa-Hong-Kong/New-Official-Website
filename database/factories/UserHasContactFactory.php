@@ -18,7 +18,7 @@ class UserHasContactFactory extends Factory
         $contact = '';
         switch ($contactType) {
             case 'email':
-                $contact = fake()->email();
+                $contact = fake()->freeEmail();
                 break;
             case 'mobile':
                 $contact = fake()->numberBetween(10000, 999999999999999);
@@ -37,7 +37,7 @@ class UserHasContactFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'type' => 'email',
-                'contact' => fake()->email(),
+                'contact' => fake()->freeEmail(),
             ];
         });
     }

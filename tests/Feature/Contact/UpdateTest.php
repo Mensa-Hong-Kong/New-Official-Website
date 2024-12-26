@@ -169,7 +169,7 @@ class UpdateTest extends TestCase
         $newContact = '';
         switch ($contact->type) {
             case 'email':
-                $newContact = fake()->email();
+                $newContact = fake()->freeEmail();
                 break;
             case 'mobile':
                 $newContact = fake()->numberBetween(10000, 999999999999999);
