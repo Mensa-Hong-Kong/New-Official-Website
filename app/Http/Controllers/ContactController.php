@@ -92,7 +92,7 @@ class ContactController extends Controller implements HasMiddleware
                         abort(428, "The {$contact->type} is not verified, cannot set this contact to default, please verify first.");
                     }
                     if ($contact->is_default) {
-                        abort(201, "The {$contact->type} already is default.");
+                        abort(201, "The {$contact->type} has already been default.");
                     }
 
                     return $next($request);
