@@ -70,7 +70,23 @@
                     <p id="alertMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal alert" id="confirm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirmButton" type="button" class="btn btn-success">Confirm</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -80,6 +96,24 @@
         function bootstrapAlert(message) {
             document.getElementById('alertMessage').innerText = message;
             new bootstrap.Modal(document.getElementById('alert')).show();
+        }
+        function bootstrapConfirm(message, callback, passData) {
+            const confirmButton = document.getElementById('confirmButton');
+            const confirmDiv = document.getElementById('confirm');
+            const confirmModal = new bootstrap.Modal(confirmDiv);
+            const confirmMessage = document.getElementById('confirmMessage');
+            let confirmHander = function() {
+                confirmModal.hide();
+                callback(passData);
+            }
+            confirmButton.addEventListener('click', confirmHander);
+            confirmDiv.addEventListener(
+                'hide.bs.modal', function() {
+                    confirmButton.removeEventListener('click', confirmHander);
+                }
+            );
+            confirmMessage.innerText = message;
+            confirmModal.show();
         }
     </script>
     @error('message')
