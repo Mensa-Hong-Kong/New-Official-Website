@@ -550,7 +550,9 @@ function submitVerifyCodeSuccessCallback(response) {
         response.status == 201 ?
         response.data.message : response.data.success
     );
-    verified(urlGetContactID(response.request.responseURL))
+    let id = urlGetContactID(response.request.responseURL);
+    document.getElementById('submittingContactButton'+id).hidden = true;
+    verified(id);
     enableSubmitting();
 }
 
@@ -559,22 +561,20 @@ function submitVerifyCodeFailCallback(error) {
         bootstrapAlert(error.response.data.errors.code);
     }
     let id = urlGetContactID(error.request.responseURL);
+    document.getElementById('submittingContactButton'+id).hidden = true;
     if(
         error.status == 429 ||
         (error.status == 422 && error.response.data.errors.isFailedTooMany)
     ) {
-        document.getElementById('submittingContactButton'+id).hidden = true;
         document.getElementById('verifyContactForm'+id).hidden = true;
-        document.getElementById('verifyCodeInput'+id).disabled = false;
         document.getElementById('verifyCodeInput'+id).value = '';
         document.getElementById('verifyContactButton'+id).hidden = true;
     } else {
-        document.getElementById('submittingContactButton'+id).hidden = true;
         document.getElementById('requestNewVerifyCode'+id).hidden = false;
         document.getElementById('submitVerifyCode'+id).hidden = false;
         document.getElementById('cancelVerify'+id).hidden = false;
-        document.getElementById('verifyCodeInput'+id).disabled = false;
     }
+    document.getElementById('verifyCodeInput'+id).disabled = false;
     enableSubmitting();
 }
 
@@ -669,7 +669,7 @@ function setDefaultSuccessCallback(response) {
         if(
             document.getElementById(
                 'verifyContactButton'+form.id.replace('setDefault', '')
-            ).contains('submitButton')
+            ).classList.contains('submitButton')
         ) {
             form.hidden = false;
         }
