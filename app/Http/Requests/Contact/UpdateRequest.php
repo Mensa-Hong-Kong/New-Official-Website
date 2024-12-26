@@ -17,7 +17,7 @@ class UpdateRequest extends FormRequest
     {
         $rules = ['required'];
         $contact = $this->route('contact');
-        switch($contact->type) {
+        switch ($contact->type) {
             case 'email':
                 $rules[] = 'email:rfc,dns';
                 break;
@@ -29,6 +29,7 @@ class UpdateRequest extends FormRequest
             ->where('user_id', $this->user()->id)
             ->where('type', $contact->type)
             ->ignore($contact->id);
-        return [$contact->type => $rules];;
+
+        return [$contact->type => $rules];
     }
 }

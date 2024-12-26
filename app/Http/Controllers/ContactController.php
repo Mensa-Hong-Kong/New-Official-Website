@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Contact\VerifyRequest;
 use App\Http\Requests\Contact\UpdateRequest;
+use App\Http\Requests\Contact\VerifyRequest;
 use App\Models\ContactHasVerification;
 use App\Models\UserHasContact;
 use Closure;
@@ -166,17 +166,18 @@ class ContactController extends Controller implements HasMiddleware
 
     public function update(UpdateRequest $request, UserHasContact $contact)
     {
-        if($request->{$contact->type} != $contact->contact) {
+        if ($request->{$contact->type} != $contact->contact) {
             DB::beginTransaction();
             $contact->update([
                 'contact' => $request->{$contact->type},
                 'is_default' => false,
             ]);
-            if($contact->isVerified()) {
+            if ($contact->isVerified()) {
                 $contact->lastVerification->update(['expired_at' => now()]);
             }
             DB::commit();
         }
+
         return [
             'success' => "The {$contact->type} update success!",
             'contact' => $contact->contact,

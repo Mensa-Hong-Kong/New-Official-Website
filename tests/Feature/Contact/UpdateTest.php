@@ -167,7 +167,7 @@ class UpdateTest extends TestCase
         $contact->sendVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $newContact = '';
-        switch($contact->type) {
+        switch ($contact->type) {
             case 'email':
                 $newContact = fake()->email();
                 break;
