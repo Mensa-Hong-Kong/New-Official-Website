@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Contact\VerifyRequest;
+use App\Http\Requests\Contact\UpdateRequest;
 use App\Models\ContactHasVerification;
 use App\Models\UserHasContact;
 use Closure;
@@ -163,7 +164,7 @@ class ContactController extends Controller implements HasMiddleware
         return ['success' => "The {$contact->type} changed to default!"];
     }
 
-    public function update(Request $request, UserHasContact $contact)
+    public function update(UpdateRequest $request, UserHasContact $contact)
     {
         if($request->{$contact->type} != $contact->contact) {
             DB::beginTransaction();
