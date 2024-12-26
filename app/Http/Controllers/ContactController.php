@@ -137,12 +137,12 @@ class ContactController extends Controller implements HasMiddleware
             UserHasContact::where('is_default', true)
                 ->where('contact', $contact->contact)
                 ->where('type', $contact->type)
-                ->where('id', '!=', $contact->id)
+                ->whereNot('id', $contact->id)
                 ->update(['is_default' => false]);
             ContactHasVerification::whereNull('expired_at')
                 ->whereNotNull('verified_at')
                 ->where('type', $contact->type)
-                ->where('contact_id', '!=', $contact->id)
+                ->whereNot('contact_id', $contact->id)
                 ->update(['expired_at' => now()]);
             $content = ['success' => "The {$contact->type} verifiy success."];
         }
