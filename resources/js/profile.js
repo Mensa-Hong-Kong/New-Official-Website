@@ -694,13 +694,12 @@ function setDefaultSuccessCallback(response) {
         tag.hidden = true;
     }
     for(let form of document.getElementsByClassName(type+'SetDefault')) {
-        if(
-            document.getElementById(
-                'verifyContactButton'+form.id.replace('setDefault', '')
-            ).classList.contains('submitButton')
-        ) {
-            form.hidden = false;
-        }
+        let contactID = form.id.replace('setDefault', '');
+        form.hidden = ! (
+            contactID != id &&
+            ! document.getElementById('verifyContactButton'+contactID)
+                .classList.contains('submitButton')
+        );
     }
     defaultContact.hidden = false;
     enableSubmitting();
@@ -806,10 +805,9 @@ function updateContactSuccessCallback(response) {
 }
 
 function updateContactFailCallback(error) {
+    let id = urlGetContactID(error.request.responseURL);
     if(error.status == 422) {
-        let input = document.getElementById(
-            'verifyCodeInput'+urlGetContactID(error.request.responseURL)
-        );
+        let input = document.getElementById('verifyCodeInput'+id);
         bootstrapAlert(error.response.data.errors[input.name]);
     }
     document.getElementById('savingContact'+id).hidden = true;
@@ -829,7 +827,7 @@ function updateContact(event) {
         input.disabled = true;
         disableSubmitting()
         if(submitting == 'updateContact'+submitAt) {
-            if(updateContactValidation()) {
+            if(updateContactValidation(input)) {
                 document.getElementById('saveContact'+id).hidden = true;
                 document.getElementById('cancelEditContact'+id).hidden = true;
                 document.getElementById('savingContact'+id).hidden = false;
@@ -875,29 +873,31 @@ document.querySelectorAll('.contactLoader').forEach(
         document.getElementById('cancelEditContact'+id).addEventListener(
             'click', cancelEditContact
         );
-        document.getElementById('editContact'+id).addEventListener(
+        let editContactButton = document.getElementById('editContact'+id);
+        editContactButton.addEventListener(
             'click', editContact
         );
-        if(verifyContactButton.classList.contains('submitButton')) {
-            verifyContactButton.addEventListener(
-                'click', verifyContact
-            );
-            document.getElementById('requestNewVerifyCode'+id).addEventListener(
-                'click', requestNewVerifyCode
-            );
-            document.getElementById('verifyContactForm'+id).addEventListener(
-                'submit', submitVerifyCode
-            );
-            document.getElementById('cancelVerify'+id).addEventListener(
-                'click', cancelVerifyContact
-            );
-        } else {
-            if(document.getElementById('defaultContact'+id).hidden) {
-                document.getElementById('setDefault'+id).hidden = false;
-            }
+        verifyContactButton.addEventListener(
+            'click', verifyContact
+        );
+        document.getElementById('requestNewVerifyCode'+id).addEventListener(
+            'click', requestNewVerifyCode
+        );
+        document.getElementById('verifyContactForm'+id).addEventListener(
+            'submit', submitVerifyCode
+        );
+        document.getElementById('cancelVerify'+id).addEventListener(
+            'click', cancelVerifyContact
+        );
+        if(
+            document.getElementById('defaultContact'+id).hidden &&
+            ! verifyContactButton.classList.contains('submitButton')
+        ) {
+            document.getElementById('setDefault'+id).hidden = false;
         }
         loader.remove();
         verifyContactButton.hidden = false;
+        editContactButton.hidden = false;
     }
 );
 
