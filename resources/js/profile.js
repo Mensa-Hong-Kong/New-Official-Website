@@ -469,6 +469,7 @@ function verified(id) {
     verifyButton.disabled = false;
     verifyButton.hidden = false;
     document.getElementById('setDefault'+id).hidden = false;
+    document.getElementById('editContact'+id).hidden = false;
 }
 
 function requestVerifyCodeSuccessCallback(response) {
@@ -616,6 +617,7 @@ function cancelVerifyContact(event) {
             document.getElementById('submitVerifyCode'+id).hidden = true;
             document.getElementById('cancelVerify'+id).hidden = true;
             document.getElementById('verifyContactButton'+id).hidden = false;
+            document.getElementById('editContact'+id).hidden = false;
             submitting = '';
         }
     }
@@ -640,6 +642,7 @@ function verifyContact(event) {
         if(submitting == 'verifyContact'+submitAt) {
             let id = event.target.id.replace('verifyContactButton', '');
             document.getElementById('verifyContactButton'+id).hidden = true;
+            document.getElementById('editContact'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
                 event.target.parentElement.dataset.requsetverifycodeurl,
@@ -716,12 +719,110 @@ function setDefault(event) {
     }
 }
 
+function closeEdit(id) {
+    document.getElementById('editContactForm'+id).hidden = true;
+    document.getElementById('saveContact'+id).hidden = true;
+    document.getElementById('cancelEditContact'+id).hidden = true;
+    document.getElementById('contact'+id).hidden = false;
+    document.getElementById('verifyContactButton'+id).hidden = false;
+    document.getElementById('editContact'+id).hidden = false;
+    let contactInput = document.getElementById('contactInput'+id);
+    contactInput.value = contactInput.dataset.value;
+}
+
+function cancelEditContact(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'cancelEditContact'+submitAt;
+        let id = event.target.id.replace('cancelEditContact', '');
+        if(submitting == 'cancelEditContact'+submitAt) {
+            closeEdit(id);
+            submitting = '';
+        }
+    }
+}
+
+function updateContactSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id = urlGetContactID(response.request.responseURL);
+    document.getElementById('contact'+id).innerText = response.data.contact;
+    let input = document.getElementById('contactInput'+id);
+    input.dataset.value = response.data.contact;
+    if(! response.data.is_default) {
+        enableVerifyButton(id);
+    }
+    document.getElementById('savingContact'+id).hidden = true;
+    closeEdit(id);
+    input.disabled = false;
+    enableSubmitting();
+}
+
+function updateContactFailCallback(error) {
+    if(error.status == 422) {
+        let input = document.getElementById(
+            'verifyCodeInput'+urlGetContactID(error.request.responseURL)
+        );
+        bootstrapAlert(error.response.data.errors[input.name]);
+    }
+    document.getElementById('savingContact'+id).hidden = true;
+    document.getElementById('saveContact'+id).hidden = false;
+    document.getElementById('cancelEditContact'+id).hidden = false;
+    document.getElementById('contactInput'+id).disabled = false;
+    enableSubmitting();
+}
+
+function updateContact(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updateContact'+submitAt;
+        let id = event.target.id.replace('editContactForm', '');
+        let input = document.getElementById('contactInput'+id);
+        input.disabled = true;
+        disableSubmitting()
+        if(submitting == 'updateContact'+submitAt) {
+            document.getElementById('saveContact'+id).hidden = true;
+            document.getElementById('cancelEditContact'+id).hidden = true;
+            document.getElementById('savingContact'+id).hidden = false;
+            let data = {};
+            data[input.name] = input.value;
+            post(
+                event.target.action,
+                updateContactSuccessCallback,
+                updateContactFailCallback,
+                'put', data
+            );
+        } else {
+            input.disabled = false;
+        }
+    }
+}
+
+function editContact(event) {
+    let id = event.target.id.replace('editContact', '');
+    document.getElementById('contact'+id).hidden = true;
+    document.getElementById('verifyContactButton'+id).hidden = true;
+    event.target.hidden = true;
+    document.getElementById('editContactForm'+id).hidden = false;
+    document.getElementById('saveContact'+id).hidden = false;
+    document.getElementById('cancelEditContact'+id).hidden = false;
+}
+
 document.querySelectorAll('.contactLoader').forEach(
     (loader) => {
         let id = loader.id.replace('contactLoader', '');
         let verifyContactButton = document.getElementById('verifyContactButton'+id)
         document.getElementById('setDefault'+id).addEventListener(
             'submit', setDefault
+        );
+        document.getElementById('editContactForm'+id).addEventListener(
+            'submit', updateContact
+        );
+        document.getElementById('cancelEditContact'+id).addEventListener(
+            'click', cancelEditContact
+        );
+        document.getElementById('editContact'+id).addEventListener(
+            'click', editContact
         );
         if(verifyContactButton.classList.contains('submitButton')) {
             verifyContactButton.addEventListener(

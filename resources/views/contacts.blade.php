@@ -4,7 +4,26 @@
             data-requsetVerifyCodeUrl="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}"
         @endif
         >
-        <div class="col-md-3">{{ $contact->contact }}</div>
+        <div class="col-md-3">
+            <span id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
+            <form id="editContactForm{{ $contact->id }}" method="POST" hidden
+                action="{{ route('contacts.update', ['contact' => $contact]) }}">
+                <input
+                    @switch($contact->type)
+                        @case('email')
+                            type="email" name="email" maxlength="320"
+                            placeholder="dammy@example.com"
+                            @break
+                        @case('mobile')
+                            type="tel" name="mobile" minlength="5" maxlength="15"
+                            placeholder="85298765432"
+                            @break
+                    @endswitch
+                    id="contactInput{{ $contact->id }}" class="form-control"
+                    value="{{ $contact->contact }}"
+                    data-value="{{ $contact->contact }}" required />
+            </form>
+        </div>
         <div class="col-md-2">
             <span
                 class="{{ $contact->type }}DefaultContact"
@@ -50,5 +69,9 @@
         <button class="btn btn-primary col-md-1 submitButton" id="submitVerifyCode{{ $contact->id }}" form="verifyContactForm{{ $contact->id }}" hidden>Submit</button>
         <button class="btn btn-danger col-md-1" id="cancelVerify{{ $contact->id }}" hidden>Cancel</button>
         <button class="btn btn-danger col-md-4" id="submittingContactButton{{ $contact->id }}" hidden disabled>Submitting</button>
+        <button class="btn btn-primary col-md-1" id="editContact{{ $contact->id }}" hidden>Edit</button>
+        <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}" hidden>Save</button>
+        <button class="btn btn-danger col-md-1" id="cancelEditContact{{ $contact->id }}" hidden>Cancel</button>
+        <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>Saving</button>
     </div>
 @endforeach
