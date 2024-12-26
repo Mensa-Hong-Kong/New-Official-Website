@@ -162,7 +162,7 @@ class UpdateTest extends TestCase
             'success' => "The {$contact->type} update success!",
             'contact' => "$contact->contact",
             "default_{$contact->type}_id" => $contact->id,
-            'is_verified' => true
+            'is_verified' => true,
         ]);
         $this->assertNull($contact->lastVerification->expired_at);
     }
