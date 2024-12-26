@@ -35,5 +35,5 @@ Route::middleware('auth')->group(function () {
     Route::match(['put', 'patch'], 'contacts/{contact}/default', [ContactController::class, 'setDefault'])
         ->name('contacts.default');
     Route::resource('/contacts', ContactController::class)
-        ->only(['update']);
+        ->only(['update', 'destroy']);
 });
