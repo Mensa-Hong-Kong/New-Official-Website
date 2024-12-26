@@ -184,4 +184,11 @@ class ContactController extends Controller implements HasMiddleware
             'is_default' => $contact->is_default,
         ];
     }
+
+    public function destroy(UserHasContact $contact)
+    {
+        $contact->delete();
+
+        return ['success' => "The {$contact->type} delete success!"];
+    }
 }
