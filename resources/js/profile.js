@@ -294,6 +294,20 @@ function validation() {
     return !hasError();
 }
 
+function enableEditForm() {
+    usernameInput.disabled = false;
+    passwordInput.disabled = false;
+    newPasswordInput.disabled = false;
+    confirmNewPasswordInput.disabled = false;
+    familyNameInput.disabled = false;
+    middleNameInput.disabled = false;
+    givenNameInput.disabled = false;
+    genderInput.disabled = false;
+    passportTypeInput.disabled = false;
+    passportNumberInput.disabled = false;
+    birthdayInput.disabled = false;
+}
+
 function successCallback(response) {
     for(let input of inputs) {
         input.hidden = true;
@@ -332,6 +346,7 @@ function successCallback(response) {
     showGender.innerText = response.gender;
     showBirthday.innerText = response.birthday;
     submitting = '';
+    enableEditForm();
     enableSubmitting();
     for(let showDiv of showInfos) {
         showDiv.hidden = false;
@@ -410,6 +425,7 @@ function failCallback(error) {
         }
     }
     submitting = '';
+    enableEditForm();
     enableSubmitting();
     savingButton.hidden = true;
     saveButton.hidden = false;
@@ -423,7 +439,17 @@ editForm.addEventListener(
             let submitAt = Date.now();
             submitting = 'updateProfile'+submitAt;
             disableSubmitting();
-            cancelButton.disabled = true;
+            usernameInput.disabled = true;
+            passwordInput.disabled = true;
+            newPasswordInput.disabled = true;
+            confirmNewPasswordInput.disabled = true;
+            familyNameInput.disabled = true;
+            middleNameInput.disabled = true;
+            givenNameInput.disabled = true;
+            genderInput.disabled = true;
+            passportTypeInput.disabled = true;
+            passportNumberInput.disabled = true;
+            birthdayInput.disabled = true;
             if($submitting == 'updateProfile'+submitAt) {
                 if(validation()) {
                     saveButton.hidden = true;
@@ -444,9 +470,11 @@ editForm.addEventListener(
                     }
                     post(editForm.action, successCallback, failCallback, 'put', data);
                 } else {
+                    enableEditForm();
                     enableSubmitting();
                 }
-                cancelButton.disabled = false;
+            } else {
+                enableEditForm();
             }
         }
     }
@@ -742,6 +770,26 @@ function cancelEditContact(event) {
     }
 }
 
+function updateContactValidation(input) {
+    if(input.validity.valueMissing) {
+        bootstrapAlert(`The ${input.name} field is required.`);
+        return false;
+    }
+    if(input.name == 'mobile' && input.validity.tooShort) {
+        bootstrapAlert(`The mobile be at least ${input.minLength} characters.`);
+        return false;
+    }
+    if(input.validity.tooLong) {
+        bootstrapAlert(`The ${input.name} must not be greater than ${input.maxLength} characters.`);
+        return false;
+    }
+    if(input.validity.typeMismatch) {
+        bootstrapAlert(`The ${input.name} must be a valid email address.`);
+        return false;
+    }
+    return true;
+}
+
 function updateContactSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     let id = urlGetContactID(response.request.responseURL);
@@ -781,17 +829,23 @@ function updateContact(event) {
         input.disabled = true;
         disableSubmitting()
         if(submitting == 'updateContact'+submitAt) {
-            document.getElementById('saveContact'+id).hidden = true;
-            document.getElementById('cancelEditContact'+id).hidden = true;
-            document.getElementById('savingContact'+id).hidden = false;
-            let data = {};
-            data[input.name] = input.value;
-            post(
-                event.target.action,
-                updateContactSuccessCallback,
-                updateContactFailCallback,
-                'put', data
-            );
+            if(updateContactValidation()) {
+                document.getElementById('saveContact'+id).hidden = true;
+                document.getElementById('cancelEditContact'+id).hidden = true;
+                document.getElementById('savingContact'+id).hidden = false;
+                let data = {};
+                data[input.name] = input.value;
+                post(
+                    event.target.action,
+                    updateContactSuccessCallback,
+                    updateContactFailCallback,
+                    'put', data
+                );
+            } else {
+                input.disabled = false;
+                submitting = '';
+                enableSubmitting();
+            }
         } else {
             input.disabled = false;
         }
