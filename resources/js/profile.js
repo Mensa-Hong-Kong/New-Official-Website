@@ -453,7 +453,7 @@ editForm.addEventListener(
 );
 
 function urlGetContactID(url) {
-    return (new URL(url).pathname).match(/^\/contacts\/([0-9]+)\/.*/i)[1];
+    return (new URL(url).pathname).match(/^\/contacts\/([0-9]+).*/i)[1];
 }
 
 function verified(id) {
