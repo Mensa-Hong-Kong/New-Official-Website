@@ -439,19 +439,19 @@ editForm.addEventListener(
             let submitAt = Date.now();
             submitting = 'updateProfile'+submitAt;
             disableSubmitting();
-            usernameInput.disabled = true;
-            passwordInput.disabled = true;
-            newPasswordInput.disabled = true;
-            confirmNewPasswordInput.disabled = true;
-            familyNameInput.disabled = true;
-            middleNameInput.disabled = true;
-            givenNameInput.disabled = true;
-            genderInput.disabled = true;
-            passportTypeInput.disabled = true;
-            passportNumberInput.disabled = true;
-            birthdayInput.disabled = true;
             if($submitting == 'updateProfile'+submitAt) {
                 if(validation()) {
+                    usernameInput.disabled = true;
+                    passwordInput.disabled = true;
+                    newPasswordInput.disabled = true;
+                    confirmNewPasswordInput.disabled = true;
+                    familyNameInput.disabled = true;
+                    middleNameInput.disabled = true;
+                    givenNameInput.disabled = true;
+                    genderInput.disabled = true;
+                    passportTypeInput.disabled = true;
+                    passportNumberInput.disabled = true;
+                    birthdayInput.disabled = true;
                     saveButton.hidden = true;
                     cancelButton.hidden = true;
                     savingButton.hidden = false;
@@ -473,8 +473,6 @@ editForm.addEventListener(
                     enableEditForm();
                     enableSubmitting();
                 }
-            } else {
-                enableEditForm();
             }
         }
     }
@@ -611,10 +609,10 @@ function submitVerifyCode(event) {
         let submitAt = Date.now();
         submitting = 'submitVerifyCode'+submitAt;
         let id = event.target.id.replace('verifyContactForm', '');
-        document.getElementById('verifyCodeInput'+id).disabled = true;
         disableSubmitting();
         if(submitting == 'submitVerifyCode'+submitAt) {
             if(codeValidation(id)) {
+                document.getElementById('verifyCodeInput'+id).disabled = true;
                 document.getElementById('verifyCodeInput'+id).disabled = true;
                 document.getElementById('requestNewVerifyCode'+id).hidden = true;
                 document.getElementById('submitVerifyCode'+id).hidden = true;
@@ -627,9 +625,10 @@ function submitVerifyCode(event) {
                     submitVerifyCodeFailCallback,
                     'post', data
                 );
+            } else {
+                submitting = '';
+                enableSubmitting();
             }
-        } else {
-            document.getElementById('verifyCodeInput'+id).disabled = false;
         }
     }
 }
@@ -776,7 +775,7 @@ function cancelEditContact(event) {
     }
 }
 
-function updateContactValidation(input) {
+function contactValidation(input) {
     if(input.validity.valueMissing) {
         bootstrapAlert(`The ${input.name} field is required.`);
         return false;
@@ -841,10 +840,10 @@ function updateContact(event) {
         submitting = 'updateContact'+submitAt;
         let id = event.target.id.replace('editContactForm', '');
         let input = document.getElementById('contactInput'+id);
-        input.disabled = true;
         disableSubmitting()
         if(submitting == 'updateContact'+submitAt) {
-            if(updateContactValidation(input)) {
+            if(contactValidation(input)) {
+                input.disabled = true;
                 document.getElementById('saveContact'+id).hidden = true;
                 document.getElementById('cancelEditContact'+id).hidden = true;
                 document.getElementById('savingContact'+id).hidden = false;
@@ -857,12 +856,9 @@ function updateContact(event) {
                     'put', data
                 );
             } else {
-                input.disabled = false;
                 submitting = '';
                 enableSubmitting();
             }
-        } else {
-            input.disabled = false;
         }
     }
 }
