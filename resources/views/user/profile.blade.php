@@ -114,11 +114,11 @@
         </article>
         <article id="email">
             <h3 class="fw-bold mb-2"><i class="bi bi-envelope"></i> Email</h3>
-            @include('contacts', ['contacts' => $contacts['emails']])
+            @include('user.contacts', ['contacts' => $contacts['emails']])
         </article>
         <article id="mobile">
             <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Mobile</h3>
-            @include('contacts', ['contacts' => $contacts['mobiles']])
+            @include('user.contacts', ['contacts' => $contacts['mobiles']])
         </article>
     </section>
 @endsection

@@ -19,7 +19,7 @@ class UserController extends Controller
 {
     public function create()
     {
-        return view('authentication.register')
+        return view('user.register')
             ->with(
                 'genders', Gender::all()
                     ->pluck('name', 'id')
@@ -124,7 +124,7 @@ class UserController extends Controller
             $contacts[$contact->type.'s'][] = $contact;
         }
 
-        return view('profile')
+        return view('user.profile')
             ->with('user', $user)
             ->with(
                 'genders', Gender::all()
@@ -166,10 +166,5 @@ class UserController extends Controller
         $return['gender'] = $request->gender;
 
         return $return;
-    }
-
-    public function destroy()
-    {
-        // ...
     }
 }
