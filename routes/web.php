@@ -32,8 +32,8 @@ Route::middleware('auth')->group(function () {
         ->name('contacts.send-verify-code');
     Route::post('contacts/{contact}/verify', [ContactController::class, 'verify'])
         ->name('contacts.verify');
-    Route::match(['put', 'patch'], 'contacts/{contact}/default', [ContactController::class, 'setDefault'])
-        ->name('contacts.default');
+    Route::match(['put', 'patch'], 'contacts/{contact}/set-default', [ContactController::class, 'setDefault'])
+        ->name('contacts.set-default');
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy']);
 });

@@ -28,7 +28,7 @@ class SetDefaultTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->putJson(route(
-            'contacts.default', ['contact' => $this->contact]
+            'contacts.set-default', ['contact' => $this->contact]
         ));
         $response->assertUnauthorized();
     }
@@ -38,7 +38,7 @@ class SetDefaultTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)
             ->patchJson(route(
-                'contacts.default', ['contact' => $this->contact]
+                'contacts.set-default', ['contact' => $this->contact]
             ));
         $response->assertForbidden();
     }
@@ -47,7 +47,7 @@ class SetDefaultTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->patchJson(route(
-                'contacts.default', ['contact' => $this->contact]
+                'contacts.set-default', ['contact' => $this->contact]
             ));
         $response->assertStatus(428);
         $response->assertJson(['message' => "The {$this->contact->type} is not verified, cannot set this contact to default, please verify first."]);
@@ -59,7 +59,7 @@ class SetDefaultTest extends TestCase
         $this->contact->update(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
-                'contacts.default', ['contact' => $this->contact]
+                'contacts.set-default', ['contact' => $this->contact]
             ));
         $response->assertCreated();
     }
@@ -69,7 +69,7 @@ class SetDefaultTest extends TestCase
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
-                'contacts.default', ['contact' => $this->contact]
+                'contacts.set-default', ['contact' => $this->contact]
             ));
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
@@ -87,7 +87,7 @@ class SetDefaultTest extends TestCase
         $contact->lastVerification->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
-                'contacts.default', ['contact' => $this->contact]
+                'contacts.set-default', ['contact' => $this->contact]
             ));
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);

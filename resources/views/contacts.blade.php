@@ -30,7 +30,7 @@
                 Default
             </span>
             <form id="setDefault{{ $contact->id }}" class="{{ $contact->type }}SetDefault" method="POST"
-                action="{{ route('contacts.default', ['contact' => $contact]) }}" hidden>
+                action="{{ route('contacts.set-default', ['contact' => $contact]) }}" hidden>
                 @csrf
                 @method('put')
                 <button class="btn btn-primary submitButton">Set Default</button>
