@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Contact\StoreRequest;
 use App\Http\Requests\Contact\UpdateRequest;
 use App\Http\Requests\Contact\VerifyRequest;
 use App\Models\ContactHasVerification;
@@ -164,7 +165,7 @@ class ContactController extends Controller implements HasMiddleware
         return ['success' => "The {$contact->type} changed to default!"];
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         foreach ($request->validated() as $type => $contact) {
             $contact = UserHasContact::create([
