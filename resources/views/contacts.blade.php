@@ -1,9 +1,6 @@
 @foreach ($contacts as $contact)
     <div class="row g-4" id="contactRow{{ $contact->id }}"
-        @if(! $contact->isVerified())
-            data-requsetVerifyCodeUrl="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}"
-        @endif
-        >
+        data-requsetVerifyCodeUrl="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
         <div class="col-md-3">
             <span id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form id="editContactForm{{ $contact->id }}" method="POST" novalidate hidden
