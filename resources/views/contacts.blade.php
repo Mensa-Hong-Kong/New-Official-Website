@@ -76,3 +76,24 @@
         <button class="btn btn-danger col-md-1 submitButton" id="deleteContact{{ $contact->id }}" form="deleteContactForm{{ $contact->id }}" hidden>Delete</button>
     </div>
 @endforeach
+<form class="row g-4 createContact" data-type="{{ $contact->type }}" id="{{ $contact->type }}CreateForm"
+    action="{{ route('contacts.store') }}" method="POST" novalidate>
+    @csrf
+    <div class="col-md-3">
+        <input
+            @switch($contact->type)
+                @case('email')
+                    type="email" name="email" maxlength="320"
+                    placeholder="dammy@example.com"
+                    @break
+                @case('mobile')
+                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    placeholder="85298765432"
+                    @break
+            @endswitch
+            id="{{ $contact->type }}ContactInput" class="form-control" required />
+    </div>
+    <div class="col-md-4"></div>
+    <button class="btn btn-success col-md-4 submitButton" id="{{ $contact->type }}CreateButtob">Create</button>
+    <button class="btn btn-success col-md-4" id="{{ $contact->type }}CreatingContact" hidden disabled>Creating</button>
+</form>

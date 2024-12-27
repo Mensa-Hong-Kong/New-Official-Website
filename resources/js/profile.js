@@ -927,49 +927,201 @@ function deleteContact(event) {
     bootstrapConfirm(message, confirmedDeleteContact, event);
 }
 
+function setContactEventListeners(loader) {
+    let id = loader.id.replace('contactLoader', '');
+    let verifyContactButton = document.getElementById('verifyContactButton'+id)
+    document.getElementById('setDefault'+id).addEventListener(
+        'submit', setDefault
+    );
+    document.getElementById('editContactForm'+id).addEventListener(
+        'submit', updateContact
+    );
+    document.getElementById('cancelEditContact'+id).addEventListener(
+        'click', cancelEditContact
+    );
+    let editContactButton = document.getElementById('editContact'+id);
+    editContactButton.addEventListener(
+        'click', editContact
+    );
+    document.getElementById('deleteContactForm'+id).addEventListener(
+        'submit', deleteContact
+    );
+    verifyContactButton.addEventListener(
+        'click', verifyContact
+    );
+    document.getElementById('requestNewVerifyCode'+id).addEventListener(
+        'click', requestNewVerifyCode
+    );
+    document.getElementById('verifyContactForm'+id).addEventListener(
+        'submit', submitVerifyCode
+    );
+    document.getElementById('cancelVerify'+id).addEventListener(
+        'click', cancelVerifyContact
+    );
+    if(
+        document.getElementById('defaultContact'+id).hidden &&
+        ! verifyContactButton.classList.contains('submitButton')
+    ) {
+        document.getElementById('setDefault'+id).hidden = false;
+    }
+    loader.remove();
+    verifyContactButton.hidden = false;
+    console.log(verifyContactButton);
+    editContactButton.hidden = false;
+    console.log(editContactButton);
+    document.getElementById('deleteContact'+id).hidden = false;
+    console.log(document.getElementById('deleteContact'+id));
+}
+
 document.querySelectorAll('.contactLoader').forEach(
     (loader) => {
-        let id = loader.id.replace('contactLoader', '');
-        let verifyContactButton = document.getElementById('verifyContactButton'+id)
-        document.getElementById('setDefault'+id).addEventListener(
-            'submit', setDefault
-        );
-        document.getElementById('editContactForm'+id).addEventListener(
-            'submit', updateContact
-        );
-        document.getElementById('cancelEditContact'+id).addEventListener(
-            'click', cancelEditContact
-        );
-        let editContactButton = document.getElementById('editContact'+id);
-        editContactButton.addEventListener(
-            'click', editContact
-        );
-        document.getElementById('deleteContactForm'+id).addEventListener(
-            'submit', deleteContact
-        );
-        verifyContactButton.addEventListener(
-            'click', verifyContact
-        );
-        document.getElementById('requestNewVerifyCode'+id).addEventListener(
-            'click', requestNewVerifyCode
-        );
-        document.getElementById('verifyContactForm'+id).addEventListener(
-            'submit', submitVerifyCode
-        );
-        document.getElementById('cancelVerify'+id).addEventListener(
-            'click', cancelVerifyContact
-        );
-        if(
-            document.getElementById('defaultContact'+id).hidden &&
-            ! verifyContactButton.classList.contains('submitButton')
-        ) {
-            document.getElementById('setDefault'+id).hidden = false;
-        }
-        loader.remove();
-        verifyContactButton.hidden = false;
-        editContactButton.hidden = false;
-        document.getElementById('deleteContact'+id).hidden = false;
+        setContactEventListeners(loader);
     }
 );
+
+function createContactSuccess(response) {
+    bootstrapAlert(response.data.success);
+    let id = response.data.id;
+    let type = response.data.type;
+    let contact = response.data.contact;
+    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+    let input = document.getElementById(type+'ContactInput')
+    input.value = '';
+    input.disabled = false;
+    document.getElementById(type+'CreatingContact').hidden = true;
+    document.getElementById(type+'CreateButtob').hidden = false;
+    enableSubmitting();
+    let rowElement = document.createElement('div');
+    rowElement.className = "row g-4";
+    rowElement.id = 'contactRow'+id;
+    rowElement.dataset.requsetVerifyCodeUrl = response.data.send_verify_code_url;
+    let innerHtml = `
+        <div class="col-md-3">
+            <span id="contact${id}">${contact}</span>
+            <form id="editContactForm${id}" method="POST" novalidate hidden
+                action="${response.data.update_url}">
+                <input
+    `
+    switch(type) {
+        case 'email':
+            innerHtml += `
+                    type="email" name="email" maxlength="320"
+                    placeholder="dammy@example.com"
+            `;
+            break;
+        case 'mobile':
+            innerHtml += `
+                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    placeholder="85298765432"
+            `;
+            break;
+    }
+    innerHtml += `
+                    id="contactInput${id}" class="form-control"
+                    value="${contact}"
+                    data-value="${contact}" required />
+            </form>
+        </div>
+        <div class="col-md-2">
+            <span
+                class="${type}DefaultContact"
+                id="defaultContact${id}"
+                data-type="${type}"
+                hidden>
+                Default
+            </span>
+            <form id="setDefault${id}" class="${type}SetDefault" method="POST"
+                action="${response.data.set_default_url}" hidden>
+                <input type="hidden" name="_token" value="${token}">
+                <input type="hidden" name="_method" value="put">
+                <button class="btn btn-primary submitButton">Set Default</button>
+            </form>
+            <button class="btn btn-primary" id="settingDefault${id}" disabled hidden>Setting</button>
+        </div>
+        <div class="col-md-2">
+            <div class="contactLoader" id="contactLoader${id}">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </div>
+            <form id="verifyContactForm${id}" hidden novalidate
+                action="${response.data.verify_url}"
+                method="POST">
+                <input type="hidden" name="_token" value="${token}">
+                <input type="text" name="code" class="form-control" id="verifyCodeInput${id}"
+                    minlength="6" maxlength="6" pattern="[A-Za-z0-9]{6}" required
+                    autocomplete="off" placeholder="Verify Code" />
+            </form>
+        </div>
+        <button id="verifyContactButton${id}" hidden class="btn col-md-1 btn-primary submitButton">Verify</button>
+        <button class="btn btn-primary col-md-2 submitButton requestNewVerifyCodeButton" id="requestNewVerifyCode${id}" hidden>
+            Send New Verify Code
+        </button>
+        <button class="btn btn-primary col-md-4" id="requestingContactButton${id}" hidden disabled>Requesting</button>
+        <button class="btn btn-primary col-md-1 submitButton" id="submitVerifyCode${id}" form="verifyContactForm${id}" hidden>Submit</button>
+        <button class="btn btn-danger col-md-1" id="cancelVerify${id}" hidden>Cancel</button>
+        <button class="btn btn-danger col-md-4" id="submittingContactButton${id}" hidden disabled>Submitting</button>
+        <button class="btn btn-primary col-md-1" id="editContact${id}" hidden>Edit</button>
+        <button class="btn btn-primary col-md-1 submitButton" id="saveContact${id}" form="editContactForm${id}" hidden>Save</button>
+        <button class="btn btn-danger col-md-1" id="cancelEditContact${id}" hidden>Cancel</button>
+        <button class="btn btn-primary col-md-2" id="savingContact${id}" hidden disabled>Saving</button>
+        <form id="deleteContactForm${id}" method="POST" hidden
+            action="${response.data.delete_url}">
+            <input type="hidden" name="_token" value="${token}">
+            <input type="hidden" name="_method" value="delete">
+        </form>
+        <button class="btn btn-danger col-md-1 submitButton" id="deleteContact${id}" form="deleteContactForm${id}" hidden>Delete</button>
+    `;
+    rowElement.innerHTML = innerHtml;
+    document.getElementById(type).insertBefore(rowElement, document.getElementById(type+'CreateForm'));
+    setContactEventListeners(document.getElementById('contactLoader'+id));
+}
+
+function createContactFail(error) {
+    let type = submitting.match(/^([a-z]+)Create.*/i)[1];
+    if(error.response.data.errors.message) {
+        bootstrapAlert(error.response.data.errors.message);
+    } else if(error.response.data.errors[type]){
+        bootstrapAlert(error.response.data.errors[type]);
+    } else {
+        bootstrapAlert('The profile.js missing create fail type hander, please contact us.')
+    }
+    document.getElementById(type+'ContactInput').disabled = false;
+    document.getElementById(type+'CreatingContact').hidden = true;
+    document.getElementById(type+'CreateButtob').hidden = false;
+    submitting = '';
+    enableSubmitting();
+}
+
+function createContact(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let type = event.target.dataset.type;
+        let input = document.getElementById(type+'ContactInput');
+        let submitAt = Date.now();
+        submitting = type+'Create'+submitAt;
+        disableSubmitting();
+        if(submitting == type+'Create'+submitAt) {
+            if(contactValidation(input)) {
+                input.disabled = true;
+                document.getElementById(type+'CreateButtob').hidden = true;
+                document.getElementById(type+'CreatingContact').hidden = false;
+                let data = {};
+                data[input.name] = `${input.value}`;
+                post(
+                    event.target.action,
+                    createContactSuccess,
+                    createContactFail,
+                    'post', data
+                );
+            } else {
+                submitting = '';
+                enableSubmitting();
+            }
+        }
+    }
+}
+
+for(let form of document.getElementsByClassName('createContact')) {
+    form.addEventListener('submit', createContact)
+}
 
 submitting = '';
