@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Profile;
+namespace App\Http\Requests\User;
 
 use App\Models\PassportType;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,16 +17,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => [
-                'required', 'string', 'min:8', 'max:16',
-                Rule::unique(User::class, 'username')
-                    ->ignore($this->user()),
-            ],
-            'password' => [
-                Rule::requiredIf($this->username != $this->user()->username || $this->new_password),
-                'string', 'min:8', 'max:16',
-            ],
-            'new_password' => 'nullable|string|min:8|max:16|confirmed',
+            'username' => 'required|string|min:8|max:16|unique:'.User::class.',username',
+            'password' => 'required|string|min:8|max:16|confirmed',
             'family_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'given_name' => 'required|string|max:255',
@@ -34,18 +26,18 @@ class UpdateRequest extends FormRequest
             'passport_number' => [
                 'required', 'regex:/^[A-Z0-9]+$/', 'min:8', 'max:18',
                 Rule::unique(User::class, 'passport_number')
-                    ->where('passport_type_id', $this->passport_type_id)
-                    ->ignore($this->user()),
+                    ->where('passport_type_id', $this->passport_type_id),
             ],
             'gender' => 'required|string|max:255',
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
+            'email' => 'nullable|email:rfc,dns',
+            'mobile' => 'nullable|integer|min_digits:5|max_digits:15',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'password.required' => 'The password field is required when you change the username or password.',
             'passport_type_id.required' => 'The passport type field is required.',
             'passport_type_id.exists' => 'The selected passport type is invalid.',
         ];

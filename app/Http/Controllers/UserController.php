@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\Profile\UpdateRequest;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\User\LoginRequest;
+use App\Http\Requests\User\RegisterRequest;
+use App\Http\Requests\User\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
