@@ -27,7 +27,7 @@ class ContactController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            )),
+            ))->except('store'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
@@ -162,6 +162,24 @@ class ContactController extends Controller implements HasMiddleware
         DB::commit();
 
         return ['success' => "The {$contact->type} changed to default!"];
+    }
+
+    public function store(Request $request)
+    {
+        foreach ($request->validated() as $type => $contact) {
+            $contact = UserHasContact::create([
+                'user_id' => $request->user()->id,
+                'type' => $type,
+                'contact' => $contact,
+            ]);
+        }
+
+        return [
+            'success' => "The {$contact->type} create success!",
+            'id' => $contact->id,
+            'type' => $contact->type,
+            'contact' => $contact->contact,
+        ];
     }
 
     public function update(UpdateRequest $request, UserHasContact $contact)
