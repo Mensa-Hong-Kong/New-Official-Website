@@ -5,7 +5,6 @@ namespace Tests\Feature\Contact;
 use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class DeleteTest extends TestCase
@@ -19,7 +18,6 @@ class DeleteTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        Notification::fake();
         $this->user = User::factory()->create();
         $this->contact = UserHasContact::factory()->create();
     }

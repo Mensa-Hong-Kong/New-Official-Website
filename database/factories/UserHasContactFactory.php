@@ -13,7 +13,6 @@ class UserHasContactFactory extends Factory
 {
     public function definition(): array
     {
-        $user = User::inRandomOrder()->first();
         $contactType = Arr::random(['email', 'mobile']);
         $contact = '';
         switch ($contactType) {

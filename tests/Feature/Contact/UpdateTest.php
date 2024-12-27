@@ -17,7 +17,6 @@ class UpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        Notification::fake();
         $this->user = User::factory()->create();
     }
 
@@ -139,6 +138,7 @@ class UpdateTest extends TestCase
 
     public function test_happy_case_when_contact_have_no_change_and_origin_is_default_and_is_verified()
     {
+        Notification::fake();
         $contact = UserHasContact::factory()
             ->state(['is_default' => true])
             ->create();
@@ -169,6 +169,7 @@ class UpdateTest extends TestCase
 
     public function test_happy_case_when_contact_has_change()
     {
+        Notification::fake();
         $contact = UserHasContact::factory()
             ->create();
         $contact->sendVerifyCode();
