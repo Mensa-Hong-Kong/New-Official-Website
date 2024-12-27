@@ -101,12 +101,12 @@ function validation() {
     } else if(familyName.validity.tooLong) {
         familyName.classList.add('is-invalid');
         familyNameFeedback.className = 'invalid-feedback';
-        familyNameFeedback.innerText = `The family name not be greater than ${familyName.maxLength} characters.`;
+        familyNameFeedback.innerText = `The family name must not be greater than ${familyName.maxLength} characters.`;
     }
     if(middleName.value && middleName.validity.tooLong) {
         middleName.classList.add('is-invalid');
         middleNameFeedback.className = 'invalid-feedback';
-        middleNameFeedback.innerText = `The middle name not be greater than ${middleName.maxLength} characters.`;
+        middleNameFeedback.innerText = `The middle name must not be greater than ${middleName.maxLength} characters.`;
     }
     if(givenName.validity.valueMissing) {
         givenName.classList.add('is-invalid');
@@ -115,7 +115,7 @@ function validation() {
     } else if(givenName.validity.tooLong) {
         givenName.classList.add('is-invalid');
         givenNameFeedback.className = 'invalid-feedback';
-        givenNameFeedback.innerText = `The given name not be greater than ${givenName.maxLength} characters.`;
+        givenNameFeedback.innerText = `The given name must not be greater than ${givenName.maxLength} characters.`;
     }
     if(passportType.validity.valueMissing) {
         passportType.classList.add('is-invalid');
@@ -133,7 +133,7 @@ function validation() {
     } else if(passportNumber.validity.tooLong) {
         passportNumber.classList.add('is-invalid');
         passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.maxLength} characters.`;
+        passportNumberFeedback.innerText = `The passport number must not be greater than ${passportNumber.maxLength} characters.`;
     }
     if(gender.validity.valueMissing) {
         gender.classList.add('is-invalid');
@@ -142,7 +142,7 @@ function validation() {
     } else if(gender.validity.tooLong) {
         gender.classList.add('is-invalid');
         genderFeedback.className = 'invalid-feedback';
-        genderFeedback.innerText = `The gender not be greater than ${gender.maxLength} characters.`;
+        genderFeedback.innerText = `The gender must not be greater than ${gender.maxLength} characters.`;
     }
     if(birthday.validity.valueMissing) {
         birthday.classList.add('is-invalid');
@@ -157,7 +157,7 @@ function validation() {
         if(email.validity.tooLong) {
             email.classList.add('is-invalid');
             emailFeedback.className = 'invalid-feedback';
-            emailFeedback.innerText = `The email not be greater than ${email.maxLength} characters.`;
+            emailFeedback.innerText = `The email must not be greater than ${email.maxLength} characters.`;
         } else if(email.validity.typeMismatch) {
             email.classList.add('is-invalid');
             emailFeedback.className = 'invalid-feedback';
@@ -172,7 +172,7 @@ function validation() {
         } else if(mobile.validity.tooLong) {
             mobile.classList.add('is-invalid');
             mobileFeedback.className = 'invalid-feedback';
-            mobileFeedback.innerText = `The mobile not be greater than ${mobile.maxLength} characters.`;
+            mobileFeedback.innerText = `The mobile must not be greater than ${mobile.maxLength} characters.`;
         } else if(mobile.validity.typeMismatch) {
             mobile.classList.add('is-invalid');
             mobileFeedback.className = 'invalid-feedback';
