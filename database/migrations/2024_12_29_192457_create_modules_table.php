@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->unsignedBigInteger('module_id')->nullable();
             $table->timestamps();
         });
