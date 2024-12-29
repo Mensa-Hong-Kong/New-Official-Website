@@ -45,7 +45,7 @@ return new class extends Migration
             }
             $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
             $table->unsignedBigInteger('team_id')->nullable();
-            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('role_id')->nullable();
             $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
             $table->timestamps();
             if ($teams || config('permission.testing')) {

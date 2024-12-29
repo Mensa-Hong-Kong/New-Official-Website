@@ -10,6 +10,7 @@ class TeamRole extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'team_id',
         'role_id',
     ];
