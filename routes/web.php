@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\IsAdministrator;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,12 @@ Route::middleware('guest')->group(function () {
     Route::view('login', 'user.login')->name('login');
     Route::post('login', [UserController::class, 'login']);
 });
+
+Route::prefix('admin')->name('admin.')
+    ->middleware(IsAdministrator::class)
+    ->group(function() {
+        Route::view('/', 'admin.index')->name('index');
+    });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {

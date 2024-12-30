@@ -10,56 +10,93 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar nav-pills navbar-expand-sm navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{{ route('index') }}">Mensa</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="mynavbar">
-                    <ul class="navbar-nav me-auto">
+    <header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
+        <nav class="container-xxl flex-wrap" aria-label="Main navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-controls="bdSidebar" aria-label="Toggle docs navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+            <a class="navbar-brand" href="{{ route('index') }}">Mensa</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="bdNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Dummy</a>
+                    </li>
+                </ul>
+                <hr class="d-lg-none text-white-50">
+                <ul class="navbar-nav">
+                    @if(auth()->user() && auth()->user()->isAdmin())
                         <li class="nav-item">
-                            <a href="#" class="nav-link">Dummy</a>
+                            <a href="{{ route('admin.index') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => str_starts_with(Route::current()->getName(), 'admin.'),
+                            ])>Admin</a>
                         </li>
-                    </ul>
-                    <hr class="my-3">
-                    <ul class="navbar-nav">
-                        @auth
-                            <li class="nav-item">
-                                <a href="{{ route('profile.show') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'profile.show',
-                                ])>Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
-                            </li>
-                        @else
-                            <li class="nav-item">
-                                <a href="{{ route('login') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'login',
-                                ])>Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('register') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'register',
-                                ])>Register</a>
-                            </li>
-                        @endauth
-                    </ul>
-                </div>
+                        <hr class="d-lg-none text-white-50">
+                    @endif
+                    @auth
+                        <li class="nav-item">
+                            <a href="{{ route('profile.show') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => Route::current()->getName() == 'profile.show',
+                            ])>Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a href="{{ route('login') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => Route::current()->getName() == 'login',
+                            ])>Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('register') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => Route::current()->getName() == 'register',
+                            ])>Register</a>
+                        </li>
+                    @endauth
+                </ul>
             </div>
         </nav>
     </header>
-    <main style="height: 100%">
-        @yield('main')
-    </main>
+    <div class="container-xxl d-flex align-items-start">
+        @if(str_starts_with(Route::current()->getName(), 'admin.'))
+            <aside class="flex-column">
+                <div class="offcanvas-lg offcanvas-start" tabindex="-1" aria-labelledby="bdSidebarOffcanvasLabel">
+                    <div class="offcanvas-header border-bottom">
+                        <h5 class="offcanvas-title" id="bdSidebarOffcanvasLabel">Admin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdSidebar"></button>
+                    </div>
+                    <nav class="offcanvas-body">
+                        <ul class="nav flex-column nav-pills">
+                            <a href="{{ route('admin.index') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => Route::current()->getName() == 'admin.index',
+                            ])>Dashboard</a>
+                            <a href="{{ route('users.index') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => Route::current()->getName() == 'admin.index',
+                            ])>User</a>
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+        @endif
+        <main>
+            @yield('main')
+        </main>
+    </div>
     <div class="modal alert" id="alert" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
