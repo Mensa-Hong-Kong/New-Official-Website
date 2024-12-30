@@ -12,7 +12,7 @@ class ModuleSeeder extends Seeder
     {
         $masterModule = Module::firstOrCreate(['name' => 'User']);
         $viewPermission = Permission::firstOrCreate(['name' => 'View']);
-        $masterModule->sync([$viewPermission->id => ['name' => "{$viewPermission->name}:{$masterModule->name}"]]);
+        $masterModule->permissions()->sync([$viewPermission->id => ['name' => "{$viewPermission->name}:{$masterModule->name}"]]);
         $module = Module::firstOrCreate(
             [
                 'name' => 'Info',
@@ -20,7 +20,7 @@ class ModuleSeeder extends Seeder
             ]
         );
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
-        $module->sync([$editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"]]);
+        $module->permissions()->sync([$editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"]]);
         $module = Module::firstOrCreate(
             [
                 'name' => 'Contact',
@@ -28,7 +28,7 @@ class ModuleSeeder extends Seeder
             ]
         );
         $deletePermission = Permission::firstOrCreate(['name' => 'Delete']);
-        $module->sync([
+        $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
             $deletePermission->id => ['name' => "{$deletePermission->name}:{$module->name}"],
         ]);

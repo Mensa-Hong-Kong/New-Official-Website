@@ -14,7 +14,7 @@ class Permission extends Model
         'title',
     ];
 
-    public function permission()
+    public function modules()
     {
         return $this->belongsToMany(Module::class, ModulePermission::class);
     }
