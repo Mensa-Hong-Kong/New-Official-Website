@@ -110,4 +110,9 @@ class User extends Authenticatable
             ->where('created_at', '>=', now()->subDay())
             ->count() >= 5;
     }
+
+    public function isAdmin()
+    {
+        return $this->getAllPermissions()->count() || $this->hasRole('Super Administrator');
+    }
 }
