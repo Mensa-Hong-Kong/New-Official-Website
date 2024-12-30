@@ -5,19 +5,7 @@ return [
     /*
     spec columns
     */
-    'columns'                       => [
-        'alpha'   => [
-            'rows'  => ['description', 'email', 'name', 'slug'],
-            'class' => 'fa fa-sort-alpha',
-        ],
-        'amount'  => [
-            'rows'  => ['amount', 'price'],
-            'class' => 'fa fa-sort-amount',
-        ],
-        'numeric' => [
-            'rows'  => ['created_at', 'updated_at', 'level', 'id', 'phone_number'],
-            'class' => 'fa fa-sort-numeric',
-        ],
+    'columns' => [
     ],
 
     /*
