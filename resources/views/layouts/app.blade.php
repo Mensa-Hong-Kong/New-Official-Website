@@ -83,10 +83,10 @@
                                 'align-items-center',
                                 'active' => Route::current()->getName() == 'admin.index',
                             ])>Dashboard</a>
-                            <a href="{{ route('users.index') }}" @class([
+                            <a href="{{ route('admin.users.index') }}" @class([
                                 'nav-link',
                                 'align-items-center',
-                                'active' => Route::current()->getName() == 'admin.index',
+                                'active' => Route::current()->getName() == 'admin.users.index',
                             ])>User</a>
                         </ul>
                     </nav>
