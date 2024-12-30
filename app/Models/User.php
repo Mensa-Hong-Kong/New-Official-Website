@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Kyslik\ColumnSortable\Sortable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, Sortable;
 
     protected $fillable = [
         'username',
@@ -28,6 +30,12 @@ class User extends Authenticatable
         'birthday',
     ];
 
+    public $sortable = [
+        'birthday',
+        'created_at',
+        'updated_at',
+    ];
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -36,6 +44,23 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: function(mixed $value, array $attributes) {
+                $name = [
+                    '1' => $attributes['given_name'],
+                    '3' => $attributes['family_name'],
+                ];
+                if(!is_null($attributes['middle_name'])) {
+                    $name['2'] = $attributes['middle_name'];
+                }
+                ksort($name);
+                return implode(', ', $name);
+            }
+        );
+    }
 
     public function gender(): BelongsTo
     {
@@ -72,6 +97,12 @@ class User extends Authenticatable
     public function loginLogs(): HasMany
     {
         return $this->hasMany(UserLoginLog::class);
+    }
+
+    public function lastLoginLogs(): HasOne
+    {
+        return $this->hasOne(UserLoginLog::class)
+            ->latest('id');
     }
 
     public function defaultEmail(): HasOne
