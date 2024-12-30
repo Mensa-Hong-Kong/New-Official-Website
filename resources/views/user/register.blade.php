@@ -57,7 +57,7 @@
             </div>
             <div class="col-md-4">
                 <label for="validationPassportType" class="form-label">Passport Type</label>
-                <select class="form-select" id="validationPassportType" name="passport_type_id" required />
+                <select class="form-select" id="validationPassportType" name="passport_type_id" required>
                     <option value="" selected disabled>Please select passport type</option>
                     @foreach ($passportTypes as $key => $value)
                         <option value="{{ $key }}" @selected($key == old('passport_type_id'))>{{ $value }}</option>
@@ -107,5 +107,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/register.js')
+    @vite('resources/js/user/register.js')
 @endpush

@@ -124,5 +124,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/profile.js')
+    @vite('resources/js/user/profile.js')
 @endpush

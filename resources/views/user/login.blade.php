@@ -37,5 +37,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/login.js')
+    @vite('resources/js/user/login.js')
 @endpush

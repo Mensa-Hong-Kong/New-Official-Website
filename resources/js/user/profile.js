@@ -1,4 +1,4 @@
-import { post, get } from "./submitForm";
+import { post, get } from "../submitForm";
 
 const editForm = document.getElementById('form');
 
