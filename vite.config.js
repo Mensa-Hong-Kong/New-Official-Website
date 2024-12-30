@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/user/register.js',
                 'resources/js/user/profile.js',
                 'resources/js/user/login.js',
+                'resources/js/admin/users/index.js'
             ],
             refresh: true,
         }),
