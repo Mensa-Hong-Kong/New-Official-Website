@@ -25,14 +25,6 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [UserController::class, 'login']);
 });
 
-Route::prefix('admin')->name('admin.')
-    ->middleware(IsAdministrator::class)
-    ->group(function() {
-        Route::view('/', 'admin.index')->name('index');
-        Route::resource('users', AdminUserController::class)
-            ->only(['index', 'show']);
-    });
-
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
@@ -46,4 +38,12 @@ Route::middleware('auth')->group(function () {
         ->name('contacts.set-default');
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy']);
+
+    Route::prefix('admin')->name('admin.')
+        ->middleware(IsAdministrator::class)
+        ->group(function() {
+            Route::view('/', 'admin.index')->name('index');
+            Route::resource('users', AdminUserController::class)
+                ->only(['index', 'show']);
+        });
 });
