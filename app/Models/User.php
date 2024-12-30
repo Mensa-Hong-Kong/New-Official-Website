@@ -52,6 +52,18 @@ class User extends Authenticatable
         return $this->hasMany(UserHasContact::class);
     }
 
+    public function emails(): HasMany
+    {
+        return $this->contacts()
+            ->where('type', 'email');
+    }
+
+    public function mobiles(): HasMany
+    {
+        return $this->contacts()
+            ->where('type', 'mobile');
+    }
+
     public function checkPassword($password): bool
     {
         return Hash::check($password, $this->password);
