@@ -7,9 +7,17 @@ use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            (new Middleware('permission:View:User'))-only(['index', 'show']),
+        ]
+    }
+
     public function index(Request $request)
     {
         $isSearch = false;
