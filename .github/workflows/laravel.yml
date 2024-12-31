@@ -76,6 +76,10 @@ jobs:
           path: vendor
           key: ${{ hashFiles('composer.lock') }}
 
+      - name: render migration dot env
+        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
+        working-directory: ./ansible
+
       - name: install composer dependencies
         run: composer install
 
