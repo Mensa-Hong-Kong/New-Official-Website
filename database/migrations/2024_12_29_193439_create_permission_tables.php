@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
             $table->unsignedBigInteger('module_id');
             $table->unsignedBigInteger('permission_id');
-            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->string('guard_name')->default('web'); // For MyISAM use string('guard_name', 25);
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);
@@ -46,7 +46,7 @@ return new class extends Migration
             $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
             $table->unsignedBigInteger('team_id')->nullable();
             $table->unsignedBigInteger('role_id')->nullable();
-            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->string('guard_name')->default('web'); // For MyISAM use string('guard_name', 25);
             $table->timestamps();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
