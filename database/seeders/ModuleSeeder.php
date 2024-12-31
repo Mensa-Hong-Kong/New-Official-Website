@@ -32,5 +32,7 @@ class ModuleSeeder extends Seeder
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
             $deletePermission->id => ['name' => "{$deletePermission->name}:{$module->name}"],
         ]);
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }
