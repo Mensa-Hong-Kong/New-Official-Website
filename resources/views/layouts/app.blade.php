@@ -68,7 +68,10 @@
             </div>
         </nav>
     </header>
-    <div class="container-xxl d-flex align-items-start">
+    <div @class([
+        'container-xxl',
+        'd-flex' => str_starts_with(Route::current()->getName(), 'admin.'),
+    ])>
         @if(str_starts_with(Route::current()->getName(), 'admin.'))
             <aside class="flex-column">
                 <div class="offcanvas-lg offcanvas-start" tabindex="-1" aria-labelledby="bdSidebarOffcanvasLabel">
