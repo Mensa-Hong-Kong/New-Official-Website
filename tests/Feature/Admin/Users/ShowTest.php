@@ -2,15 +2,14 @@
 
 namespace Tests\Feature\Admin\Users;
 
-use App\Models\User;
 use App\Models\ModulePermission;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ShowTest extends TestCase
 {
     use RefreshDatabase;
-
 
     public function test_have_no_login()
     {

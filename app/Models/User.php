@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, Sortable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, Sortable;
 
     protected $fillable = [
         'username',
@@ -48,15 +48,16 @@ class User extends Authenticatable
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: function(mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes) {
                 $name = [
                     '1' => $attributes['given_name'],
                     '3' => $attributes['family_name'],
                 ];
-                if(!is_null($attributes['middle_name'])) {
+                if (! is_null($attributes['middle_name'])) {
                     $name['2'] = $attributes['middle_name'];
                 }
                 ksort($name);
+
                 return implode(', ', $name);
             }
         );

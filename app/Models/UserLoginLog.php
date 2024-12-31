@@ -18,5 +18,4 @@ class UserLoginLog extends Authenticatable
     public $sortable = [
         'created_at',
     ];
-
 }
