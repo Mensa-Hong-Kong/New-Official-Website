@@ -115,17 +115,8 @@ class UserController extends Controller
 
     public function show(Request $request)
     {
-        $user = $request->user();
-        $contacts = [
-            'emails' => [],
-            'mobiles' => [],
-        ];
-        foreach ($user->contacts as $contact) {
-            $contacts[$contact->type.'s'][] = $contact;
-        }
-
         return view('user.profile')
-            ->with('user', $user)
+            ->with('user', $request->user())
             ->with(
                 'genders', Gender::all()
                     ->pluck('name', 'id')
@@ -134,8 +125,11 @@ class UserController extends Controller
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
                     ->toArray()
-            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'))
-            ->with('contacts', $contacts);
+            )->with(
+                'maxBirthday', now()
+                    ->subYears(2)
+                    ->format('Y-m-d')
+            );
     }
 
     public function update(UpdateRequest $request)
