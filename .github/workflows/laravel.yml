@@ -44,6 +44,10 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
 
+      - name: render migration dot env
+        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
+        working-directory: ./ansible
+
       - name: install composer dependencies
         run: composer install
 
@@ -52,10 +56,6 @@ jobs:
 
       - name: build assets
         run: npm run build
-
-      - name: render migration dot env
-        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
-        working-directory: ./ansible
 
       - name: run migrations with seeders
         run: php artisan migrate --seed
