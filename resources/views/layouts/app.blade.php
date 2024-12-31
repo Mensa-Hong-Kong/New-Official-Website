@@ -78,16 +78,48 @@
                     </div>
                     <nav class="offcanvas-body">
                         <ul class="nav flex-column nav-pills">
-                            <a href="{{ route('admin.index') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'admin.index',
-                            ])>Dashboard</a>
-                            <a href="{{ route('admin.users.index') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'admin.users.index',
-                            ])>User</a>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.index') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'admin.index',
+                                ])>Dashboard</a>
+                            </li>
+                            <li class="nav-item accordion">
+                                <button role="button"
+                                    data-bs-toggle="collapse" aria-expanded="true"
+                                    data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
+                                    style="height: 0em"
+                                    @class([
+                                        'nav-item',
+                                        'accordion-button',
+                                        'collapsed' => !str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.users.'
+                                        ),
+                                    ])>
+                                    Users
+                                </button>
+                                <ul id="asideNavAdminUser" @class([
+                                    'accordion-collapse',
+                                    'collapse',
+                                    'show' => str_starts_with(
+                                        Route::current()->getName(),
+                                        'admin.users.'
+                                    ),
+                                ])>
+                                    <li>
+                                        <a href="{{ route('admin.users.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.users.index',
+                                        ])>Index</a>
+                                    </li>
+                                    @if(Route::current()->getName() == 'admin.users.show')
+                                        <a href="#" class="nav-link align-items-center active">Show</a>
+                                    @endif
+                                </ul>
+                            </li>
                         </ul>
                     </nav>
                 </div>

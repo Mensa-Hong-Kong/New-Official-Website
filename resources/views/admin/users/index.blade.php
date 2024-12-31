@@ -9,7 +9,7 @@
                     <button @class([
                         'accordion-button',
                         'collapsed' => !$isSearch,
-                    ]) type="button" data-bs-toggle="collapse" data-bs-target="#search" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                    ]) type="button" data-bs-toggle="collapse" data-bs-target="#search" aria-expanded="true" aria-controls="search">
                         Search
                     </button>
                 </h2>
