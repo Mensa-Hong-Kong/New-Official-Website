@@ -15,9 +15,9 @@ class ModuleSeeder extends Seeder
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
         $deletePermission = Permission::firstOrCreate(['name' => 'Delete']);
         $masterModule->permissions()->sync([
-            $viewPermission->id => ['name' => "{$viewPermission->name}:{$masterModule->name}"]
-            $editPermission->id => ['name' => "{$editPermission->name}:{$masterModule->name}"]
-            $deletePermission->id => ['name' => "{$deletePermission->name}:{$masterModule->name}"]
+            $viewPermission->id => ['name' => "{$viewPermission->name}:{$masterModule->name}"],
+            $editPermission->id => ['name' => "{$editPermission->name}:{$masterModule->name}"],
+            $deletePermission->id => ['name' => "{$deletePermission->name}:{$masterModule->name}"],
         ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
