@@ -7,12 +7,6 @@
                 <h3 class="fw-bold mb-2">
                     Info
                 </h3>
-                <div class="alert alert-primary" id="editInfoRemind" role="alert" hidden>
-                    <ol>
-                        <li>Password only require when you change the username or password</li>
-                        <li>New password and confirm password is not require unless you want to change a new password</li>
-                    </ol>
-                </div>
                 @csrf
                 @method('put')
                 <div class="col-md-4">
