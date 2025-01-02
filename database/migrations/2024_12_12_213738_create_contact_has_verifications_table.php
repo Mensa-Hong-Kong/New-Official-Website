@@ -23,6 +23,7 @@ return new class extends Migration
             $table->dateTime('expired_at')->nullable();
             $table->unsignedBigInteger('creator_id');
             $table->string('creator_ip');
+            $table->boolean('middleware_should_count')->default(1);
             $table->timestamps();
         });
     }

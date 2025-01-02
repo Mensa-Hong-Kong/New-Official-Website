@@ -84,6 +84,7 @@ class UserHasContact extends Model
         return ContactHasVerification::where('type', $this->type)
             ->where('contact', $this->contact)
             ->where('created_at', '>=', now()->subDay())
+            ->where('middleware_should_count', true)
             ->count() >= 5;
     }
 }

@@ -152,6 +152,7 @@ class User extends Authenticatable
         return $this->contactVerifications()
             ->where('type', $contactType)
             ->where('created_at', '>=', now()->subDay())
+            ->where('middleware_should_count', true)
             ->count() >= 5;
     }
 

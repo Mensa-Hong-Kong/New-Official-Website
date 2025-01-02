@@ -20,6 +20,7 @@ class ContactHasVerification extends Model
         'expired_at',
         'creator_id',
         'creator_ip',
+        'middleware_should_count',
     ];
 
     protected $casts = [
