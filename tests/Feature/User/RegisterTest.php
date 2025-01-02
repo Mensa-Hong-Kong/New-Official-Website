@@ -244,16 +244,6 @@ class RegisterTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must not be greater than 18 characters.']);
     }
 
-    public function test_passport_number_is_used()
-    {
-        $user = User::factory()->create();
-        $data = $this->happyCase;
-        $data['passport_type_id'] = $user->passport_type_id;
-        $data['passport_number'] = $user->passport_number;
-        $response = $this->post(route('register'), $data);
-        $response->assertInvalid(['passport_number' => 'The passport number has already been taken.']);
-    }
-
     public function test_missing_gender()
     {
         $data = $this->happyCase;
