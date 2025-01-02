@@ -15,9 +15,7 @@
 2. follow terminal output to set shellenv to zprofile
 
 ```shell
-echo >> /Users/tszyuloveyou/.zprofile
-echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/tszyuloveyou/.zprofile
-eval "$(/usr/local/bin/brew shellenv)"
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> ~/.zprofile
 ```
 
 ### NVM
