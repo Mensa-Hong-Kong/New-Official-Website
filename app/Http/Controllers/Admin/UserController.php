@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContactHasVerification;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -16,6 +18,7 @@ class UserController extends Controller implements HasMiddleware
     {
         return [
             (new Middleware('permission:View:User'))->only(['index', 'show']),
+            (new Middleware('permission:Edit:User'))->only(['update']),
         ];
     }
 
@@ -95,5 +98,73 @@ class UserController extends Controller implements HasMiddleware
     {
         return view('admin.users.show')
             ->with('user', $user);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        DB::beginTransaction();
+        $gender = Gender::createOrFirst(['name' => $request->gender]);
+        $return = [
+            'username' => $request->username,
+            'family_name' => $request->family_name,
+            'middle_name' => $request->middle_name,
+            'given_name' => $request->given_name,
+            'passport_type_id' => $request->passport_type_id,
+            'passport_number' => $request->passport_number,
+            'gender_id' => $gender->id,
+            'birthday' => $request->birthday,
+        ];
+        foreach($return as $key => $value) {
+            if($user->{$key} != $value) {
+                $user->update($return);
+                break;
+            }
+        }
+        unset($return['gender_id']);
+        $return['gender'] = $gender->name;
+        foreach(['emails', 'mobiles'] as $field) {
+            foreach($user->{$field} as $contact) {
+                $update = [];
+                $return[$field][$contact->id]['is_verified'] = $request->{$field}[$contact->id]['is_verified'] ?? false;
+                if($request->{$field}[$contact->id]['contact'] != $contact->contact) {
+                    $update['contact'] = $request->{$field}[$contact->id]['contact'];
+                }
+                $is_default = $request->{$field}[$contact->id]['is_default'] ?? false;
+                if($is_default != $contact->is_default) {
+                    $update['is_default'] = $is_default;
+                }
+                if(count($update)) {
+                    $contact->update($update);
+                }
+                $return[$field][$contact->id]['contact'] = $contact->contact;
+                $return[$field][$contact->id]['is_default'] = $contact->is_default;
+                if($contact->is_default) {
+                    $return[$field][$contact->id]['is_verified'] = true;
+                }
+                if($return[$field][$contact->id]['is_verified'] != $contact->isVerified()) {
+                    if($return[$field][$contact->id]['is_verified']) {
+                        $verification = ContactHasVerification::create([
+                            'contact_id' => $contact->id,
+                            'contact' => $contact->contact,
+                            'type' => $contact->type,
+                            'verified_at' => now(),
+                            'creator_id' => $request->user()->id,
+                            'creator_ip' => $request->ip(),
+                            'middleware_should_count' => false,
+                        ]);
+                        ContactHasVerification::whereNot('id', $verification->id)
+                            ->where('contact', $contact->contact)
+                            ->where('type', $contact->type)
+                            ->update(['expired_at' => now()]);
+                    } else {
+                        $contact->lastVerification()->update(['expired_at' => now()]);
+                    }
+                }
+            }
+        }
+        DB::commit();
+        $return['success'] = 'The user data update success!';
+
+        return $return;
     }
 }
