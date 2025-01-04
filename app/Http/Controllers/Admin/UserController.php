@@ -123,48 +123,8 @@ class UserController extends Controller implements HasMiddleware
         }
         unset($return['gender_id']);
         $return['gender'] = $gender->name;
-        foreach(['emails', 'mobiles'] as $field) {
-            foreach($user->{$field} as $contact) {
-                $update = [];
-                $return[$field][$contact->id]['is_verified'] = $request->{$field}[$contact->id]['is_verified'] ?? false;
-                if($request->{$field}[$contact->id]['contact'] != $contact->contact) {
-                    $update['contact'] = $request->{$field}[$contact->id]['contact'];
-                }
-                $is_default = $request->{$field}[$contact->id]['is_default'] ?? false;
-                if($is_default != $contact->is_default) {
-                    $update['is_default'] = $is_default;
-                }
-                if(count($update)) {
-                    $contact->update($update);
-                }
-                $return[$field][$contact->id]['contact'] = $contact->contact;
-                $return[$field][$contact->id]['is_default'] = $contact->is_default;
-                if($contact->is_default) {
-                    $return[$field][$contact->id]['is_verified'] = true;
-                }
-                if($return[$field][$contact->id]['is_verified'] != $contact->isVerified()) {
-                    if($return[$field][$contact->id]['is_verified']) {
-                        $verification = ContactHasVerification::create([
-                            'contact_id' => $contact->id,
-                            'contact' => $contact->contact,
-                            'type' => $contact->type,
-                            'verified_at' => now(),
-                            'creator_id' => $request->user()->id,
-                            'creator_ip' => $request->ip(),
-                            'middleware_should_count' => false,
-                        ]);
-                        ContactHasVerification::whereNot('id', $verification->id)
-                            ->where('contact', $contact->contact)
-                            ->where('type', $contact->type)
-                            ->update(['expired_at' => now()]);
-                    } else {
-                        $contact->lastVerification()->update(['expired_at' => now()]);
-                    }
-                }
-            }
-        }
-        DB::commit();
         $return['success'] = 'The user data update success!';
+        DB::commit();
 
         return $return;
     }
