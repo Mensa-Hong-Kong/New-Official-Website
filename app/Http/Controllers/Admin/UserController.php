@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Models\ContactHasVerification;
 use App\Models\Gender;
 use App\Models\PassportType;
@@ -100,7 +101,7 @@ class UserController extends Controller implements HasMiddleware
             ->with('user', $user);
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateRequest $request, User $user)
     {
         DB::beginTransaction();
         $gender = Gender::createOrFirst(['name' => $request->gender]);
