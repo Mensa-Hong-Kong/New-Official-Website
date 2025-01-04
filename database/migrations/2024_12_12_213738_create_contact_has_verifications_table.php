@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('contact_id');
             $table->string('contact', 320);
             $table->enum('type', ['email', 'mobile']);
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->unsignedTinyInteger('tried_time')->default(0);
             $table->dateTime('closed_at');
             $table->dateTime('verified_at')->nullable();
