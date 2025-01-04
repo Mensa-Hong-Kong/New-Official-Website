@@ -44,6 +44,6 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::view('/', 'admin.index')->name('index');
             Route::resource('users', AdminUserController::class)
-                ->only(['index', 'show']);
+                ->only(['index', 'show', 'update']);
         });
 });
