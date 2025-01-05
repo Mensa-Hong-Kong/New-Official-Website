@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\Users;
 
+use App\Models\Gender;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,7 +35,7 @@ class UpdateTest extends TestCase
             'given_name' => 'Diamond',
             'passport_type_id' => 2,
             'passport_number' => 'A1234567',
-            'gender' => 'Male',
+            'gender_id' => Gender::firstOrCreate(['name' => 'Male'])->id,
             'birthday' => '1997-07-01',
         ]);
         $this->user->givePermissionTo('Edit:User');
