@@ -73,7 +73,7 @@ class SetDefaultTest extends TestCase
             ));
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
-        $this->assertTrue((bool) $this->contact->fresh()->is_default);
+        $this->assertTrue((bool) $this->contact->refresh()->is_default);
     }
 
     public function test_happy_case_user_has_default_contact()
@@ -91,7 +91,7 @@ class SetDefaultTest extends TestCase
             ));
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
-        $this->assertTrue((bool) $this->contact->fresh()->is_default);
-        $this->assertFalse((bool) $contact->fresh()->is_default);
+        $this->assertTrue((bool) $this->contact->refresh()->is_default);
+        $this->assertFalse((bool) $contact->refresh()->is_default);
     }
 }
