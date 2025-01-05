@@ -211,8 +211,6 @@ function validation() {
             passwordFeedback.className = 'invalid-feedback';
             passwordFeedback.innerText = `The password field must not be greater than ${password.maxLength} characters.`;
         }
-    }
-    if(usernameInput.value != showUsername.innerText || newPasswordInput.value || confirmNewPasswordInput.value) {
         if(newPasswordInput.validity.tooShort) {
             newPasswordInput.classList.add('is-invalid');
             newPasswordFeedback.className = 'invalid-feedback';
