@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('type', ['email', 'mobile']);
             $table->string('code')->nullable();
             $table->unsignedTinyInteger('tried_time')->default(0);
-            $table->dateTime('closed_at');
+            $table->dateTime('closed_at')->nullable();
             $table->dateTime('verified_at')->nullable();
             $table->dateTime('expired_at')->nullable();
             $table->unsignedBigInteger('creator_id');
