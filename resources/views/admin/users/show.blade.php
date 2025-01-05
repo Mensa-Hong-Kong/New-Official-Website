@@ -8,13 +8,15 @@
                 @method('put')
                 <h3 class="fw-bold mb-2">
                     Info
-                    <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Saving...
-                    </button>
-                    <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
-                    <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
-                    <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
+                    @can('Edit:User')
+                        <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Saving...
+                        </button>
+                        <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
+                        <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
+                        <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
+                    @endcan
                 </h3>
                 @csrf
                 @method('put')
