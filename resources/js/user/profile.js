@@ -437,7 +437,7 @@ editForm.addEventListener(
             let submitAt = Date.now();
             submitting = 'updateProfile'+submitAt;
             disableSubmitting();
-            if($submitting == 'updateProfile'+submitAt) {
+            if(submitting == 'updateProfile'+submitAt) {
                 if(validation()) {
                     usernameInput.disabled = true;
                     passwordInput.disabled = true;
