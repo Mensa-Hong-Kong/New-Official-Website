@@ -113,3 +113,7 @@
         </article>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/users/show.js')
+@endpush
