@@ -312,14 +312,14 @@ function successCallback(response) {
         input.classList.remove('is-valid"');
         input.classList.remove('is-invalid');
     }
-    inputValues.username = response.username;
-    inputValues.familyName = response.family_name;
-    inputValues.middleName = response.middle_name;
-    inputValues.givenName = response.given_name;
-    inputValues.passportType = response.passport_type_id;
-    inputValues.passportNumber = response.passport_number;
-    inputValues.gender = response.gender;
-    inputValues.birthday = response.birthday;
+    inputValues.username = response.data.username;
+    inputValues.familyName = response.data.family_name;
+    inputValues.middleName = response.data.middle_name;
+    inputValues.givenName = response.data.given_name;
+    inputValues.passportType = response.data.passport_type_id;
+    inputValues.passportNumber = response.data.passport_number;
+    inputValues.gender = response.data.gender;
+    inputValues.birthday = response.data.birthday;
     for(let column of newPasswordColumns) {
         column.hidden = true;
     }
@@ -329,20 +329,20 @@ function successCallback(response) {
         feedback.innerText = 'Looks good!'
     }
     fillInputValues();
-    if(!genders.includes(response.gender)) {
-        genders.push(response.gender);
+    if(!genders.includes(response.data.gender)) {
+        genders.push(response.data.gender);
         newOption = document.createElement('option');
-        newOption.value = response.gender;
+        newOption.value = response.data.gender;
         gendersDatalist.appendChild(newOption);
     }
-    showUsername.innerText = response.username;
-    showFamilyName.innerText = response.family_name;
-    showMiddleName.innerText = response.middle_name;
-    showGivenName.innerText = response.given_name;
+    showUsername.innerText = response.data.username;
+    showFamilyName.innerText = response.data.family_name;
+    showMiddleName.innerText = response.data.middle_name;
+    showGivenName.innerText = response.data.given_name;
     showPassportType.innerText = passportTypeInput.options[passportTypeInput.selectedIndex].text;
-    showPassportNumber.innerText = response.passport_number;
-    showGender.innerText = response.gender;
-    showBirthday.innerText = response.birthday;
+    showPassportNumber.innerText = response.data.passport_number;
+    showGender.innerText = response.data.gender;
+    showBirthday.innerText = response.data.birthday;
     submitting = '';
     enableEditForm();
     enableSubmitting();
