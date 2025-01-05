@@ -147,7 +147,7 @@ cancelButton.addEventListener(
         cancelButton.hidden = true;
         for(let input of inputs) {
             input.hidden = true;
-            input.classList.remove('is-valid"');
+            input.classList.remove('is-valid');
             input.classList.remove('is-invalid');
         }
         for(let column of newPasswordColumns) {
@@ -177,7 +177,7 @@ function hasError() {
 
 function validation() {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
         input.classList.remove('is-invalid');
     }
     for(let feedback of feedbacks) {
@@ -308,9 +308,9 @@ function enableEditForm() {
 
 function successCallback(response) {
     for(let input of inputs) {
-        input.hidden = true;
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
         input.classList.remove('is-invalid');
+        input.hidden = true;
     }
     inputValues.username = response.data.username;
     inputValues.familyName = response.data.family_name;
@@ -355,7 +355,7 @@ function successCallback(response) {
 
 function failCallback(error) {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
     }
     for(let feedback of feedbacks) {
         feedback.className = 'valid-feedback';
