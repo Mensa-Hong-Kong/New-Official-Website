@@ -198,10 +198,10 @@ function validation() {
         usernameFeedback.innerText = `The username field must not be greater than ${username.maxLength} characters.`;
     }
     if(usernameInput.value != showUsername.innerText || newPasswordInput.value || confirmNewPasswordInput.value) {
-        if(usernameInput.validity.valueMissing) {
-            usernameInput.classList.add('is-invalid');
-            usernameFeedback.className = 'invalid-feedback';
-            usernameFeedback.innerText = 'The password field is required when you change the username or password.';
+        if(passwordInput.validity.valueMissing) {
+            passwordInput.classList.add('is-invalid');
+            passwordFeedback.className = 'invalid-feedback';
+            passwordFeedback.innerText = 'The password field is required when you change the username or password.';
         } else if(passwordInput.validity.tooShort) {
             passwordInput.classList.add('is-invalid');
             passwordFeedback.className = 'invalid-feedback';
