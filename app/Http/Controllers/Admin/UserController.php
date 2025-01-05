@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UpdateRequest;
-use App\Models\ContactHasVerification;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;

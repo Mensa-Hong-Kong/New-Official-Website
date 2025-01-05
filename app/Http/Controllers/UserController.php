@@ -10,7 +10,6 @@ use App\Models\PassportType;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

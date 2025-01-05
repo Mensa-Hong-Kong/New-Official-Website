@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin\Users;
 
 use App\Models\ModulePermission;
 use App\Models\User;
-use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -153,6 +152,7 @@ class UpdateTest extends TestCase
             );
         $response->assertInvalid(['username' => 'The username has already been taken.']);
     }
+
     public function test_missing_family_name()
     {
         $data = $this->happyCase;

@@ -4,10 +4,8 @@ namespace App\Http\Requests\Admin\User;
 
 use App\Models\PassportType;
 use App\Models\User;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class UpdateRequest extends FormRequest
 {
@@ -19,6 +17,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->route('user');
+
         return [
             'username' => [
                 'required', 'string', 'min:8', 'max:16',
