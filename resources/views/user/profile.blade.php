@@ -91,7 +91,9 @@
                     <label for="validationPassportNumber">Passport Number</label>
                     <div id="showPassportNumber">{{ $user->passport_number }}</div>
                     <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" value="{{ old('passport_number', $user->passport_number) }}" placeholder="passport_number" name="passport_number" required hidden />
-                    <div id="passportNumberFeedback" class="valid-feedback"></div>
+                    <div id="passportNumberFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
@@ -107,7 +109,9 @@
                     <label for="validationBirthday">Date of Birth</label>
                     <div id="showBirthday">{{ $user->birthday }}</div>
                     <input type="date" class="form-control" id="validationBirthday" name="birthday" max="{{ $maxBirthday }}" value="{{ old('birthday', $user->birthday) }}" required hidden />
-                    <div id="birthdayFeedback" class="valid-feedback"></div>
+                    <div id="birthdayFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
             </form>
         </article>
