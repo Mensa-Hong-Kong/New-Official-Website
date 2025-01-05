@@ -98,7 +98,20 @@ class UserController extends Controller implements HasMiddleware
     public function show(User $user)
     {
         return view('admin.users.show')
-            ->with('user', $user);
+            ->with('user', $user)
+            ->with(
+                'genders', Gender::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
+                'passportTypes', PassportType::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
+                'maxBirthday', now()
+                    ->subYears(2)
+                    ->format('Y-m-d')
+            );
     }
 
     public function update(UpdateRequest $request, User $user)
