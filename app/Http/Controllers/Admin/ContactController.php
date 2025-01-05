@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Contact\UpdateRequest;
 use App\Models\ContactHasVerification;
 use App\Models\User;
 use App\Models\UserHasContact;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +18,7 @@ class ContactController extends Controller implements HasMiddleware
         return [new Middleware('permission:Edit:User')];
     }
 
-    public function update(Request $request, User $user, UserHasContact $contact)
+    public function update(UpdateRequest $request, User $user, UserHasContact $contact)
     {
         DB::beginTransaction();
         $contact->update([
