@@ -57,7 +57,6 @@ class StoreTest extends TestCase
                     'mobile' => fake()->numberBetween(10000, 999999999999999),
                 ]
             );
-        var_dump($response->content());
         $response->assertInvalid(['message' => 'The data fields of email, mobile only can have one.']);
     }
 
