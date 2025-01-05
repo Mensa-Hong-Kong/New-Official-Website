@@ -104,7 +104,7 @@ class UserController extends Controller implements HasMiddleware
     public function update(UpdateRequest $request, User $user)
     {
         DB::beginTransaction();
-        $gender = Gender::createOrFirst(['name' => $request->gender]);
+        $gender = Gender::firstOrCreate(['name' => $request->gender]);
         $return = [
             'username' => $request->username,
             'family_name' => $request->family_name,
@@ -121,7 +121,6 @@ class UserController extends Controller implements HasMiddleware
                 break;
             }
         }
-        unset($return['gender_id']);
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
         DB::commit();
