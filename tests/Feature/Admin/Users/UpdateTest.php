@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin\Users;
 
-use App\Models\Gender;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
@@ -446,7 +445,6 @@ class UpdateTest extends TestCase
                 ), $data
             );
         $response->assertSuccessful();
-        $data['gender_id'] = Gender::firstOrCreate(['name' => $data['gender']])->id;
         $data['success'] = 'The user data update success!';
         $response->assertJson($data);
         $user = User::firstWhere('id', $this->user->id);
@@ -473,7 +471,6 @@ class UpdateTest extends TestCase
                 ), $data
             );
         $response->assertSuccessful();
-        $data['gender_id'] = Gender::firstOrCreate(['name' => $data['gender']])->id;
         $data['success'] = 'The user data update success!';
         $response->assertJson($data);
         $user = User::firstWhere('id', $this->user->id);

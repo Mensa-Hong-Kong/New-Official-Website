@@ -116,6 +116,7 @@ class UserController extends Controller implements HasMiddleware
             'birthday' => $request->birthday,
         ];
         $user->update($return);
+        unset($return['gender_id']);
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
         DB::commit();
