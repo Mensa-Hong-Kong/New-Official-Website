@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Contact;
+namespace Tests\Feature\Contacts;
 
 use App\Models\ContactHasVerification;
 use App\Models\User;
