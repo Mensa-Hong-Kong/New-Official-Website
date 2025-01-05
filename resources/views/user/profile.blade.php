@@ -4,6 +4,8 @@
     <section class="container">
         <article>
             <form method="POST" class="row g-3" id="form" novalidate>
+                @csrf
+                @method('put')
                 <h2 class="fw-bold mb-2">
                     Profile
                     <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
