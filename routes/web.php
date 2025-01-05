@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
@@ -45,5 +46,7 @@ Route::middleware('auth')->group(function () {
             Route::view('/', 'admin.index')->name('index');
             Route::resource('users', AdminUserController::class)
                 ->only(['index', 'show', 'update']);
+            Route::resource('contacts', AdminContactController::class)
+                ->only('update');
         });
 });
