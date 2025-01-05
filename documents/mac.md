@@ -15,8 +15,9 @@
 2. follow terminal output to set shellenv to zprofile
 
 ```shell
-echo >> /Users/tszyuloveyou/.zprofile
-echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/tszyuloveyou/.zprofile
+touch ~/.zprofile
+echo >> ~/.zprofile
+echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> ~/.zprofile
 eval "$(/usr/local/bin/brew shellenv)"
 ```
 
