@@ -176,7 +176,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['is_default' => 'The default field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_for_non_verified_email_only_change_contact()
+    public function test_happy_case_for_not_verified_email_only_change_contact()
     {
         $email = UserHasContact::factory()
             ->state([
@@ -203,7 +203,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_non_verified_mobile_only_change_contact()
+    public function test_happy_case_for_not_verified_mobile_only_change_contact()
     {
         $mobile = UserHasContact::factory()
             ->state([
@@ -230,7 +230,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_non_verified_contact_only_change_to_is_verified()
+    public function test_happy_case_for_not_verified_contact_only_change_to_is_verified()
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
@@ -256,7 +256,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($contactModel->is_default);
     }
 
-    public function test_happy_case_for_non_verified_contact_only_change_to_is_default()
+    public function test_happy_case_for_not_verified_contact_only_change_to_is_default()
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
@@ -282,7 +282,7 @@ class UpdateTest extends TestCase
         $this->assertTrue($contactModel->is_default);
     }
 
-    public function test_happy_case_for_non_verified_email_change_contact_and_is_verified()
+    public function test_happy_case_for_not_verified_email_change_contact_and_is_verified()
     {
         $email = UserHasContact::factory()
             ->state([
@@ -312,7 +312,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_non_verified_email_change_contact_and_is_default()
+    public function test_happy_case_for_not_verified_email_change_contact_and_is_default()
     {
         $email = UserHasContact::factory()
             ->state([
@@ -342,7 +342,7 @@ class UpdateTest extends TestCase
         $this->assertTrue($email->is_default);
     }
 
-    public function test_happy_case_for_non_verified_mobile_change_contact_and_is_verified()
+    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_verified()
     {
         $mobile = UserHasContact::factory()
             ->state([
@@ -372,7 +372,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_non_verified_mobile_change_contact_and_is_default()
+    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_default()
     {
         $mobile = UserHasContact::factory()
             ->state([
