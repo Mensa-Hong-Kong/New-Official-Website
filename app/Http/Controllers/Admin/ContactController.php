@@ -45,6 +45,9 @@ class ContactController extends Controller implements HasMiddleware
                 $this->verified($contact);
             } else {
                 $contact->lastVerification()->update(['expired_at' => now()]);
+                if($contact->is_default) {
+                    $contact->update(['is_default' => false]);
+                }
             }
             DB::commit();
         }
