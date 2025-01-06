@@ -408,12 +408,69 @@ function urlGetContactID(url) {
     return (new URL(url).pathname).match(/^\/admin\/contacts\/([0-9]+).*/i)[1];
 }
 
+function updateVerifyContactStatusButton(button, status) {
+    if(stringToBoolean(button.value) == status) {
+        button.value = status ? 0 : 1;
+        if(status) {
+            button.innerHTML = 'Verified';
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-success');
+        } else {
+            button.innerHTML = 'Not Verified';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-danger');
+            document.getElementById('defaultContact'+id).hidden = true;
+        }
+    }
+}
+
+function changeVerifyContactStatusSuccessCallbacke(response) {
+    let id = urlGetContactID(response.request.responseURL);
+    document.getElementById('changingVerifyContactStatus'+id).hidden = true;
+    let input = document.getElementById('verifyContactStatus'+id);
+    updateVerifyContactStatusButton(input, response.data.status);
+    enableSubmitting();
+    input.hidden = false;
+}
+
+function changeVerifyContactStatusFailCallbacke(error) {
+    if(error.response.data.status) {
+        bootstrapAlert(error.response.data.status);
+    }
+    document.getElementById('changingVerifyContactStatus'+id).hidden = true;
+    enableSubmitting();
+    document.getElementById('verifyContactStatus'+id).hidden = false;
+}
+
+function changeVerifyContactStatus(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'changeVerifyContactStatus'+submitAt;
+        let id = event.target.id.replace('changeVerifyContactStatusForm', '');
+        disableSubmitting();
+        if(submitting == 'changeVerifyContactStatus'+submitAt) {
+            let input = document.getElementById('verifyContactStatus'+id);
+            input.hidden = true;
+            document.getElementById('changingVerifyContactStatus'+id).hidden = false;
+            let data = {status: stringToBoolean(input.value)};
+            post(
+                event.target.action,
+                changeVerifyContactStatusSuccessCallbacke,
+                changeVerifyContactStatusFailCallbacke,
+                'put', data
+            );
+        }
+    }
+}
+
 function closeEdit(id) {
     document.getElementById('editContactForm'+id).hidden = true;
     let contact = document.getElementById('contactInput'+id);
     contact.value = contact.dataset.value;
-    let isVerified = document.getElementById('isVerifiedContactCheckbox'+id);
-    isVerified.checked = stringToBoolean(isVerified.dataset.value);
+    document.getElementById('isVerifiedContactCheckbox'+id).checked = ! stringToBoolean(
+        document.getElementById('changingVerifyContactStatus'+id).value
+    );
     let isDefault = document.getElementById('isDefaultContactCheckbox'+id);
     isDefault.checked = stringToBoolean(isDefault.dataset.value);
     document.getElementById('showContactRow'+id).hidden = false;
@@ -458,8 +515,10 @@ function updateContactSuccessCallback(response) {
     let contact = document.getElementById('contactInput'+id);
     contact.dataset.value = response.data[contact.name];
     let isVerified = document.getElementById('isVerifiedContactCheckbox'+id);
-    isVerified.dataset.value = response.data.is_verified;
-    document.getElementById('verifiedContact'+id).hidden = !response.data.is_verified;
+    updateVerifyContactStatusButton(
+        document.getElementById('verifyContactStatus'+id),
+        response.data.is_verified
+    );
     let isDefault = document.getElementById('isDefaultContactCheckbox'+id);
     isDefault.dataset.value = response.data.is_default;
     if(response.data.is_default) {
@@ -538,6 +597,9 @@ function editContact(event) {
 
 function setContactEventListeners(loader) {
     let id = loader.id.replace('contactLoader', '');
+    document.getElementById('changeVerifyContactStatusForm'+id).addEventListener(
+        'submit', changeVerifyContactStatus
+    )
     document.getElementById('editContactForm'+id).addEventListener(
         'submit', updateContact
     );
