@@ -95,6 +95,7 @@ class VerifyTest extends TestCase
                 'success' => 'The contact verifty status update success!',
                 'status' => false,
             ]);
+        $contact->refresh();
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
@@ -115,6 +116,7 @@ class VerifyTest extends TestCase
                 'success' => 'The contact verifty status update success!',
                 'status' => true,
             ]);
+        $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
@@ -137,6 +139,7 @@ class VerifyTest extends TestCase
                 'success' => 'The contact verifty status update success!',
                 'status' => true,
             ]);
+        $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
@@ -144,7 +147,7 @@ class VerifyTest extends TestCase
     public function test_happy_case_default_contact_no_change()
     {
         $contact = UserHasContact::factory()
-            ->statue(['is_default' => true])
+            ->state(['is_default' => true])
             ->create();
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
@@ -160,6 +163,7 @@ class VerifyTest extends TestCase
                 'success' => 'The contact verifty status update success!',
                 'status' => true,
             ]);
+        $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertTrue($contact->is_default);
     }
@@ -189,7 +193,7 @@ class VerifyTest extends TestCase
     public function test_happy_case_default_contact_change_to_not_verified()
     {
         $contact = UserHasContact::factory()
-            ->statue(['is_default' => true])
+            ->state(['is_default' => true])
             ->create();
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
@@ -205,6 +209,7 @@ class VerifyTest extends TestCase
                 'success' => 'The contact verifty status update success!',
                 'status' => false,
             ]);
+        $contact->refresh();
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
