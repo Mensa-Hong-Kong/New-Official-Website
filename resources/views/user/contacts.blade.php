@@ -33,7 +33,10 @@
                 @method('put')
                 <button class="btn btn-primary submitButton">Set Default</button>
             </form>
-            <button class="btn btn-primary" id="settingDefault{{ $contact->id }}" disabled hidden>Setting</button>
+            <button class="btn btn-primary" id="settingDefault{{ $contact->id }}" disabled hidden>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Setting
+            </button>
         </div>
         <div class="col-md-2">
             <div class="contactLoader" id="contactLoader{{ $contact->id }}">
@@ -58,14 +61,23 @@
         <button class="btn btn-primary col-md-2 submitButton requestNewVerifyCodeButton" id="requestNewVerifyCode{{ $contact->id }}" hidden>
             Send New Verify Code
         </button>
-        <button class="btn btn-primary col-md-4" id="requestingContactButton{{ $contact->id }}" hidden disabled>Requesting</button>
+        <button class="btn btn-primary col-md-4" id="requestingContactButton{{ $contact->id }}" hidden disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Requesting...
+        </button>
         <button class="btn btn-primary col-md-1 submitButton" id="submitVerifyCode{{ $contact->id }}" form="verifyContactForm{{ $contact->id }}" hidden>Submit</button>
         <button class="btn btn-danger col-md-1" id="cancelVerify{{ $contact->id }}" hidden>Cancel</button>
-        <button class="btn btn-danger col-md-4" id="submittingContactButton{{ $contact->id }}" hidden disabled>Submitting</button>
+        <button class="btn btn-danger col-md-4" id="submittingContactButton{{ $contact->id }}" hidden disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Submitting...
+        </button>
         <button class="btn btn-primary col-md-1" id="editContact{{ $contact->id }}" hidden>Edit</button>
         <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}" hidden>Save</button>
         <button class="btn btn-danger col-md-1" id="cancelEditContact{{ $contact->id }}" hidden>Cancel</button>
-        <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>Saving</button>
+        <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Saving...
+        </button>
         <form id="deleteContactForm{{ $contact->id }}" method="POST" hidden
             action="{{ route('contacts.destroy', ['contact' => $contact]) }}">
             @csrf
@@ -93,5 +105,8 @@
     </div>
     <div class="col-md-4"></div>
     <button class="btn btn-success col-md-4 submitButton" id="{{ $type }}CreateButtob">Create</button>
-    <button class="btn btn-success col-md-4" id="{{ $type }}CreatingContact" hidden disabled>Creating</button>
+    <button class="btn btn-success col-md-4" id="{{ $type }}CreatingContact" hidden disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Creating
+    </button>
 </form>

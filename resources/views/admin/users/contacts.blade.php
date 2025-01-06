@@ -45,7 +45,10 @@
             <label class="btn btn-outline-success col-md-1" for="isDefaultContactCheckbox{{ $contact->id }}">Default</label>
             <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}">Save</button>
             <button class="btn btn-danger col-md-1" id="cancelEditContact{{ $contact->id }}" onclick="return false;">Cancel</button>
-            <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>Saving</button>
+            <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Saving
+            </button>
         </form>
     @endcan
 @endforeach
