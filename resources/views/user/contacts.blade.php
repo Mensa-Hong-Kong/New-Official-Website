@@ -1,11 +1,11 @@
 @foreach ($contacts as $contact)
-    <div class="row g-4" id="contactRow{{ $contact->id }}"
+    <div class="row g-3" id="contactRow{{ $contact->id }}"
         data-requsetVerifyCodeUrl="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
         <div class="col-md-3">
             <span id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form id="editContactForm{{ $contact->id }}" method="POST" novalidate hidden
                 action="{{ route('contacts.update', ['contact' => $contact]) }}">
-                <input
+                <input id="contactInput{{ $contact->id }}" class="form-control"
                     @switch($contact->type)
                         @case('email')
                             type="email" name="email" maxlength="320"
@@ -16,14 +16,12 @@
                             placeholder="85298765432"
                             @break
                     @endswitch
-                    id="contactInput{{ $contact->id }}" class="form-control"
                     value="{{ $contact->contact }}"
                     data-value="{{ $contact->contact }}" required />
             </form>
         </div>
         <div class="col-md-2">
-            <span
-                class="{{ $contact->type }}DefaultContact"
+            <span class="{{ $contact->type }}DefaultContact"
                 id="defaultContact{{ $contact->id }}"
                 data-type="{{ $contact->type }}"
                 @hidden(! $contact->is_default)>

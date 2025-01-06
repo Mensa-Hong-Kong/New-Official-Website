@@ -753,12 +753,12 @@ function closeEdit(id) {
     document.getElementById('editContactForm'+id).hidden = true;
     document.getElementById('saveContact'+id).hidden = true;
     document.getElementById('cancelEditContact'+id).hidden = true;
+    let input = document.getElementById('contactInput'+id);
+    input.value = input.dataset.value;
     document.getElementById('contact'+id).hidden = false;
     document.getElementById('verifyContactButton'+id).hidden = false;
     document.getElementById('editContact'+id).hidden = false;
     document.getElementById('deleteContact'+id).hidden = false;
-    let contactInput = document.getElementById('contactInput'+id);
-    contactInput.value = contactInput.dataset.value;
 }
 
 function cancelEditContact(event) {
@@ -779,15 +779,15 @@ function contactValidation(input) {
         return false;
     }
     if(input.name == 'mobile' && input.validity.tooShort) {
-        bootstrapAlert(`The mobile be at least ${input.minLength} characters.`);
+        bootstrapAlert(`The ${input.name} be at least ${input.minLength} characters.`);
         return false;
     }
     if(input.validity.tooLong) {
         bootstrapAlert(`The ${input.name} must not be greater than ${input.maxLength} characters.`);
         return false;
     }
-    if(input.validity.typeMismatch) {
-        bootstrapAlert(`The ${input.name} must be a valid email address.`);
+    if(input.name == 'email' && input.validity.typeMismatch) {
+        bootstrapAlert(`The email must be a valid email address.`);
         return false;
     }
     return true;
@@ -964,11 +964,8 @@ function setContactEventListeners(loader) {
     }
     loader.remove();
     verifyContactButton.hidden = false;
-    console.log(verifyContactButton);
     editContactButton.hidden = false;
-    console.log(editContactButton);
     document.getElementById('deleteContact'+id).hidden = false;
-    console.log(document.getElementById('deleteContact'+id));
 }
 
 document.querySelectorAll('.contactLoader').forEach(
