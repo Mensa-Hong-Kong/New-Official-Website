@@ -6,7 +6,7 @@
             <span class="{{ $contact->type }}VerifiedContact"
                 id="verifiedContact{{ $contact->id }}"
                 @hidden(! $contact->isVerified())>
-                Verifid
+                Verified
             </span>
         </div>
         <div class="col-md-1">
@@ -39,8 +39,8 @@
                 @endswitch
                 value="{{ $contact->contact }}"
                 data-value="{{ $contact->contact }}" required />
-            <input type="checkbox" class="btn-check isVerifidContactCheckbox" id="isVerifidContactCheckbox{{ $contact->id }}" @checked($contact->isVerified()) data-value="{{ $contact->isVerified() }}">
-            <label class="btn btn-outline-success col-md-1" for="isVerifidContactCheckbox{{ $contact->id }}">Verifid</label>
+            <input type="checkbox" class="btn-check isVerifiedContactCheckbox" id="isVerifiedContactCheckbox{{ $contact->id }}" @checked($contact->isVerified()) data-value="{{ $contact->isVerified() }}">
+            <label class="btn btn-outline-success col-md-1" for="isVerifiedContactCheckbox{{ $contact->id }}">Verified</label>
             <input type="checkbox" class="btn-check isDefaultContactCheckbox" id="isDefaultContactCheckbox{{ $contact->id }}" @checked($contact->is_default) data-value="{{ $contact->is_default }}">
             <label class="btn btn-outline-success col-md-1" for="isDefaultContactCheckbox{{ $contact->id }}">Default</label>
             <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}">Save</button>
