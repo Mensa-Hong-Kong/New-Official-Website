@@ -39,13 +39,13 @@ class ContactController extends Controller implements HasMiddleware
 
     public function verify(StatusRequest $request, UserHasContact $contact)
     {
-        if($request->status != $contact->isVerified()) {
+        if ($request->status != $contact->isVerified()) {
             DB::beginTransaction();
-            if($request->status) {
+            if ($request->status) {
                 $this->verified($contact);
             } else {
                 $contact->lastVerification()->update(['expired_at' => now()]);
-                if($contact->is_default) {
+                if ($contact->is_default) {
                     $contact->update(['is_default' => false]);
                 }
             }

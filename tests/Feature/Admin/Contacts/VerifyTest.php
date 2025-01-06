@@ -90,11 +90,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => false]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => false,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => false,
+        ]);
         $contact->refresh();
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
@@ -111,11 +111,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => true]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => true,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => true,
+        ]);
         $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertFalse($contact->is_default);
@@ -134,11 +134,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => true]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => true,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => true,
+        ]);
         $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertFalse($contact->is_default);
@@ -158,11 +158,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => true]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => true,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => true,
+        ]);
         $contact->refresh();
         $this->assertTrue($contact->isVerified());
         $this->assertTrue($contact->is_default);
@@ -181,11 +181,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => false]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => false,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => false,
+        ]);
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
@@ -204,11 +204,11 @@ class VerifyTest extends TestCase
                     ['contact' => $contact]
                 ), ['status' => false]
             );
-            $response->assertSuccessful();
-            $response->assertJson([
-                'success' => 'The contact verifty status update success!',
-                'status' => false,
-            ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The contact verifty status update success!',
+            'status' => false,
+        ]);
         $contact->refresh();
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
