@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Contact\UpdateRequest;
+use App\Http\Requests\StatusRequest;
 use App\Models\ContactHasVerification;
 use App\Models\User;
 use App\Models\UserHasContact;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +37,7 @@ class ContactController extends Controller implements HasMiddleware
             ->update(['expired_at' => now()]);
     }
 
-    public function verify(Request $request, UserHasContact $contact)
+    public function verify(StatusRequest $request, UserHasContact $contact)
     {
         if($request->status != $contact->isVerified()) {
             DB::beginTransaction();
