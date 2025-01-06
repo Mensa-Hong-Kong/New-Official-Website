@@ -48,5 +48,7 @@ Route::middleware('auth')->group(function () {
                 ->only(['index', 'show', 'update']);
             Route::resource('contacts', AdminContactController::class)
                 ->only('update');
+            Route::match(['put', 'patch'], 'contacts/{contact}/verify', [AdminContactController::class, 'verify'])
+                ->name('contacts.verify');
         });
 });
