@@ -1,4 +1,5 @@
-import { post } from "../..//submitForm";
+import { post } from "../../submitForm";
+import stringToBoolean from "../../stringToBoolean";
 
 const editForm = document.getElementById('form');
 
@@ -400,6 +401,174 @@ editForm.addEventListener(
                 }
             }
         }
+    }
+);
+
+function urlGetContactID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/contacts\/([0-9]+).*/i)[1];
+}
+
+function closeEdit(id) {
+    document.getElementById('editContactForm'+id).hidden = true;
+    let contact = document.getElementById('contactInput'+id);
+    contact.value = contact.dataset.value;
+    let isVerifid = document.getElementById('isVerifidContactCheckbox'+id);
+    isVerifid.checked = stringToBoolean(isVerifid.dataset.value);
+    let isDefault = document.getElementById('isDefaultContactCheckbox'+id);
+    isDefault.checked = stringToBoolean(isDefault.dataset.value);
+    document.getElementById('showContactRow'+id).hidden = false;
+}
+
+function cancelEditContact(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'cancelEditContact'+submitAt;
+        let id = event.target.id.replace('cancelEditContact', '');
+        if(submitting == 'cancelEditContact'+submitAt) {
+            closeEdit(id);
+            submitting = '';
+        }
+    }
+}
+
+function contactValidation(input) {
+    if(input.validity.valueMissing) {
+        bootstrapAlert(`The ${input.name} field is required.`);
+        return false;
+    }
+    if(input.name == 'mobile' && input.validity.tooShort) {
+        bootstrapAlert(`The ${input.name} be at least ${input.minLength} characters.`);
+        return false;
+    }
+    if(input.validity.tooLong) {
+        bootstrapAlert(`The ${input.name} must not be greater than ${input.maxLength} characters.`);
+        return false;
+    }
+    if(input.name == 'email' && input.validity.typeMismatch) {
+        bootstrapAlert(`The email must be a valid email address.`);
+        return false;
+    }
+    return true;
+}
+
+function updateContactSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id = urlGetContactID(response.request.responseURL);
+    document.getElementById('contact'+id).innerText = response.data.contact;
+    let contact = document.getElementById('contactInput'+id);
+    contact.dataset.value = response.data[contact.name];
+    let isVerifid = document.getElementById('isVerifidContactCheckbox'+id);
+    isVerifid.dataset.value = response.data.is_verified;
+    document.getElementById('verifiedContact'+id).hidden = !response.data.is_verified;
+    let isDefault = document.getElementById('isDefaultContactCheckbox'+id);
+    isDefault.dataset.value = response.data.is_default;
+    if(response.data.is_default) {
+        for(let element of document.getElementsByClassName(contact.name+'DefaultContact')) {
+            element.hidden = true;
+        }
+    }
+    document.getElementById('defaultContact'+id).hidden = !response.data.is_default;
+    document.getElementById('savingContact'+id).hidden = true;
+    closeEdit(id);
+    document.getElementById('saveContact'+id).hidden = false;
+    document.getElementById('cancelEditContact'+id).hidden = false;
+    contact.disabled = false;
+    isVerifid.disabled = false;
+    isDefault.disabled = false;
+    enableSubmitting();
+}
+
+function updateContactFailCallback(error) {
+    let id = urlGetContactID(error.request.responseURL);
+    if(error.status == 422) {
+        let input = document.getElementById('verifyCodeInput'+id);
+        bootstrapAlert(error.response.data.errors[input.name]);
+    }
+    document.getElementById('savingContact'+id).hidden = true;
+    document.getElementById('saveContact'+id).hidden = false;
+    document.getElementById('cancelEditContact'+id).hidden = false;
+    document.getElementById('contactInput'+id).disabled = false;
+    document.getElementById('isVerifidContactCheckbox'+id).disabled = false;
+    document.getElementById('isDefaultContactCheckbox'+id).disabled = false;
+    enableSubmitting();
+}
+
+function updateContact(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updateContact'+submitAt;
+        let id = event.target.id.replace('editContactForm', '');
+        let contact = document.getElementById('contactInput'+id);
+        let isVerifid = document.getElementById('isVerifidContactCheckbox'+id);
+        let isDefault = document.getElementById('isDefaultContactCheckbox'+id);
+        disableSubmitting();
+        if(submitting == 'updateContact'+submitAt) {
+            if(contactValidation(contact)) {
+                contact.disabled = true;
+                isVerifid.disabled = true;
+                isDefault.disabled = true;
+                document.getElementById('saveContact'+id).hidden = true;
+                document.getElementById('cancelEditContact'+id).hidden = true;
+                document.getElementById('savingContact'+id).hidden = false;
+                let data = {
+                    is_verified: isVerifid.checked,
+                    is_default: isDefault.checked,
+                };
+                data[contact.name] = contact.value;
+                post(
+                    event.target.action,
+                    updateContactSuccessCallback,
+                    updateContactFailCallback,
+                    'put', data
+                );
+            } else {
+                submitting = '';
+                enableSubmitting();
+            }
+        }
+    }
+}
+
+function editContact(event) {
+    let id = event.target.id.replace('editContact', '');
+    document.getElementById('showContactRow'+id).hidden = true;
+    document.getElementById('editContactForm'+id).hidden = false;
+}
+
+function setContactEventListeners(loader) {
+    let id = loader.id.replace('contactLoader', '');
+    document.getElementById('editContactForm'+id).addEventListener(
+        'submit', updateContact
+    );
+    document.getElementById('isDefaultContactCheckbox'+id).addEventListener(
+        'change', function(event) {
+            if(event.target.checked) {
+                document.getElementById('isVerifidContactCheckbox'+id).checked = true;
+            }
+        }
+    );
+    document.getElementById('isVerifidContactCheckbox'+id).addEventListener(
+        'change', function(event) {
+            if(! event.target.checked) {
+                document.getElementById('isDefaultContactCheckbox'+id).checked = false;
+            }
+        }
+    );
+    document.getElementById('cancelEditContact'+id).addEventListener(
+        'click', cancelEditContact
+    );
+    let editContactButton = document.getElementById('editContact'+id);
+    editContactButton.addEventListener(
+        'click', editContact
+    );
+    loader.remove();
+    editContactButton.hidden = false;
+}
+
+document.querySelectorAll('.contactLoader').forEach(
+    (loader) => {
+        setContactEventListeners(loader);
     }
 );
 

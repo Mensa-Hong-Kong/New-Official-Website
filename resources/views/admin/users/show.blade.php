@@ -99,19 +99,11 @@
         </article>
         <article id="email">
             <h3 class="fw-bold mb-2"><i class="bi bi-envelope"></i> Email</h3>
-            @foreach ($user->emails as $email)
-                <div class="row">
-                    <div class="col">{{ $email->contact }}</div>
-                </div>
-            @endforeach
+            @include('admin.users.contacts', ['contacts' => $user->emails])
         </article>
         <article id="mobile">
             <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Mobile</h3>
-            @foreach ($user->mobiles as $mobile)
-                <div class="row">
-                    <div class="col">{{ $mobile->contact }}</div>
-                </div>
-            @endforeach
+            @include('admin.users.contacts', ['contacts' => $user->mobiles])
         </article>
     </section>
 @endsection
