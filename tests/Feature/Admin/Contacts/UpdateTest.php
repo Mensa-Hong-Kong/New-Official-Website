@@ -200,7 +200,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse($email->is_default);
     }
 
     public function test_happy_case_for_non_verified_mobile_only_change_contact()
@@ -227,7 +227,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 
     public function test_happy_case_for_non_verified_contact_only_change_to_is_verified()
@@ -253,7 +253,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertTrue($contactModel->isVerified());
-        $this->assertFalse((bool) $contactModel->is_default);
+        $this->assertFalse( $contactModel->is_default);
     }
 
     public function test_happy_case_for_non_verified_contact_only_change_to_is_default()
@@ -279,7 +279,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertTrue($contactModel->isVerified());
-        $this->assertTrue((bool) $contactModel->is_default);
+        $this->assertTrue( $contactModel->is_default);
     }
 
     public function test_happy_case_for_non_verified_email_change_contact_and_is_verified()
@@ -309,7 +309,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse( $email->is_default);
     }
 
     public function test_happy_case_for_non_verified_email_change_contact_and_is_default()
@@ -339,7 +339,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertTrue((bool) $email->is_default);
+        $this->assertTrue( $email->is_default);
     }
 
     public function test_happy_case_for_non_verified_mobile_change_contact_and_is_verified()
@@ -369,7 +369,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 
     public function test_happy_case_for_non_verified_mobile_change_contact_and_is_default()
@@ -399,7 +399,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertTrue((bool) $mobile->is_default);
+        $this->assertTrue( $mobile->is_default);
     }
 
     public function test_happy_case_for_verified_email_only_change_contact()
@@ -431,7 +431,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse( $email->is_default);
     }
 
     public function test_happy_case_for_verified_mobile_only_change_contact()
@@ -463,7 +463,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 
     public function test_happy_case_for_verified_contact_only_change_to_is_not_verified()
@@ -488,7 +488,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertFalse($contactModel->isVerified());
-        $this->assertFalse((bool) $contactModel->is_default);
+        $this->assertFalse( $contactModel->is_default);
     }
 
     public function test_happy_case_for_verified_contact_only_change_to_is_default()
@@ -516,7 +516,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertTrue($contactModel->isVerified());
-        $this->assertTrue((bool) $contactModel->is_default);
+        $this->assertTrue( $contactModel->is_default);
     }
 
     public function test_happy_case_for_verified_email_change_contact_and_is_not_verified()
@@ -545,7 +545,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse( $email->is_default);
     }
 
     public function test_happy_case_for_verified_email_change_contact_and_is_default()
@@ -577,7 +577,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertTrue((bool) $email->is_default);
+        $this->assertTrue( $email->is_default);
     }
 
     public function test_happy_case_for_verified_mobile_change_contact_and_is_not_verified()
@@ -606,7 +606,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 
     public function test_happy_case_for_verified_mobile_change_contact_and_is_default()
@@ -638,7 +638,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertTrue((bool) $mobile->is_default);
+        $this->assertTrue( $mobile->is_default);
     }
 
     public function test_happy_case_for_default_email_only_change_contact()
@@ -671,7 +671,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertTrue((bool) $email->is_default);
+        $this->assertTrue( $email->is_default);
     }
 
     public function test_happy_case_for_default_mobile_only_change_contact()
@@ -704,7 +704,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertTrue((bool) $mobile->is_default);
+        $this->assertTrue( $mobile->is_default);
     }
 
     public function test_happy_case_for_default_contact_only_change_to_is_not_verified()
@@ -729,7 +729,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertFalse($contactModel->isVerified());
-        $this->assertFalse((bool) $contactModel->is_default);
+        $this->assertFalse( $contactModel->is_default);
     }
 
     public function test_happy_case_for_default_contact_only_change_to_is_not_default()
@@ -759,7 +759,7 @@ class UpdateTest extends TestCase
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertTrue($contactModel->isVerified());
-        $this->assertFalse((bool) $contactModel->is_default);
+        $this->assertFalse( $contactModel->is_default);
     }
 
     public function test_happy_case_for_default_email_change_contact_and_is_not_verified()
@@ -789,7 +789,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse( $email->is_default);
     }
 
     public function test_happy_case_for_default_email_change_contact_and_is_not_default()
@@ -822,7 +822,7 @@ class UpdateTest extends TestCase
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified());
-        $this->assertFalse((bool) $email->is_default);
+        $this->assertFalse( $email->is_default);
     }
 
     public function test_happy_case_for_default_mobile_change_contact_and_is_not_verified()
@@ -852,7 +852,7 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 
     public function test_happy_case_for_default_mobile_only_change_contac_and_is_not_defaultt()
@@ -885,6 +885,6 @@ class UpdateTest extends TestCase
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified());
-        $this->assertFalse((bool) $mobile->is_default);
+        $this->assertFalse( $mobile->is_default);
     }
 }

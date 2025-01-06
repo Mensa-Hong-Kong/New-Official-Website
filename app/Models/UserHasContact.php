@@ -22,6 +22,11 @@ class UserHasContact extends Model
         'is_default',
     ];
 
+    public function getIsDefaultAttribute($value): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
