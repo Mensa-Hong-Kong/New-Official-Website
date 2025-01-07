@@ -28,7 +28,7 @@
                 @csrf
                 @method('put')
                 <button id="contactDefaultStatus{{ $contact->id }}" hidden
-                    name="status" value="{{ (int) ! $contact->isVerified() }}"
+                    name="status" value="{{ (int) ! $contact->is_default }}"
                     @class([
                         'btn',
                         'form-control',
@@ -37,7 +37,7 @@
                         'submitButton',
                         '{{ $contact->type }}DefaultContact',
                     ])>
-                    {{ $contact->isVerified() ? 'Default' : 'Non Default'}}
+                    {{ $contact->is_default ? 'Default' : 'Non Default'}}
                 </button>
                 <button class="btn btn-primary form-control" id="changingContactDefaultStatus{{ $contact->id }}" hidden disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -77,7 +77,7 @@
                 <label class="form-control btn btn-outline-success" for="isVerifiedContactCheckbox{{ $contact->id }}">Verified</label>
             </div>
             <div class=" col-md-2">
-                <input type="checkbox" class="btn-check {{ $contact->type }}DefaultContactCheckbox" id="isDefaultContactCheckbox{{ $contact->id }}" @checked($contact->is_default)">
+                <input type="checkbox" class="btn-check {{ $contact->type }}DefaultContactCheckbox" id="isDefaultContactCheckbox{{ $contact->id }}" @checked($contact->is_default)>
                 <label class="form-control btn btn-outline-success" for="isDefaultContactCheckbox{{ $contact->id }}">Default</label>
             </div>
             <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}">Save</button>
