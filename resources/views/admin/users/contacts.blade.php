@@ -48,6 +48,12 @@
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             </div>
             <button class="btn btn-primary col-md-1" id="editContact{{ $contact->id }}" hidden>Edit</button>
+            <form id="deleteContactForm{{ $contact->id }}" method="POST" hidden
+                action="{{ route('admin.contacts.destroy', ['contact' => $contact]) }}">
+                @csrf
+                @method('delete')
+            </form>
+            <button class="btn btn-danger col-md-1 submitButton" id="deleteContact{{ $contact->id }}" form="deleteContactForm{{ $contact->id }}" hidden>Delete</button>
         </div>
         <form class="row g-3" id="editContactForm{{ $contact->id }}" method="POST" hidden
             action="{{ route('admin.contacts.update', ['contact' => $contact]) }}">

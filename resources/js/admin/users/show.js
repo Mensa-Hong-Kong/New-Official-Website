@@ -683,6 +683,53 @@ function editContact(event) {
     document.getElementById('editContactForm'+id).hidden = false;
 }
 
+function deleteContactSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id =  urlGetContactID(response.request.responseURL);
+    document.getElementById('showContactRow'+id).remove();
+    document.getElementById('editContactForm'+id).remove();
+    enableSubmitting();
+}
+
+function deleteContactFailCallback(error) {
+    let id = urlGetContactID(error.request.responseURL);
+    let editContactButton = document.getElementById('editContact'+id)
+    editContactButton.addEventListener('click', editContact);
+    setDefaultButton.disabled = false;
+    enableSubmitting();
+}
+
+function confirmedDeleteContact(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'deleteContactForm'+submitAt;
+        disableSubmitting();
+        let id = event.target.id.replace('deleteContactForm', '');
+        let editContactButton = document.getElementById('editContact'+id)
+        editContactButton.removeEventListener('click', editContact);
+        editContactButton.disabled = true;
+        if(submitting == 'deleteContactForm'+submitAt) {
+            post(
+                event.target.action,
+                deleteContactSuccessCallback,
+                deleteContactFailCallback,
+                'delete'
+            );
+        } else {
+            editContactButton.addEventListener('click', editContact);
+            editContactButton.disabled = false;
+        }
+    }
+}
+
+function deleteContact(event) {
+    event.preventDefault();
+    let id = event.target.id.replace('deleteContactForm', '');
+    let contactInput = document.getElementById('contactInput'+id);
+    let message = `Are you sure to delete the ${contactInput.name} of ${contactInput.dataset.value}?`;
+    bootstrapConfirm(message, confirmedDeleteContact, event);
+}
+
 function setContactEventListeners(loader) {
     let id = loader.id.replace('contactLoader', '');
     document.getElementById('changeVerifyContactStatusForm'+id).addEventListener(
@@ -715,10 +762,14 @@ function setContactEventListeners(loader) {
     editContactButton.addEventListener(
         'click', editContact
     );
+    document.getElementById('deleteContactForm'+id).addEventListener(
+        'submit', deleteContact
+    );
     loader.remove();
     document.getElementById('verifyContactStatus'+id).hidden = false;
     document.getElementById('contactDefaultStatus'+id).hidden = false;
     editContactButton.hidden = false;
+    document.getElementById('deleteContact'+id).hidden = false;
 }
 
 document.querySelectorAll('.contactLoader').forEach(
