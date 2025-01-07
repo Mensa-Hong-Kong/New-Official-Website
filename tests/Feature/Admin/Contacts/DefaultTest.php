@@ -92,7 +92,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => false,
         ]);
         $contact->refresh();
@@ -113,7 +113,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -136,7 +136,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => false,
         ]);
         $contact->refresh();
@@ -159,7 +159,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -183,7 +183,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -207,7 +207,7 @@ class DefaultTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => false,
         ]);
         $contact->refresh();

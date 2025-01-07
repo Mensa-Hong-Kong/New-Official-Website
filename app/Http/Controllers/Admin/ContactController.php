@@ -53,7 +53,7 @@ class ContactController extends Controller implements HasMiddleware
         }
 
         return [
-            'success' => 'The contact verifty status update success!',
+            'success' => "The {$contact->type} verifty status update success!",
             'status' => $contact->refresh()->isVerified(),
         ];
     }
@@ -70,7 +70,7 @@ class ContactController extends Controller implements HasMiddleware
         }
 
         return [
-            'success' => 'The contact default status update success!',
+            'success' => "The {$contact->type} default status update success!",
             'status' => $contact->is_default,
         ];
     }
