@@ -75,7 +75,7 @@ class ContactController extends Controller implements HasMiddleware
         ];
     }
 
-    public function update(UpdateRequest $request, User $user, UserHasContact $contact)
+    public function update(UpdateRequest $request, UserHasContact $contact)
     {
         DB::beginTransaction();
         $contact->update([
