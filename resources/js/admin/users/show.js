@@ -428,7 +428,7 @@ function changeVerifyContactStatusSuccessCallbacke(response) {
     document.getElementById('changingVerifyContactStatus'+id).hidden = true;
     let input = document.getElementById('verifyContactStatus'+id);
     updateVerifyContactStatusButton(input, response.data.status);
-    document.getElementById('isVerifiedContactCheckbox'+id).hidden = response.data.status;
+    document.getElementById('isVerifiedContactCheckbox'+id).checked = response.data.status;
     if(!response.data.status) {
         document.getElementById('isDefaultContactCheckbox'+id).checked = false;
     } else {
