@@ -1,54 +1,54 @@
 
 @foreach ($contacts as $contact)
-    <div class="row g-3" id="showContactRow{{ $contact->id }}">
-        <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
-        <form class="col-md-2" id="changeVerifyContactStatusForm{{ $contact->id }}" method="POST"
-            action="{{ route('admin.contacts.verify', ['contact' => $contact]) }}">
-            @csrf
-            @method('put')
-            <button id="verifyContactStatus{{ $contact->id }}"
-                name="status" value="{{ (int) ! $contact->isVerified() }}"
-                @class([
-                    'btn',
-                    'form-control',
-                    'btn-success' => $contact->isVerified(),
-                    'btn-danger' => ! $contact->isVerified(),
-                    'submitButton',
-                ])>
-                {{ $contact->isVerified() ? 'Verified' : 'Not Verified'}}
-            </button>
-            <button class="btn btn-primary form-control" id="changingVerifyContactStatus{{ $contact->id }}" hidden disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Changing...
-            </button>
-        </form>
-        <form class="col-md-2" id="changeContactDefaultStatusForm{{ $contact->id }}" method="POST"
-            action="{{ route('admin.contacts.default', ['contact' => $contact]) }}">
-            @csrf
-            @method('put')
-            <button id="contactDefaultStatus{{ $contact->id }}"
-                name="status" value="{{ (int) ! $contact->isVerified() }}"
-                @class([
-                    'btn',
-                    'form-control',
-                    'btn-success' => $contact->is_default,
-                    'btn-danger' => ! $contact->is_default,
-                    'submitButton',
-                    '{{ $contact->type }}DefaultContact',
-                ])>
-                {{ $contact->isVerified() ? 'Default' : 'Non Default'}}
-            </button>
-            <button class="btn btn-primary form-control" id="changingContactDefaultStatus{{ $contact->id }}" hidden disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Changing...
-            </button>
-        </form>
-        <div class="contactLoader col-md-1" id="contactLoader{{ $contact->id }}">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        </div>
-        <button class="btn btn-primary col-md-1" id="editContact{{ $contact->id }}" hidden>Edit</button>
-    </div>
     @can('Edit:User')
+        <div class="row g-3" id="showContactRow{{ $contact->id }}">
+            <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
+            <form class="col-md-2" id="changeVerifyContactStatusForm{{ $contact->id }}" method="POST"
+                action="{{ route('admin.contacts.verify', ['contact' => $contact]) }}">
+                @csrf
+                @method('put')
+                <button id="verifyContactStatus{{ $contact->id }}"
+                    name="status" value="{{ (int) ! $contact->isVerified() }}"
+                    @class([
+                        'btn',
+                        'form-control',
+                        'btn-success' => $contact->isVerified(),
+                        'btn-danger' => ! $contact->isVerified(),
+                        'submitButton',
+                    ])>
+                    {{ $contact->isVerified() ? 'Verified' : 'Not Verified'}}
+                </button>
+                <button class="btn btn-primary form-control" id="changingVerifyContactStatus{{ $contact->id }}" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Changing...
+                </button>
+            </form>
+            <form class="col-md-2" id="changeContactDefaultStatusForm{{ $contact->id }}" method="POST"
+                action="{{ route('admin.contacts.default', ['contact' => $contact]) }}">
+                @csrf
+                @method('put')
+                <button id="contactDefaultStatus{{ $contact->id }}"
+                    name="status" value="{{ (int) ! $contact->isVerified() }}"
+                    @class([
+                        'btn',
+                        'form-control',
+                        'btn-success' => $contact->is_default,
+                        'btn-danger' => ! $contact->is_default,
+                        'submitButton',
+                        '{{ $contact->type }}DefaultContact',
+                    ])>
+                    {{ $contact->isVerified() ? 'Default' : 'Non Default'}}
+                </button>
+                <button class="btn btn-primary form-control" id="changingContactDefaultStatus{{ $contact->id }}" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Changing...
+                </button>
+            </form>
+            <div class="contactLoader col-md-1" id="contactLoader{{ $contact->id }}">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </div>
+            <button class="btn btn-primary col-md-1" id="editContact{{ $contact->id }}" hidden>Edit</button>
+        </div>
         <form class="row g-3" id="editContactForm{{ $contact->id }}" method="POST" hidden
             action="{{ route('admin.contacts.update', ['contact' => $contact]) }}">
             @csrf
@@ -81,5 +81,9 @@
                 Saving
             </button>
         </form>
+    @else
+        <div class="row g-3">
+            <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
+        </div>
     @endcan
 @endforeach
