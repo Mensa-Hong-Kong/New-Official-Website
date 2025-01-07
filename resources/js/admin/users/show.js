@@ -419,7 +419,6 @@ function updateVerifyContactStatusButton(button, status) {
             button.innerHTML = 'Not Verified';
             button.classList.remove('btn-success');
             button.classList.add('btn-danger');
-            document.getElementById('defaultContact'+id).hidden = true;
         }
     }
 }
@@ -432,6 +431,8 @@ function changeVerifyContactStatusSuccessCallbacke(response) {
     document.getElementById('isVerifiedContactCheckbox'+id).hidden = response.data.status;
     if(!response.data.status) {
         document.getElementById('isDefaultContactCheckbox'+id).checked = false;
+    } else {
+        document.getElementById('defaultContact'+id).hidden = true;
     }
     enableSubmitting();
     input.hidden = false;
