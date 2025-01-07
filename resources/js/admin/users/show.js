@@ -431,7 +431,6 @@ function changeVerifyContactStatusSuccessCallbacke(response) {
     document.getElementById('isVerifiedContactCheckbox'+id).checked = response.data.status;
     if(!response.data.status) {
         document.getElementById('isDefaultContactCheckbox'+id).checked = false;
-    } else {
         document.getElementById('defaultContact'+id).hidden = true;
     }
     enableSubmitting();
