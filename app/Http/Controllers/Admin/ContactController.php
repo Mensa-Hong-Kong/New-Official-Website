@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Contact\StoreRequest;
 use App\Http\Requests\Admin\Contact\UpdateRequest;
 use App\Http\Requests\StatusRequest;
 use App\Models\ContactHasVerification;
 use App\Models\UserHasContact;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +75,7 @@ class ContactController extends Controller implements HasMiddleware
         ];
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         foreach ($request->validated() as $key => $value) {
             if(in_array($key, ['email', 'mobile'])) {
