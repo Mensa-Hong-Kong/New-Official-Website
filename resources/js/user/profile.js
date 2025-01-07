@@ -882,12 +882,10 @@ function deleteContactSuccessCallback(response) {
 
 function deleteContactFailCallback(error) {
     let id = urlGetContactID(error.request.responseURL);
-    let setDefaultButton = document.getElementById('setDefault'+id);
-    setDefaultButton.addEventListener('submit', setDefault);
-    setDefaultButton.disabled = false;
+    document.getElementById('setDefault'+id).disabled = false;
     let editContactButton = document.getElementById('editContact'+id)
     editContactButton.addEventListener('click', editContact);
-    setDefaultButton.disabled = false;
+    editContactButton.disabled = false;
     enableSubmitting();
 }
 
@@ -897,8 +895,6 @@ function confirmedDeleteContact(event) {
         submitting = 'deleteContactForm'+submitAt;
         disableSubmitting();
         let id = event.target.id.replace('deleteContactForm', '');
-        let setDefaultForm = document.getElementById('setDefault'+id);
-        setDefaultForm.removeEventListener('submit', setDefault);
         let editContactButton = document.getElementById('editContact'+id)
         editContactButton.removeEventListener('click', editContact);
         editContactButton.disabled = true;
@@ -910,7 +906,6 @@ function confirmedDeleteContact(event) {
                 'delete'
             );
         } else {
-            setDefaultForm.addEventListener('submit', setDefault);
             editContactButton.addEventListener('click', editContact);
             editContactButton.disabled = false;
         }
@@ -980,12 +975,12 @@ function createContactSuccess(response) {
     let type = response.data.type;
     let contact = response.data.contact;
     let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-    let input = document.getElementById(type+'ContactInput')
+    let input = document.getElementById(type+'ContactInput');
     input.value = '';
+    enableSubmitting();
     input.disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
     document.getElementById(type+'CreateButtob').hidden = false;
-    enableSubmitting();
     let rowElement = document.createElement('div');
     rowElement.className = "row g-4";
     rowElement.id = 'contactRow'+id;
@@ -995,8 +990,8 @@ function createContactSuccess(response) {
             <span id="contact${id}">${contact}</span>
             <form id="editContactForm${id}" method="POST" novalidate hidden
                 action="${response.data.update_url}">
-                <input
-    `
+                <input id="contactInput${id}" class="form-control"
+    `;
     switch(type) {
         case 'email':
             innerHtml += `
@@ -1012,9 +1007,7 @@ function createContactSuccess(response) {
             break;
     }
     innerHtml += `
-                    id="contactInput${id}" class="form-control"
-                    value="${contact}"
-                    data-value="${contact}" required />
+                    value="${contact}" data-value="${contact}" required />
             </form>
         </div>
         <div class="col-md-2">
@@ -1077,7 +1070,7 @@ function createContactFail(error) {
     } else if(error.response.data.errors[type]){
         bootstrapAlert(error.response.data.errors[type]);
     } else {
-        bootstrapAlert('The profile.js missing create fail type hander, please contact us.')
+        bootstrapAlert('The profile.js missing create fail type handle, please contact us.')
     }
     document.getElementById(type+'ContactInput').disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
