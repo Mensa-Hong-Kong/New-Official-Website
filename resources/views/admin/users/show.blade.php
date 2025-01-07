@@ -18,8 +18,6 @@
                         <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
                     @endcan
                 </h3>
-                @csrf
-                @method('put')
                 <div class="col-md-4">
                     <label for="validationUsername" class="form-label">Usermame</label>
                     <div id="showUsername" class="showInfo">{{ $user->username }}</div>
