@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\Contact\UpdateRequest;
 use App\Http\Requests\StatusRequest;
 use App\Models\ContactHasVerification;
 use App\Models\UserHasContact;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,37 @@ class ContactController extends Controller implements HasMiddleware
         return [
             'success' => "The {$contact->type} default status update success!",
             'status' => $contact->is_default,
+        ];
+    }
+
+    public function store(Request $request)
+    {
+        foreach ($request->validated() as $key => $value) {
+            if(in_array($key, ['email', 'mobile'])) {
+                $contact = UserHasContact::create([
+                    'user_id' => $request->user_id,
+                    'type' => $key,
+                    'contact' => $value,
+                    'is_default' => $request->is_default ?? false,
+                ]);
+                if($request->is_verified ?? false || $contact->is_default ?? false) {
+                    $this->verified($contact);
+                }
+                break;
+            }
+        }
+
+        return [
+            'success' => "The {$contact->type} create success!",
+            'id' => $contact->id,
+            'type' => $contact->type,
+            'contact' => $contact->contact,
+            'is_default' => $contact->is_default,
+            'is_verified' => $contact->isVerified(),
+            'verify_url' => route('admin.contacts.verify', ['contact' => $contact]),
+            'default_url' => route('admin.contacts.default', ['contact' => $contact]),
+            'update_url' => route('admin.contacts.update', ['contact' => $contact]),
+            'delete_url' => route('admin.contacts.destroy', ['contact' => $contact]),
         ];
     }
 
