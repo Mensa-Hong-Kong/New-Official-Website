@@ -716,6 +716,8 @@ function setContactEventListeners(loader) {
         'click', editContact
     );
     loader.remove();
+    document.getElementById('verifyContactStatus'+id).hidden = false;
+    document.getElementById('contactDefaultStatus'+id).hidden = false;
     editContactButton.hidden = false;
 }
 

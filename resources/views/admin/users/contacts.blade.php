@@ -7,7 +7,7 @@
                 action="{{ route('admin.contacts.verify', ['contact' => $contact]) }}">
                 @csrf
                 @method('put')
-                <button id="verifyContactStatus{{ $contact->id }}"
+                <button id="verifyContactStatus{{ $contact->id }}" hidden
                     name="status" value="{{ (int) ! $contact->isVerified() }}"
                     @class([
                         'btn',
@@ -27,7 +27,7 @@
                 action="{{ route('admin.contacts.default', ['contact' => $contact]) }}">
                 @csrf
                 @method('put')
-                <button id="contactDefaultStatus{{ $contact->id }}"
+                <button id="contactDefaultStatus{{ $contact->id }}" hidden
                     name="status" value="{{ (int) ! $contact->isVerified() }}"
                     @class([
                         'btn',
