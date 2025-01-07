@@ -412,11 +412,11 @@ function updateVerifyContactStatusButton(button, status) {
     if(stringToBoolean(button.value) == status) {
         button.value = status ? 0 : 1;
         if(status) {
-            button.innerHTML = 'Verified';
+            button.innerText = 'Verified';
             button.classList.remove('btn-danger');
             button.classList.add('btn-success');
         } else {
-            button.innerHTML = 'Not Verified';
+            button.innerText = 'Not Verified';
             button.classList.remove('btn-success');
             button.classList.add('btn-danger');
         }
@@ -426,11 +426,11 @@ function updateVerifyContactStatusButton(button, status) {
 function updateContactDefaultStatusButton(button, status) {
     if(stringToBoolean(button.value) == status) {
         if(status) {
-            button.innerHTML = 'Default';
+            button.innerText = 'Default';
             button.classList.remove('btn-danger');
             button.classList.add('btn-success');
         } else {
-            button.innerHTML = 'Non Default';
+            button.innerText = 'Non Default';
             button.classList.remove('btn-success');
             button.classList.add('btn-danger');
         }
@@ -597,8 +597,8 @@ function contactValidation(input) {
 function updateContactSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     let id = urlGetContactID(response.request.responseURL);
-    document.getElementById('contact'+id).innerText = response.data.contact;
     let contact = document.getElementById('contactInput'+id);
+    document.getElementById('contact'+id).innerText = response.data[contact.name];
     contact.dataset.value = response.data[contact.name];
     let isVerified = document.getElementById('isVerifiedContactCheckbox'+id);
     updateVerifyContactStatusButton(
@@ -695,7 +695,7 @@ function deleteContactFailCallback(error) {
     let id = urlGetContactID(error.request.responseURL);
     let editContactButton = document.getElementById('editContact'+id)
     editContactButton.addEventListener('click', editContact);
-    setDefaultButton.disabled = false;
+    editContactButton.disabled = false;
     enableSubmitting();
 }
 
