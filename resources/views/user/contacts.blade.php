@@ -86,7 +86,7 @@
         <button class="btn btn-danger col-md-1 submitButton" id="deleteContact{{ $contact->id }}" form="deleteContactForm{{ $contact->id }}" hidden>Delete</button>
     </div>
 @endforeach
-<form class="row g-4 createContact" data-type="{{ $type }}" id="{{ $type }}CreateForm"
+<form class="row g-3 createContact" data-type="{{ $type }}" id="{{ $type }}CreateForm"
     action="{{ route('contacts.store') }}" method="POST" novalidate>
     @csrf
     <div class="col-md-3">
