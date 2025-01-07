@@ -103,7 +103,7 @@
                         <th scope="col">@sortablelink('created_at', 'Created At')</th>
                         <th scope="col">@sortablelink('updated_at', 'Updated At')</th>
                         <th scope="col">@sortablelink('lastLoginLogs.created_at', 'Last Login Time')</th>
-                        <th scope="col">Contorl</th>
+                        <th scope="col">Control</th>
                     </tr>
                 </thead>
                 <tbody>
