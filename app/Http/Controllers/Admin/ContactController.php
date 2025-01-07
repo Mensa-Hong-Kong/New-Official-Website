@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Contact\UpdateRequest;
 use App\Http\Requests\StatusRequest;
 use App\Models\ContactHasVerification;
-use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
