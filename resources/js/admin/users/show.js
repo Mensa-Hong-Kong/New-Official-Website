@@ -778,4 +778,174 @@ document.querySelectorAll('.contactLoader').forEach(
     }
 );
 
+function createContactSuccess(response) {
+    let id = response.data.id;
+    let type = response.data.type;
+    let contactInput = document.getElementById(type+'ContactInput')
+    let isVerified = document.getElementById(type+'IsVerifiedCheckbox');
+    let isDefault = document.getElementById(type+'IsDefaultCheckbox');
+    contactInput.value = '';
+    isVerified.checked = false;
+    isDefault.checked = false;
+    enableSubmitting();
+    contactInput.disabled = false;
+    isVerified.disabled = false;
+    isDefault.disabled = false;
+    document.getElementById(type+'CreatingContact').hidden = true;
+    document.getElementById(type+'CreateButtob').hidden = false;
+    let contact = response.data.contact;
+    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+    let formElement = document.createElement('form');
+    formElement.className = "row g-3";
+    formElement.id = 'editContactForm'+id;
+    formElement.method = 'POST';
+    formElement.hidden = true;
+    formElement.action = response.data.update_url;
+    let formInnerHtml = `
+        <input type="hidden" name="_token" value="${token}">
+        <input type="hidden" name="_method" value="put">
+        <input id="contactInput${id}" class="col-md-3"
+    `;
+    switch(type) {
+        case 'email':
+            formInnerHtml += `
+                    type="email" name="email" maxlength="320"
+                    placeholder="dammy@example.com"
+            `;
+            break;
+        case 'mobile':
+            formInnerHtml += `
+                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    placeholder="85298765432"
+            `;
+            break;
+    }
+    formInnerHtml += `
+            value="${contact}"
+            data-value="${contact}" required />
+        <div class=" col-md-2">
+            <input type="checkbox" class="btn-check" id="isVerifiedContactCheckbox${id}" ${!response.data.is_verified ? 'checked' : ''})>
+            <label class="form-control btn btn-outline-success" for="isVerifiedContactCheckbox${id}">Verified</label>
+        </div>
+        <div class=" col-md-2">
+            <input type="checkbox" class="btn-check ${type}DefaultContactCheckbox" id="isDefaultContactCheckbox${id}" ${!response.data.is_default ? 'checked' : ''})>
+            <label class="form-control btn btn-outline-success" for="isDefaultContactCheckbox${id}">Default</label>
+        </div>
+        <button class="btn btn-primary col-md-1 submitButton" id="saveContact${id}">Save</button>
+        <button class="btn btn-danger col-md-1" id="cancelEditContact${id}" onclick="return false;">Cancel</button>
+        <button class="btn btn-primary col-md-2" id="savingContact${id}" hidden disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Saving
+        </button>
+    `;
+    formElement.innerHTML = formInnerHtml;
+    document.getElementById(type).insertBefore(formElement, document.getElementById(type+'CreateForm'));
+    let rowElement = document.createElement('div');
+    rowElement.className = "row g-3";
+    rowElement.id = 'showContactRow'+id;
+    let rowInnerHtml = `
+        <span class="col-md-3" id="contact${id}">${contact}</span>
+        <form class="col-md-2" id="changeVerifyContactStatusForm${id}" method="POST"
+            action="${response.data.verify_url}">
+            <input type="hidden" name="_token" value="${token}">
+            <input type="hidden" name="_method" value="put">
+            <button id="verifyContactStatus${id}" hidden
+                name="status" value="${response.data.is_verified ? '0' : '1'}"
+                class="btn form-control ${response.data.is_verified ? 'btn-succes' : 'btn-danger'} submitButton">
+                ${response.data.is_verified ? 'Verified' : 'Not Verified'}
+            </button>
+            <button class="btn btn-primary form-control" id="changingVerifyContactStatus${id}" hidden disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Changing...
+            </button>
+        </form>
+        <form class="col-md-2" id="changeContactDefaultStatusForm${id}" method="POST"
+            action="${response.data.default_url}">
+            <input type="hidden" name="_token" value="${token}">
+            <input type="hidden" name="_method" value="put">
+            <button id="contactDefaultStatus${id}" hidden
+                name="status" value="${response.data.is_default ? '0' : '1'}"
+                class="btn form-control ${response.data.is_default ? 'btn-succes' : 'btn-danger'} submitButton ${type}DefaultContact">
+                ${response.data.is_default ? 'Default' : 'Non Default'}
+            </button>
+            <button class="btn btn-primary form-control" id="changingContactDefaultStatus${id}" hidden disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Changing...
+            </button>
+        </form>
+        <div class="contactLoader col-md-1" id="contactLoader${id}">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        </div>
+        <button class="btn btn-primary col-md-1" id="editContact${id}" hidden>Edit</button>
+        <form id="deleteContactForm${id}" method="POST" hidden
+            action="${response.data.delete_url}">
+            <input tpye="hidden" name="_token" value="${token}">
+            <input type="hidden" name="_method" value="delete">
+        </form>
+        <button class="btn btn-danger col-md-1 submitButton" id="deleteContact${id}" form="deleteContactForm${id}" hidden>Delete</button>
+    `;
+    rowElement.innerHTML = rowInnerHtml;
+    document.getElementById(type).insertBefore(rowElement, formElement);
+    setContactEventListeners(document.getElementById('contactLoader'+id));
+}
+
+function createContactFail(error) {
+    let type = submitting.match(/^([a-z]+)Create.*/i)[1];
+    if(error.response.data.errors.message) {
+        bootstrapAlert(error.response.data.errors.message);
+    } else if(error.response.data.errors[type]){
+        bootstrapAlert(error.response.data.errors[type]);
+    } else {
+        bootstrapAlert('The show.js missing create fail type handle, please contact us.')
+    }
+    document.getElementById(type+'ContactInput').disabled = false;
+    document.getElementById(type+'IsVerifiedCheckbox').disabled = false;
+    document.getElementById(type+'IsDefaultCheckbox').disabled = false;
+    document.getElementById(type+'CreatingContact').hidden = true;
+    document.getElementById(type+'CreateButtob').hidden = false;
+    submitting = '';
+    enableSubmitting();
+}
+
+function createContact(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let type = event.target.dataset.type;
+        let cnotact = document.getElementById(type+'ContactInput');
+        let isVerified = document.getElementById(type+'IsVerifiedCheckbox');
+        let isDefault = document.getElementById(type+'IsDefaultCheckbox');
+        let submitAt = Date.now();
+        submitting = type+'Create'+submitAt;
+        disableSubmitting();
+        if(submitting == type+'Create'+submitAt) {
+            if(contactValidation(cnotact)) {
+                cnotact.disabled = true;
+                isVerified.disabled = true;
+                isDefault.disabled = true;
+                document.getElementById(type+'CreateButtob').hidden = true;
+                document.getElementById(type+'CreatingContact').hidden = false;
+                let data = {
+                    user_id: window.location.pathname.match(/^\/admin\/users\/([0-9]+).*/i)[1],
+                    is_verified: isVerified.checked,
+                    is_default: isDefault.checked,
+                };
+                data[cnotact.name] = `${cnotact.value}`;
+                post(
+                    event.target.action,
+                    createContactSuccess,
+                    createContactFail,
+                    'post', data
+                );
+            } else {
+                submitting = '';
+                enableSubmitting();
+            }
+        }
+    }
+}
+
+for(let form of document.getElementsByClassName('createContact')) {
+    form.addEventListener('submit', createContact)
+}
+
 submitting = '';

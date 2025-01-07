@@ -8,7 +8,6 @@
                 @method('put')
                 <h3 class="fw-bold mb-2">
                     Info
-                    @can('Edit:User')
                         <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Saving...
@@ -16,7 +15,6 @@
                         <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
                         <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
                         <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
-                    @endcan
                 </h3>
                 <div class="col-md-4">
                     <label for="validationUsername" class="form-label">Usermame</label>
@@ -97,17 +95,15 @@
         </article>
         <article id="email">
             <h3 class="fw-bold mb-2"><i class="bi bi-envelope"></i> Email</h3>
-            @include('admin.users.contacts', ['contacts' => $user->emails])
+            @include('admin.users.contacts', ['contacts' => $user->emails, 'type' => 'email', 'userID' => $user->id])
         </article>
         <article id="mobile">
             <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Mobile</h3>
-            @include('admin.users.contacts', ['contacts' => $user->mobiles])
+            @include('admin.users.contacts', ['contacts' => $user->mobiles, 'type' => 'mobile', 'userID' => $user->id])
         </article>
     </section>
 @endsection
 
-@can('Edit:User')
     @push('after footer')
         @vite('resources/js/admin/users/show.js')
     @endpush
-@endcan

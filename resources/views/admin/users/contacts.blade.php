@@ -1,6 +1,5 @@
 
 @foreach ($contacts as $contact)
-    @can('Edit:User')
         <div class="row g-3" id="showContactRow{{ $contact->id }}">
             <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form class="col-md-2" id="changeVerifyContactStatusForm{{ $contact->id }}" method="POST"
@@ -80,16 +79,40 @@
                 <input type="checkbox" class="btn-check {{ $contact->type }}DefaultContactCheckbox" id="isDefaultContactCheckbox{{ $contact->id }}" @checked($contact->is_default)>
                 <label class="form-control btn btn-outline-success" for="isDefaultContactCheckbox{{ $contact->id }}">Default</label>
             </div>
-            <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}" form="editContactForm{{ $contact->id }}">Save</button>
+            <button class="btn btn-primary col-md-1 submitButton" id="saveContact{{ $contact->id }}">Save</button>
             <button class="btn btn-danger col-md-1" id="cancelEditContact{{ $contact->id }}" onclick="return false;">Cancel</button>
             <button class="btn btn-primary col-md-2" id="savingContact{{ $contact->id }}" hidden disabled>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 Saving
             </button>
         </form>
-    @else
-        <div class="row g-3">
-            <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
-        </div>
-    @endcan
 @endforeach
+    <form class="row g-3 createContact" data-type="{{ $type }}" id="{{ $type }}CreateForm"
+        action="{{ route('admin.contacts.store') }}" method="POST" novalidate>
+        @csrf
+        <input type="hidden" name="user_id" value="{{ $userID }}">
+        <input id="{{ $type }}ContactInput" class="col-md-3" required
+            @switch($contact->type)
+                @case('email')
+                    type="email" name="email" maxlength="320"
+                    placeholder="dammy@example.com"
+                    @break
+                @case('mobile')
+                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    placeholder="85298765432"
+                    @break
+            @endswitch />
+        <div class=" col-md-2">
+            <input type="checkbox" class="btn-check" id="{{ $type }}IsVerifiedCheckbox">
+            <label class="form-control btn btn-outline-success" for="{{ $type }}IsVerifiedCheckbox">Verified</label>
+        </div>
+        <div class=" col-md-2">
+            <input type="checkbox" class="btn-check" id="{{ $type }}IsDefaultCheckbox">
+            <label class="form-control btn btn-outline-success" for="{{ $type }}IsDefaultCheckbox">Default</label>
+        </div>
+        <button class="btn btn-success col-md-2 submitButton" id="{{ $type }}CreateButtob">Create</button>
+        <button class="btn btn-success col-md-2" id="{{ $type }}CreatingContact" hidden disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Creating
+        </button>
+    </form>
