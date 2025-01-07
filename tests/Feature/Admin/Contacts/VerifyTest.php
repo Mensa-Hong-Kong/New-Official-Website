@@ -186,6 +186,7 @@ class VerifyTest extends TestCase
             'success' => 'The contact verifty status update success!',
             'status' => false,
         ]);
+        $contact->refresh();
         $this->assertFalse($contact->isVerified());
         $this->assertFalse($contact->is_default);
     }
