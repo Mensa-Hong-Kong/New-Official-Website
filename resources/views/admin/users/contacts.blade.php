@@ -110,7 +110,7 @@
                     placeholder="85298765432"
                     @break
             @endswitch
-            name="contact"required />
+            name="contact" required />
         <div class=" col-md-2">
             <input type="checkbox" class="btn-check" id="{{ $type }}IsVerifiedCheckbox">
             <label class="form-control btn btn-outline-success" for="{{ $type }}IsVerifiedCheckbox">Verified</label>
