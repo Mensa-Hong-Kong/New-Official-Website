@@ -30,7 +30,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
             'contact' => $contact->contact,
             'type' => $contact->type,
             'verified_at' => now(),
-            'creator_id' => User::inRandomOrder()->first(),
+            'creator_id' => User::inRandomOrder()->first()->id,
             'creator_ip' => fake()->ipv4(),
             'middleware_should_count' => false,
         ]);
