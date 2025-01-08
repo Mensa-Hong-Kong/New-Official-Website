@@ -93,7 +93,7 @@
         <input type="hidden" name="user_id" value="{{ $userID }}">
         <input type="hidden" name="type" value="{{ $type }}">
         <input id="{{ $type }}ContactInput" class="col-md-3"
-            @switch($contact->type)
+            @switch($type)
                 @case('email')
                     type="email" maxlength="320"
                     placeholder="dammy@example.com"
