@@ -40,7 +40,7 @@ class StoreTest extends TestCase
             ), [
                 'user_id' => $this->user->id,
                 'tpye' => $tpye,
-                'contact' => $contact
+                'contact' => $contact,
             ]
         );
         $response->assertUnauthorized();
@@ -57,7 +57,7 @@ class StoreTest extends TestCase
         );
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -80,7 +80,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -103,7 +103,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -127,7 +127,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -164,7 +164,7 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'cotact' => $contact
+                    'cotact' => $contact,
                 ]
             );
         $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
@@ -172,7 +172,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_string()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -196,7 +196,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_in_list()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -218,16 +218,15 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-
     public function test_missing_contaact()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'type' => $type
+                    'type' => $type,
                 ]
             );
         $response->assertInvalid(['contact' => "The contact of $type is required."]);
@@ -310,7 +309,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -335,7 +334,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -361,7 +360,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -403,7 +402,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -446,7 +445,7 @@ class StoreTest extends TestCase
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
-        switch($type) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;

@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
             'is_default' => 'sometimes|boolean',
             'contact' => ['required'],
         ];
-        switch($this->type) {
+        switch ($this->type) {
             case 'email':
                 $return['contact'][] = 'email:rfc,dns';
                 break;
@@ -38,6 +38,7 @@ class StoreRequest extends FormRequest
         $return['contact'][] = Rule::unique(UserHasContact::class, 'contact')
             ->where('user_id', $this->user_id)
             ->where('type', $this->type);
+
         return $return;
     }
 
@@ -53,7 +54,7 @@ class StoreRequest extends FormRequest
             'is_verified.boolean' => 'The verified field must be true or false. if you are using our CMS, please contact I.T. officer.',
             'is_default.boolean' => 'The default field must be true or false. if you are using our CMS, please contact I.T. officer.',
         ];
-        if(!is_array($this->type)) {
+        if (! is_array($this->type)) {
             $return = array_merge($return, [
                 'contact.required' => "The contact of {$this->type} is required.",
                 'contact.email' => 'The contact of email must be a valid email address.',
@@ -63,6 +64,7 @@ class StoreRequest extends FormRequest
                 'contact.unique' => "The contact of {$this->type} has already been taken.",
             ]);
         }
+
         return $return;
     }
 

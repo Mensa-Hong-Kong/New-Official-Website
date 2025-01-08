@@ -37,7 +37,7 @@ class StoreTest extends TestCase
                 'contacts.store',
             ), [
                 'type' => $type,
-                'contact' => $contact
+                'contact' => $contact,
             ]
         );
         $response->assertUnauthorized();
@@ -65,7 +65,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_string()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -88,7 +88,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_in_list()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -111,7 +111,7 @@ class StoreTest extends TestCase
 
     public function test_missing_contaact()
     {
-        $type =Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.store'),

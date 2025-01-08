@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
             'type' => 'required|string|in:email,mobile',
             'contact' => ['required'],
         ];
-        switch($this->type) {
+        switch ($this->type) {
             case 'email':
                 $return['contact'][] = 'email:rfc,dns';
                 break;
@@ -34,6 +34,7 @@ class StoreRequest extends FormRequest
         $return['contact'][] = Rule::unique(UserHasContact::class, 'contact')
             ->where('user_id', $this->user()->id)
             ->where('type', $this->type);
+
         return $return;
     }
 
@@ -44,7 +45,7 @@ class StoreRequest extends FormRequest
             'type.string' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.',
             'type.in' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.',
         ];
-        if(!is_array($this->type)) {
+        if (! is_array($this->type)) {
             $return = array_merge($return, [
                 'contact.required' => "The contact of {$this->type} is required.",
                 'contact.email' => 'The contact of email must be a valid email address.',
@@ -54,6 +55,7 @@ class StoreRequest extends FormRequest
                 'contact.unique' => "The contact of {$this->type} has already been taken.",
             ]);
         }
+
         return $return;
     }
 
