@@ -30,7 +30,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
             'contact' => $contact->contact,
             'type' => $contact->type,
             'verified_at' => now(),
-            'creator_id' =>  User::inRandomOrder()->first(),
+            'creator_id' => User::inRandomOrder()->first(),
             'creator_ip' => fake()->ipv4(),
             'middleware_should_count' => false,
         ]);
@@ -46,7 +46,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $this->assertEquals(
@@ -126,7 +126,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -148,7 +148,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -161,7 +161,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -214,7 +214,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $this->verified($contact);
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -250,7 +250,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -266,7 +266,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact->lastVerification()->update(['expired_at' => now()]);
@@ -292,7 +292,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
@@ -316,7 +316,7 @@ class ClearUnusedAdminVerifiyRecodeTest extends TestCase
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
-        if(fake()->randomElement([true, false])) {
+        if (fake()->randomElement([true, false])) {
             $contact->lastVerification()->update(['verified_at' => now()]);
         }
         $contact = UserHasContact::factory()->create();
