@@ -103,7 +103,8 @@
         </article>
     </section>
 @endsection
-
+@can('Edit:User')
     @push('after footer')
         @vite('resources/js/admin/users/show.js')
     @endpush
+@endcan

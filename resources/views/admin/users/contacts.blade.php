@@ -1,5 +1,6 @@
 
 @foreach ($contacts as $contact)
+    @can('Edit:User')
         <div class="row g-3" id="showContactRow{{ $contact->id }}">
             <span class="col-md-3" id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form class="col-md-2" id="changeVerifyContactStatusForm{{ $contact->id }}" method="POST"
@@ -86,7 +87,13 @@
                 Saving
             </button>
         </form>
+    @else
+        <div class="row g-3">
+            <span class="col-md-3">{{ $contact->contact }}</span>
+        </div>
+    @endcan
 @endforeach
+@can('Edit:User')
     <form class="row g-3 createContact" data-type="{{ $type }}" id="{{ $type }}CreateForm"
         action="{{ route('admin.contacts.store') }}" method="POST" novalidate>
         @csrf
@@ -118,3 +125,4 @@
             Creating
         </button>
     </form>
+@endcan
