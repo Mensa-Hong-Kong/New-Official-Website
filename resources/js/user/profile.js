@@ -544,7 +544,7 @@ function requestNewVerifyCode(event) {
             document.getElementById('cancelVerify'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
-                event.target.parentElement.dataset.requsetverifycodeurl,
+                event.target.parentElement.dataset.requsetVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
                 requestNewVerifyCodefailCallback
             );
@@ -673,7 +673,7 @@ function verifyContact(event) {
             document.getElementById('deleteContact'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
-                event.target.parentElement.dataset.requsetverifycodeurl,
+                event.target.parentElement.dataset.requsetVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
                 requestVerifyCodefailCallback
             );
@@ -796,9 +796,9 @@ function contactValidation(input) {
 function updateContactSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     let id = urlGetContactID(response.request.responseURL);
-    document.getElementById('contact'+id).innerText = response.data.contact;
     let input = document.getElementById('contactInput'+id);
-    input.dataset.value = response.data.contact;
+    document.getElementById('contact'+id).innerText = response.data[input.name];
+    input.dataset.value = response.data[input.name];
     if(
         ! response.data.is_verified &&
         ! document.getElementById('verifyContactButton'+id)
@@ -972,9 +972,9 @@ document.querySelectorAll('.contactLoader').forEach(
 function createContactSuccess(response) {
     bootstrapAlert(response.data.success);
     let id = response.data.id;
+    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     let type = response.data.type;
     let contact = response.data.contact;
-    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     let input = document.getElementById(type+'ContactInput');
     input.value = '';
     enableSubmitting();
@@ -1092,8 +1092,10 @@ function createContact(event) {
                 input.disabled = true;
                 document.getElementById(type+'CreateButtob').hidden = true;
                 document.getElementById(type+'CreatingContact').hidden = false;
-                let data = {};
-                data[input.name] = `${input.value}`;
+                let data = {
+                    type: type,
+                    contact: input.value,
+                };
                 post(
                     event.target.action,
                     createContactSuccess,

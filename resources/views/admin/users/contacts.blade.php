@@ -91,17 +91,19 @@
         action="{{ route('admin.contacts.store') }}" method="POST" novalidate>
         @csrf
         <input type="hidden" name="user_id" value="{{ $userID }}">
-        <input id="{{ $type }}ContactInput" class="col-md-3" required
+        <input type="hidden" name="type" value="{{ $type }}">
+        <input id="{{ $type }}ContactInput" class="col-md-3"
             @switch($contact->type)
                 @case('email')
-                    type="email" name="email" maxlength="320"
+                    type="email" maxlength="320"
                     placeholder="dammy@example.com"
                     @break
                 @case('mobile')
-                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    type="tel" minlength="5" maxlength="15"
                     placeholder="85298765432"
                     @break
-            @endswitch />
+            @endswitch
+            name="contact"required />
         <div class=" col-md-2">
             <input type="checkbox" class="btn-check" id="{{ $type }}IsVerifiedCheckbox">
             <label class="form-control btn btn-outline-success" for="{{ $type }}IsVerifiedCheckbox">Verified</label>

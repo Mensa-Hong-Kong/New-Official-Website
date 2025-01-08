@@ -851,7 +851,7 @@ function createContactSuccess(response) {
             <input type="hidden" name="_method" value="put">
             <button id="verifyContactStatus${id}" hidden
                 name="status" value="${response.data.is_verified ? '0' : '1'}"
-                class="btn form-control ${response.data.is_verified ? 'btn-succes' : 'btn-danger'} submitButton">
+                class="btn form-control ${response.data.is_verified ? 'btn-success' : 'btn-danger'} submitButton">
                 ${response.data.is_verified ? 'Verified' : 'Not Verified'}
             </button>
             <button class="btn btn-primary form-control" id="changingVerifyContactStatus${id}" hidden disabled>
@@ -865,7 +865,7 @@ function createContactSuccess(response) {
             <input type="hidden" name="_method" value="put">
             <button id="contactDefaultStatus${id}" hidden
                 name="status" value="${response.data.is_default ? '0' : '1'}"
-                class="btn form-control ${response.data.is_default ? 'btn-succes' : 'btn-danger'} submitButton ${type}DefaultContact">
+                class="btn form-control ${response.data.is_default ? 'btn-success' : 'btn-danger'} submitButton ${type}DefaultContact">
                 ${response.data.is_default ? 'Default' : 'Non Default'}
             </button>
             <button class="btn btn-primary form-control" id="changingContactDefaultStatus${id}" hidden disabled>
@@ -928,8 +928,9 @@ function createContact(event) {
                     user_id: window.location.pathname.match(/^\/admin\/users\/([0-9]+).*/i)[1],
                     is_verified: isVerified.checked,
                     is_default: isDefault.checked,
+                    type: type,
+                    contact: cnotact.value,
                 };
-                data[cnotact.name] = `${cnotact.value}`;
                 post(
                     event.target.action,
                     createContactSuccess,
@@ -946,6 +947,7 @@ function createContact(event) {
 
 for(let form of document.getElementsByClassName('createContact')) {
     form.addEventListener('submit', createContact)
+    let type = form.dataset.type;
 }
 
 submitting = '';

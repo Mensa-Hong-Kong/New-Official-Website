@@ -160,7 +160,7 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson([
             'success' => "The {$contact->type} update success!",
-            'contact' => "$contact->contact",
+            $contact->type => "$contact->contact",
             "default_{$contact->type}_id" => $contact->id,
             'is_verified' => true,
         ]);
@@ -193,7 +193,7 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson([
             'success' => "The {$contact->type} update success!",
-            'contact' => $newContact,
+            $contact->type => $newContact,
             "default_{$contact->type}_id" => null,
             'is_verified' => false,
         ]);

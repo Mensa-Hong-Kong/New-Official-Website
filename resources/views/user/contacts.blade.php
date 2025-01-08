@@ -1,6 +1,6 @@
 @foreach ($contacts as $contact)
     <div class="row g-3" id="contactRow{{ $contact->id }}"
-        data-requsetVerifyCodeUrl="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
+        data-requset-verify-code-url="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
         <div class="col-md-3">
             <span id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form id="editContactForm{{ $contact->id }}" method="POST" novalidate hidden
@@ -89,19 +89,20 @@
 <form class="row g-3 createContact" data-type="{{ $type }}" id="{{ $type }}CreateForm"
     action="{{ route('contacts.store') }}" method="POST" novalidate>
     @csrf
+    <input type="hidden" name="type" value="{{ $type }}">
     <div class="col-md-3">
-        <input
+        <input id="{{ $type }}ContactInput" class="form-control"
             @switch($type)
                 @case('email')
-                    type="email" name="email" maxlength="320"
+                    type="email" maxlength="320"
                     placeholder="dammy@example.com"
                     @break
                 @case('mobile')
-                    type="tel" name="mobile" minlength="5" maxlength="15"
+                    type="tel" minlength="5" maxlength="15"
                     placeholder="85298765432"
                     @break
             @endswitch
-            id="{{ $type }}ContactInput" class="form-control" required />
+            name="contact" required />
     </div>
     <div class="col-md-4"></div>
     <button class="btn btn-success col-md-4 submitButton" id="{{ $type }}CreateButtob">Create</button>

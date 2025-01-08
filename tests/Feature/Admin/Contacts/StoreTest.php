@@ -24,9 +24,9 @@ class StoreTest extends TestCase
 
     public function test_have_no_login()
     {
-        $contactType = Arr::random(['email', 'mobile']);
+        $tpye = Arr::random(['email', 'mobile']);
         $contact = '';
-        switch ($contactType) {
+        switch ($tpye) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -37,7 +37,11 @@ class StoreTest extends TestCase
         $response = $this->postJson(
             route(
                 'admin.contacts.store',
-            ), [$contactType => $contact]
+            ), [
+                'user_id' => $this->user->id,
+                'tpye' => $tpye,
+                'contact' => $contact
+            ]
         );
         $response->assertUnauthorized();
     }
@@ -65,7 +69,8 @@ class StoreTest extends TestCase
             route('admin.contacts.store'),
             [
                 'user_id' => $this->user->id,
-                $type => $contact,
+                'type' => $type,
+                'contact' => $contact,
             ]
         );
         $response->assertForbidden();
@@ -86,7 +91,10 @@ class StoreTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('admin.contacts.store'),
-                [$type => $contact]
+                [
+                    'type' => $type,
+                    'contact' => $contact,
+                ]
             );
         $response->assertInvalid(['message' => 'The user field is required, if you are using our CMS, please contact I.T. officer.']);
     }
@@ -108,7 +116,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => 'abc',
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                 ]
             );
         $response->assertInvalid(['message' => 'The user field must be an integer, if you are using our CMS, please contact I.T. officer.']);
@@ -131,34 +140,97 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => 0,
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                 ]
             );
-        $response->assertInvalid(['message' => 'User is ont found, may be deleted, if you are using our CMS, please refresh. If refresh is not show 404, please contact I.T. officer.']);
+        $response->assertInvalid(['message' => 'User is ont found, may be deleted, if you are using our CMS, please refresh. Than, if refresh is not show 404, please contact I.T. officer.']);
     }
 
-    public function test_have_missing_contaact()
+    public function test_missing_type()
     {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('admin.contacts.store'),
-                ['user_id' => $this->user->id]
-            );
-        $response->assertInvalid(['message' => 'The data fields of email, mobile must have one.']);
-    }
-
-    public function test_have_more_than_one_contaact_parameter()
-    {
+        $type = Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'email' => fake()->freeEmail(),
-                    'mobile' => fake()->numberBetween(10000, 999999999999999),
+                    'cotact' => $contact
                 ]
             );
-        $response->assertInvalid(['message' => 'The data fields of email, mobile only can have one.']);
+        $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+    public function test_type_is_not_string()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('admin.contacts.store'),
+                [
+                    'user_id' => $this->user->id,
+                    'type' => [$type],
+                    'contact' => $contact,
+                ]
+            );
+        $response->assertInvalid(['message' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+    public function test_type_is_not_in_list()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('admin.contacts.store'),
+                [
+                    'user_id' => $this->user->id,
+                    'type' => 'abc',
+                    'contact' => $contact,
+                ]
+            );
+        $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+
+    public function test_missing_contaact()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('admin.contacts.store'),
+                [
+                    'user_id' => $this->user->id,
+                    'type' => $type
+                ]
+            );
+        $response->assertInvalid(['contact' => "The contact of $type is required."]);
     }
 
     public function test_email_invalid()
@@ -168,10 +240,11 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'email' => 'abc',
+                    'type' => 'email',
+                    'contact' => 'abc',
                 ]
             );
-        $response->assertInvalid(['email' => 'The email field must be a valid email address.']);
+        $response->assertInvalid(['contact' => 'The contact of email must be a valid email address.']);
     }
 
     public function test_mobile_not_integer()
@@ -181,10 +254,11 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'mobile' => 'abc',
+                    'type' => 'mobile',
+                    'contact' => 'abc',
                 ]
             );
-        $response->assertInvalid(['mobile' => 'The mobile field must be an integer.']);
+        $response->assertInvalid(['contact' => 'The contact of mobile must be an integer.']);
     }
 
     public function test_mobile_too_short()
@@ -194,10 +268,11 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'mobile' => '1234',
+                    'type' => 'mobile',
+                    'contact' => '1234',
                 ]
             );
-        $response->assertInvalid(['mobile' => 'The mobile field must have at least 5 digits.']);
+        $response->assertInvalid(['contact' => 'The contact of mobile must have at least 5 digits.']);
     }
 
     public function test_mobile_too_long()
@@ -207,10 +282,11 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    'mobile' => '1234567890123456',
+                    'type' => 'mobile',
+                    'contact' => '1234567890123456',
                 ]
             );
-        $response->assertInvalid(['mobile' => 'The mobile field must not have more than 15 digits.']);
+        $response->assertInvalid(['contact' => 'The contact of mobile must not have more than 15 digits.']);
     }
 
     public function test_contact_exist_with_same_user()
@@ -223,10 +299,11 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    $contact->type => $contact->contact,
+                    'type' => $contact->type,
+                    'contact' => $contact->contact,
                 ]
             );
-        $response->assertInvalid([$contact->type => "The {$contact->type} has already been taken."]);
+        $response->assertInvalid(['contact' => "The contact of {$contact->type} has already been taken."]);
     }
 
     public function test_with_is_verified_and_is_verified_is_not_boolean()
@@ -246,7 +323,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                     'is_verified' => 'abc',
                 ]
             );
@@ -270,6 +348,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
+                    'type' => $type,
+                    'contact' => $contact,
                     $type => $contact,
                     'is_default' => 'abc',
                 ]
@@ -294,7 +374,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                 ]
             );
         $response->assertSuccessful();
@@ -335,7 +416,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                     'is_verified' => true,
                 ]
             );
@@ -377,7 +459,8 @@ class StoreTest extends TestCase
                 route('admin.contacts.store'),
                 [
                     'user_id' => $this->user->id,
-                    $type => $contact,
+                    'type' => $type,
+                    'contact' => $contact,
                     'is_default' => true,
                 ]
             );

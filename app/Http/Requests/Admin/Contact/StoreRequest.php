@@ -20,37 +20,50 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $return = [
             'user_id' => 'required|integer|exists:'.User::class.',id',
-            'email' => [
-                'required_without_all:mobile', 'missing_with:mobile', 'email:rfc,dns',
-                Rule::unique(UserHasContact::class, 'contact')
-                    ->where('user_id', $this->user_id)
-                    ->where('type', 'email'),
-            ],
-            'mobile' => [
-                'required_without_all:email', 'missing_with:email',
-                'integer', 'min_digits:5', 'max_digits:15',
-                Rule::unique(UserHasContact::class, 'contact')
-                    ->where('user_id', $this->user_id)
-                    ->where('type', 'mobile'),
-            ],
+            'type' => 'required|string|in:email,mobile',
             'is_verified' => 'sometimes|boolean',
             'is_default' => 'sometimes|boolean',
+            'contact' => ['required'],
         ];
+        switch($this->type) {
+            case 'email':
+                $return['contact'][] = 'email:rfc,dns';
+                break;
+            case 'mobile':
+                $return['contact'] = ['required', 'integer', 'min_digits:5', 'max_digits:15'];
+                break;
+        }
+        $return['contact'][] = Rule::unique(UserHasContact::class, 'contact')
+            ->where('user_id', $this->user_id)
+            ->where('type', $this->type);
+        return $return;
     }
 
     public function messages(): array
     {
-        return [
+        $return = [
             'user_id.required' => 'The user field is required, if you are using our CMS, please contact I.T. officer.',
             'user_id.integer' => 'The user field must be an integer, if you are using our CMS, please contact I.T. officer.',
-            'user_id.exists' => 'User is ont found, may be deleted, if you are using our CMS, please refresh. If refresh is not show 404, please contact I.T. officer.',
-            'email.required_without_all' => 'The data fields of :attribute, :values must have one.',
-            'email.missing_with' => 'The data fields of :attribute, :values only can have one.',
+            'user_id.exists' => 'User is ont found, may be deleted, if you are using our CMS, please refresh. Than, if refresh is not show 404, please contact I.T. officer.',
+            'type.required' => 'The type field is required, if you are using our CMS, please contact I.T. officer.',
+            'type.string' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.',
+            'type.in' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.',
             'is_verified.boolean' => 'The verified field must be true or false. if you are using our CMS, please contact I.T. officer.',
             'is_default.boolean' => 'The default field must be true or false. if you are using our CMS, please contact I.T. officer.',
         ];
+        if(!is_array($this->type)) {
+            $return = array_merge($return, [
+                'contact.required' => "The contact of {$this->type} is required.",
+                'contact.email' => 'The contact of email must be a valid email address.',
+                'contact.integer' => "The contact of {$this->type} must be an integer.",
+                'contact.min_digits' => "The contact of {$this->type} must have at least :min digits.",
+                'contact.max_digits' => "The contact of {$this->type} must not have more than :max digits.",
+                'contact.unique' => "The contact of {$this->type} has already been taken.",
+            ]);
+        }
+        return $return;
     }
 
     protected function failedValidation(Validator $validator)
@@ -58,19 +71,7 @@ class StoreRequest extends FormRequest
         $errors = $validator->errors();
         $message = $errors->first();
         $key = 'message';
-        if (
-            (
-                ! str_ends_with($message, ' have one.') ||
-                ! str_starts_with($message, 'The data fields of ')
-            ) && ! in_array($message, [
-                'The user field is required, if you are using our CMS, please contact I.T. officer.',
-                'The user field must be an integer, if you are using our CMS, please contact I.T. officer.',
-                'User is ont found, may be deleted, if you are using our CMS, please refresh. If refresh is not show 404, please contact I.T. officer.',
-                'The verified field must be true or false. if you are using our CMS, please contact I.T. officer.',
-                'The default field must be true or false. if you are using our CMS, please contact I.T. officer.',
-
-            ])
-        ) {
+        if (! str_ends_with($message, 'please contact I.T. officer.')) {
             $key = $errors->keys()[0];
         }
 

@@ -22,9 +22,9 @@ class StoreTest extends TestCase
 
     public function test_have_no_login()
     {
-        $contactType = Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
-        switch ($contactType) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -35,89 +35,19 @@ class StoreTest extends TestCase
         $response = $this->postJson(
             route(
                 'contacts.store',
-            ), [$contactType => $contact]
+            ), [
+                'type' => $type,
+                'contact' => $contact
+            ]
         );
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_contaact_parameter()
+    public function test_missing_type()
     {
-        $response = $this->actingAs($this->user)
-            ->postJson(route('contacts.store'));
-        $response->assertInvalid(['message' => 'The data fields of email, mobile must have one.']);
-    }
-
-    public function test_have_more_than_one_contaact_parameter()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                [
-                    'email' => fake()->freeEmail(),
-                    'mobile' => fake()->numberBetween(10000, 999999999999999),
-                ]
-            );
-        $response->assertInvalid(['message' => 'The data fields of email, mobile only can have one.']);
-    }
-
-    public function test_email_invalid()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                ['email' => 'abc']
-            );
-        $response->assertInvalid(['email' => 'The email field must be a valid email address.']);
-    }
-
-    public function test_mobile_not_integer()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                ['mobile' => 'abc']
-            );
-        $response->assertInvalid(['mobile' => 'The mobile field must be an integer.']);
-    }
-
-    public function test_mobile_too_short()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                ['mobile' => '1234']
-            );
-        $response->assertInvalid(['mobile' => 'The mobile field must have at least 5 digits.']);
-    }
-
-    public function test_mobile_too_long()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                ['mobile' => '1234567890123456']
-            );
-        $response->assertInvalid(['mobile' => 'The mobile field must not have more than 15 digits.']);
-    }
-
-    public function test_contact_exist_with_same_user()
-    {
-        $contact = UserHasContact::factory()
-            ->{Arr::random(['email', 'mobile'])}()
-            ->create();
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                route('contacts.store'),
-                [$contact->type => $contact->contact]
-            );
-        $response->assertInvalid([$contact->type => "The {$contact->type} has already been taken."]);
-    }
-
-    public function test_happy_case()
-    {
-        $contactType = Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
-        switch ($contactType) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -128,17 +58,165 @@ class StoreTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.store'),
-                [$contactType => $contact]
+                ['cotact' => $contact]
+            );
+        $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+    public function test_type_is_not_string()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => [$type],
+                    'contact' => $contact,
+                ]
+            );
+        $response->assertInvalid(['message' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+    public function test_type_is_not_in_list()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => 'abc',
+                    'contact' => $contact,
+                ]
+            );
+        $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
+    }
+
+    public function test_missing_contaact()
+    {
+        $type =Arr::random(['email', 'mobile']);
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                ['type' => $type]
+            );
+        $response->assertInvalid(['contact' => "The contact of $type is required."]);
+    }
+
+    public function test_email_invalid()
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => 'email',
+                    'contact' => 'abc',
+                ]
+            );
+        $response->assertInvalid(['contact' => 'The contact of email must be a valid email address.']);
+    }
+
+    public function test_mobile_not_integer()
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => 'mobile',
+                    'contact' => 'abc',
+                ]
+            );
+        $response->assertInvalid(['contact' => 'The contact of mobile must be an integer.']);
+    }
+
+    public function test_mobile_too_short()
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => 'mobile',
+                    'contact' => '1234',
+                ]
+            );
+        $response->assertInvalid(['contact' => 'The contact of mobile must have at least 5 digits.']);
+    }
+
+    public function test_mobile_too_long()
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => 'mobile',
+                    'contact' => '1234567890123456',
+                ]
+            );
+        $response->assertInvalid(['contact' => 'The contact of mobile must not have more than 15 digits.']);
+    }
+
+    public function test_contact_exist_with_same_user()
+    {
+        $contact = UserHasContact::factory()
+            ->{Arr::random(['email', 'mobile'])}()
+            ->create();
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => $contact->type,
+                    'contact' => $contact->contact,
+                ]
+            );
+        $response->assertInvalid(['contact' => "The contact of {$contact->type} has already been taken."]);
+    }
+
+    public function test_happy_case()
+    {
+        $type = Arr::random(['email', 'mobile']);
+        $contact = '';
+        switch ($type) {
+            case 'email':
+                $contact = fake()->freeEmail();
+                break;
+            case 'mobile':
+                $contact = fake()->numberBetween(10000, 999999999999999);
+                break;
+        }
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.store'),
+                [
+                    'type' => $type,
+                    'contact' => $contact,
+                ]
             );
         $response->assertSuccessful();
         $contactModel = UserHasContact::first();
-        $this->assertEquals($contactType, $contactModel->type);
+        $this->assertEquals($type, $contactModel->type);
         $this->assertEquals($contact, $contactModel->contact);
         $this->assertEquals($this->user->id, $contactModel->user_id);
         $response->assertJson([
-            'success' => "The $contactType create success!",
+            'success' => "The $type create success!",
             'id' => $contactModel->id,
-            'type' => $contactType,
+            'type' => $type,
             'contact' => $contact,
             'send_verify_code_url' => route('contacts.send-verify-code', ['contact' => $contactModel]),
             'verify_url' => route('contacts.verify', ['contact' => $contactModel]),

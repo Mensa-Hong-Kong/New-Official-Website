@@ -77,19 +77,14 @@ class ContactController extends Controller implements HasMiddleware
 
     public function store(StoreRequest $request)
     {
-        foreach ($request->validated() as $key => $value) {
-            if(in_array($key, ['email', 'mobile'])) {
-                $contact = UserHasContact::create([
-                    'user_id' => $request->user_id,
-                    'type' => $key,
-                    'contact' => $value,
-                    'is_default' => $request->is_default ?? false,
-                ]);
-                if($request->is_verified ?? false || $contact->is_default ?? false) {
-                    $this->verified($contact);
-                }
-                break;
-            }
+        $contact = UserHasContact::create([
+            'user_id' => $request->user_id,
+            'type' => $request->type,
+            'contact' => $request->contact,
+            'is_default' => $request->is_default ?? false,
+        ]);
+        if($request->is_verified ?? false || $contact->is_default ?? false) {
+            $this->verified($contact);
         }
 
         return [

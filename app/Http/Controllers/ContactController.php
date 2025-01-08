@@ -167,13 +167,11 @@ class ContactController extends Controller implements HasMiddleware
 
     public function store(StoreRequest $request)
     {
-        foreach ($request->validated() as $type => $contact) {
-            $contact = UserHasContact::create([
-                'user_id' => $request->user()->id,
-                'type' => $type,
-                'contact' => $contact,
-            ]);
-        }
+        $contact = UserHasContact::create([
+            'user_id' => $request->user()->id,
+            'type' => $request->type,
+            'contact' => $request->contact,
+        ]);
 
         return [
             'success' => "The {$contact->type} create success!",
@@ -205,7 +203,7 @@ class ContactController extends Controller implements HasMiddleware
 
         return [
             'success' => "The {$contact->type} update success!",
-            'contact' => $contact->contact,
+            $contact->type => $contact->contact,
             "default_{$contact->type}_id" => $request->user()->{"default$type"}->id ?? null,
             'is_verified' => $contact->refresh()->isVerified(),
         ];
