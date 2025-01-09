@@ -32,6 +32,15 @@
             </div>
             <div class="mb-4">
                 <div class="form-floating">
+                    <input type="date" name="birthday" class="form-control" id="validationBirthday"  max="{{ $maxBirthday }}" value="{{ old('birthday', $maxBirthday) }}" placeholder="Birthday" required />
+                    <label for="validationBirthday">Birthday</label>
+                    <div id="birthdayFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="form-floating">
                     <select class="form-select" id="validationVerifiedContactType" name="verified_contact_type" required>
                         <option value="" selected disabled>Please select Verified Contact Type</option>
                         <option value="email">Email</option>
@@ -48,15 +57,6 @@
                     <input type="text" name="verified_contact" class="form-control" id="validationVerifiedContact" placeholder="Verified Contact" required />
                     <label for="validationVerifiedContact">Verified Contact</label>
                     <div id="verifiedContactFeedback" class="valid-feedback">
-                        Looks good!
-                    </div>
-                </div>
-            </div>
-            <div class="mb-4">
-                <div class="form-floating">
-                    <input type="date" name="birthday" class="form-control" id="validationBirthday"  max="{{ $maxBirthday }}" value="{{ old('birthday', $maxBirthday) }}" placeholder="Birthday" required />
-                    <label for="validationBirthday">Birthday</label>
-                    <div id="birthdayFeedback" class="valid-feedback">
                         Looks good!
                     </div>
                 </div>
@@ -80,3 +80,7 @@
         </form>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/user/forgetPassword.js')
+@endpush
