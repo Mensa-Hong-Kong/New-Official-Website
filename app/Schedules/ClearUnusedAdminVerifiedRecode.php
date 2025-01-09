@@ -4,7 +4,7 @@ namespace App\Schedules;
 
 use App\Models\ContactHasVerification;
 
-class ClearUnusedAdminVerifiyRecode
+class ClearUnusedAdminVerifiedRecode
 {
     public function __invoke()
     {

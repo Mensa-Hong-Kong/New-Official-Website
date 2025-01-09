@@ -1,6 +1,6 @@
 @foreach ($contacts as $contact)
     <div class="row g-3" id="contactRow{{ $contact->id }}"
-        data-requset-verify-code-url="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
+        data-request-verify-code-url="{{ route('contacts.send-verify-code', ['contact' => $contact]) }}">
         <div class="col-md-3">
             <span id="contact{{ $contact->id }}">{{ $contact->contact }}</span>
             <form id="editContactForm{{ $contact->id }}" method="POST" novalidate hidden
@@ -105,7 +105,7 @@
             name="contact" required />
     </div>
     <div class="col-md-4"></div>
-    <button class="btn btn-success col-md-4 submitButton" id="{{ $type }}CreateButtob">Create</button>
+    <button class="btn btn-success col-md-4 submitButton" id="{{ $type }}CreateButton">Create</button>
     <button class="btn btn-success col-md-4" id="{{ $type }}CreatingContact" hidden disabled>
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         Creating

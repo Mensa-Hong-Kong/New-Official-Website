@@ -119,7 +119,7 @@
             <input type="checkbox" class="btn-check" id="{{ $type }}IsDefaultCheckbox">
             <label class="form-control btn btn-outline-success" for="{{ $type }}IsDefaultCheckbox">Default</label>
         </div>
-        <button class="btn btn-success col-md-2 submitButton" id="{{ $type }}CreateButtob">Create</button>
+        <button class="btn btn-success col-md-2 submitButton" id="{{ $type }}CreateButton">Create</button>
         <button class="btn btn-success col-md-2" id="{{ $type }}CreatingContact" hidden disabled>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Creating

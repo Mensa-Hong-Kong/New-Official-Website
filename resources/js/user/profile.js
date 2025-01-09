@@ -544,7 +544,7 @@ function requestNewVerifyCode(event) {
             document.getElementById('cancelVerify'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
-                event.target.parentElement.dataset.requsetVerifyCodeUrl,
+                event.target.parentElement.dataset.requestVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
                 requestNewVerifyCodefailCallback
             );
@@ -673,7 +673,7 @@ function verifyContact(event) {
             document.getElementById('deleteContact'+id).hidden = true;
             document.getElementById('requestingContactButton'+id).hidden = false;
             get(
-                event.target.parentElement.dataset.requsetVerifyCodeUrl,
+                event.target.parentElement.dataset.requestVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
                 requestVerifyCodefailCallback
             );
@@ -980,11 +980,11 @@ function createContactSuccess(response) {
     enableSubmitting();
     input.disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
-    document.getElementById(type+'CreateButtob').hidden = false;
+    document.getElementById(type+'CreateButton').hidden = false;
     let rowElement = document.createElement('div');
     rowElement.className = "row g-4";
     rowElement.id = 'contactRow'+id;
-    rowElement.dataset.requsetVerifyCodeUrl = response.data.send_verify_code_url;
+    rowElement.dataset.requestVerifyCodeUrl = response.data.send_verify_code_url;
     let innerHtml = `
         <div class="col-md-3">
             <span id="contact${id}">${contact}</span>
@@ -1074,7 +1074,7 @@ function createContactFail(error) {
     }
     document.getElementById(type+'ContactInput').disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
-    document.getElementById(type+'CreateButtob').hidden = false;
+    document.getElementById(type+'CreateButton').hidden = false;
     submitting = '';
     enableSubmitting();
 }
@@ -1090,7 +1090,7 @@ function createContact(event) {
         if(submitting == type+'Create'+submitAt) {
             if(contactValidation(input)) {
                 input.disabled = true;
-                document.getElementById(type+'CreateButtob').hidden = true;
+                document.getElementById(type+'CreateButton').hidden = true;
                 document.getElementById(type+'CreatingContact').hidden = false;
                 let data = {
                     type: type,

@@ -503,9 +503,9 @@ function changeContacDefaulttStatusSuccessCallbacke(response) {
     document.getElementById('changingContactDefaultStatus'+id).hidden = true;
     let input = document.getElementById('contactDefaultStatus'+id);
     if(response.data.status) {
-        let verifiyButton = document.getElementById('verifyContactStatus'+id);
-        if(stringToBoolean(verifiyButton.value) == true) {
-            updateVerifyContactStatusButton(verifiyButton, true);
+        let verifyButton = document.getElementById('verifyContactStatus'+id);
+        if(stringToBoolean(verifyButton.value) == true) {
+            updateVerifyContactStatusButton(verifyButton, true);
         }
         let name = document.getElementById('contactInput'+id).name;
         updateAllDefaultCheckboxToFalse(name);
@@ -792,7 +792,7 @@ function createContactSuccess(response) {
     isVerified.disabled = false;
     isDefault.disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
-    document.getElementById(type+'CreateButtob').hidden = false;
+    document.getElementById(type+'CreateButton').hidden = false;
     let contact = response.data.contact;
     let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     let formElement = document.createElement('form');
@@ -902,7 +902,7 @@ function createContactFail(error) {
     document.getElementById(type+'IsVerifiedCheckbox').disabled = false;
     document.getElementById(type+'IsDefaultCheckbox').disabled = false;
     document.getElementById(type+'CreatingContact').hidden = true;
-    document.getElementById(type+'CreateButtob').hidden = false;
+    document.getElementById(type+'CreateButton').hidden = false;
     submitting = '';
     enableSubmitting();
 }
@@ -922,7 +922,7 @@ function createContact(event) {
                 cnotact.disabled = true;
                 isVerified.disabled = true;
                 isDefault.disabled = true;
-                document.getElementById(type+'CreateButtob').hidden = true;
+                document.getElementById(type+'CreateButton').hidden = true;
                 document.getElementById(type+'CreatingContact').hidden = false;
                 let data = {
                     user_id: window.location.pathname.match(/^\/admin\/users\/([0-9]+).*/i)[1],

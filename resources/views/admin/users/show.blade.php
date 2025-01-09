@@ -17,7 +17,7 @@
                         <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
                 </h3>
                 <div class="col-md-4">
-                    <label for="validationUsername" class="form-label">Usermame</label>
+                    <label for="validationUsername" class="form-label">Username</label>
                     <div id="showUsername" class="showInfo">{{ $user->username }}</div>
                     <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username', $user->username) }}" placeholder="username" required hidden />
                     <div id="usernameFeedback" class="valid-feedback">

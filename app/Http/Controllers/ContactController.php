@@ -146,7 +146,7 @@ class ContactController extends Controller implements HasMiddleware
                 ->where('type', $contact->type)
                 ->whereNot('contact_id', $contact->id)
                 ->update(['expired_at' => now()]);
-            $content = ['success' => "The {$contact->type} verifiy success."];
+            $content = ['success' => "The {$contact->type} verify success."];
         }
         DB::commit();
 

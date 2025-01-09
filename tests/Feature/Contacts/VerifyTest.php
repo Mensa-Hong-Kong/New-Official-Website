@@ -292,7 +292,7 @@ class VerifyTest extends TestCase
                 ['code' => '123456']
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
+        $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
         $this->assertTrue($this->contact->refresh()->isVerified());
     }
 
@@ -314,7 +314,7 @@ class VerifyTest extends TestCase
                 ['code' => '123456']
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The {$this->contact->type} verifiy success."]);
+        $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
         $this->assertTrue($this->contact->refresh()->isVerified());
         $this->assertFalse($contact->refresh()->is_default);
         $this->assertFalse($contact->refresh()->isVerified());

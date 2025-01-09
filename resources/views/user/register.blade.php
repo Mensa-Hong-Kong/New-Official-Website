@@ -5,7 +5,7 @@
         <div class="alert alert-primary" role="alert">
             <ol>
                 <li>
-                    Passport number include inside brackets number but withour all symbol<br>
+                    Passport number include inside brackets number but without all symbol<br>
                     Example 1: A123456(7) should type A1234567
                     Example 1: 1234567(8) should type 12345678
                 </li>
@@ -17,7 +17,7 @@
             @csrf
             <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
             <div class="col-md-4">
-                <label for="validationUsername" class="form-label">Usermame</label>
+                <label for="validationUsername" class="form-label">Username</label>
                 <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username') }}" placeholder="username" required />
                 <div id="usernameFeedback" class="valid-feedback">
                     Looks good!
