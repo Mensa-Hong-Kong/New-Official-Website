@@ -130,8 +130,11 @@ class UserController extends Controller
             },
         ])->firstWhere('username', $request->username);
         if ($user) {
-            if ($user->loginLogs->count() >= 10) {
-                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['created_at'];
+            $failLoginLogsWithin24Hours = $user->loginLogs()
+                ->where('status', false)
+                ->get();
+            if ($failLoginLogsWithin24Hours->count() >= 10) {
+                $firstInRangeLoginFailedTime = $failLoginLogsWithin24Hours[0]['created_at'];
 
                 return response([
                     'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
