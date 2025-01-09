@@ -155,7 +155,12 @@ class UserController extends Controller
 
     public function forgetPassword()
     {
-        // ...
+        return view('user.forget-password')
+            ->with(
+                'passportTypes', PassportType::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
     public function resetPassword()
