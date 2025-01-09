@@ -57,7 +57,7 @@ function hasError() {
 
 function validation() {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
         input.classList.remove('is-invalid');
     }
     for(let feedback of feedbacks) {
