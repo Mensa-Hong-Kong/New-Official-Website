@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title')Mensa</title>
+    <title>@yield('title')Mensa HK</title>
     @vite('resources/css/app.scss')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
@@ -15,16 +15,47 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-controls="bdSidebar" aria-label="Toggle docs navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
-            <a class="navbar-brand" href="{{ route('index') }}">Mensa</a>
+            <a class="navbar-brand" href="{{ route('index') }}">Mensa HK</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="bdNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Dummy</a>
+                        <a href="#" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Board of Directors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Committees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Upcoming Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Admission Test</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Event</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">SIGS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Mensa Means</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Constitution</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">FAQs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Contact Us</a>
                     </li>
                 </ul>
+
                 <hr class="d-lg-none text-white-50">
                 <ul class="navbar-nav">
                     @if(auth()->user() && auth()->user()->isAdmin())
