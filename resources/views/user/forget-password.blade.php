@@ -64,7 +64,7 @@
             <div class="mb-4">
                 <input type="submit" id="resetButton" class="form-control btn btn-primary" value="Reset Password">
                 <div class="alert alert-danger" id="resetFeedback" role="alert" hidden></div>
-                <button class="form-control btn btn-primary" id="loggingInButton" type="button" disabled hidden>
+                <button class="form-control btn btn-primary" id="resettingButton" type="button" disabled hidden>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     Resetting...
                 </button>
