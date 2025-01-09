@@ -92,6 +92,7 @@ class UserController extends Controller
                 'errors' => ['password' => 'The provided password is incorrect.'],
             ], 422);
         }
+        DB::beginTransaction();
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
         $update = [
             'username' => $request->username,
@@ -110,6 +111,7 @@ class UserController extends Controller
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
         $return['gender'] = $request->gender;
+        DB::commit();
 
         return $return;
     }
