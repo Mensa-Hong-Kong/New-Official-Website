@@ -133,6 +133,7 @@ class UserController extends Controller
         ])->firstWhere('username', $request->username);
         if ($user) {
             $failLoginLogsWithin24Hours = $user->loginLogs()
+                ->where('created_at', '>=', now()->subDay())
                 ->where('status', false)
                 ->get();
             if ($failLoginLogsWithin24Hours->count() >= 10) {
