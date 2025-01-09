@@ -65,45 +65,6 @@ class UserController extends Controller
         return redirect()->route('profile.show');
     }
 
-    public function logout()
-    {
-        Auth::logout();
-
-        return redirect()->route('index');
-    }
-
-    public function login(LoginRequest $request)
-    {
-        $user = User::with([
-            'loginLogs' => function ($query) {
-                $query->where('status', false)
-                    ->where('created_at', '>=', now()->subDay());
-            },
-        ])->firstWhere('username', $request->username);
-        if ($user) {
-            if ($user->loginLogs->count() >= 10) {
-                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['created_at'];
-
-                return response([
-                    'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
-                ], 422);
-            }
-            $log = ['user_id' => $user->id];
-            if ($user->checkPassword($request->password)) {
-                $log['status'] = true;
-                UserLoginLog::create($log);
-                Auth::login($user, $request->remember_me);
-
-                return redirect()->intended(route('profile.show'));
-            }
-            UserLoginLog::create($log);
-        }
-
-        return response([
-            'errors' => ['failed' => 'The provided username or password is incorrect.'],
-        ], 422);
-    }
-
     public function show(Request $request)
     {
         return view('user.profile')
@@ -151,5 +112,44 @@ class UserController extends Controller
         $return['gender'] = $request->gender;
 
         return $return;
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        return redirect()->route('index');
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $user = User::with([
+            'loginLogs' => function ($query) {
+                $query->where('status', false)
+                    ->where('created_at', '>=', now()->subDay());
+            },
+        ])->firstWhere('username', $request->username);
+        if ($user) {
+            if ($user->loginLogs->count() >= 10) {
+                $firstInRangeLoginFailedTime = $user['loginLogs'][0]['created_at'];
+
+                return response([
+                    'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
+                ], 422);
+            }
+            $log = ['user_id' => $user->id];
+            if ($user->checkPassword($request->password)) {
+                $log['status'] = true;
+                UserLoginLog::create($log);
+                Auth::login($user, $request->remember_me);
+
+                return redirect()->intended(route('profile.show'));
+            }
+            UserLoginLog::create($log);
+        }
+
+        return response([
+            'errors' => ['failed' => 'The provided username or password is incorrect.'],
+        ], 422);
     }
 }
