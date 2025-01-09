@@ -152,4 +152,14 @@ class UserController extends Controller
             'errors' => ['failed' => 'The provided username or password is incorrect.'],
         ], 422);
     }
+
+    public function forgetPassword()
+    {
+        // ...
+    }
+
+    public function resetPassword()
+    {
+        // ...
+    }
 }
