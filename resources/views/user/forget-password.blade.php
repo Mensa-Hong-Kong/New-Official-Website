@@ -42,7 +42,7 @@
             <div class="mb-4">
                 <div class="form-floating">
                     <select class="form-select" id="validationVerifiedContactType" name="verified_contact_type" required>
-                        <option value="" selected disabled>Please select Verified Contact Type</option>
+                        <option value="" selected disabled>Please select verified contact type</option>
                         <option value="email">Email</option>
                         <option value="mobile">Mobile</option>
                     </select>
@@ -71,10 +71,12 @@
             </div>
             <div class="row mb-4">
                 <div class="col d-flex justify-content-center">
-                    <a href="{{ route('login') }}" class="form-control btn btn-outline-primary">Login</a>
+                    <a id="login" href="{{ route('login') }}" class="form-control btn btn-outline-primary">Login</a>
+                    <button id="disabledLogin" class="form-control btn btn-outline-primary" disabled hidden>Login</button>
                 </div>
                 <div class="col d-flex justify-content-center">
-                    <a href="{{ route('register') }}" class="form-control btn btn-outline-success">Register</a>
+                    <a id="register" href="{{ route('register') }}" class="form-control btn btn-outline-success">Register</a>
+                    <button id="disabledRegister" class="form-control btn btn-outline-success" disabled hidden>Register</button>
                 </div>
             </div>
         </form>
