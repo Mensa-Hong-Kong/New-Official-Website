@@ -879,7 +879,7 @@ function createContactSuccess(response) {
         <button class="btn btn-primary col-md-1" id="editContact${id}" hidden>Edit</button>
         <form id="deleteContactForm${id}" method="POST" hidden
             action="${response.data.delete_url}">
-            <input tpye="hidden" name="_token" value="${token}">
+            <input type="hidden" name="_token" value="${token}">
             <input type="hidden" name="_method" value="delete">
         </form>
         <button class="btn btn-danger col-md-1 submitButton" id="deleteContact${id}" form="deleteContactForm${id}" hidden>Delete</button>

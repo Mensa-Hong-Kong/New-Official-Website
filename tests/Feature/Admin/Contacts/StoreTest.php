@@ -24,9 +24,9 @@ class StoreTest extends TestCase
 
     public function test_have_no_login()
     {
-        $tpye = Arr::random(['email', 'mobile']);
+        $type = Arr::random(['email', 'mobile']);
         $contact = '';
-        switch ($tpye) {
+        switch ($type) {
             case 'email':
                 $contact = fake()->freeEmail();
                 break;
@@ -39,7 +39,7 @@ class StoreTest extends TestCase
                 'admin.contacts.store',
             ), [
                 'user_id' => $this->user->id,
-                'tpye' => $tpye,
+                'type' => $type,
                 'contact' => $contact,
             ]
         );

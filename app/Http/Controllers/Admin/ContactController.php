@@ -31,7 +31,7 @@ class ContactController extends Controller implements HasMiddleware
             'creator_ip' => $request->ip(),
             'middleware_should_count' => false,
         ]);
-        ContactHasVerification::where('type', $contact->tpye)
+        ContactHasVerification::where('type', $contact->type)
             ->where('contact', $contact->contact)
             ->whereNot('id', $verification->id)
             ->update(['expired_at' => now()]);
@@ -53,7 +53,7 @@ class ContactController extends Controller implements HasMiddleware
         }
 
         return [
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => $contact->refresh()->isVerified(),
         ];
     }
