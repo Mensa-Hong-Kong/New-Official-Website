@@ -24,7 +24,7 @@ class UserController extends Controller implements HasMiddleware
     {
         return [
             (new Middleware('permission:View:User'))->only(['index', 'show']),
-            (new Middleware('permission:Edit:User'))->only(['update']),
+            (new Middleware('permission:Edit:User'))->only(['update', 'resetPassword']),
         ];
     }
 
