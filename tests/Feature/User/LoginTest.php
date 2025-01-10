@@ -28,14 +28,14 @@ class LoginTest extends TestCase
             'password' => '12345678',
         ];
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->post(route('login'), $data);
+        $response = $this->actingAs($user)->postJson(route('login'), $data);
         $response->assertRedirectToRoute('index');
     }
 
     public function test_missing_username()
     {
         $data['password'] = '12345678';
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field is required.']);
     }
 
@@ -45,7 +45,7 @@ class LoginTest extends TestCase
             'username' => ['12345678'],
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field must be a string.']);
     }
 
@@ -55,7 +55,7 @@ class LoginTest extends TestCase
             'username' => '1234567',
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field must be at least 8 characters.']);
     }
 
@@ -65,14 +65,14 @@ class LoginTest extends TestCase
             'username' => '12345678901234567',
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
     }
 
     public function test_missing_password()
     {
         $data['username'] = '12345678';
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field is required.']);
     }
 
@@ -83,7 +83,7 @@ class LoginTest extends TestCase
             'password' => ['12345678'],
         ];
         $data['password_confirmation'] = ['12345678'];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field must be a string.']);
     }
 
@@ -94,7 +94,7 @@ class LoginTest extends TestCase
             'password' => '1234567',
         ];
         $data['password_confirmation'] = '1234567';
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field must be at least 8 characters.']);
     }
 
@@ -104,7 +104,7 @@ class LoginTest extends TestCase
             'username' => '12345678',
             'password' => '12345678901234567',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field must not be greater than 16 characters.']);
     }
 
@@ -114,7 +114,7 @@ class LoginTest extends TestCase
             'username' => '12345678',
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
     }
 
@@ -128,7 +128,7 @@ class LoginTest extends TestCase
             'username' => '87654321',
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
     }
 
@@ -140,7 +140,7 @@ class LoginTest extends TestCase
             'password' => '87654321',
         ];
         $this->assertEquals(0, $user->loginLogs->count());
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['failed' => 'The provided username or password is incorrect.']);
         $countLoginLogs = UserLoginLog::where('user_id', $user->id)
             ->count();
@@ -161,7 +161,7 @@ class LoginTest extends TestCase
             'username' => $user->username,
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['throttle' => "Too many failed login attempts. Please try again later than {$loginAt}."]);
     }
 
@@ -183,7 +183,7 @@ class LoginTest extends TestCase
             'username' => $user->username,
             'password' => '12345678',
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
         $cookieJar = $response->headers->getCookies();
@@ -198,7 +198,7 @@ class LoginTest extends TestCase
             'password' => '12345678',
             'remember_me' => true,
         ];
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
         $cookieJar = $response->headers->getCookies();
@@ -218,7 +218,7 @@ class LoginTest extends TestCase
         ]);
         (new UserLoginLog)->fillable(['user_id', 'created_at'])
             ->insert($insert);
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertValid();
     }
 
@@ -239,7 +239,7 @@ class LoginTest extends TestCase
         ];
         (new UserLoginLog)->fillable(['user_id', 'created_at'])
             ->insert($insert);
-        $response = $this->post(route('login'), $data);
+        $response = $this->postJson(route('login'), $data);
         $response->assertValid();
     }
 }
