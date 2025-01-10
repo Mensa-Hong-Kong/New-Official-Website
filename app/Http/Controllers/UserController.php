@@ -7,12 +7,16 @@ use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
+use App\Models\ResetPasswordLog;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
+use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -169,8 +173,42 @@ class UserController extends Controller
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
-    public function resetPassword()
+    public function resetPassword(Request $request)
     {
-        // ...
+        DB::beginTransaction();
+        $contact = UserHasContact::where('type', $request->verified_contact_type)
+            ->where('contact', $request->verified_contact)
+            ->whereHas(
+                'user', function($query) use($request) {
+                    $query->where('passport_type_id', $request->passport_type_id)
+                        ->where('passport_number', $request->passport_number)
+                        ->where('birthday', $request->birthday);
+                }
+            )->whereHas(
+                'verifications', function($query) use($request) {
+                    $query->whereNotNull('verified_at')
+                        ->whereNull('expired_at');
+                }
+            )->first();
+        $log = [
+            'passport_type_id' => $request->passport_type_id,
+            'passport_number' => $request->passport_number,
+            'contact_type' => $request->verified_contact_type,
+            'creator_ip' => $request->ip(),
+        ];
+        ResetPasswordLog::create($log);
+        if($contact) {
+            $log['user_id'] = $contact->user->id;
+            $log['creator_id'] = $contact->user->id;
+            $password = App::environment('testing') ? '12345678' : Str::password(16);
+            $contact->user->update(['password' => $password]);
+            $contact->notify(new ResetPasswordNotification($contact->type, $password));
+            DB::commit();
+            return ['success' => "The new password has been send to {$contact->type} of {$contact->contact}"];
+        }
+        DB::commit();
+        return response([
+            'errors' => ['failed' => 'The provided passport, birthday or verified contact is incorrect.'],
+        ], 422);
     }
 }
