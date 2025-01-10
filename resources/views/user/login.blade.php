@@ -5,7 +5,7 @@
         <form id="form" class="mx-auto w-25" method="POST" novalidate>
             <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
             @csrf
-            <div data-mdb-input-init class="mb-4">
+            <div data-mdb-input-init class="form-outline mb-4">
                 <div class="form-floating">
                     <input type="text" name="username" class="form-control" id="validationUsername" minlength="8" maxlength="16" placeholder="username" required />
                     <label for="validationUsername">Username</label>
@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div data-mdb-input-init class="mb-4">
+            <div data-mdb-input-init class="form-outline mb-4">
                 <div class="form-floating">
                     <input type="password" name="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" required />
                     <label for="validationPassword">Password</label>
@@ -34,15 +34,13 @@
                     <a href="{{ route('forget-password') }}">Forgot password?</a>
                 </div>
             </div>
-            <div class="mb-4">
-                <input type="submit" id="loginButton" class="form-control btn btn-primary" value="Login">
-                <div class="alert alert-danger" id="loginFeedback" role="alert" hidden></div>
-                <button class="form-control btn btn-primary" id="loggingInButton" type="button" disabled hidden>
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Logging In...
-                </button>
-            </div>
-            <div class="text-center">
+            <input type="submit" id="loginButton" class="form-control btn btn-primary" value="Login">
+            <div class="alert alert-danger" id="loginFeedback" role="alert" hidden></div>
+            <button class="form-control btn btn-primary" id="loggingInButton" type="button" disabled hidden>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Logging In...
+            </button>
+            <div class="form-control text-center">
                 <p>Not a member? <a href="{{ route('register') }}">Register</a></p>
             </div>
         </form>
