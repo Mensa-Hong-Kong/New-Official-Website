@@ -145,6 +145,12 @@ function successCallback(response) {
     resetFeedback.classList.add('alert-success')
     resetFeedback.hidden = false;
     resetFeedback.innerText = response.data.success;
+    resettingButton.hidden = true;
+    disabledLogin.hidden = true;
+    disabledRegister.hidden = true;
+    resetButton.hidden = false;
+    login.hidden = false;
+    register.hidden = false;
 }
 
 function failCallback(error) {
