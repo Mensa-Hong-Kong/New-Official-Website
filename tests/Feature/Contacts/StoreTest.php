@@ -109,7 +109,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_missing_contaact()
+    public function test_missing_contact()
     {
         $type = Arr::random(['email', 'mobile']);
         $response = $this->actingAs($this->user)
