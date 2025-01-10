@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
+use App\Http\Requests\User\ResetPasswordRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
@@ -173,7 +174,7 @@ class UserController extends Controller
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
         DB::beginTransaction();
         $contact = UserHasContact::where('type', $request->verified_contact_type)
