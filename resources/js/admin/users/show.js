@@ -404,6 +404,51 @@ editForm.addEventListener(
     }
 );
 
+const resettingPasswordButton = document.getElementById('resettingPassword');
+
+function closeResettingPassword() {
+    resettingPasswordButton.hidden = true;
+    for(let button of document.getElementsByClassName('resetPassword')) {
+        button.hidden = false;
+    }
+    editButton.disabled = false;
+    enableSubmitting();
+    submitting = '';
+}
+
+function resetPasswordSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    closeResettingPassword();
+}
+
+function resetPasswordFailCallback(error) {
+    if(error.status == 422) {
+        bootstrapAlert(error.data.errors.contact_type);
+    }
+    closeResettingPassword();
+}
+
+document.getElementById('resetPassword').addEventListener(
+    'submit', function(event) {
+        event.preventDefault();
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'resetPassword'+submitAt;
+            disableSubmitting();
+            if(submitting == 'resetPassword'+submitAt) {
+                editButton.disabled = true;
+                event.submitter.hidden = true;
+                resettingPasswordButton.hidden = false;
+                post(
+                    event.target.action,
+                    resetPasswordSuccessCallback, resetPasswordFailCallback,
+                    'put', {contact_type: event.submitter.value}
+                );
+            }
+        }
+    }
+);
+
 function urlGetContactID(url) {
     return (new URL(url).pathname).match(/^\/admin\/contacts\/([0-9]+).*/i)[1];
 }
@@ -423,18 +468,32 @@ function updateVerifyContactStatusButton(button, status) {
     }
 }
 
-function updateContactDefaultStatusButton(button, status) {
-    if(stringToBoolean(button.value) == status) {
+function updateContactDefaultStatusButton(id, status) {
+    let defaultButton = document.getElementById('contactDefaultStatus'+id);
+    let resetPasswordButton = document.getElementById(
+        document.getElementById('contactInput'+id).name+'ResetPassword'
+    );
+    if(stringToBoolean(defaultButton.value) == status) {
         if(status) {
-            button.innerText = 'Default';
-            button.classList.remove('btn-danger');
-            button.classList.add('btn-success');
+            defaultButton.innerText = 'Default';
+            defaultButton.classList.remove('btn-danger');
+            defaultButton.classList.add('btn-success');
+            if(resetPasswordButton.classList.contains('btn-secondary')) {
+                resetPasswordButton.classList.remove('btn-secondary');
+                resetPasswordButton.classList.add('btn-danger');
+                resetPasswordButton.disabled = false;
+            }
         } else {
-            button.innerText = 'Non Default';
-            button.classList.remove('btn-success');
-            button.classList.add('btn-danger');
+            defaultButton.innerText = 'Non Default';
+            defaultButton.classList.remove('btn-success');
+            defaultButton.classList.add('btn-danger');
+            if(resetPasswordButton.classList.contains('btn-danger')) {
+                resetPasswordButton.classList.remove('btn-danger');
+                resetPasswordButton.classList.add('btn-secondary');
+                resetPasswordButton.disabled = true;
+            }
         }
-        button.value = status ? 0 : 1;
+        defaultButton.value = status ? 0 : 1;
     }
 }
 
@@ -444,9 +503,12 @@ function changeVerifyContactStatusSuccessCallback(response) {
     let input = document.getElementById('verifyContactStatus'+id);
     document.getElementById('isVerifiedContactCheckbox'+id).checked = response.data.status;
     if(! response.data.status) {
-        let defaultButton = document.getElementById('contactDefaultStatus'+id);
-        if(stringToBoolean(defaultButton.value) == false) {
-            updateContactDefaultStatusButton(defaultButton, false);
+        if(
+            stringToBoolean(
+                document.getElementById('contactDefaultStatus'+id).value
+            ) == false
+        ) {
+            updateContactDefaultStatusButton(id, false);
         }
         document.getElementById('isDefaultContactCheckbox'+id).checked = false;
     }
@@ -494,28 +556,29 @@ function updateAllDefaultCheckboxToFalse(type) {
 
 function updateAllDefaultButtonToNonDefault(type) {
     for(let element of document.getElementsByClassName(type+'DefaultContact')) {
-        updateContactDefaultStatusButton(element, false);
+        updateContactDefaultStatusButton(
+            element.id.replace('contactDefaultStatus', ''), false
+        );
     }
 }
 
 function changeContactDefaultStatusSuccessCallback(response) {
     let id = urlGetContactID(response.request.responseURL);
     document.getElementById('changingContactDefaultStatus'+id).hidden = true;
-    let input = document.getElementById('contactDefaultStatus'+id);
+    let name = document.getElementById('contactInput'+id).name;
     if(response.data.status) {
         let verifyButton = document.getElementById('verifyContactStatus'+id);
         if(stringToBoolean(verifyButton.value) == true) {
             updateVerifyContactStatusButton(verifyButton, true);
         }
-        let name = document.getElementById('contactInput'+id).name;
         updateAllDefaultCheckboxToFalse(name);
         updateAllDefaultButtonToNonDefault(name);
         document.getElementById('isVerifiedContactCheckbox'+id).checked = true;
     }
     document.getElementById('isDefaultContactCheckbox'+id).checked = response.data.status;
-    updateContactDefaultStatusButton(input, response.data.status);
+    updateContactDefaultStatusButton(id, response.data.status);
     enableSubmitting();
-    input.hidden = false;
+    document.getElementById('contactDefaultStatus'+id).hidden = false;
 }
 
 function changeContactDefaultStatusFailCallback(error) {
@@ -611,10 +674,7 @@ function updateContactSuccessCallback(response) {
         updateAllDefaultButtonToNonDefault(contact.name);
     }
     isDefault.checked = response.data.is_default;
-    updateContactDefaultStatusButton(
-        document.getElementById('contactDefaultStatus'+id),
-        response.data.is_default
-    );
+    updateContactDefaultStatusButton(id, response.data.is_default);
     document.getElementById('savingContact'+id).hidden = true;
     closeEdit(id);
     document.getElementById('saveContact'+id).hidden = false;
@@ -686,6 +746,16 @@ function editContact(event) {
 function deleteContactSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     let id =  urlGetContactID(response.request.responseURL);
+    if(! stringToBoolean(document.getElementById('contactDefaultStatus'+id).value)) {
+        let resetPasswordButton = document.getElementById(
+            document.getElementById('contactInput'+id).name+'ResetPassword'
+        );
+        if(resetPasswordButton.classList.contains('btn-danger')) {
+            resetPasswordButton.classList.remove('btn-danger');
+            resetPasswordButton.classList.add('btn-secondary');
+            resetPasswordButton.disabled = true;
+        }
+    }
     document.getElementById('showContactRow'+id).remove();
     document.getElementById('editContactForm'+id).remove();
     enableSubmitting();

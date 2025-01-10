@@ -3,6 +3,11 @@
 @section('main')
     <section class="container">
         <article>
+            <form id="resetPassword" method="POST"
+                action="{{ route('admin.users.reset-password', ['user' => $user]) }}">
+                @csrf
+                @method('put')
+            </form>
             <form method="POST" class="row g-3" id="form" novalidate>
                 @csrf
                 @method('put')
@@ -24,11 +29,41 @@
                         Looks good!
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <label for="validationPassword" class="form-label">Password</label>
-                    <div id="showPassword">********</div>
+                    <div id="showPassword row">
+                        <span class="col-2">********</span>
+                        @can('Edit:User')
+                            <button id="emailResetPassword" form="resetPassword" name="contact_type" value="email"
+                                @disabled(!$user->defaultEmail) @class([
+                                    "btn",
+                                    "btn-danger" => $user->defaultEmail,
+                                    'btn-secondary' => !$user->defaultEmail,
+                                    "submitButton",
+                                    "resetPassword",
+                                    "col-4"
+                                ])>
+                                Reset by Email
+                            </button>
+                            <button id="resettingPassword" class="btn btn-danger col-4" hidden disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Resetting...
+                            </button>
+                            <button id="mobileResetPassword" form="resetPassword" name="contact_type" value="mobile"
+                                @disabled(!$user->defaultMobile) @class([
+                                    "btn",
+                                    "btn-danger" => $user->defaultMobile,
+                                    'btn-secondary' => !$user->defaultMobile,
+                                    "submitButton",
+                                    "resetPassword",
+                                    "col-4"
+                                ])>
+                                Reset by Mobile
+                            </button>
+                        @endcan
+                    </div>
                 </div>
-                <div class="col-md-4"></div>
+                <div class="col-md-3"></div>
                 <div class="col-md-4">
                     <label for="validationFamilyName" class="form-label">Family Name</label>
                     <div id="showFamilyName">{{ $user->family_name }}</div>
