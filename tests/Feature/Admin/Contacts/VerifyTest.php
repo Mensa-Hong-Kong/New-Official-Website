@@ -92,7 +92,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => false,
         ]);
         $contact->refresh();
@@ -113,7 +113,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -136,7 +136,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -160,7 +160,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => true,
         ]);
         $contact->refresh();
@@ -183,7 +183,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => false,
         ]);
         $contact->refresh();
@@ -207,7 +207,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} verifty status update success!",
+            'success' => "The {$contact->type} verify status update success!",
             'status' => false,
         ]);
         $contact->refresh();
