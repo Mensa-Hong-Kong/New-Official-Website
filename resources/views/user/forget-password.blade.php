@@ -16,7 +16,7 @@
                         @endforeach
                     </select>
                     <label for="validationPassportType" class="form-label">Passport Type</label>
-                    <div id="usernameFeedback" class="valid-feedback">
+                    <div id="passportTypeFeedback" class="valid-feedback">
                         Looks good!
                     </div>
                 </div>
