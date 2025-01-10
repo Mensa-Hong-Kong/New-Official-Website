@@ -102,10 +102,6 @@ function failCallback(error) {
                     loginFeedback.hidden = false;
                     loginFeedback.innerText = value;
                     break;
-                case 'throttle':
-                    loginFeedback.hidden = false;
-                    loginFeedback.innerText = value;
-                    break;
                 default:
                     alert('undefine feedback key');
                     break;

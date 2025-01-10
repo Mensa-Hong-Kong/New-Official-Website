@@ -502,7 +502,8 @@ class ForgetPasswordTest extends TestCase
                 'verified_contact' => $contact->contact,
             ]
         );
-        $response->assertInvalid(['throttle' => "Too many failed reset password attempts. Please try again later than $failedAt."]);
+        $response->assertTooManyRequests();
+        $response->assertJson(['message' => "Too many failed reset password attempts. Please try again later than $failedAt."]);
     }
 
     public function test_happy_case_when_have_no_failed_record()

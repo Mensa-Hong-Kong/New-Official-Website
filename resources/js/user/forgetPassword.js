@@ -197,10 +197,6 @@ function failCallback(error) {
                     resetFeedback.hidden = false;
                     resetFeedback.innerText = value;
                     break;
-                case 'throttle':
-                    resetFeedback.hidden = false;
-                    resetFeedback.innerText = value;
-                    break;
                 default:
                     alert('undefine feedback key');
                     break;

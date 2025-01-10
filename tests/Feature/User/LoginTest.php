@@ -162,7 +162,8 @@ class LoginTest extends TestCase
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
-        $response->assertInvalid(['throttle' => "Too many failed login attempts. Please try again later than {$loginAt}."]);
+        $response->assertTooManyRequests();
+        $response->assertJson(['message' => "Too many failed login attempts. Please try again later than {$loginAt}."]);
     }
 
     private function hasRememberWebCooky(array $cookyJar): bool

@@ -34,10 +34,7 @@ class UserController extends Controller implements HasMiddleware
                     ->get();
                 if ($failForgetPasswordLogsWithin24Hours->count() >= 10) {
                     $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];
-
-                    return response([
-                        'errors' => ['throttle' => "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime."],
-                    ], 422);
+                    abort(429, "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime.");
                 }
 
                 return $next($request);
@@ -168,9 +165,7 @@ class UserController extends Controller implements HasMiddleware
             if ($failLoginLogsWithin24Hours->count() >= 10) {
                 $firstInRangeLoginFailedTime = $failLoginLogsWithin24Hours[0]['created_at'];
 
-                return response([
-                    'errors' => ['throttle' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime."],
-                ], 422);
+                abort(429, "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.");
             }
             $log = ['user_id' => $user->id];
             if ($user->checkPassword($request->password)) {
