@@ -855,7 +855,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_default_mobile_only_change_contac_and_is_not_defaultt()
+    public function test_happy_case_for_default_mobile_only_change_contact_and_is_not_default()
     {
         $mobile = UserHasContact::factory()
             ->state([

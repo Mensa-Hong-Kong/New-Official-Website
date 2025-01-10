@@ -57,7 +57,7 @@ class StoreTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.store'),
-                ['cotact' => $contact]
+                ['contact' => $contact]
             );
         $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
     }
