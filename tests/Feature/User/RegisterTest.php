@@ -362,7 +362,7 @@ class RegisterTest extends TestCase
         );
     }
 
-    public function test_with_middle_mame_and_mobile_and_without_email_happy_case()
+    public function test_with_middle_name_and_mobile_and_without_email_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
