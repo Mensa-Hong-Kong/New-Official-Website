@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('contact_type', ['email', 'mobile']);
             $table->unsignedBigInteger('creator_id')->nullable();
             $table->string('creator_ip');
+            $table->boolean('middleware_should_count')->default(1);
             $table->timestamps();
         });
     }

@@ -31,6 +31,7 @@ class UserController extends Controller implements HasMiddleware
                 $failForgetPasswordLogsWithin24Hours = ResetPasswordLog::where('passport_type_id', $request->passport_type_id)
                     ->where('passport_number', $request->passport_number)
                     ->where('created_at', '>=', now()->subDay())
+                    ->where('middleware_should_count', true)
                     ->get();
                 if ($failForgetPasswordLogsWithin24Hours->count() >= 10) {
                     $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];

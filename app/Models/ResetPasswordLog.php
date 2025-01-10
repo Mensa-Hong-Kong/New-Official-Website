@@ -16,6 +16,7 @@ class ResetPasswordLog extends Model
         'contact_type',
         'creator_id',
         'creator_ip',
+        'middleware_should_count',
     ];
 
     public function passportType()
