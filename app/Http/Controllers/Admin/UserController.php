@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
+use App\Models\ResetPasswordLog;
 use App\Models\User;
+use App\Models\UserHasContact;
+use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -134,5 +139,35 @@ class UserController extends Controller implements HasMiddleware
         DB::commit();
 
         return $return;
+    }
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $contact = UserHasContact::where('user_id', $user->id)
+            ->where('type', $request->contact_type)
+            ->where('is_default', true)
+            ->first();
+        if (! $contact) {
+            return response([
+                'errors' => ['contact_type' => "This user have no default {$request->contact_type}, cannot reset password by {$request->contact_type}."],
+            ], 422);
+        }
+        DB::beginTransaction();
+        $log = [
+            'passport_type_id' => $user->passport_type_id,
+            'passport_number' => $user->passport_number,
+            'contact_type' => $request->contact_type,
+            'user_id' => $user->id,
+            'creator_id' => $request->user()->id,
+            'creator_ip' => $request->ip(),
+            'middleware_should_count' => false,
+        ];
+        ResetPasswordLog::create($log);
+        $password = App::environment('testing') ? '12345678' : Str::password(16);
+        $user->update(['password' => $password]);
+        $contact->notify(new ResetPasswordNotification($contact->type, $password));
+        DB::commit();
+
+        return ['success' => "The new password has been send to user default {$contact->type}."];
     }
 }
