@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsAdministrator;
-use App\Models\PassportType;
 use Illuminate\Support\Facades\Route;
 
 /*

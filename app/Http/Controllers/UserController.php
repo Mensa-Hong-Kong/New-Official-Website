@@ -27,13 +27,14 @@ class UserController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [(new Middleware(
-            function(Request $request, Closure $next) {
+            function (Request $request, Closure $next) {
                 $failForgetPasswordLogsWithin24Hours = ResetPasswordLog::where('passport_type_id', $request->passport_type_id)
                     ->where('passport_number', $request->passport_number)
                     ->where('created_at', '>=', now()->subDay())
                     ->get();
-                if($failForgetPasswordLogsWithin24Hours->count() >= 10) {
+                if ($failForgetPasswordLogsWithin24Hours->count() >= 10) {
                     $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];
+
                     return response([
                         'errors' => ['throttle' => "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime."],
                     ], 422);
@@ -203,13 +204,13 @@ class UserController extends Controller implements HasMiddleware
         $contact = UserHasContact::where('type', $request->verified_contact_type)
             ->where('contact', $request->verified_contact)
             ->whereHas(
-                'user', function($query) use($request) {
+                'user', function ($query) use ($request) {
                     $query->where('passport_type_id', $request->passport_type_id)
                         ->where('passport_number', $request->passport_number)
                         ->where('birthday', $request->birthday);
                 }
             )->whereHas(
-                'verifications', function($query) use($request) {
+                'verifications', function ($query) {
                     $query->whereNotNull('verified_at')
                         ->whereNull('expired_at');
                 }
@@ -221,16 +222,18 @@ class UserController extends Controller implements HasMiddleware
             'creator_ip' => $request->ip(),
         ];
         ResetPasswordLog::create($log);
-        if($contact) {
+        if ($contact) {
             $log['user_id'] = $contact->user->id;
             $log['creator_id'] = $contact->user->id;
             $password = App::environment('testing') ? '12345678' : Str::password(16);
             $contact->user->update(['password' => $password]);
             $contact->notify(new ResetPasswordNotification($contact->type, $password));
             DB::commit();
+
             return ['success' => "The new password has been send to {$contact->type} of {$contact->contact}"];
         }
         DB::commit();
+
         return response([
             'errors' => ['failed' => 'The provided passport, birthday or verified contact is incorrect.'],
         ], 422);

@@ -42,14 +42,14 @@ class ForgetPasswordTest extends TestCase
         $this->verified($contact);
         $response = $this->actingAs($user)
             ->putJson(route('reset-password'),
-            [
-                'passport_type_id' => $user->passport_type_id,
-                'passport_number' => $user->passport_number,
-                'birthday' => $user->birthday,
-                'verified_contact_type' => $contact->contact,
-                'verified_contact' => $contact->type,
-            ]
-        );
+                [
+                    'passport_type_id' => $user->passport_type_id,
+                    'passport_number' => $user->passport_number,
+                    'birthday' => $user->birthday,
+                    'verified_contact_type' => $contact->contact,
+                    'verified_contact' => $contact->type,
+                ]
+            );
         $response->assertRedirectToRoute('index');
     }
 
@@ -384,7 +384,7 @@ class ForgetPasswordTest extends TestCase
                 'verified_contact_type' => Arr::random(['email', 'mobile']),
             ]
         );
-        $response->assertInvalid(['verified_contact' => "The verified contact field is required."]);
+        $response->assertInvalid(['verified_contact' => 'The verified contact field is required.']);
     }
 
     public function test_email_invalid()

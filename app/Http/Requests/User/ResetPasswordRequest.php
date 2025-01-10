@@ -3,7 +3,6 @@
 namespace App\Http\Requests\User;
 
 use App\Models\PassportType;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResetPasswordRequest extends FormRequest
@@ -22,7 +21,7 @@ class ResetPasswordRequest extends FormRequest
             'verified_contact_type' => 'required|string|in:email,mobile',
             'verified_contact' => 'required',
         ];
-        switch($this->verified_contact_type) {
+        switch ($this->verified_contact_type) {
             case 'email':
                 $return['verified_contact'] .= '|email:rfc,dns';
                 break;
@@ -30,6 +29,7 @@ class ResetPasswordRequest extends FormRequest
                 $return['verified_contact'] .= '|integer|min_digits:5|max_digits:15';
                 break;
         }
+
         return $return;
     }
 
@@ -39,7 +39,7 @@ class ResetPasswordRequest extends FormRequest
             'passport_type_id.required' => 'The passport type field is required.',
             'passport_type_id.exists' => 'The selected passport type is invalid.',
         ];
-        switch($this->verified_contact_type) {
+        switch ($this->verified_contact_type) {
             case 'email':
                 $return['verified_contact.email'] = 'The verified contact of email must be a valid email address.';
                 break;
@@ -49,6 +49,7 @@ class ResetPasswordRequest extends FormRequest
                 $return['verified_contact.max_digits'] = 'The verified contact of mobile must not have more than 15 digits.';
                 break;
         }
+
         return $return;
     }
 }
