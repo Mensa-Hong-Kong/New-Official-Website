@@ -438,7 +438,7 @@ function updateContactDefaultStatusButton(button, status) {
     }
 }
 
-function changeVerifyContactStatusSuccessCallbacke(response) {
+function changeVerifyContactStatusSuccessCallback(response) {
     let id = urlGetContactID(response.request.responseURL);
     document.getElementById('changingVerifyContactStatus'+id).hidden = true;
     let input = document.getElementById('verifyContactStatus'+id);
@@ -455,7 +455,7 @@ function changeVerifyContactStatusSuccessCallbacke(response) {
     input.hidden = false;
 }
 
-function changeVerifyContactStatusFailCallbacke(error) {
+function changeVerifyContactStatusFailCallback(error) {
     if(error.response.data.status) {
         bootstrapAlert(error.response.data.status);
     }
@@ -478,8 +478,8 @@ function changeVerifyContactStatus(event) {
             let data = {status: stringToBoolean(input.value)};
             post(
                 event.target.action,
-                changeVerifyContactStatusSuccessCallbacke,
-                changeVerifyContactStatusFailCallbacke,
+                changeVerifyContactStatusSuccessCallback,
+                changeVerifyContactStatusFailCallback,
                 'put', data
             );
         }
@@ -498,7 +498,7 @@ function updateAllDefaultButtonToNonDefault(type) {
     }
 }
 
-function changeContacDefaulttStatusSuccessCallbacke(response) {
+function changeContactDefaultStatusSuccessCallback(response) {
     let id = urlGetContactID(response.request.responseURL);
     document.getElementById('changingContactDefaultStatus'+id).hidden = true;
     let input = document.getElementById('contactDefaultStatus'+id);
@@ -518,7 +518,7 @@ function changeContacDefaulttStatusSuccessCallbacke(response) {
     input.hidden = false;
 }
 
-function changeContactDefaultStatusFailCallbacke(error) {
+function changeContactDefaultStatusFailCallback(error) {
     if(error.response.data.status) {
         bootstrapAlert(error.response.data.status);
     }
@@ -541,8 +541,8 @@ function changeContactDefaultStatus(event) {
             let data = {status: stringToBoolean(input.value)};
             post(
                 event.target.action,
-                changeContacDefaulttStatusSuccessCallbacke,
-                changeContactDefaultStatusFailCallbacke,
+                changeContactDefaultStatusSuccessCallback,
+                changeContactDefaultStatusFailCallback,
                 'put', data
             );
         }
@@ -911,15 +911,15 @@ function createContact(event) {
     event.preventDefault();
     if(submitting == '') {
         let type = event.target.dataset.type;
-        let cnotact = document.getElementById(type+'ContactInput');
+        let contact = document.getElementById(type+'ContactInput');
         let isVerified = document.getElementById(type+'IsVerifiedCheckbox');
         let isDefault = document.getElementById(type+'IsDefaultCheckbox');
         let submitAt = Date.now();
         submitting = type+'Create'+submitAt;
         disableSubmitting();
         if(submitting == type+'Create'+submitAt) {
-            if(contactValidation(cnotact)) {
-                cnotact.disabled = true;
+            if(contactValidation(contact)) {
+                contact.disabled = true;
                 isVerified.disabled = true;
                 isDefault.disabled = true;
                 document.getElementById(type+'CreateButton').hidden = true;
@@ -929,7 +929,7 @@ function createContact(event) {
                     is_verified: isVerified.checked,
                     is_default: isDefault.checked,
                     type: type,
-                    contact: cnotact.value,
+                    contact: contact.value,
                 };
                 post(
                     event.target.action,
@@ -947,7 +947,6 @@ function createContact(event) {
 
 for(let form of document.getElementsByClassName('createContact')) {
     form.addEventListener('submit', createContact)
-    let type = form.dataset.type;
 }
 
 submitting = '';
