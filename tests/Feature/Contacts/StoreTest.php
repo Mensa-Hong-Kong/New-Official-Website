@@ -22,7 +22,7 @@ class StoreTest extends TestCase
 
     public function test_have_no_login()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -45,7 +45,7 @@ class StoreTest extends TestCase
 
     public function test_missing_type()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -65,7 +65,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_string()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -88,7 +88,7 @@ class StoreTest extends TestCase
 
     public function test_type_is_not_in_list()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':
@@ -111,7 +111,7 @@ class StoreTest extends TestCase
 
     public function test_missing_contact()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.store'),
@@ -175,7 +175,7 @@ class StoreTest extends TestCase
     public function test_contact_exist_with_same_user()
     {
         $contact = UserHasContact::factory()
-            ->{Arr::random(['email', 'mobile'])}()
+            ->{fake()->randomElement(['email', 'mobile'])}()
             ->create();
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -190,7 +190,7 @@ class StoreTest extends TestCase
 
     public function test_happy_case()
     {
-        $type = Arr::random(['email', 'mobile']);
+        $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
             case 'email':

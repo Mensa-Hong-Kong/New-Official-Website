@@ -13,7 +13,7 @@ class UserHasContactFactory extends Factory
 {
     public function definition(): array
     {
-        $contactType = Arr::random(['email', 'mobile']);
+        $contactType = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($contactType) {
             case 'email':
