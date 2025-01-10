@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
             Route::view('/', 'admin.index')->name('index');
             Route::resource('users', AdminUserController::class)
                 ->only(['index', 'show', 'update']);
+            Route::match(['put', 'patch'], 'users/{user}/password', [AdminUserController::class, 'resetPassword'])
+                ->name('users.reset-password');
             Route::resource('contacts', AdminContactController::class)
                 ->only(['store', 'update', 'destroy']);
             Route::match(['put', 'patch'], 'contacts/{contact}/verify', [AdminContactController::class, 'verify'])
