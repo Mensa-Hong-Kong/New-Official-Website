@@ -13,14 +13,37 @@ use App\Models\User;
 use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware(
+            function(Request $request, Closure $next) {
+                $failForgetPasswordLogsWithin24Hours = ResetPasswordLog::where('passport_type_id', $request->passport_type_id)
+                    ->where('passport_number', $request->passport_number)
+                    ->where('created_at', '>=', now()->subDay())
+                    ->get();
+                if($failForgetPasswordLogsWithin24Hours->count() >= 10) {
+                    $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];
+                    return response([
+                        'errors' => ['throttle' => "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime."],
+                    ], 422);
+                }
+
+                return $next($request);
+            }
+        ))->only('resetPassword')];
+    }
+
     public function create()
     {
         return view('user.register')
