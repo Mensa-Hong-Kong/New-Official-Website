@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\ResetPasswordRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Models\Gender;
 use App\Models\PassportType;
@@ -141,7 +142,7 @@ class UserController extends Controller implements HasMiddleware
         return $return;
     }
 
-    public function resetPassword(Request $request, User $user)
+    public function resetPassword(ResetPasswordRequest $request, User $user)
     {
         $contact = UserHasContact::where('user_id', $user->id)
             ->where('type', $request->contact_type)
