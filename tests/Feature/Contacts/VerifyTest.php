@@ -284,7 +284,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_happy_case_have_no_othen_user_default_same_contact()
+    public function test_happy_case_have_no_other_user_default_same_contact()
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -296,7 +296,7 @@ class VerifyTest extends TestCase
         $this->assertTrue($this->contact->refresh()->isVerified());
     }
 
-    public function test_happy_case_has_othen_user_default_same_contact_type()
+    public function test_happy_case_has_other_user_default_same_contact_type()
     {
         $user = User::factory()->create();
         $contact = UserHasContact::factory()
