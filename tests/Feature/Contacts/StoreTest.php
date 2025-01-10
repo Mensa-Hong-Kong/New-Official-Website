@@ -5,7 +5,6 @@ namespace Tests\Feature\Contacts;
 use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class StoreTest extends TestCase

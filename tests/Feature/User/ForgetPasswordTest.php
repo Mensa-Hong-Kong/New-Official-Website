@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
