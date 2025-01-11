@@ -58,5 +58,7 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::resource('module', ModuleController::class)
+                ->only('index');
         });
 });
