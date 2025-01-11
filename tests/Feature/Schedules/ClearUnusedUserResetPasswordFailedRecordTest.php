@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Schedules;
 
-use App\Models\User;
 use App\Models\ResetPasswordLog;
+use App\Models\User;
 use App\Models\UserHasContact;
 use App\Schedules\ClearUnusedUserResetPasswordFailedRecord;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
@@ -557,7 +555,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
-        $this->create_admin_reset_password_record_without_pass_24_hours();;
+        $this->create_admin_reset_password_record_without_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(4, ResetPasswordLog::count());
