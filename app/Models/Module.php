@@ -13,6 +13,7 @@ class Module extends Model
         'name',
         'title',
         'module_id',
+        'display_order',
     ];
 
     public function master()
