@@ -179,7 +179,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_have_no_has_unused_admin_verify_record()
+    public function test_only_have_no_unused_admin_verify_record()
     {
         $this->create_using_user_verify_record();
         $this->create_unused_user_verify_record();
