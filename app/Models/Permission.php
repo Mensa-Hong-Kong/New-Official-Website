@@ -12,6 +12,7 @@ class Permission extends Model
     protected $fillable = [
         'name',
         'title',
+        'display_order',
     ];
 
     public function modules()

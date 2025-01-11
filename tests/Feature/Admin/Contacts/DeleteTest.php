@@ -52,7 +52,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_casee()
+    public function test_happy_case()
     {
         $contact = UserHasContact::factory()
             ->create();

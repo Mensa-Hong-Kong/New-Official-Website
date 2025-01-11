@@ -312,7 +312,7 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -324,7 +324,7 @@ class UpdateTest extends TestCase
         $data['username'] = 'testing2';
         $data['password'] = '12345678';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -337,7 +337,7 @@ class UpdateTest extends TestCase
         $data['new_password'] = '98765432';
         $data['new_password_confirmation'] = '98765432';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -348,7 +348,7 @@ class UpdateTest extends TestCase
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -362,7 +362,7 @@ class UpdateTest extends TestCase
         $data['new_password'] = '98765432';
         $data['new_password_confirmation'] = '98765432';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -375,7 +375,7 @@ class UpdateTest extends TestCase
         $data['password'] = '12345678';
         $data['middle_name'] = 'Tai Man';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -389,7 +389,7 @@ class UpdateTest extends TestCase
         $data['new_password_confirmation'] = '98765432';
         $data['middle_name'] = 'Tai Man';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);
@@ -404,7 +404,7 @@ class UpdateTest extends TestCase
         $data['new_password_confirmation'] = '98765432';
         $data['middle_name'] = 'Tai Man';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertValid();
+        $response->assertSuccessful();
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $response->assertJson($expect);

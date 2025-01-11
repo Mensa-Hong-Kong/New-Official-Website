@@ -25,7 +25,7 @@
                 @csrf
                 @method('put')
                 <div class="col-md-4">
-                    <label for="validationUsername" class="form-label">Usermame</label>
+                    <label for="validationUsername" class="form-label">Username</label>
                     <div id="showUsername" class="showInfo">{{ $user->username }}</div>
                     <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username', $user->username) }}" placeholder="username" required hidden />
                     <div id="usernameFeedback" class="valid-feedback">
@@ -72,7 +72,7 @@
                 <div class="col-md-4">
                     <label for="validationGivenName" class="form-label">Given Name</label>
                     <div id="showGivenName">{{ $user->given_name }}</div>
-                    <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name', $user->family_name) }}" placeholder="given name" name="given_name" required hidden />
+                    <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name', $user->given_name) }}" placeholder="given name" name="given_name" required hidden />
                     <div id="givenNameFeedback" class="valid-feedback">
                         Looks good!
                     </div>

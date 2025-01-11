@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
@@ -24,6 +26,10 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [UserController::class, 'store']);
     Route::view('login', 'user.login')->name('login');
     Route::post('login', [UserController::class, 'login']);
+    Route::get('forget-password', [UserController::class, 'forgetPassword'])
+        ->name('forget-password');
+    Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
+        ->name('reset-password');
 });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
@@ -46,11 +52,17 @@ Route::middleware('auth')->group(function () {
             Route::view('/', 'admin.index')->name('index');
             Route::resource('users', AdminUserController::class)
                 ->only(['index', 'show', 'update']);
+            Route::match(['put', 'patch'], 'users/{user}/password', [AdminUserController::class, 'resetPassword'])
+                ->name('users.reset-password');
             Route::resource('contacts', AdminContactController::class)
                 ->only(['store', 'update', 'destroy']);
             Route::match(['put', 'patch'], 'contacts/{contact}/verify', [AdminContactController::class, 'verify'])
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::resource('modules', ModuleController::class)
+                ->only('index');
+            Route::resource('permissions', PermissionController::class)
+                ->only('index');
         });
 });

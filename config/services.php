@@ -41,7 +41,8 @@ return [
         'whatsapp' => [
             'from' => env('TWILIO_WHATSAPP_FROM'),
             'templateIDs' => [
-                'verificationCode' => env('TWILIO_WHATSAPP_VERIFICATION_CODE_TEMPALTE_ID'),
+                'verificationCode' => env('TWILIO_WHATSAPP_VERIFICATION_CODE_TEMPLATE_ID'),
+                'newPassword' => env('TWILIO_WHATSAPP_NEW_PASSWORD_TEMPLATE_ID'),
             ],
         ],
     ],

@@ -12,18 +12,8 @@ class Module extends Model
     protected $fillable = [
         'name',
         'title',
-        'module_id',
+        'display_order',
     ];
-
-    public function master()
-    {
-        return $this->belongsTo(Module::class);
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Module::class);
-    }
 
     public function permissions()
     {

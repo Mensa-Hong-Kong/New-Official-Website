@@ -28,7 +28,7 @@ function hasError() {
 
 function validation() {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
         input.classList.remove('is-invalid');
     }
     for(let feedback of feedbacks) {
@@ -75,7 +75,7 @@ function successCallback(response) {
 
 function failCallback(error) {
     for(let input of inputs) {
-        input.classList.remove('is-valid"');
+        input.classList.remove('is-valid');
     }
     for(let feedback of feedbacks) {
         feedback.className = 'valid-feedback';
@@ -99,10 +99,6 @@ function failCallback(error) {
                     for(let input of inputs) {
                         input.classList.add('is-invalid');
                     }
-                    loginFeedback.hidden = false;
-                    loginFeedback.innerText = value;
-                    break;
-                case 'throttle':
                     loginFeedback.hidden = false;
                     loginFeedback.innerText = value;
                     break;

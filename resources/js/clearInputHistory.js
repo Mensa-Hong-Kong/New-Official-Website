@@ -4,7 +4,17 @@ export default class ClearInputHistory
         window.addEventListener(
             "pagehide", function() {
                 for(let input of inputs) {
-                    input.value = '';
+                    if(input.type == 'date') {
+                        if(input.max) {
+                            input.value = input.max;
+                        } else if(input.min) {
+                            input.value = input.max;
+                        } else {
+                            input.value = '';
+                        }
+                    } else {
+                        input.value = '';
+                    }
                 }
             }
         );

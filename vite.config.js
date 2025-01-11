@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/js/user/login.js',
                 'resources/js/admin/users/index.js',
                 'resources/js/admin/users/show.js',
+                'resources/js/user/forgetPassword.js',
             ],
             refresh: true,
         }),
