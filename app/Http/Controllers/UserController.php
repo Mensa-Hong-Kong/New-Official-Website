@@ -159,12 +159,8 @@ class UserController extends Controller implements HasMiddleware
             },
         ])->firstWhere('username', $request->username);
         if ($user) {
-            $failLoginLogsWithin24Hours = $user->loginLogs()
-                ->where('created_at', '>=', now()->subDay())
-                ->where('status', false)
-                ->get();
-            if ($failLoginLogsWithin24Hours->count() >= 10) {
-                $firstInRangeLoginFailedTime = $failLoginLogsWithin24Hours[0]['created_at'];
+            if ($user->loginLogs->count() >= 10) {
+                $firstInRangeLoginFailedTime = $user->loginLogs[0]['created_at'];
 
                 abort(429, "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.");
             }
