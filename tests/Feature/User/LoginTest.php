@@ -189,6 +189,11 @@ class LoginTest extends TestCase
         $response->assertRedirectToRoute('profile.show');
         $cookieJar = $response->headers->getCookies();
         $this->assertFalse($this->hasRememberWebCooky($cookieJar));
+        $this->assertTrue(
+            UserLoginLog::where('user_id', $user->id)
+                ->where('status', true)
+                ->exists()
+        );
     }
 
     public function test_happy_case_with_remember_me_have_when_no_failed_record()
@@ -221,6 +226,16 @@ class LoginTest extends TestCase
             ->insert($insert);
         $response = $this->postJson(route('login'), $data);
         $response->assertValid();
+        $this->assertTrue(
+            UserLoginLog::where('user_id', $user->id)
+                ->where('status', true)
+                ->exists()
+        );
+        $this->assertFalse(
+            UserLoginLog::where('user_id', $user->id)
+                ->where('status', false)
+                ->exists()
+        );
     }
 
     public function test_happy_case_when_login_have_number_of_limit_failed_but_has_one_without_24_hours()
@@ -242,5 +257,15 @@ class LoginTest extends TestCase
             ->insert($insert);
         $response = $this->postJson(route('login'), $data);
         $response->assertValid();
+        $this->assertTrue(
+            UserLoginLog::where('user_id', $user->id)
+                ->where('status', true)
+                ->exists()
+        );
+        $this->assertFalse(
+            UserLoginLog::where('user_id', $user->id)
+                ->where('status', false)
+                ->exists()
+        );
     }
 }
