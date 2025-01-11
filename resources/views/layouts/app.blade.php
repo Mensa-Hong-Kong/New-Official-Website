@@ -123,6 +123,13 @@
                                     @endif
                                 </ul>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.modules.index') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'admin.modules.index',
+                                ])>Module</a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
