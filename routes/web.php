@@ -63,6 +63,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('modules', ModuleController::class)
                 ->only('index');
             Route::resource('permissions', PermissionController::class)
-                ->only('index');
+                ->only(['index', 'update']);
         });
 });
