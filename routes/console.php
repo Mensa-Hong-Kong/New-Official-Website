@@ -1,6 +1,7 @@
 <?php
 
 use App\Schedules\ClearUnusedAdminVerifiedRecode;
+use App\Schedules\ClearUnusedUserResetPasswordFailedRecord;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -21,3 +22,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::call(new ClearUnusedAdminVerifiedRecode)->daily();
+Schedule::call(new ClearUnusedUserResetPasswordFailedRecord)->daily();
