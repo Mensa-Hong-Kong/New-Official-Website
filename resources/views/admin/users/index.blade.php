@@ -108,31 +108,31 @@
                 </thead>
                 <tbody>
                     @foreach ($users as $user)
-                    <tr>
-                        <th scope="row">{{ $user->id }}</th>
-                        <td>
-                            @if(strlen($user->name) > 32)
-                                {{ substr($user->name, 0, 29) }}...
-                            @else
-                                {{ $user->name }}
-                            @endif
-                        </td>
-                        <td>
-                            @if(strlen($user->gender->name) > 32)
-                                {{ substr($user->gender->name, 0, 29) }}...
-                            @else
-                                {{ $user->gender->name }}
-                            @endif
-                        </td>
-                        <td>{{ $user->created_at }}</td>
-                        <td>{{ $user->updated_at }}</td>
-                        <td>{{ $user->lastLoginLogs->created_at ?? '--' }}</td>
-                        <td>
-                            <a href="{{ route('admin.users.show', ['user' => $user]) }}">
-                                <button class="btn btn-primary">Show</button>
-                            </a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <th scope="row">{{ $user->id }}</th>
+                            <td>
+                                @if(strlen($user->name) > 32)
+                                    {{ substr($user->name, 0, 29) }}...
+                                @else
+                                    {{ $user->name }}
+                                @endif
+                            </td>
+                            <td>
+                                @if(strlen($user->gender->name) > 32)
+                                    {{ substr($user->gender->name, 0, 29) }}...
+                                @else
+                                    {{ $user->gender->name }}
+                                @endif
+                            </td>
+                            <td>{{ $user->created_at }}</td>
+                            <td>{{ $user->updated_at }}</td>
+                            <td>{{ $user->lastLoginLogs->created_at ?? '--' }}</td>
+                            <td>
+                                <a href="{{ route('admin.users.show', ['user' => $user]) }}">
+                                    <button class="btn btn-primary">Show</button>
+                                </a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
