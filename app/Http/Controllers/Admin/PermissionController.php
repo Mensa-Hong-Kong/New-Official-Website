@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Module;
+use App\Models\Permission;
 
-class ModuleController extends Controller
+class PermissionController extends Controller
 {
     public function index()
     {
-        return view('admin.module')
-            ->with('modules', Module::orderBy('display_order')->get());
+        return view('admin.permission')
+            ->with('permissions', Permission::orderBy('display_order')->get());
     }
 }
