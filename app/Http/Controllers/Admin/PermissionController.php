@@ -16,9 +16,10 @@ class PermissionController extends Controller
 
     public function update(NameRequest $request, Permission $permission)
     {
-        if($request->name != $permission->title) {
+        if ($request->name != $permission->title) {
             $permission->update(['tit;e' => $request->name]);
         }
+
         return ['success' => 'The permission display name update success!'];
     }
 }

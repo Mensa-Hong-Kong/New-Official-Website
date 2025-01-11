@@ -32,7 +32,7 @@ class UpdateTest extends TestCase
                 'admin.permissions.update',
                 [
                     'permission' => Permission::inRandomOrder()
-                        ->first()
+                        ->first(),
                 ]
             ), ['name' => 'abc']
         );
@@ -47,7 +47,7 @@ class UpdateTest extends TestCase
                 'admin.permissions.update',
                 [
                     'permission' => Permission::inRandomOrder()
-                        ->first()
+                        ->first(),
                 ]
             ), ['name' => 'abc']
         );
@@ -73,7 +73,7 @@ class UpdateTest extends TestCase
                 'admin.permissions.update',
                 [
                     'permission' => Permission::inRandomOrder()
-                        ->first()
+                        ->first(),
                 ]
             ), ['name' => ['abc']]
         );
@@ -87,7 +87,7 @@ class UpdateTest extends TestCase
                 'admin.permissions.update',
                 [
                     'permission' => Permission::inRandomOrder()
-                        ->first()
+                        ->first(),
                 ]
             ), ['name' => 'abc:efg']
         );
@@ -101,7 +101,7 @@ class UpdateTest extends TestCase
                 'admin.permissions.update',
                 [
                     'permission' => Permission::inRandomOrder()
-                        ->first()
+                        ->first(),
                 ]
             ), ['name' => 'abc']
         );
