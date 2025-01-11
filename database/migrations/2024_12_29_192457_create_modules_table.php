@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('title')->nullable();
-            $table->unsignedBigInteger('module_id')->nullable();
             $table->unsignedBigInteger('display_order')->default(0);
             $table->timestamps();
         });
