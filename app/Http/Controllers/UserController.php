@@ -168,6 +168,9 @@ class UserController extends Controller implements HasMiddleware
             if ($user->checkPassword($request->password)) {
                 $log['status'] = true;
                 UserLoginLog::create($log);
+                $user->loginLogs()
+                    ->where('status', false)
+                    ->delete();
                 Auth::login($user, $request->remember_me);
 
                 return redirect()->intended(route('profile.show'));
