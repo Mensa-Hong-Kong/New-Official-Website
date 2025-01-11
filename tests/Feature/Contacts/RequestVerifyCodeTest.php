@@ -88,7 +88,7 @@ class RequestVerifyCodeTest extends TestCase
             ->state(['user_id' => $this->user->id])->create();
         $contact->sendVerifyCode();
         $contact->lastVerification
-            ->fillable(['created_at', 'user_ip'])
+            ->fillable(['created_at'])
             ->update(['created_at' => now()->subMinute()]);
         $response = $this->actingAs($this->user)->getJson(route('contacts.send-verify-code', ['contact' => $contact]));
         $response->assertTooManyRequests();
