@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
@@ -58,7 +59,7 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
-            Route::resource('module', ModuleController::class)
+            Route::resource('modules', ModuleController::class)
                 ->only('index');
         });
 });
