@@ -130,6 +130,13 @@
                                     'active' => Route::current()->getName() == 'admin.modules.index',
                                 ])>Module</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.permissions.index') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'admin.permissions.index',
+                                ])>Permission</a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
