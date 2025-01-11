@@ -8,7 +8,6 @@ use App\Models\UserHasContact;
 use App\Schedules\ClearUnusedAdminVerifiedRecode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ClearUnusedAdminVerifiedRecodeTest extends TestCase
@@ -19,7 +18,6 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
     {
         parent::setup();
         User::factory()->create();
-        Queue::fake();
         Notification::fake();
     }
 
