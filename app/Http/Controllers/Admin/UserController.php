@@ -154,7 +154,7 @@ class UserController extends Controller implements HasMiddleware
             ], 422);
         }
         DB::beginTransaction();
-        $log = [
+        ResetPasswordLog::create([
             'passport_type_id' => $user->passport_type_id,
             'passport_number' => $user->passport_number,
             'contact_type' => $request->contact_type,
@@ -162,8 +162,7 @@ class UserController extends Controller implements HasMiddleware
             'creator_id' => $request->user()->id,
             'creator_ip' => $request->ip(),
             'middleware_should_count' => false,
-        ];
-        ResetPasswordLog::create($log);
+        ]);
         $password = App::environment('testing') ? '12345678' : Str::password(16);
         $user->update(['password' => $password]);
         $contact->notify(new ResetPasswordNotification($contact->type, $password));
