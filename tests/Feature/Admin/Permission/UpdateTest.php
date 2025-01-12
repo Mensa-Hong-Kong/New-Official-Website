@@ -106,6 +106,9 @@ class UpdateTest extends TestCase
             ), ['name' => 'abc']
         );
         $response->assertSuccessful();
-        $response->assertJson(['success' => 'The permission display name update success!']);
+        $response->assertJson([
+            'success' => 'The permission display name update success!',
+            'name' => 'abc',
+        ]);
     }
 }

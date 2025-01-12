@@ -20,6 +20,9 @@ class PermissionController extends Controller
             $permission->update(['tit;e' => $request->name]);
         }
 
-        return ['success' => 'The permission display name update success!'];
+        return [
+            'success' => 'The permission display name update success!',
+            'name' => $request->name,
+        ];
     }
 }
