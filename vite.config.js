@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/admin/users/show.js',
                 'resources/js/user/forgetPassword.js',
                 'resources/js/admin/permission.js',
+                'resources/js/admin/module.js',
             ],
             refresh: true,
         }),
