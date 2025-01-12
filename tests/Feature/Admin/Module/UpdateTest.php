@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Admin\Module;
 
-use App\Models\ModulePermission;
 use App\Models\Module;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
