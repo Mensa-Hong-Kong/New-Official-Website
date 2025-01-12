@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
             Route::resource('modules', ModuleController::class)
-                ->only('index');
+                ->only(['index', 'update']);
             Route::resource('permissions', PermissionController::class)
                 ->only(['index', 'update']);
         });
