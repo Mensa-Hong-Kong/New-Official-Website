@@ -4,13 +4,15 @@
     <section class="container">
         <h2 class="fw-bold mb-2 text-uppercase">
             Modules
-            <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
-            <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
-            <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
-            <button class="btn btn-success" id="savingDisplayOrder" hidden disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Saving Display Order...
-            </button>
+            @can('Edit:Permission')
+                <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
+                <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
+                <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
+                <button class="btn btn-success" id="savingDisplayOrder" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Saving Display Order...
+                </button>
+            @endcan
         </h2>
         @if(count($modules))
             <table class="table table-hover">
@@ -18,7 +20,9 @@
                     <tr>
                         <th scope="col">Name</th>
                         <th scope="col">Display Name</th>
-                        <th scope="col">Control</th>
+                        @can('Edit:Permission')
+                            <th scope="col">Control</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -35,18 +39,20 @@
                                         value="{{ $module->title }}" data-value="{{ $module->title }}" />
                                 </form>
                             </td>
-                            <td>
-                                <div class="contactLoader" id="contactLoader{{ $module->id }}">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                </div>
-                                <button class="btn btn-primary" id="edit{{ $module->id }}" hidden>Edit</button>
-                                <button class="btn btn-primary submitButton" id="save{{ $module->id }}" form="updateDisplayNameForm{{ $module->id }}" hidden>Save</button>
-                                <button class="btn btn-danger" id="cancel{{ $module->id }}" hidden>Cancel</button>
-                                <button class="btn btn-success" id="saving{{ $module->id }}" hidden disabled>
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    Saving...
-                                </button>
-                            </td>
+                            @can('Edit:Permission')
+                                <td>
+                                    <div class="contactLoader" id="contactLoader{{ $module->id }}">
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    </div>
+                                    <button class="btn btn-primary" id="edit{{ $module->id }}" hidden>Edit</button>
+                                    <button class="btn btn-primary submitButton" id="save{{ $module->id }}" form="updateDisplayNameForm{{ $module->id }}" hidden>Save</button>
+                                    <button class="btn btn-danger" id="cancel{{ $module->id }}" hidden>Cancel</button>
+                                    <button class="btn btn-success" id="saving{{ $module->id }}" hidden disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Saving...
+                                    </button>
+                                </td>
+                            @endcan
                         </tr>
                     @endforeach
                 </tbody>
@@ -59,6 +65,8 @@
     </section>
 @endsection
 
-@push('after footer')
-    @vite('resources/js/admin/module.js')
-@endpush
+@can('Edit:Permission')
+    @push('after footer')
+        @vite('resources/js/admin/module.js')
+    @endpush
+@endcan
