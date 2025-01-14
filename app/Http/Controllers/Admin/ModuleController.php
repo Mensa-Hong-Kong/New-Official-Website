@@ -8,6 +8,7 @@ use App\Http\Requests\NameRequest;
 use App\Models\Module;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class ModuleController extends Controller implements HasMiddleware
 {
@@ -42,11 +43,14 @@ class ModuleController extends Controller implements HasMiddleware
         }
         $case = implode(' ', $case);
         Module::whereIn('id', $request->display_order)
-            ->update(['display_order' => "(CASE $case ELSE display_order END)"]);
+            ->update(['display_order' => DB::raw("(CASE $case ELSE display_order END)")]);
 
         return [
             'success' => 'The display order update success!',
-            'display_order' => $request->display_order,
+            'display_order' => Module::orderBy('display_order')
+                ->get('id')
+                ->pluck('id')
+                ->toArray(),
         ];
     }
 }
