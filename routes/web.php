@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
+                ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
                 ->only(['index', 'update']);
             Route::resource('permissions', PermissionController::class)
