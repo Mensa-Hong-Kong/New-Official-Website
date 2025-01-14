@@ -24,9 +24,8 @@ class UpdateDisplayOrderTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->putJson(
-            route(
-                'admin.modules.display-order.update',
-            ), [
+            route('admin.modules.display-order.update'),
+            [
                 'display_order' => Module::inRandomOrder()
                     ->get('display_order')
                     ->pluck('display_order')
