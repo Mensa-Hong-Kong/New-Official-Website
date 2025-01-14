@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Module\DisplayOrderRequest;
 use App\Http\Requests\NameRequest;
 use App\Models\Module;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ModuleController extends Controller
+class ModuleController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('permission:Edit:Permission')];
+    }
+
     public function index()
     {
         return view('admin.module')

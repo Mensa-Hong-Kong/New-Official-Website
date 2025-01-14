@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NameRequest;
 use App\Models\Permission;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('permission:Edit:Permission')];
+    }
+
     public function index()
     {
         return view('admin.permission')
