@@ -17,9 +17,15 @@ class IndexTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_is_not_admin()
+    public function test_have_no_edit_permission()
     {
         $user = User::factory()->create();
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Permission')
+                ->first()
+                ->name
+        );
         $response = $this->actingAs($user)
             ->get(route('admin.permissions.index'));
         $response->assertForbidden();
@@ -28,9 +34,7 @@ class IndexTest extends TestCase
     public function test_happy_case()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo(
-            ModulePermission::inRandomOrder()->first()->name
-        );
+        $user->givePermissionTo('Edit:Permission');
         $response = $this->actingAs($user)
             ->get(route('admin.permissions.index'));
         $response->assertSuccessful();

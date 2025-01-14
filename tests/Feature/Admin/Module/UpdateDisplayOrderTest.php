@@ -18,11 +18,7 @@ class UpdateDisplayOrderTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(
-            ModulePermission::inRandomOrder()
-                ->first()
-                ->name
-        );
+        $this->user->givePermissionTo('Edit:Permission');
     }
 
     public function test_have_no_login()
@@ -47,6 +43,12 @@ class UpdateDisplayOrderTest extends TestCase
     public function test_have_no_permission()
     {
         $user = User::factory()->create();
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Permission')
+                ->first()
+                ->name
+        );
         $response = $this->actingAs($user)->putJson(
             route('admin.modules.display-order.update'),
             [
@@ -80,7 +82,7 @@ class UpdateDisplayOrderTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => [1, 2]]
+            ['display_order' => [Module::first()->id]]
         );
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
@@ -96,36 +98,50 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_display_order_value_is_not_integer()
     {
+        $IDs = Module::inRandomOrder()
+            ->get('id')
+            ->pluck('id')
+            ->toArray();
+        $IDs[0] = 'abc';
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => ['abc']]
+            ['display_order' => $IDs]
         );
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field must be an integer.']);
     }
 
     public function test_display_order_value_is_duplicate()
     {
+        $IDs = Module::inRandomOrder()
+            ->get('id')
+            ->pluck('id')
+            ->toArray();
+        $IDs[] = $IDs[0];
         Module::create(['name' => 'abc']);
         $module = Module::first();
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => [$module->id, $module->id]]
+            ['display_order' => $IDs]
         );
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
     }
 
     public function test_display_order_value_is_exists_on_database()
     {
+        $IDs = Module::inRandomOrder()
+            ->get('id')
+            ->pluck('id')
+            ->toArray();
+        $IDs[0] = 0;
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => [0]]
+            ['display_order' => $IDs]
         );
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
     public function test_happy_case()
     {
-        $module = Module::create(['name' => 'abc']);
         $moduleIDs = Module::inRandomOrder()
             ->get('id')
             ->pluck('id')

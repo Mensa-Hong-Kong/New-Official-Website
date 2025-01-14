@@ -18,11 +18,7 @@ class UpdateTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(
-            ModulePermission::inRandomOrder()
-                ->first()
-                ->name
-        );
+        $this->user->givePermissionTo('Edit:Permission');
     }
 
     public function test_have_no_login()
@@ -39,9 +35,15 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_permission()
+    public function test_have_no_edit_permission()
     {
         $user = User::factory()->create();
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Permission')
+                ->first()
+                ->name
+        );
         $response = $this->actingAs($user)->putJson(
             route(
                 'admin.modules.update',
@@ -56,8 +58,7 @@ class UpdateTest extends TestCase
 
     public function test_permission_is_not_exist()
     {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->putJson(
+        $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.modules.update',
                 ['module' => 0]
