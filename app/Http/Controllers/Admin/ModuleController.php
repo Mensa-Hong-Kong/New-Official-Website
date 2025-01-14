@@ -38,7 +38,7 @@ class ModuleController extends Controller implements HasMiddleware
     public function displayOrder(DisplayOrderRequest $request)
     {
         $case = [];
-        foreach(array_values($request->display_order) as $order => $id) {
+        foreach (array_values($request->display_order) as $order => $id) {
             $case[] = "WHEN id = $id THEN $order";
         }
         $case = implode(' ', $case);

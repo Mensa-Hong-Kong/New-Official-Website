@@ -34,7 +34,7 @@ class UpdateDisplayOrderTest extends TestCase
                 'display_order' => Module::inRandomOrder()
                     ->get('display_order')
                     ->pluck('display_order')
-                    ->toArray()
+                    ->toArray(),
             ]
         );
         $response->assertUnauthorized();
@@ -55,7 +55,7 @@ class UpdateDisplayOrderTest extends TestCase
                 'display_order' => Module::inRandomOrder()
                     ->get('display_order')
                     ->pluck('display_order')
-                    ->toArray()
+                    ->toArray(),
             ]
         );
         $response->assertForbidden();

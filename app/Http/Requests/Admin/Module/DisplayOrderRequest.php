@@ -23,11 +23,13 @@ class DisplayOrderRequest extends FormRequest
             ->toArray();
         $size = count($IDs);
         $IDs = implode(',', $IDs);
+
         return [
             'display_order' => "required|array|size:$size",
             'display_order.*' => "required|integer|distinct|in:$IDs",
         ];
     }
+
     public function messages(): array
     {
         return [
