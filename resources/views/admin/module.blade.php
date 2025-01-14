@@ -2,7 +2,16 @@
 
 @section('main')
     <section class="container">
-        <h2 class="fw-bold mb-2 text-uppercase">Modules</h2>
+        <h2 class="fw-bold mb-2 text-uppercase">
+            Modules
+            <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
+            <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
+            <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
+            <button class="btn btn-success" id="savingDisplayOrder" hidden disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Saving Display Order...
+            </button>
+        </h2>
         @if(count($modules))
             <table class="table table-hover">
                 <thead>
@@ -12,9 +21,9 @@
                         <th scope="col">Control</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tableBody">
                     @foreach ($modules as $module)
-                        <tr>
+                        <tr class="dataRow" id="dataRow{{ $module->id }}">
                             <th scope="row">{{ $module->name }}</th>
                             <td>
                                 <span id="showDisplayName{{ $module->id }}">{{ $module->title }}</span>
