@@ -10,14 +10,18 @@ class ModuleSeeder extends Seeder
 {
     public function run(): void
     {
-        $masterModule = Module::firstOrCreate(['name' => 'User']);
+        $module = Module::firstOrCreate(['name' => 'User']);
         $viewPermission = Permission::firstOrCreate(['name' => 'View']);
         $viewPermission->update(['display_order' => '0']);
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
         $editPermission->update(['display_order' => '1']);
-        $masterModule->permissions()->sync([
-            $viewPermission->id => ['name' => "{$viewPermission->name}:{$masterModule->name}"],
-            $editPermission->id => ['name' => "{$editPermission->name}:{$masterModule->name}"],
+        $module->permissions()->sync([
+            $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+        $module = Module::firstOrCreate(['name' => 'Permission']);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
