@@ -26,10 +26,6 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->putJson(
             route(
                 'admin.modules.display-order.update',
-                [
-                    'module' => Module::inRandomOrder()
-                        ->first(),
-                ]
             ), [
                 'display_order' => Module::inRandomOrder()
                     ->get('display_order')
