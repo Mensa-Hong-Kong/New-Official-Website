@@ -12,7 +12,7 @@ class PermissionController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [new Middleware('permission:Edit:Permission')];
+        return [(new Middleware('permission:Edit:Permission'))->except('index')];
     }
 
     public function index()
