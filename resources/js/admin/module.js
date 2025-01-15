@@ -125,6 +125,7 @@ function closeEditDisplayName(id) {
     document.getElementById('cancel'+id).hidden = true;
     let input = document.getElementById('displayNameInput'+id);
     input.value = input.dataset.value;
+    document.getElementById('showDisplayName'+id).hidden = false;
     document.getElementById('edit'+id).hidden = false;
 }
 
@@ -187,6 +188,7 @@ function updateDisplayName(event) {
 
 function editDisplayName(event) {
     let id = event.target.id.replace('edit', '');
+    document.getElementById('showDisplayName'+id).hidden = true;
     event.target.hidden = true;
     document.getElementById('updateDisplayNameForm'+id).hidden = false;
     document.getElementById('save'+id).hidden = false;
