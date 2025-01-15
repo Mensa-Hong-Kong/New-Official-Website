@@ -64,8 +64,8 @@ Route::middleware('auth')->group(function () {
                 ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
                 ->only(['index', 'update']);
-                Route::match(['put', 'patch'], 'permissions/display-order', [PermissionController::class, 'displayOrder'])
-                    ->name('permissions.display-order.update');
+            Route::match(['put', 'patch'], 'permissions/display-order', [PermissionController::class, 'displayOrder'])
+                ->name('permissions.display-order.update');
             Route::resource('permissions', PermissionController::class)
                 ->only(['index', 'update']);
         });

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin\Permission;
 
-use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

@@ -1,5 +1,7 @@
 import { post } from "../submitForm";
 
+let submitting = 'loading';
+
 const submitButtons = document.getElementsByClassName('submitButton')
 
 function disableSubmitting(){
@@ -14,8 +16,6 @@ function enableSubmitting(){
         button.disabled = false;
     }
 }
-
-let submitting = 'loading';
 
 const tableBody = document.getElementById('tableBody');
 const dataRows = document.getElementsByClassName('dataRow');
