@@ -12,6 +12,7 @@ class Team extends Model
     protected $fillable = [
         'name',
         'type_id',
+        'display_order',
     ];
 
     public function type()
