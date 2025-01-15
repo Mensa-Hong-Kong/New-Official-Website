@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('team_types', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('title');
             $table->unsignedBigInteger('display_order')->default(0);
             $table->timestamps();
         });
