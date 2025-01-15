@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::match(['put', 'patch'], 'team-types/display-order', [TeamTypeController::class, 'displayOrder'])
+                ->name('team-types.display-order.update');
             Route::resource('team-types', TeamTypeController::class)
                 ->only(['index', 'update']);
             Route::resource('teams', TeamController::class)
