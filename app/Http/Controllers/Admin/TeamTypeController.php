@@ -25,7 +25,6 @@ class TeamTypeController extends Controller implements HasMiddleware
             );
     }
 
-
     public function update(NameRequest $request, TeamType $teamType)
     {
         if ($request->name != $teamType->title) {
