@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\Permission;
+namespace Tests\Feature\Admin\Permissions;
 
 use App\Models\ModulePermission;
 use App\Models\Permission;

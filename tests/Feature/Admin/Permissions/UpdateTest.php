@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Feature\Admin\Module;
+namespace Tests\Feature\Admin\Permissions;
 
-use App\Models\Module;
 use App\Models\ModulePermission;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,9 +25,9 @@ class UpdateTest extends TestCase
     {
         $response = $this->putJson(
             route(
-                'admin.modules.update',
+                'admin.permissions.update',
                 [
-                    'module' => Module::inRandomOrder()
+                    'permission' => Permission::inRandomOrder()
                         ->first(),
                 ]
             ), ['name' => 'abc']
@@ -46,9 +46,9 @@ class UpdateTest extends TestCase
         );
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.modules.update',
+                'admin.permissions.update',
                 [
-                    'module' => Module::inRandomOrder()
+                    'permission' => Permission::inRandomOrder()
                         ->first(),
                 ]
             ), ['name' => 'abc']
@@ -58,10 +58,11 @@ class UpdateTest extends TestCase
 
     public function test_permission_is_not_exist()
     {
-        $response = $this->actingAs($this->user)->putJson(
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->putJson(
             route(
-                'admin.modules.update',
-                ['module' => 0]
+                'admin.permissions.update',
+                ['permission' => 0]
             ), ['name' => 'abc']
         );
         $response->assertNotFound();
@@ -71,9 +72,9 @@ class UpdateTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.modules.update',
+                'admin.permissions.update',
                 [
-                    'module' => Module::inRandomOrder()
+                    'permission' => Permission::inRandomOrder()
                         ->first(),
                 ]
             ), ['name' => ['abc']]
@@ -85,9 +86,9 @@ class UpdateTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.modules.update',
+                'admin.permissions.update',
                 [
-                    'module' => Module::inRandomOrder()
+                    'permission' => Permission::inRandomOrder()
                         ->first(),
                 ]
             ), ['name' => 'abc:efg']
@@ -99,16 +100,16 @@ class UpdateTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.modules.update',
+                'admin.permissions.update',
                 [
-                    'module' => Module::inRandomOrder()
+                    'permission' => Permission::inRandomOrder()
                         ->first(),
                 ]
             ), ['name' => 'abc']
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'The module display name update success!',
+            'success' => 'The permission display name update success!',
             'name' => 'abc',
         ]);
     }

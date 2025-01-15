@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\Module;
+namespace Tests\Feature\Admin\Teams;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,7 +12,7 @@ class IndexTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('admin.modules.index'));
+        $response = $this->get(route('admin.teams.index'));
         $response->assertRedirectToRoute('login');
     }
 
@@ -20,7 +20,7 @@ class IndexTest extends TestCase
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
-            ->get(route('admin.modules.index'));
+            ->get(route('admin.teams.index'));
         $response->assertForbidden();
     }
 
@@ -29,7 +29,7 @@ class IndexTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
         $response = $this->actingAs($user)
-            ->get(route('admin.modules.index'));
+            ->get(route('admin.teams.index'));
         $response->assertSuccessful();
     }
 }
