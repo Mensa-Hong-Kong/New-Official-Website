@@ -10,12 +10,14 @@
                 <thead>
                     <tr>
                         <th scope="col">Name</th>
+                        <th scope="col">Display Name</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     @foreach ($types as $type)
                         <tr class="dataRow" id="dataRow{{ $type->id }}">
                             <th scope="row">{{ $type->name }}</th>
+                            <th scope="row">{{ $type->title }}</th>
                         </tr>
                     @endforeach
                 </tbody>

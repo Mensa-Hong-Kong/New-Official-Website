@@ -14,7 +14,7 @@
                         @class([
                             'nav-link',
                             'active' => $loop->first,
-                        ])>{{ $type->name }}</button>
+                        ])>{{ $type->title ?? $type->name }}</button>
                 </li>
             @endforeach
         </ul>
