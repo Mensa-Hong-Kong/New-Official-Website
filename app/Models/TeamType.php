@@ -12,6 +12,7 @@ class TeamType extends Model
     protected $fillable = [
         'name',
         'title',
+        'display_order',
     ];
 
     public function teams()
