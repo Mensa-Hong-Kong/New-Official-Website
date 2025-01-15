@@ -31,7 +31,7 @@ class ModuleController extends Controller implements HasMiddleware
 
         return [
             'success' => 'The module display name update success!',
-            'name' => $request->name,
+            'name' => $module->name,
         ];
     }
 
