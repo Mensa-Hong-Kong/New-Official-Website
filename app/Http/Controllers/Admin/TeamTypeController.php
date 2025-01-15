@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NameRequest;
 use App\Models\TeamType;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class TeamTypeController extends Controller
+class TeamTypeController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware('permission:Edit:Permission'))->except('index')];
+    }
+
     public function index()
     {
         return view('admin.team-types.index')
