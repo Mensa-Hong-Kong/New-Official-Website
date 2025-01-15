@@ -31,7 +31,7 @@ class PermissionController extends Controller implements HasMiddleware
 
         return [
             'success' => 'The permission display name update success!',
-            'name' => $permission->name,
+            'name' => $permission->title,
         ];
     }
 

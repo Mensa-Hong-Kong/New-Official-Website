@@ -19,15 +19,15 @@ class TeamTypeController extends Controller
     }
 
 
-    public function update(NameRequest $request, TeamType $type)
+    public function update(NameRequest $request, TeamType $teamType)
     {
-        if ($request->name != $type->title) {
-            $type->update(['tit;e' => $request->name]);
+        if ($request->name != $teamType->title) {
+            $teamType->update(['title' => $request->name]);
         }
 
         return [
             'success' => 'The tame type display name update success!',
-            'name' => $type->name,
+            'name' => $teamType->title,
         ];
     }
 }
