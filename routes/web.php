@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
@@ -61,6 +62,8 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::resource('team-types', TeamTypeController::class)
+                ->only('index');
             Route::resource('teams', TeamController::class)
                 ->only('index');
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
