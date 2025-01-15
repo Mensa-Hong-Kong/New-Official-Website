@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\TeamType\DisplayOrderRequest;
 use App\Http\Requests\NameRequest;
 use App\Models\TeamType;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +39,7 @@ class TeamTypeController extends Controller implements HasMiddleware
         ];
     }
 
-    public function displayOrder(Request $request)
+    public function displayOrder(DisplayOrderRequest $request)
     {
         $case = [];
         foreach (array_values($request->display_order) as $order => $id) {
