@@ -252,14 +252,14 @@
             const confirmDiv = document.getElementById('confirm');
             const confirmModal = new bootstrap.Modal(confirmDiv);
             const confirmMessage = document.getElementById('confirmMessage');
-            let confirmHander = function() {
+            let confirmHandle = function() {
                 confirmModal.hide();
                 callback(passData);
             }
-            confirmButton.addEventListener('click', confirmHander);
+            confirmButton.addEventListener('click', confirmHandle);
             confirmDiv.addEventListener(
                 'hide.bs.modal', function() {
-                    confirmButton.removeEventListener('click', confirmHander);
+                    confirmButton.removeEventListener('click', confirmHandle);
                 }
             );
             confirmMessage.innerText = message;
