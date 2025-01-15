@@ -19,7 +19,7 @@ class PermissionController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.permission')
+        return view('admin.permissions')
             ->with('permissions', Permission::orderBy('display_order')->get());
     }
 
