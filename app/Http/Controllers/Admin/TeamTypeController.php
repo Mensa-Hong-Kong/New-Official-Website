@@ -17,7 +17,7 @@ class TeamTypeController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.team-types.index')
+        return view('admin.team-types')
             ->with(
                 'types', TeamType::orderBy('display_order')
                     ->orderBy('id')
