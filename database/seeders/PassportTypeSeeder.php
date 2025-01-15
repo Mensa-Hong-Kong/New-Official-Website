@@ -14,7 +14,7 @@ class PassportTypeSeeder extends Seeder
             ['name' => 'Hong Kong Identity Card'],
             ['name' => 'Macau Identity Card'],
         ];
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             PassportType::firstOrCreate($row);
         }
     }

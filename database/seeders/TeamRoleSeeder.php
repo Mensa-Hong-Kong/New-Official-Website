@@ -26,7 +26,7 @@ class TeamRoleSeeder extends Seeder
         $roles[] = Role::firstOrCreate(['name' => 'Honorary Secretary']);
         $roles[] = Role::firstOrCreate(['name' => 'Honorary Treasurer']);
         $roles[] = Role::firstOrCreate(['name' => 'Director']);
-        foreach($roles as $role) {
+        foreach ($roles as $role) {
             TeamRole::firstOrCreate([
                 'name' => "{$team->name}:{$role->name}",
                 'team_id' => $team->id,
@@ -56,8 +56,8 @@ class TeamRoleSeeder extends Seeder
         $roles = [];
         $roles[] = Role::firstOrCreate(['name' => 'Chairperson']);
         $roles[] = Role::firstOrCreate(['name' => 'Member']);
-        foreach($teams as $team) {
-            foreach($roles as $role) {
+        foreach ($teams as $team) {
+            foreach ($roles as $role) {
                 TeamRole::firstOrCreate([
                     'name' => "{$team->name}:{$role->name}",
                     'team_id' => $team->id,
@@ -120,8 +120,8 @@ class TeamRoleSeeder extends Seeder
         $roles = [];
         $roles[] = Role::firstOrCreate(['name' => 'Convenor']);
         $roles[] = Role::firstOrCreate(['name' => 'Deputy Convenor']);
-        foreach($teams as $team) {
-            foreach($roles as $role) {
+        foreach ($teams as $team) {
+            foreach ($roles as $role) {
                 TeamRole::firstOrCreate([
                     'name' => "{$team->name}:{$role->name}",
                     'team_id' => $team->id,

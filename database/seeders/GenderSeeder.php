@@ -13,7 +13,7 @@ class GenderSeeder extends Seeder
             ['name' => 'Male'],
             ['name' => 'Female'],
         ];
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             Gender::firstOrCreate($row);
         }
     }
