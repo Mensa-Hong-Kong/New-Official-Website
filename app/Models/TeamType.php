@@ -17,6 +17,6 @@ class TeamType extends Model
 
     public function teams()
     {
-        return $this->hasMany(Team::class);
+        return $this->hasMany(Team::class, 'type_id');
     }
 }

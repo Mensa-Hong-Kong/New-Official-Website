@@ -17,7 +17,7 @@ class Team extends Model
 
     public function type()
     {
-        return $this->hasMany(TeamType::class);
+        return $this->belongsTo(TeamType::class);
     }
 
     public function roles()
