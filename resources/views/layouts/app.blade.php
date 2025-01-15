@@ -123,6 +123,70 @@
                                     @endif
                                 </ul>
                             </li>
+                            <li class="nav-item accordion">
+                                <button role="button"
+                                    data-bs-toggle="collapse" aria-expanded="true"
+                                    data-bs-target="#asideNavAdminTeamType" aria-controls="asideNavAdminTeamType"
+                                    style="height: 0em"
+                                    @class([
+                                        'nav-item',
+                                        'accordion-button',
+                                        'collapsed' => !str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.team-types.'
+                                        ),
+                                    ])>
+                                    Team Types
+                                </button>
+                                <ul id="asideNavAdminTeamType" @class([
+                                    'accordion-collapse',
+                                    'collapse',
+                                    'show' => str_starts_with(
+                                        Route::current()->getName(),
+                                        'admin.team-types.'
+                                    ),
+                                ])>
+                                    <li>
+                                        <a href="{{ route('admin.team-types.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.team-types.index',
+                                        ])>Index</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item accordion">
+                                <button role="button"
+                                    data-bs-toggle="collapse" aria-expanded="true"
+                                    data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
+                                    style="height: 0em"
+                                    @class([
+                                        'nav-item',
+                                        'accordion-button',
+                                        'collapsed' => !str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.teams.'
+                                        ),
+                                    ])>
+                                    Teams
+                                </button>
+                                <ul id="asideNavAdminTeam" @class([
+                                    'accordion-collapse',
+                                    'collapse',
+                                    'show' => str_starts_with(
+                                        Route::current()->getName(),
+                                        'admin.teams.'
+                                    ),
+                                ])>
+                                    <li>
+                                        <a href="{{ route('admin.teams.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.teams.index',
+                                        ])>Index</a>
+                                    </li>
+                                </ul>
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.modules.index') }}" @class([
                                     'nav-link',
