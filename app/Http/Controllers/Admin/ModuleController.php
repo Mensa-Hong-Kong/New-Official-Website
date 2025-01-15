@@ -26,7 +26,7 @@ class ModuleController extends Controller implements HasMiddleware
     public function update(NameRequest $request, Module $module)
     {
         if ($request->name != $module->title) {
-            $module->update(['tit;e' => $request->name]);
+            $module->update(['title' => $request->name]);
         }
 
         return [

@@ -26,7 +26,7 @@ class PermissionController extends Controller implements HasMiddleware
     public function update(NameRequest $request, Permission $permission)
     {
         if ($request->name != $permission->title) {
-            $permission->update(['tit;e' => $request->name]);
+            $permission->update(['title' => $request->name]);
         }
 
         return [
