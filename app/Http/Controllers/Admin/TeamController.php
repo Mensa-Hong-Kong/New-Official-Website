@@ -6,10 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Team;
 use App\Models\TeamType;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class TeamController extends Controller
+class TeamController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware('permission:Edit:Permission'))->except('index')];
+    }
+
     public function index()
     {
         return view('admin.teams.index')
