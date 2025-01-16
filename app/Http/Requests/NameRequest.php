@@ -13,13 +13,6 @@ class NameRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['name' => 'nullable|string|not_regex:/:/'];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'name.not_regex' => 'The name field cannot has ";".',
-        ];
+        return ['name' => 'nullable|string'];
     }
 }

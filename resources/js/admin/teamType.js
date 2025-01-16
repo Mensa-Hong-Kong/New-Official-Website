@@ -169,19 +169,14 @@ function updateDisplayName(event) {
         let input = document.getElementById('displayNameInput'+id);
         disableSubmitting();
         if(submitting == 'updateDisplayName'+submitAt) {
-            if(input.validity.patternMismatch) {
-                bootstrapAlert('The name field cannot has ";".');
-                enableSubmitting();
-            } else {
-                input.disabled = true;
-                document.getElementById('save'+id).hidden = true;
-                document.getElementById('cancel'+id).hidden = true;
-                document.getElementById('saving'+id).hidden = false;
-                let data = {
-                    name: input.value,
-                }
-                post(event.target.action, updateDisplayNameSuccessCallback, updateDisplayNameFailCallback, 'put', data);
+            input.disabled = true;
+            document.getElementById('save'+id).hidden = true;
+            document.getElementById('cancel'+id).hidden = true;
+            document.getElementById('saving'+id).hidden = false;
+            let data = {
+                name: input.value,
             }
+            post(event.target.action, updateDisplayNameSuccessCallback, updateDisplayNameFailCallback, 'put', data);
         }
     }
 }

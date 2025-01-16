@@ -31,7 +31,7 @@
                                     action="{{ route('admin.team-types.update', ['team_type' => $type]) }}">
                                     @csrf
                                     @method('put')
-                                    <input class="form-control" id="displayNameInput{{ $type->id }}" pattern="(?!.*:).*"
+                                    <input class="form-control" id="displayNameInput{{ $type->id }}"
                                         value="{{ $type->title }}" data-value="{{ $type->title }}" />
                                 </form>
                             </td>

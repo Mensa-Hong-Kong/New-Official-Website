@@ -82,20 +82,6 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_has_colon()
-    {
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.team-types.update',
-                [
-                    'team_type' => TeamType::inRandomOrder()
-                        ->first(),
-                ]
-            ), ['name' => 'abc:efg']
-        );
-        $response->assertInvalid(['name' => 'The name field cannot has ";".']);
-    }
-
     public function test_happy_case()
     {
         $response = $this->actingAs($this->user)->putJson(
