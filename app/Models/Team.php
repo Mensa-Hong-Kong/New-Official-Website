@@ -22,6 +22,7 @@ class Team extends Model
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, TeamRole::class);
+        return $this->belongsToMany(Role::class, TeamRole::class)
+            ->withPivot('display_order');
     }
 }
