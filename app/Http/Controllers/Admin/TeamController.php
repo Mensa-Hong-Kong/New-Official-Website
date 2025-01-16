@@ -77,4 +77,10 @@ class TeamController extends Controller implements HasMiddleware
 
         return redirect()->route('admin.teams.index');
     }
+
+    public function show(Team $team)
+    {
+        return view('admin.teams.show')
+            ->with('team', $team);
+    }
 }
