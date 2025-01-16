@@ -32,12 +32,16 @@
                         <thead>
                             <tr>
                                 <th scope="col">Name</th>
+                                <th scope="col">Control</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($type->teams as $team)
                                 <tr>
                                     <th>{{ $team->name }}</th>
+                                    <td>
+                                        <a href="{{ route('admin.teams.show', ['team' => $team]) }}" class="btn btn-primary">Show</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
