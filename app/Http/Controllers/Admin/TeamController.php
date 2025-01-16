@@ -43,13 +43,13 @@ class TeamController extends Controller implements HasMiddleware
             ->orderBy('id')
             ->get();
         $displayOptions = [];
-        foreach($types as $type) {
+        foreach ($types as $type) {
             $displayOptions[$type->id] = [];
-            foreach($type->teams as $team) {
+            foreach ($type->teams as $team) {
                 $displayOptions[$type->id][$team->display_order] = "before \"$team->name\"";
             }
             $displayOptions[$type->id][0] = 'top';
-            $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = "latest";
+            $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
         }
 
         return view('admin.teams.create')

@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
             'type_id' => 'required|integer|exists:'.TeamType::class.',id',
             'display_order' => 'required|integer|min:0',
         ];
-        if(!is_array($this->type_id)) {
+        if (! is_array($this->type_id)) {
             $return['name'][] = Rule::unique(Team::class, 'name')
                 ->where('type_id', $this->type_id);
             $maxDisplayOrder = Team::where('type_id', $this->type_id)
