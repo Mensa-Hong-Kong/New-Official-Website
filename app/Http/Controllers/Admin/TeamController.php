@@ -68,14 +68,14 @@ class TeamController extends Controller implements HasMiddleware
         Team::where('type_id', $request->type_id)
             ->where('display_order', '>=', $request->display_order)
             ->increment('display_order');
-        Team::create([
+        $team = Team::create([
             'name' => $request->name,
             'type_id' => $request->type_id,
             'display_order' => $request->display_order,
         ]);
         DB::commit();
 
-        return redirect()->route('admin.teams.index');
+        return redirect()->route('admin.teams.show', ['team' => $team]);
     }
 
     public function show(Team $team)

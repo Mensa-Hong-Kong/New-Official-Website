@@ -181,6 +181,7 @@ class StoreTest extends TestCase
             route('admin.teams.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.teams.index');
+        $team = Team::latest('id')->first();
+        $response->assertRedirectToRoute('admin.teams.show', ['team' => $team]);
     }
 }
