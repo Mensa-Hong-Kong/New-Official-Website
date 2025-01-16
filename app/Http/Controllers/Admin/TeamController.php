@@ -81,6 +81,13 @@ class TeamController extends Controller implements HasMiddleware
     public function show(Team $team)
     {
         return view('admin.teams.show')
-            ->with('team', $team);
+            ->with(
+                'team', $team->load([
+                    'roles' => function($query) {
+                        $query->orderBy('pivot_display_order')
+                            ->orderBy('id');
+                    },
+                ])
+            );
     }
 }
