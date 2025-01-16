@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -68,6 +69,8 @@ Route::middleware('auth')->group(function () {
                 ->only(['index', 'update']);
             Route::resource('teams', TeamController::class)
                 ->except(['edit', 'update', 'destroy']);
+            Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
+                ->name('teams.roles.display-order.update');
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
                 ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
