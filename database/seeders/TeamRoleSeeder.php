@@ -28,7 +28,7 @@ class TeamRoleSeeder extends Seeder
         $roles[] = Role::firstOrCreate(['name' => 'Director']);
         foreach ($roles as $role) {
             TeamRole::firstOrCreate([
-                'name' => "{$team->name}:{$role->name}",
+                'name' => "{$type->name}:{$team->name}:{$role->name}",
                 'team_id' => $team->id,
                 'role_id' => $role->id,
             ]);
@@ -59,7 +59,7 @@ class TeamRoleSeeder extends Seeder
         foreach ($teams as $team) {
             foreach ($roles as $role) {
                 TeamRole::firstOrCreate([
-                    'name' => "{$team->name}:{$role->name}",
+                    'name' => "{$type->name}:{$team->name}:{$role->name}",
                     'team_id' => $team->id,
                     'role_id' => $role->id,
                 ]);
@@ -123,7 +123,7 @@ class TeamRoleSeeder extends Seeder
         foreach ($teams as $team) {
             foreach ($roles as $role) {
                 TeamRole::firstOrCreate([
-                    'name' => "{$team->name}:{$role->name}",
+                    'name' => "{$type->name}:{$team->name}:{$role->name}",
                     'team_id' => $team->id,
                     'role_id' => $role->id,
                 ]);
