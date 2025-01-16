@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Team;
+use App\Models\TeamRole;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class RoleController extends Controller
+{
+    public function displayOrder(Request $request, Team $team)
+    {
+        $case = [];
+        foreach (array_values($request->display_order) as $order => $id) {
+            $case[] = "WHEN role_id = $id THEN $order";
+        }
+        $case = implode(' ', $case);
+        TeamRole::whereIn('role_id', $request->display_order)
+            ->where('team_id', $team->id)
+            ->update(['display_order' => DB::raw("(CASE $case ELSE display_order END)")]);
+
+        return [
+            'success' => 'The display order update success!',
+            'display_order' => TeamRole::where('team_id', $team->id)
+                ->orderBy('display_order')
+                ->get('role_id')
+                ->pluck('role_id')
+                ->toArray(),
+        ];
+    }
+}
