@@ -92,7 +92,8 @@ class UpdateDisplayOrderTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.teams.roles.display-order.update',[
+                'admin.teams.roles.display-order.update',
+                [
                     'team' => Team::inRandomOrder()
                         ->first(),
                 ]
@@ -115,8 +116,8 @@ class UpdateDisplayOrderTest extends TestCase
                 'display_order' => [
                     TeamRole::where('team_id', $team->id)
                         ->first()
-                        ->role_id
-                ]
+                        ->role_id,
+                ],
             ]
         );
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
@@ -126,7 +127,8 @@ class UpdateDisplayOrderTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.teams.roles.display-order.update',[
+                'admin.teams.roles.display-order.update',
+                [
                     'team' => Team::inRandomOrder()
                         ->first(),
                 ]
