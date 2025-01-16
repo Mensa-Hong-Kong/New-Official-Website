@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Role\DisplayOrderRequest;
 use App\Models\Team;
 use App\Models\TeamRole;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ class RoleController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Permission'))];
     }
 
-    public function displayOrder(Request $request, Team $team)
+    public function displayOrder(DisplayOrderRequest $request, Team $team)
     {
         $case = [];
         foreach (array_values($request->display_order) as $order => $id) {
