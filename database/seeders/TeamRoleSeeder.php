@@ -59,8 +59,8 @@ class TeamRoleSeeder extends Seeder
             foreach ($roles as $role) {
                 $sync[$role->id] = ['name' => "{$type->name}:{$team->name}:{$role->name}"];
             }
+            $team->roles()->sync($sync);
         }
-        $team->roles()->sync($sync);
 
         // Special Interest Groups
         $teams = [];
@@ -121,7 +121,7 @@ class TeamRoleSeeder extends Seeder
             foreach ($roles as $role) {
                 $sync[$role->id] = ['name' => "{$type->name}:{$team->name}:{$role->name}"];
             }
+            $team->roles()->sync($sync);
         }
-        $team->roles()->sync($sync);
     }
 }
