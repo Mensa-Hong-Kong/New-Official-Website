@@ -7,7 +7,7 @@
             @method('put')
             @include('admin.teams.form')
             <input type="submit" id="saveButton" class="form-control btn btn-primary" value="Save">
-            <button class="form-control btn btn-primary" id="saveButton" type="button" disabled hidden>
+            <button class="form-control btn btn-primary" id="savingButton" type="button" disabled hidden>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 Saving...
             </button>
@@ -15,3 +15,6 @@
     </section>
 @endsection
 
+@push('after footer')
+    @vite('resources/js/admin/teams/edit.js')
+@endpush

@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/js/admin/teamType.js',
                 'resources/js/admin/teams/create.js',
                 'resources/js/admin/teams/show.js',
+                'resources/js/admin/teams/edit.js',
                 'resources/js/admin/permission.js',
                 'resources/js/admin/module.js',
             ],
