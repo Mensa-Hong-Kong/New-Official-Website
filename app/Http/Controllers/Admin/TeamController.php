@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Team\StoreRequest;
+use App\Http\Requests\Admin\Team\FormRequest;
 use App\Models\Team;
 use App\Models\TeamType;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -62,7 +62,7 @@ class TeamController extends Controller implements HasMiddleware
             )->with('displayOptions', $displayOptions);
     }
 
-    public function store(StoreRequest $request)
+    public function store(FormRequest $request)
     {
         DB::beginTransaction();
         Team::where('type_id', $request->type_id)

@@ -7,7 +7,7 @@ use App\Models\TeamType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class FormRequest extends FormRequest
 {
     protected $stopOnFirstFailure = true;
 
