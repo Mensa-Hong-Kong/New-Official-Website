@@ -8,7 +8,6 @@ const typeFeedback = document.getElementById('typeFeedback');
 const displayOrder = document.getElementById('validationDisplayOrder');
 const displayOrderFeedback = document.getElementById('displayOrderFeedback');
 const createButton = document.getElementById('createButton');
-const createFeedback = document.getElementById('createFeedback');
 const creatingButton = document.getElementById('creatingButton');
 
 type.addEventListener(
