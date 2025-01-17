@@ -102,7 +102,7 @@ class TeamController extends Controller implements HasMiddleware
         foreach ($types as $type) {
             $displayOptions[$type->id] = [];
             foreach ($type->teams as $thisTeam) {
-                if(
+                if (
                     $type->id != $team->type_id ||
                     $thisTeam->id != $team->id
                 ) {
@@ -137,7 +137,7 @@ class TeamController extends Controller implements HasMiddleware
             'display_order' => $request->display_order,
         ]);
         $sync = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $sync[$role->id] = ['name' => "{$team->type->name}:{$team->name}:$role->name"];
         }
         $team->roles()->sync($sync);

@@ -82,7 +82,7 @@ class UpdateTest extends TestCase
             route(
                 'admin.teams.update',
                 [
-                    'team' => Team::inRandomOrder()->first()
+                    'team' => Team::inRandomOrder()->first(),
                 ]
             ),
             $data
@@ -249,7 +249,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($team->type_id, $newTeam->type_id);
         $this->assertEquals($team->display_order, $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:{$team->name}:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -279,7 +279,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($team->type_id, $newTeam->type_id);
         $this->assertEquals($team->display_order, $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:abc:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -312,7 +312,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newType->id, $newTeam->type_id);
         $this->assertEquals($team->display_order, $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$newType->name}:{$team->name}:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -327,7 +327,7 @@ class UpdateTest extends TestCase
             ->inRandomOrder()
             ->get();
         $displayOrders = [];
-        foreach($teams as $index => $team) {
+        foreach ($teams as $index => $team) {
             $displayOrders[] = $index;
             $team->update(['display_order' => $index]);
         }
@@ -355,7 +355,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($team->type_id, $newTeam->type_id);
         $this->assertEquals($displayOrders[0], $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:{$team->name}:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -369,11 +369,11 @@ class UpdateTest extends TestCase
         $newType = TeamType::inRandomOrder()
             ->whereNotIn('id', [$team->type_id, 1])
             ->first();
-        $teams = Team::where('type_id', $newType->id )
+        $teams = Team::where('type_id', $newType->id)
             ->inRandomOrder()
             ->get();
         $displayOrders = [];
-        foreach($teams as $index => $team) {
+        foreach ($teams as $index => $team) {
             $displayOrders[] = $index;
             $team->update(['display_order' => $index]);
         }
@@ -401,7 +401,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newType->id, $newTeam->type_id);
         $this->assertEquals($displayOrders[0], $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$newType->name}:{$team->name}:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -416,7 +416,7 @@ class UpdateTest extends TestCase
             ->inRandomOrder()
             ->get();
         $displayOrders = [];
-        foreach($teams as $index => $team) {
+        foreach ($teams as $index => $team) {
             $displayOrders[] = $index;
             $team->update(['display_order' => $index]);
         }
@@ -444,7 +444,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($team->type_id, $newTeam->type_id);
         $this->assertEquals($displayOrders[0], $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:abc:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -477,7 +477,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newType->id, $newTeam->type_id);
         $this->assertEquals($team->display_order, $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$newType->name}:abc:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
@@ -495,7 +495,7 @@ class UpdateTest extends TestCase
             ->inRandomOrder()
             ->get();
         $displayOrders = [];
-        foreach($teams as $index => $team) {
+        foreach ($teams as $index => $team) {
             $displayOrders[] = $index;
             $team->update(['display_order' => $index]);
         }
@@ -523,7 +523,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newType->id, $newTeam->type_id);
         $this->assertEquals($displayOrders[0], $newTeam->display_order);
         $expectedTeamRoles = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$newType->name}:abc:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);

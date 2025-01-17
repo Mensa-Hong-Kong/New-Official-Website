@@ -28,8 +28,8 @@ class FormRequest extends BaseFormRequest
                 ->where('type_id', $this->type_id);
             $maxDisplayOrder = Team::where('type_id', $this->type_id)
                 ->max('display_order');
-            if($this->method() == 'POST') {
-                ++$maxDisplayOrder;
+            if ($this->method() == 'POST') {
+                $maxDisplayOrder++;
             } else {
                 $unique = $unique->ignore($this->route('team'));
             }

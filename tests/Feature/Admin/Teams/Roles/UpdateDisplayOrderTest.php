@@ -25,21 +25,16 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_have_no_login()
     {
+        $team = Team::inRandomOrder()->first();
         $response = $this->putJson(
             route(
                 'admin.teams.roles.display-order.update',
-                [
-                    'team' => Team::inRandomOrder()
-                        ->first(),
-                ]
+                ['team' => $team]
             ),
             [
                 'display_order' => TeamRole::inRandomOrder()
-                    ->where(
-                        'team_id', Team::inRandomOrder()
-                            ->first()
-                            ->id
-                    )->get('display_order')
+                    ->where('team_id', $team->id)
+                    ->get('display_order')
                     ->pluck('display_order')
                     ->toArray(),
             ]
@@ -56,8 +51,7 @@ class UpdateDisplayOrderTest extends TestCase
                 ->first()
                 ->name
         );
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $response = $this->actingAs($user)->putJson(
             route(
                 'admin.teams.roles.display-order.update',
@@ -79,10 +73,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.roles.display-order.update',
-                [
-                    'team' => Team::inRandomOrder()
-                        ->first(),
-                ]
+                ['team' => Team::inRandomOrder()->first()]
             )
         );
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
@@ -93,10 +84,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.roles.display-order.update',
-                [
-                    'team' => Team::inRandomOrder()
-                        ->first(),
-                ]
+                ['team' => Team::inRandomOrder()->first()]
             ),
             ['display_order' => 'abc']
         );
@@ -105,8 +93,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_display_order_size_is_not_match()
     {
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.roles.display-order.update',
@@ -128,10 +115,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.roles.display-order.update',
-                [
-                    'team' => Team::inRandomOrder()
-                        ->first(),
-                ]
+                ['team' => Team::inRandomOrder()->first()]
             ),
             ['display_order' => []]
         );
@@ -140,8 +124,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_display_order_value_is_not_integer()
     {
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $IDs = TeamRole::inRandomOrder()
             ->where('team_id', $team->id)
             ->get('role_id')
@@ -160,8 +143,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_display_order_value_is_duplicate()
     {
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $IDs = TeamRole::inRandomOrder()
             ->where('team_id', $team->id)
             ->get('role_id')
@@ -186,8 +168,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_display_order_value_is_exists_on_database()
     {
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $IDs = TeamRole::inRandomOrder()
             ->where('team_id', $team->id)
             ->get('id')
@@ -206,8 +187,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_happy_case()
     {
-        $team = Team::inRandomOrder()
-            ->first();
+        $team = Team::inRandomOrder()->first();
         $IDs = TeamRole::inRandomOrder()
             ->where('team_id', $team->id)
             ->get('role_id')
