@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('team-types', TeamTypeController::class)
                 ->only(['index', 'update']);
             Route::resource('teams', TeamController::class)
-                ->except(['edit', 'destroy']);
+                ->except('destroy');
             Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
                 ->name('teams.roles.display-order.update');
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])

@@ -88,6 +88,39 @@ class TeamController extends Controller implements HasMiddleware
             );
     }
 
+    public function edit(Team $team)
+    {
+        $types = TeamType::with([
+            'teams' => function ($query) {
+                $query->orderBy('display_order')
+                    ->orderBy('id');
+            },
+        ])->orderBy('display_order')
+            ->orderBy('id')
+            ->get(['id', 'name']);
+        $displayOptions = [];
+        foreach ($types as $type) {
+            $displayOptions[$type->id] = [];
+            foreach ($type->teams as $thisTeam) {
+                if(
+                    $type->id != $team->type_id ||
+                    $thisTeam->id != $team->id
+                ) {
+                    $displayOptions[$type->id][$thisTeam->display_order] = "before \"$team->name\"";
+                }
+            }
+            $displayOptions[$type->id][0] = 'top';
+            $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
+        }
+        $types = $types->pluck('name', 'id')
+            ->toArray();
+
+        return view('admin.teams.edit')
+            ->with('types', $types)
+            ->with('displayOptions', $displayOptions)
+            ->with('team', $team);
+    }
+
     public function update(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
