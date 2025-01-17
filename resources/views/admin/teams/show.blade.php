@@ -7,6 +7,10 @@
         </h2>
         <h3 class="fw-bold mb-2">
             Info
+            <a class="btn btn-primary"
+                href="{{ route('admin.teams.edit', ['team' => $team]) }}">
+                Edit
+            </a>
         </h3>
         <table class="table">
             <tr>

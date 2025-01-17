@@ -131,7 +131,13 @@
                                 ])>Team Types</a>
                             </li>
                             @if(
-                                Route::current()->getName() == 'admin.teams.show' ||
+                                in_array(
+                                    Route::current()->getName(),
+                                    [
+                                        'admin.teams.show',
+                                        'admin.teams.edit',
+                                    ]
+                                ) ||
                                 (auth()->user() && auth()->user()->can('Edit:Permission'))
                             )
                                 <li class="nav-item accordion">
@@ -173,10 +179,28 @@
                                                 ])>Create</a>
                                             </li>
                                         @endcan
-                                        @if(Route::current()->getName() == 'admin.teams.show')
+                                        @if(
+                                            in_array(
+                                                Route::current()->getName(),
+                                                [
+                                                    'admin.teams.show',
+                                                    'admin.teams.edit',
+                                                ]
+                                            )
+                                        )
                                             <li>
                                                 <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
-                                                    class="nav-link align-items-center active">Show</a>
+                                                    @class([
+                                                        'nav-link',
+                                                        'align-items-center',
+                                                        'active' => Route::current()->getName() == 'admin.teams.show',
+                                                    ])>Show</a>
+                                            </li>
+                                        @endif
+                                        @if(Route::current()->getName() == 'admin.teams.edit')
+                                            <li>
+                                                <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
+                                                    class="nav-link align-items-center active">Edit</a>
                                             </li>
                                         @endif
                                     </ul>
