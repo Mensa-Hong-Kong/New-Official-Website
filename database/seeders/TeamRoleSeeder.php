@@ -26,13 +26,11 @@ class TeamRoleSeeder extends Seeder
         $roles[] = Role::firstOrCreate(['name' => 'Honorary Secretary']);
         $roles[] = Role::firstOrCreate(['name' => 'Honorary Treasurer']);
         $roles[] = Role::firstOrCreate(['name' => 'Director']);
+        $sync = [];
         foreach ($roles as $role) {
-            TeamRole::firstOrCreate([
-                'name' => "{$type->name}:{$team->name}:{$role->name}",
-                'team_id' => $team->id,
-                'role_id' => $role->id,
-            ]);
+            $sync[$role->id] = ['name' => "{$type->name}:{$team->name}:{$role->name}"];
         }
+        $team->roles()->sync($sync);
 
         // Committees
         $type = TeamType::firstOrCreate(['name' => 'Committee']);
@@ -56,15 +54,13 @@ class TeamRoleSeeder extends Seeder
         $roles = [];
         $roles[] = Role::firstOrCreate(['name' => 'Chairperson']);
         $roles[] = Role::firstOrCreate(['name' => 'Member']);
+        $sync = [];
         foreach ($teams as $team) {
             foreach ($roles as $role) {
-                TeamRole::firstOrCreate([
-                    'name' => "{$type->name}:{$team->name}:{$role->name}",
-                    'team_id' => $team->id,
-                    'role_id' => $role->id,
-                ]);
+                $sync[$role->id] = ['name' => "{$type->name}:{$team->name}:{$role->name}"];
             }
         }
+        $team->roles()->sync($sync);
 
         // Special Interest Groups
         $teams = [];
@@ -120,14 +116,12 @@ class TeamRoleSeeder extends Seeder
         $roles = [];
         $roles[] = Role::firstOrCreate(['name' => 'Convenor']);
         $roles[] = Role::firstOrCreate(['name' => 'Deputy Convenor']);
+        $sync = [];
         foreach ($teams as $team) {
             foreach ($roles as $role) {
-                TeamRole::firstOrCreate([
-                    'name' => "{$type->name}:{$team->name}:{$role->name}",
-                    'team_id' => $team->id,
-                    'role_id' => $role->id,
-                ]);
+                $sync[$role->id] = ['name' => "{$type->name}:{$team->name}:{$role->name}"];
             }
         }
+        $team->roles()->sync($sync);
     }
 }
