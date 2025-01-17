@@ -41,7 +41,7 @@ class TeamController extends Controller implements HasMiddleware
             },
         ])->orderBy('display_order')
             ->orderBy('id')
-            ->get();
+            ->get(['id', 'name']);
         $displayOptions = [];
         foreach ($types as $type) {
             $displayOptions[$type->id] = [];
@@ -51,15 +51,12 @@ class TeamController extends Controller implements HasMiddleware
             $displayOptions[$type->id][0] = 'top';
             $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
         }
+        $types = $types->pluck('name', 'id')
+            ->toArray();
 
         return view('admin.teams.create')
-            ->with(
-                'types', TeamType::orderBy('display_order')
-                    ->orderBy('id')
-                    ->get(['id', 'name'])
-                    ->pluck('name', 'id')
-                    ->toArray()
-            )->with('displayOptions', $displayOptions);
+            ->with('types', $types)
+            ->with('displayOptions', $displayOptions);
     }
 
     public function store(FormRequest $request)
