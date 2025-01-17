@@ -90,4 +90,29 @@ class TeamController extends Controller implements HasMiddleware
                 ])
             );
     }
+
+    public function update(FormRequest $request, Team $team)
+    {
+        DB::beginTransaction();
+        Team::where('type_id', $team->type_id)
+            ->where('display_order', '>', $team->display_order)
+            ->decrement('display_order');
+        Team::where('type_id', $request->type_id)
+            ->where('display_order', '>=', $request->display_order)
+            ->whereNot('id', $team->id)
+            ->increment('display_order');
+        $team->update([
+            'name' => $request->name,
+            'type_id' => $request->type_id,
+            'display_order' => $request->display_order,
+        ]);
+        $sync = [];
+        foreach($team->roles as $role) {
+            $sync[$role->id] = ['name' => "{$team->type->name}:{$team->name}:$role->name"];
+        }
+        $team->roles()->sync($sync);
+        DB::commit();
+
+        return redirect()->route('admin.teams.show', ['team' => $team]);
+    }
 }
