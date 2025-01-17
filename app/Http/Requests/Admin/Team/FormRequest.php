@@ -4,10 +4,10 @@ namespace App\Http\Requests\Admin\Team;
 
 use App\Models\Team;
 use App\Models\TeamType;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest as BaseFormRequest;
 use Illuminate\Validation\Rule;
 
-class FormRequest extends FormRequest
+class FormRequest extends BaseFormRequest
 {
     protected $stopOnFirstFailure = true;
 
@@ -24,10 +24,16 @@ class FormRequest extends FormRequest
             'display_order' => 'required|integer|min:0',
         ];
         if (! is_array($this->type_id)) {
-            $return['name'][] = Rule::unique(Team::class, 'name')
+            $unique = Rule::unique(Team::class, 'name')
                 ->where('type_id', $this->type_id);
             $maxDisplayOrder = Team::where('type_id', $this->type_id)
-                ->max('display_order') + 1;
+                ->max('display_order');
+            if($this->method() == 'POST') {
+                ++$maxDisplayOrder;
+            } else {
+                $unique = $unique->ignore($this->route('team'));
+            }
+            $return['name'][] = $unique;
             $return['display_order'] .= "|max:$maxDisplayOrder";
         }
 
