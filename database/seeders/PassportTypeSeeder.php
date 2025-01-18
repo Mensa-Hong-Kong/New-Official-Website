@@ -9,10 +9,13 @@ class PassportTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        PassportType::insert([
+        $rows = [
             ['name' => 'China Identity Card'],
             ['name' => 'Hong Kong Identity Card'],
             ['name' => 'Macau Identity Card'],
-        ]);
+        ];
+        foreach ($rows as $row) {
+            PassportType::firstOrCreate($row);
+        }
     }
 }

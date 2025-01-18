@@ -72,11 +72,11 @@
                 @endswitch
                 value="{{ $contact->contact }}"
                 data-value="{{ $contact->contact }}" required />
-            <div class=" col-md-2">
+            <div class="col-md-2">
                 <input type="checkbox" class="btn-check" id="isVerifiedContactCheckbox{{ $contact->id }}" @checked($contact->isVerified())>
                 <label class="form-control btn btn-outline-success" for="isVerifiedContactCheckbox{{ $contact->id }}">Verified</label>
             </div>
-            <div class=" col-md-2">
+            <div class="col-md-2">
                 <input type="checkbox" class="btn-check {{ $contact->type }}DefaultContactCheckbox" id="isDefaultContactCheckbox{{ $contact->id }}" @checked($contact->is_default)>
                 <label class="form-control btn btn-outline-success" for="isDefaultContactCheckbox{{ $contact->id }}">Default</label>
             </div>

@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
@@ -60,9 +63,21 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.verify');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default');
+            Route::match(['put', 'patch'], 'team-types/display-order', [TeamTypeController::class, 'displayOrder'])
+                ->name('team-types.display-order.update');
+            Route::resource('team-types', TeamTypeController::class)
+                ->only(['index', 'update']);
+            Route::resource('teams', TeamController::class)
+                ->except('destroy');
+            Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
+                ->name('teams.roles.display-order.update');
+            Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
+                ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
-                ->only('index');
+                ->only(['index', 'update']);
+            Route::match(['put', 'patch'], 'permissions/display-order', [PermissionController::class, 'displayOrder'])
+                ->name('permissions.display-order.update');
             Route::resource('permissions', PermissionController::class)
-                ->only('index');
+                ->only(['index', 'update']);
         });
 });

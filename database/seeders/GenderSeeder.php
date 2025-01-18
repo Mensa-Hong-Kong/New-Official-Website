@@ -9,9 +9,12 @@ class GenderSeeder extends Seeder
 {
     public function run(): void
     {
-        Gender::insert([
+        $rows = [
             ['name' => 'Male'],
             ['name' => 'Female'],
-        ]);
+        ];
+        foreach ($rows as $row) {
+            Gender::firstOrCreate($row);
+        }
     }
 }

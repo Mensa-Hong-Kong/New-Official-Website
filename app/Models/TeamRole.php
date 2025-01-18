@@ -13,5 +13,6 @@ class TeamRole extends Model
         'name',
         'team_id',
         'role_id',
+        'display_order',
     ];
 }

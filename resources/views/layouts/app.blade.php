@@ -155,6 +155,97 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('admin.team-types.index') }}" @class([
+                                    'nav-link',
+                                    'align-items-center',
+                                    'active' => Route::current()->getName() == 'admin.team-types.index',
+                                ])>Team Types</a>
+                            </li>
+                            @if(
+                                in_array(
+                                    Route::current()->getName(),
+                                    [
+                                        'admin.teams.show',
+                                        'admin.teams.edit',
+                                    ]
+                                ) ||
+                                (auth()->user() && auth()->user()->can('Edit:Permission'))
+                            )
+                                <li class="nav-item accordion">
+                                    <button role="button"
+                                        data-bs-toggle="collapse" aria-expanded="true"
+                                        data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
+                                        style="height: 0em"
+                                        @class([
+                                            'nav-item',
+                                            'accordion-button',
+                                            'collapsed' => !str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.teams.'
+                                            ),
+                                        ])>
+                                        Teams
+                                    </button>
+                                    <ul id="asideNavAdminTeam" @class([
+                                        'accordion-collapse',
+                                        'collapse',
+                                        'show' => str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.teams.'
+                                        ),
+                                    ])>
+                                        <li>
+                                            <a href="{{ route('admin.teams.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.teams.index',
+                                            ])>Index</a>
+                                        </li>
+                                        @can('Edit:Permission')
+                                            <li>
+                                                <a href="{{ route('admin.teams.create') }}" @class([
+                                                    'nav-link',
+                                                    'align-items-center',
+                                                    'active' => Route::current()->getName() == 'admin.teams.create',
+                                                ])>Create</a>
+                                            </li>
+                                        @endcan
+                                        @if(
+                                            in_array(
+                                                Route::current()->getName(),
+                                                [
+                                                    'admin.teams.show',
+                                                    'admin.teams.edit',
+                                                ]
+                                            )
+                                        )
+                                            <li>
+                                                <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
+                                                    @class([
+                                                        'nav-link',
+                                                        'align-items-center',
+                                                        'active' => Route::current()->getName() == 'admin.teams.show',
+                                                    ])>Show</a>
+                                            </li>
+                                        @endif
+                                        @if(Route::current()->getName() == 'admin.teams.edit')
+                                            <li>
+                                                <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
+                                                    class="nav-link align-items-center active">Edit</a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.teams.index') }}" @class([
+                                        'nav-link',
+                                        'align-items-center',
+                                        'active' => Route::current()->getName() == 'admin.teams.index',
+                                    ])>Teams</a>
+                                </li>
+                            @endif
+                            <li class="nav-item">
                                 <a href="{{ route('admin.modules.index') }}" @class([
                                     'nav-link',
                                     'align-items-center',
@@ -219,14 +310,14 @@
             const confirmDiv = document.getElementById('confirm');
             const confirmModal = new bootstrap.Modal(confirmDiv);
             const confirmMessage = document.getElementById('confirmMessage');
-            let confirmHander = function() {
+            let confirmHandle = function() {
                 confirmModal.hide();
                 callback(passData);
             }
-            confirmButton.addEventListener('click', confirmHander);
+            confirmButton.addEventListener('click', confirmHandle);
             confirmDiv.addEventListener(
                 'hide.bs.modal', function() {
-                    confirmButton.removeEventListener('click', confirmHander);
+                    confirmButton.removeEventListener('click', confirmHandle);
                 }
             );
             confirmMessage.innerText = message;

@@ -87,7 +87,12 @@
                                 <input type="tel" class="form-control" id="validationMobile" minlength="5" maxlength="15" placeholder="85298765432" name="mobile" value="{{ old('mobile') }}" autocomplete="off" />
                                 <div id="mobileFeedback" class="valid-feedback"></div>
                             </div>
-                            <input type="submit" id="submitButton" class="form-control btn btn-primary" value="Search">
+                            <div class="col-md-6">
+                                <input type="submit" id="submitButton" class="form-control btn btn-primary" value="Search">
+                            </div>
+                            <div class="col-md-6">
+                                <a class="form-control btn btn-danger" href="{{ route('admin.users.index') }}">Clear</a>
+                            </div>
                         </form>
                     </div>
                 </div>
