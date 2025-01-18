@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Team\FormRequest;
+use App\Models\Role;
 use App\Models\Team;
 use App\Models\TeamType;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -144,5 +145,24 @@ class TeamController extends Controller implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.teams.show', ['team' => $team]);
+    }
+
+    public function destroy(Team $team)
+    {
+        DB::beginTransaction();
+        $team->load([
+            'roles' => function($query) use($team) {
+                $query->withCount('teams')
+                    ->having('teams_count', '=', '1');
+            }
+        ]);
+        if($team->roles->count()) {
+            Role::whereIn('id', $team->roles->pluck('id')->toArray())
+                ->delete();
+        }
+        $team->roles()->detach();
+        DB::commit();
+
+        return redirect()->route('admin.teams.index');
     }
 }
