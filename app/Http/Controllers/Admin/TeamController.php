@@ -16,7 +16,7 @@ class TeamController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware('permission:Edit:Permission'))->except('index')];
+        return [(new Middleware('permission:Edit:Permission'))->except(['index', 'show'])];
     }
 
     public function index()
