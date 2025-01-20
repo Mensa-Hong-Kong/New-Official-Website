@@ -3,17 +3,18 @@ import { post } from "../../submitForm";
 let submitting = 'loading';
 
 const teamTypeTabs = document.getElementsByClassName('teamTypeTab');
-const showTeams = document.getElementsByClassName('showTeam');
-const disabledShowTeams = document.getElementsByClassName('disabledShowTeam');
 const submitButtons = document.getElementsByClassName('submitButton');
 
-function urlGetTeamID(url) {
-    return (new URL(url).pathname).match(/^\/admin\/teams\/([0-9]+).*/i)[1];
-}
+const editDisplayOrder = document.getElementById('editDisplayOrder');
+const saveDisplayOrder = document.getElementById('saveDisplayOrder');
+const cancelDisplayOrder = document.getElementById('cancelDisplayOrder');
+const savingDisplayOrder = document.getElementById('savingDisplayOrder');
 
 function disableSubmitting(){
-    for(let tab of teamTypeTabs) {
-        tab.disabled = true;
+    if(saveDisplayOrder.hidden) {
+        for(let tab of teamTypeTabs) {
+            tab.disabled = true;
+        }
     }
     for(let showTeam of showTeams) {
         showTeam.hidden = true;
@@ -40,6 +41,133 @@ function enableSubmitting(){
     for(let tab of teamTypeTabs) {
         tab.disabled = false;
     }
+}
+
+let row;
+
+let displayOrder;
+
+function dragOver(event) {
+    event.preventDefault();
+    let children= Array.from(event.target.parentNode.parentNode.children);
+    if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
+        event.target.parentNode.after(row);
+    } else {
+        event.target.parentNode.before(row);
+    }
+}
+
+function dragStart(event) {
+    row = event.target;
+}
+
+function closeEditDisplayOrder(){
+    saveDisplayOrder.hidden = true;
+    cancelDisplayOrder.hidden = true;
+    savingDisplayOrder.hidden = true;
+    let typeID;
+    for(let tab of teamTypeTabs) {
+        tab.disabled = false;
+        if(tab.classList.contains('active')) {
+            typeID = tab.id.match(/^pills-team-type-([0-9]+)-tab/i)[1];
+            console.log(tab);
+        }
+    }
+    for(let id of displayOrder) {
+        let row = document.getElementById('row'+id);
+        row.removeEventListener('dragstart', dragStart);
+        row.removeEventListener('dragover', dragOver);
+        row.draggable = false;
+        row.classList.remove('draggable');
+        document.getElementById('tableBody'+typeID).appendChild(row);
+    }
+    editDisplayOrder.hidden = false;
+}
+
+cancelDisplayOrder.addEventListener(
+    'click', closeEditDisplayOrder
+);
+
+function updataDisplayOrderSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    displayOrder = response.data.display_order;
+    closeEditDisplayOrder();
+    enableSubmitting();
+}
+
+function updataDisplayOrderFailCallback(error) {
+    if(error.status == 422) {
+        bootstrapAlert(error.data.errors.display_order);
+    }
+    savingDisplayOrder.hidden = true;
+    saveDisplayOrder.hidden = false;
+    cancelDisplayOrder.hidden = false;
+    enableSubmitting();
+}
+
+saveDisplayOrder.addEventListener(
+    'click', function(event) {
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'updateDisplayOrder'+submitAt;
+            let typeID;
+            for(let tab of teamTypeTabs) {
+                if(tab.classList.contains('active')) {
+                    typeID = tab.id.match(/^pills-team-type-([0-9]+)-tab/i)[1];
+                }
+            }
+            disableSubmitting();
+            if(submitting == 'updateDisplayOrder'+submitAt) {
+                saveDisplayOrder.hidden = true;
+                cancelDisplayOrder.hidden = true;
+                savingDisplayOrder.hidden = false;
+                let data = {
+                    type_id: typeID,
+                    display_order: [],
+                };
+                for(let row of document.getElementsByClassName('dataRow'+typeID)) {
+                    data.display_order.push(row.id.replace('row', ''));
+                }
+                post(
+                    window.location.href+'/display-order',
+                    updataDisplayOrderSuccessCallback, updataDisplayOrderFailCallback,
+                    'put', data
+                );
+            }
+        }
+    }
+);
+
+editDisplayOrder.addEventListener(
+    'click', function(event) {
+        let id;
+        if(saveDisplayOrder.hidden) {
+            for(let tab of teamTypeTabs) {
+                tab.disabled = true;
+                if(tab.classList.contains('active')) {
+                    id = tab.id.match(/^pills-team-type-([0-9]+)-tab/i)[1];
+                }
+            }
+        }
+        displayOrder = [];
+        for(let row of document.getElementsByClassName('dataRow'+id)) {
+            row.addEventListener('dragstart', dragStart);
+            row.addEventListener('dragover', dragOver);
+            row.classList.add('draggable');
+            row.draggable = true;
+            displayOrder.push(row.id.replace('row', ''));
+        }
+        event.target.hidden = true;
+        saveDisplayOrder.hidden = false;
+        cancelDisplayOrder.hidden = false;
+    }
+);
+
+const showTeams = document.getElementsByClassName('showTeam');
+const disabledShowTeams = document.getElementsByClassName('disabledShowTeam');
+
+function urlGetTeamID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/teams\/([0-9]+).*/i)[1];
 }
 
 function deleteTeamSuccessCallback(response) {
