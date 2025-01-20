@@ -67,6 +67,8 @@ Route::middleware('auth')->group(function () {
                 ->name('team-types.display-order.update');
             Route::resource('team-types', TeamTypeController::class)
                 ->only(['index', 'update']);
+            Route::match(['put', 'patch'], 'teams/display-order', [TeamController::class, 'displayOrder'])
+                ->name('teams.display-order.update');
             Route::resource('teams', TeamController::class);
             Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
                 ->name('teams.roles.display-order.update');
