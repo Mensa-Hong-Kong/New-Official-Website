@@ -151,12 +151,12 @@ class TeamController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $team->load([
-            'roles' => function($query) use($team) {
+            'roles' => function ($query) {
                 $query->withCount('teams')
                     ->having('teams_count', '=', '1');
-            }
+            },
         ]);
-        if($team->roles->count()) {
+        if ($team->roles->count()) {
             Role::whereIn('id', $team->roles->pluck('id')->toArray())
                 ->delete();
         }
