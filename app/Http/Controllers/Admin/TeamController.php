@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Team\DisplayOrderRequest;
 use App\Http\Requests\Admin\Team\FormRequest;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\TeamType;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -167,7 +167,7 @@ class TeamController extends Controller implements HasMiddleware
         return ['success' => "The team of $team->name delete success!"];
     }
 
-    public function displayOrder(Request $request)
+    public function displayOrder(DisplayOrderRequest $request)
     {
         $case = [];
         foreach (array_values($request->display_order) as $order => $id) {
