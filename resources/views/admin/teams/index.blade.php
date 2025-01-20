@@ -8,7 +8,7 @@
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
             @foreach ($types as $type)
                 <li class="nav-item" role="presentation">
-                    <button id="pills-team-type-{{ $type->id }}-tab" type="button"
+                    <button id="pills-team-type-{{ $type->id }}-tab teamTypeTab" type="button"
                         data-bs-toggle="pill" data-bs-target="#pills-team-type-{{ $type->id }}"
                         role="tab"aria-controls="pills-home" aria-selected="true"
                         @class([
@@ -37,10 +37,26 @@
                         </thead>
                         <tbody>
                             @foreach ($type->teams as $team)
-                                <tr>
+                                <tr id="row{{ $team->id }}">
                                     <th>{{ $team->name }}</th>
                                     <td>
-                                        <a href="{{ route('admin.teams.show', ['team' => $team]) }}" class="btn btn-primary">Show</a>
+                                        <a class="btn btn-primary showTeam" href="{{ route('admin.teams.show', ['team' => $team]) }}">
+                                            Show
+                                        </a>
+                                        @can('Edit:Permission')
+                                            <button class="btn btn-primary disabledShowTeam" disabled hidden>Show</button>
+                                            <span class="spinner-border spinner-border-sm teamLoader" id="teamLoader{{ $team->id }}" role="status" aria-hidden="true"></span>
+                                            <form method="POST" id="deleteTeamForm{{ $team->id }}" hidden
+                                                action="{{ route('admin.teams.destroy', ['team' => $team]) }}">
+                                                @csrf
+                                                @method('delete')
+                                            </form>
+                                            <button class="btn btn-danger submitButton"form="deleteTeamForm{{ $team->id }}" id="deleteTeam{{ $team->id }}" hidden>Delete</button>
+                                            <button class="btn btn-danger" id="deletingTeam{{ $team->id }}" data-name="{{ $team->name }}" hidden disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                Deleting...
+                                            </button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach
@@ -51,3 +67,9 @@
           </div>
     </section>
 @endsection
+
+@can('Edit:Permission')
+    @push('after footer')
+        @vite('resources/js/admin/teams/index.js')
+    @endpush
+@endcan
