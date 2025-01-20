@@ -67,7 +67,7 @@ class UpdateTest extends TestCase
         $response = $this->actingAs($user)->get(
             route(
                 'admin.teams.update',
-                ['team' => Team::inRandomOrder()->first()]
+                ['team' => 0]
             ),
             $this->happyCase
         );

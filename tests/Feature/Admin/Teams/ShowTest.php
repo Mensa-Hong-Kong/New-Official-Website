@@ -42,7 +42,7 @@ class ShowTest extends TestCase
         $response = $this->actingAs($user)->get(
             route(
                 'admin.teams.show',
-                ['team' => Team::first()]
+                ['team' => 0]
             )
         );
         $response->assertNotFound();

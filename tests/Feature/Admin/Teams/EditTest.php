@@ -49,7 +49,7 @@ class EditTest extends TestCase
         $response = $this->actingAs($user)->get(
             route(
                 'admin.teams.edit',
-                ['team' => Team::first()]
+                ['team' => 0]
             )
         );
         $response->assertNotFound();
