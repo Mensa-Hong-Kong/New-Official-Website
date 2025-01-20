@@ -163,6 +163,6 @@ class TeamController extends Controller implements HasMiddleware
         $team->roles()->detach();
         DB::commit();
 
-        return redirect()->route('admin.teams.index');
+        return ['success' => "The team of $team->name delete success!"];
     }
 }

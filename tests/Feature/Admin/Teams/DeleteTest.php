@@ -114,7 +114,8 @@ class DeleteTest extends TestCase
                 ['team' => $team]
             ),
         );
-        $response->assertRedirectToRoute('admin.teams.index');
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The team of $team->name delete success!"]);
         $this->assertEquals(
             $totalUsingRoles,
             Role::whereIn('id', $roles->pluck('id')
