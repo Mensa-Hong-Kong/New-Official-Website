@@ -74,6 +74,17 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
+    public function test_name_too_long()
+    {
+        $data = $this->happyCase;
+        $data['name'] = str_repeat('a', 171);;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.teams.store'),
+            $data
+        );
+        $response->assertInvalid(['name' => 'The name field must not be greater than 170 characters.']);
+    }
+
     public function test_name_has_colon()
     {
         $data = $this->happyCase;

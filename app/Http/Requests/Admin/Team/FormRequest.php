@@ -19,7 +19,7 @@ class FormRequest extends BaseFormRequest
     public function rules(): array
     {
         $return = [
-            'name' => ['required', 'string', 'regex:/^(?!.*:).*$/'],
+            'name' => ['required', 'string', 'max:170', 'regex:/^(?!.*:).*$/'],
             'type_id' => 'required|integer|exists:'.TeamType::class.',id',
             'display_order' => 'required|integer|min:0',
         ];

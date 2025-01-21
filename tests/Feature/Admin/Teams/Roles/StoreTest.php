@@ -111,6 +111,23 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
+    public function test_name_is_not_string()
+    {
+        $team = Team::inRandomOrder()
+            ->whereNot('type_id', 1)
+            ->first();
+        $data = $this->happyCase;
+        $data['name'] = str_repeat('a', 171);;
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.teams.roles.store',
+                ['team' => $team]
+            ),
+            $data
+        );
+        $response->assertInvalid(['name' => 'The name field must not be greater than 170 characters.']);
+    }
+
     public function test_name_has_colon()
     {
         $team = Team::inRandomOrder()
