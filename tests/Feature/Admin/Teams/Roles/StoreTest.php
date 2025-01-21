@@ -111,7 +111,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_is_not_string()
+    public function test_name_too_long()
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
