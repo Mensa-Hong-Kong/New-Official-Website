@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
             Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
                 ->name('teams.roles.display-order.update');
             Route::resource('teams/{team}/roles', RoleController::class)
-                ->only('store')
+                ->only(['store', 'create'])
                 ->names('teams.roles');
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
                 ->name('modules.display-order.update');
