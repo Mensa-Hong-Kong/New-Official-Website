@@ -82,6 +82,20 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
+    public function test_name_too_long()
+    {
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.permissions.update',
+                [
+                    'permission' => Permission::inRandomOrder()
+                        ->first(),
+                ]
+            ), ['name' => str_repeat('a', 256)]
+        );
+        $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
+    }
+
     public function test_happy_case()
     {
         $response = $this->actingAs($this->user)->putJson(

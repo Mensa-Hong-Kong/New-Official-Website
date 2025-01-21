@@ -13,6 +13,6 @@ class NameRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['name' => 'nullable|string'];
+        return ['name' => 'nullable|string|max:255'];
     }
 }

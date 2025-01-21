@@ -35,7 +35,7 @@
                                     action="{{ route('admin.modules.update', ['module' => $module]) }}">
                                     @csrf
                                     @method('put')
-                                    <input class="form-control" id="displayNameInput{{ $module->id }}"
+                                    <input class="form-control" id="displayNameInput{{ $module->id }}" maxlength="255"
                                         value="{{ $module->title }}" data-value="{{ $module->title }}" />
                                 </form>
                             </td>

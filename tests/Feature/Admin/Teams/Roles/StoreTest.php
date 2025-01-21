@@ -117,7 +117,7 @@ class StoreTest extends TestCase
             ->whereNot('type_id', 1)
             ->first();
         $data = $this->happyCase;
-        $data['name'] = str_repeat('a', 171);;
+        $data['name'] = str_repeat('a', 171);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.teams.roles.store',

@@ -107,7 +107,7 @@ class UpdateTest extends TestCase
     public function test_name_too_long()
     {
         $data = $this->happyCase;
-        $data['name'] = str_repeat('a', 171);;
+        $data['name'] = str_repeat('a', 171);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.update',
