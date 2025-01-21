@@ -94,7 +94,7 @@ class StoreTest extends TestCase
             route('admin.teams.store'),
             $data
         );
-        $response->assertInvalid(['name' => 'The name of team type has already been taken.']);
+        $response->assertInvalid(['name' => 'The name of team in this type has already been taken.']);
     }
 
     public function test_missing_type_id()
