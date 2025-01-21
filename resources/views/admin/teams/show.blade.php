@@ -7,10 +7,12 @@
         </h2>
         <h3 class="fw-bold mb-2">
             Info
-            <a class="btn btn-primary"
-                href="{{ route('admin.teams.edit', ['team' => $team]) }}">
-                Edit
-            </a>
+            @can('Edit:Permission')
+                <a class="btn btn-primary"
+                    href="{{ route('admin.teams.edit', ['team' => $team]) }}">
+                    Edit
+                </a>
+            @endcan
         </h3>
         <table class="table">
             <tr>
@@ -24,15 +26,17 @@
         </table>
         <h3 class="fw-bold mb-2">
             Roles
-            <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
-                class="btn btn-success">Create</a>
-            <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
-            <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
-            <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
-            <button class="btn btn-success" id="savingDisplayOrder" hidden disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Saving Display Order...
-            </button>
+            @can('Edit:Permission')
+                <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
+                    class="btn btn-success">Create</a>
+                <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
+                <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
+                <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
+                <button class="btn btn-success" id="savingDisplayOrder" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Saving Display Order...
+                </button>
+            @endcan
         </h3>
         <table class="table table-hover">
             <thead>
@@ -51,6 +55,8 @@
     </section>
 @endsection
 
-@push('after footer')
-    @vite('resources/js/admin/teams/show.js')
-@endpush
+@can('Edit:Permission')
+    @push('after footer')
+        @vite('resources/js/admin/teams/show.js')
+    @endpush
+@endcan
