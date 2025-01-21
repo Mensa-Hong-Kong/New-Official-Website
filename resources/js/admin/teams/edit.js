@@ -22,7 +22,7 @@ type.addEventListener(
     }
 );
 
-var inputs = [name, type, displayOrder];
+const inputs = [name, type, displayOrder];
 
 const feedbacks = [nameFeedback, typeFeedback, displayOrderFeedback];
 

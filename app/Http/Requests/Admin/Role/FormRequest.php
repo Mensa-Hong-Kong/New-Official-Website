@@ -30,10 +30,11 @@ class FormRequest extends BaseFormRequest
             );
         $modulePermissionIDs = ModulePermission::get('id');
         $modulePermissionIDs = $modulePermissionIDs->implode('id', ',');
+
         return [
             'name' => ['required', 'string', 'regex:/^(?!.*:).*$/', $unique],
             'display_order' => "required|integer|min:0|max:$maxDisplayOrder",
-            'module_permissions' => "present|array",
+            'module_permissions' => 'present|array',
             'module_permissions.*' => "required|integer|distinct|in:$modulePermissionIDs",
         ];
     }
@@ -50,17 +51,18 @@ class FormRequest extends BaseFormRequest
             'module_permissions.*.in' => 'The permissions not up to date, if you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.',
         ];
     }
+
     protected function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
         $keys = $errors->keys();
         $messages = [];
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $message = $errors->first($key);
-            if(str_starts_with($key, 'module_permissions')) {
+            if (str_starts_with($key, 'module_permissions')) {
                 $key = 'message';
             }
-            if(!isset($messages[$key])) {
+            if (! isset($messages[$key])) {
                 $messages[$key] = $message;
             }
         }

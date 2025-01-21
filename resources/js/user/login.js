@@ -11,7 +11,7 @@ const loginButton = document.getElementById('loginButton');
 const loggingInButton = document.getElementById('loggingInButton');
 const loginFeedback = document.getElementById('loginFeedback');
 
-var inputs = [username,  password];
+const inputs = [username,  password];
 
 new ClearInputHistory(inputs);
 

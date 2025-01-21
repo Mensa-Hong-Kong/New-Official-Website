@@ -23,11 +23,11 @@ class RoleController extends Controller implements HasMiddleware
     {
         $rows = ModulePermission::get(['id', 'module_id', 'permission_id']);
         $modulePermissions = [];
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $modulePermissions[$row->module_id][$row->permission_id] = $row->id;
         }
         $displayOptions = [];
-        foreach($team->roles as $role) {
+        foreach ($team->roles as $role) {
             $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
         }
         $displayOptions[0] = 'top';
@@ -38,12 +38,12 @@ class RoleController extends Controller implements HasMiddleware
             ->with('team', $team)
             ->with(
                 'roles', Role::whereDoesntHave(
-                    'teams', function($query) use($team) {
+                    'teams', function ($query) use ($team) {
                         $query->where($query->getModel()->getTable().'.id', $team->id);
                     }
                 )->get('name')
-                ->pluck('name')
-                ->toArray()
+                    ->pluck('name')
+                    ->toArray()
             )->with('displayOptions', $displayOptions)
             ->with(
                 'modules', Module::orderBy('display_order')
@@ -64,7 +64,7 @@ class RoleController extends Controller implements HasMiddleware
             'role_id' => $role->id,
             'display_order' => $request->display_order,
         ]);
-        if(count($request->module_permissions)) {
+        if (count($request->module_permissions)) {
             $teamRole->syncPermissions($request->module_permissions);
         }
         DB::commit();

@@ -271,7 +271,7 @@ class StoreTest extends TestCase
             ->whereNot('type_id', 1)
             ->first();
         $data = $this->happyCase;
-        $permission =  ModulePermission::inRandomOrder()->first();
+        $permission = ModulePermission::inRandomOrder()->first();
         $data['module_permissions'] = [$permission->id, $permission->id];
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -299,7 +299,6 @@ class StoreTest extends TestCase
         );
         $response->assertInvalid(['message' => 'The permissions not up to date, if you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
-
 
     public function test_happy_case()
     {
