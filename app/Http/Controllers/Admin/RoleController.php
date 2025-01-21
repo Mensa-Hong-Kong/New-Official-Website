@@ -19,6 +19,41 @@ class RoleController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Permission'))];
     }
 
+    public function create(Team $team)
+    {
+        $rows = ModulePermission::get(['id', 'module_id', 'permission_id']);
+        $modulePermissions = [];
+        foreach($rows as $row) {
+            $modulePermissions[$row->module_id][$row->permission_id] = $row->id;
+        }
+        $displayOptions = [];
+        foreach($team->roles as $role) {
+            $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
+        }
+        $displayOptions[0] = 'top';
+        $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
+        ksort($displayOptions);
+
+        return view('admin.teams.roles.create')
+            ->with('team', $team)
+            ->with(
+                'roles', Role::whereDoesntHave(
+                    'teams', function($query) use($team) {
+                        $query->where($query->getModel()->getTable().'.id', $team->id);
+                    }
+                )->get('name')
+                ->pluck('name')
+                ->toArray()
+            )->with('displayOptions', $displayOptions)
+            ->with(
+                'modules', Module::orderBy('display_order')
+                    ->get(['id', 'name'])
+            )->with(
+                'permissions', Permission::orderBy('display_order')
+                    ->get(['id', 'name'])
+            )->with('modulePermissions', $modulePermissions);
+    }
+
     public function store(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
