@@ -24,6 +24,8 @@
         </table>
         <h3 class="fw-bold mb-2">
             Roles
+            <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
+                class="btn btn-success">Create</a>
             <button class="btn btn-primary" id="editDisplayOrder">Edit Display Order</button>
             <button class="btn btn-primary" id="saveDisplayOrder" hidden>Save Display Order</button>
             <button class="btn btn-danger" id="cancelDisplayOrder" hidden>Cancel</button>
