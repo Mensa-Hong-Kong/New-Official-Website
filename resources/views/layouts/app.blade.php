@@ -138,6 +138,7 @@
                                         'admin.teams.edit',
                                     ]
                                 ) ||
+                                str_starts_with(Route::current()->getName(), 'admin.teams.roles.') ||
                                 (auth()->user() && auth()->user()->can('Edit:Permission'))
                             )
                                 <li class="nav-item accordion">
@@ -186,7 +187,8 @@
                                                     'admin.teams.show',
                                                     'admin.teams.edit',
                                                 ]
-                                            )
+                                            ) ||
+                                            str_starts_with(Route::current()->getName(), 'admin.teams.roles.')
                                         )
                                             <li>
                                                 <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
@@ -201,6 +203,12 @@
                                             <li>
                                                 <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
                                                     class="nav-link align-items-center active">Edit</a>
+                                            </li>
+                                        @endif
+                                        @if(Route::current()->getName() == 'admin.teams.roles.create')
+                                            <li>
+                                                <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
+                                                    class="nav-link align-items-center active">Create Role</a>
                                             </li>
                                         @endif
                                     </ul>
