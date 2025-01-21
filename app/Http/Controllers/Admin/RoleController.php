@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Role\DisplayOrderRequest;
+use App\Http\Requests\Admin\Role\FormRequest;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\TeamRole;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class RoleController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Permission'))];
     }
 
-    public function store(Request $request, Team $team)
+    public function store(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
         $role = Role::firstOrCreate(['name' => $request->name]);
