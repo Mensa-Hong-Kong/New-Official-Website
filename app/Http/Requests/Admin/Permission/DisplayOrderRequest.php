@@ -18,11 +18,9 @@ class DisplayOrderRequest extends FormRequest
 
     public function rules(): array
     {
-        $IDs = Permission::get('id')
-            ->pluck('id')
-            ->toArray();
-        $size = count($IDs);
-        $IDs = implode(',', $IDs);
+        $IDs = Permission::get('id');
+        $size = $IDs->count();
+        $IDs = $IDs->implode('id', ',');
 
         return [
             'display_order' => "required|array|size:$size",

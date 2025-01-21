@@ -19,11 +19,9 @@ class DisplayOrderRequest extends FormRequest
     public function rules(): array
     {
         $IDs = TeamRole::where('team_id', $this->route('team')->id)
-            ->get('role_id')
-            ->pluck('role_id')
-            ->toArray();
-        $size = count($IDs);
-        $IDs = implode(',', $IDs);
+            ->get('role_id');
+        $size = $IDs->count();
+        $IDs = $IDs->implode('role_id', ',');
 
         return [
             'display_order' => "required|array|size:$size",

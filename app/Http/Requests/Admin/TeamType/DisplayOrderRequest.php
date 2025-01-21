@@ -18,11 +18,9 @@ class DisplayOrderRequest extends FormRequest
 
     public function rules(): array
     {
-        $IDs = TeamType::get('id')
-            ->pluck('id')
-            ->toArray();
-        $size = count($IDs);
-        $IDs = implode(',', $IDs);
+        $IDs = TeamType::get('id');
+        $size = $IDs->count();
+        $IDs = $IDs->implode('id', ',');
 
         return [
             'display_order' => "required|array|size:$size",

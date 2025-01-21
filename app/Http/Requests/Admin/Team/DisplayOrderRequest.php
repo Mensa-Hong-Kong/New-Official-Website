@@ -26,11 +26,9 @@ class DisplayOrderRequest extends FormRequest
         ];
         if (! is_array($this->type_id)) {
             $IDs = Team::where('type_id', $this->type_id)
-                ->get('id')
-                ->pluck('id')
-                ->toArray();
-            $size = count($IDs);
-            $IDs = implode(',', $IDs);
+                ->get('id');
+            $size = $IDs->count();
+            $IDs = $IDs->implode('id', ',');
             $return['display_order'] .= "|size:$size";
             $return['display_order.*'] .= "|in:$IDs";
         }
