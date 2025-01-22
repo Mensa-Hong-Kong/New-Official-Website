@@ -211,6 +211,12 @@
                                                     class="nav-link align-items-center active">Create Role</a>
                                             </li>
                                         @endif
+                                        @if(Route::current()->getName() == 'admin.teams.roles.edit')
+                                            <li>
+                                                <a href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}"
+                                                    class="nav-link align-items-center active">Edit Role</a>
+                                            </li>
+                                        @endif
                                     </ul>
                                 </li>
                             @else
