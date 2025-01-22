@@ -117,12 +117,15 @@ form.addEventListener(
                 let data = {
                     name: name.value,
                     display_order: displayOrder.value,
-                    module_permissions: [],
                 }
+                let modulePermissions = [];
                 for(let permission of permissions) {
                     if(permission.checked) {
-                        data.module_permissions.push(permission.value);
+                        module_permissions.push(permission.value);
                     }
+                }
+                if(modulePermissions.length) {
+                    data[module_permissions] = modulePermissions;
                 }
                 post(form.action, successCallback, failCallback, 'post', data);
             }

@@ -39,7 +39,7 @@ class FormRequest extends BaseFormRequest
         return [
             'name' => ['required', 'string', 'max:170', 'regex:/^(?!.*:).*$/', $unique],
             'display_order' => "required|integer|min:0|max:$maxDisplayOrder",
-            'module_permissions' => 'present|array',
+            'module_permissions' => 'sometimes|array',
             'module_permissions.*' => "required|integer|distinct|in:$modulePermissionIDs",
         ];
     }

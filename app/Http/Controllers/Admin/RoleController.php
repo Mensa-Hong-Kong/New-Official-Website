@@ -67,7 +67,7 @@ class RoleController extends Controller implements HasMiddleware
             'role_id' => $role->id,
             'display_order' => $request->display_order,
         ]);
-        if (count($request->module_permissions)) {
+        if ($request->module_permissions) {
             $teamRole->syncPermissions(array_map('intval', $request->module_permissions));
         }
         DB::commit();
@@ -86,9 +86,8 @@ class RoleController extends Controller implements HasMiddleware
             'name' => "{$team->type->name}:{$team->name}:{$role->name}",
             'display_order' => $request->display_order,
         ]);
-        if (count($request->module_permissions)) {
-            $teamRole->syncPermissions(array_map('intval', $request->module_permissions));
-        }
+        $modulePermissions = $request->module_permissions ?? [];
+        $teamRole->syncPermissions(array_map('intval', $modulePermissions));
         DB::commit();
 
         return redirect()->route('admin.teams.show', ['team' => $team]);

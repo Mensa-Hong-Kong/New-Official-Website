@@ -17,7 +17,6 @@ class UpdateTest extends TestCase
     private $happyCase = [
         'name' => 'abc',
         'display_order' => 0,
-        'module_permissions' => [],
     ];
 
     private $user;
@@ -299,27 +298,6 @@ class UpdateTest extends TestCase
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
-    }
-
-    public function test_missing_module_permissions()
-    {
-        $team = Team::inRandomOrder()
-            ->whereNot('type_id', 1)
-            ->first();
-        $role = $team->roles()->inRandomOrder()->first();
-        $data = $this->happyCase;
-        unset($data['module_permissions']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.teams.roles.update',
-                [
-                    'team' => $team,
-                    'role' => $role,
-                ]
-            ),
-            $data
-        );
-        $response->assertInvalid(['message' => 'The permissions field must be present, if you are using our CMS, please contact I.T. officer.']);
     }
 
     public function test_module_permissions_is_not_array()
