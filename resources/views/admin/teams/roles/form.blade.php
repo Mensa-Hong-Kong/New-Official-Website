@@ -3,7 +3,7 @@
                 <div class="form-floating">
                     <input type="text" name="name" class="form-control" id="validationName"
                         minlength="1" maxlength="170" pattern="(?!.*:).*" placeholder="name"
-                        value="{{ old('name') }}" list="roles" required />
+                        value="{{ old('name', $role['name'] ?? '') }}" list="roles" required />
                     <label for="validationName">Name</label>
                     <div id="nameFeedback" class="valid-feedback">
                         Looks good!
@@ -15,9 +15,9 @@
                 <div class="form-floating">
                     <select class="form-select" id="validationDisplayOrder" name="display_order"
                         @disabled(!old('type_id', $team->type_id ?? '')) required>
-                        <option value="" selected disabled>Please display order type</option>
+                        <option value="" @selected(old('display_order', $role->pivot->display_order ?? '') === '') disabled>Please display order type</option>
                         @foreach ($displayOptions as $key => $value)
-                            <option value="{{ $key }}" @selected($key === old('display_order'))>
+                            <option value="{{ $key }}" @selected($key === old('display_order', $role->pivot->display_order ?? ''))>
                                 {{ $value }}
                             </option>
                         @endforeach
@@ -49,7 +49,8 @@
                                             <div class="form-check">
                                                 <input type="checkbox" name="module_permissions[]"
                                                     value="{{ $modulePermissions[$module->id][$permission->id] }}"
-                                                    class="form-check-input permission" />
+                                                    class="form-check-input permission"
+                                                    @checked($roleHasModulePermissions[$modulePermissions[$module->id][$permission->id]] ?? false) />
                                             </div>
                                         </td>
                                     @else
