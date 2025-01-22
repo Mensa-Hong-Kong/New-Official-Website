@@ -40,7 +40,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $this->happyCase
@@ -66,7 +66,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $this->happyCase
@@ -119,7 +119,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -140,7 +140,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -161,7 +161,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -182,7 +182,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -208,7 +208,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -229,7 +229,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -250,7 +250,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -271,7 +271,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -293,7 +293,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -314,7 +314,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -335,7 +335,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -356,7 +356,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -378,7 +378,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -399,7 +399,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data
@@ -425,7 +425,7 @@ class UpdateTest extends TestCase
                 'admin.teams.roles.update',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             ),
             $data

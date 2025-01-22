@@ -83,9 +83,9 @@ class RoleController extends Controller implements HasMiddleware
             ->where('role_id', $role->id)
             ->first();
         $teamRole->update([
-                'name' => "{$team->type->name}:{$team->name}:{$role->name}",
-                'display_order' => $request->display_order,
-            ]);
+            'name' => "{$team->type->name}:{$team->name}:{$role->name}",
+            'display_order' => $request->display_order,
+        ]);
         if (count($request->module_permissions)) {
             $teamRole->syncPermissions($request->module_permissions);
         }

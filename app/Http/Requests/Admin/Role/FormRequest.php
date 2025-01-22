@@ -29,7 +29,7 @@ class FormRequest extends BaseFormRequest
                     ->toArray()
             );
         if ($this->method() == 'POST') {
-            ++$maxDisplayOrder;
+            $maxDisplayOrder++;
         } else {
             $unique = $unique->ignore($this->route('role'));
         }
