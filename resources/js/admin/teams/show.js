@@ -129,8 +129,4 @@ function closeEditDisplayName(id) {
     document.getElementById('edit'+id).hidden = false;
 }
 
-function cancelEditDisplayName(event) {
-    closeEditDisplayName(event.target.id.replace('cancel', ''));
-}
-
 submitting = '';
