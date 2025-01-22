@@ -146,7 +146,7 @@ class RoleController extends Controller implements HasMiddleware
             ->first();
         $teamRole->syncPermissions([]);
         $teamRole->delete();
-        if(! count($role->teams)) {
+        if (! count($role->teams)) {
             $role->delete();
         }
         DB::commit();
