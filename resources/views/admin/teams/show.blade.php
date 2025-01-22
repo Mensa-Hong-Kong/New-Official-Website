@@ -42,12 +42,23 @@
             <thead>
                 <tr>
                     <th scope="col">Name</th>
+                    @can('Edit:Permission')
+                        <th scope="col">Control</th>
+                    @endcan
                 </tr>
             </thead>
             <tbody id="tableBody">
                 @foreach ($team->roles as $role)
                     <tr class="dataRow" id="dataRow{{ $role->id }}">
                         <th>{{ $role->name }}</th>
+                        @can('Edit:Permission')
+                            <td>
+                                <a class="btn btn-primary"
+                                    href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}">
+                                    Edit
+                                </a>
+                            </td>
+                        @endcan
                     </tr>
                 @endforeach
             </tbody>
