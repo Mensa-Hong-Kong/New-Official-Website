@@ -160,4 +160,14 @@ class User extends Authenticatable
     {
         return $this->getAllPermissions()->count() || $this->hasRole('Super Administrator');
     }
+
+    public function member()
+    {
+        return $this->hasOne(Member::class);
+    }
+
+    public function isMember()
+    {
+        return (bool) $this->member;
+    }
 }
