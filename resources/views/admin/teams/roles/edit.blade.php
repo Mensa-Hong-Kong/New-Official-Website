@@ -14,3 +14,6 @@
     </section>
 @endsection
 
+@push('after footer')
+    @vite('resources/js/admin/teams/roles/edit.js')
+@endpush
