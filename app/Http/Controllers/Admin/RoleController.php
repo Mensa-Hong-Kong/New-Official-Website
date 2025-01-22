@@ -138,6 +138,22 @@ class RoleController extends Controller implements HasMiddleware
         return redirect()->route('admin.teams.show', ['team' => $team]);
     }
 
+    public function destroy(Team $team, Role $role)
+    {
+        DB::beginTransaction();
+        $teamRole = TeamRole::where('team_id', $team->id)
+            ->where('role_id', $role->id)
+            ->first();
+        $teamRole->syncPermissions([]);
+        $teamRole->delete();
+        if(! count($role->teams)) {
+            $role->delete();
+        }
+        DB::commit();
+
+        return ['success' => "The role of $role->name delete success!"];
+    }
+
     public function displayOrder(DisplayOrderRequest $request, Team $team)
     {
         $case = [];
