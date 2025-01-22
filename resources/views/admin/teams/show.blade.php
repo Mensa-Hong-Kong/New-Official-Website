@@ -8,10 +8,11 @@
         <h3 class="fw-bold mb-2">
             Info
             @can('Edit:Permission')
-                <a class="btn btn-primary"
+                <a class="btn btn-primary" id="editTeam"
                     href="{{ route('admin.teams.edit', ['team' => $team]) }}">
                     Edit
                 </a>
+                <button class="btn btn-primary" id="disabledEditTeam" disabled hidden>Edit</button>
             @endcan
         </h3>
         <table class="table">
@@ -53,10 +54,22 @@
                         <th>{{ $role->name }}</th>
                         @can('Edit:Permission')
                             <td>
-                                <a class="btn btn-primary"
+                                <a class="btn btn-primary editRole"
                                     href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}">
                                     Edit
                                 </a>
+                                <button class="btn btn-primary disabledEditRole" disabled hidden>Edit</button>
+                                <span class="spinner-border spinner-border-sm roleLoader" id="roleLoader{{ $role->id }}" role="status" aria-hidden="true"></span>
+                                <form method="POST" id="deleteRoleForm{{ $role->id }}" hidden
+                                    action="{{ route('admin.teams.roles.destroy', ['team' => $team, 'role' => $role]) }}">
+                                    @csrf
+                                    @method('delete')
+                                </form>
+                                <button class="btn btn-danger submitButton" form="deleteRoleForm{{ $role->id }}" id="deleteRole{{ $role->id }}" data-name="{{ $role->name }}"  hidden>Delete</button>
+                                <button class="btn btn-danger" id="deletingRole{{ $role->id }}" hidden disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Deleting...
+                                </button>
                             </td>
                         @endcan
                     </tr>
