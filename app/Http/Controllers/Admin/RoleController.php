@@ -75,6 +75,52 @@ class RoleController extends Controller implements HasMiddleware
         return redirect()->route('admin.teams.show', ['team' => $team]);
     }
 
+    public function edit(Team $team, Role $role)
+    {
+        $rows = ModulePermission::get(['id', 'module_id', 'permission_id']);
+        $modulePermissions = [];
+        foreach ($rows as $row) {
+            $modulePermissions[$row->module_id][$row->permission_id] = $row->id;
+        }
+        $displayOptions = [];
+        foreach ($team->roles as $role) {
+            $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
+        }
+        $displayOptions[0] = 'top';
+        $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
+        ksort($displayOptions);
+        $roleHasModulePermissions = ModulePermission::whereHas(
+            'roles', function($query) use($team, $role) {
+                $query->where('team_id', $team->id)
+                    ->where('role_id', $role->id);
+            }
+        )->get('id')
+            ->pluck('id', 'id')
+            ->toArray();
+
+
+        return view('admin.teams.roles.edit')
+            ->with('team', $team)
+            ->with('role', $role)
+            ->with(
+                'roles', Role::whereDoesntHave(
+                    'teams', function ($query) use ($team) {
+                        $query->where($query->getModel()->getTable().'.id', $team->id);
+                    }
+                )->get('name')
+                    ->pluck('name')
+                    ->toArray()
+            )->with('displayOptions', $displayOptions)
+            ->with(
+                'modules', Module::orderBy('display_order')
+                    ->get(['id', 'name'])
+            )->with(
+                'permissions', Permission::orderBy('display_order')
+                    ->get(['id', 'name'])
+            )->with('modulePermissions', $modulePermissions)
+            ->with('roleHasModulePermissions', $roleHasModulePermissions);
+    }
+
     public function update(FormRequest $request, Team $team, Role $role)
     {
         DB::beginTransaction();
