@@ -22,7 +22,7 @@ class EditTest extends TestCase
                 'admin.teams.roles.edit',
                 [
                     'team' => $team,
-                    'role' => $role
+                    'role' => $role,
                 ]
             )
         );
@@ -46,7 +46,7 @@ class EditTest extends TestCase
                     'admin.teams.roles.edit',
                     [
                         'team' => $team,
-                        'role' => $role
+                        'role' => $role,
                     ]
                 )
             );

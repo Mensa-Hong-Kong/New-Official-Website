@@ -90,14 +90,13 @@ class RoleController extends Controller implements HasMiddleware
         $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
         ksort($displayOptions);
         $roleHasModulePermissions = ModulePermission::whereHas(
-            'roles', function($query) use($team, $role) {
+            'roles', function ($query) use ($team, $role) {
                 $query->where('team_id', $team->id)
                     ->where('role_id', $role->id);
             }
         )->get('id')
             ->pluck('id', 'id')
             ->toArray();
-
 
         return view('admin.teams.roles.edit')
             ->with('team', $team)
