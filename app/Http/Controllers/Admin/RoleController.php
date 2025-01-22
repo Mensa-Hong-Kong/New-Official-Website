@@ -68,7 +68,7 @@ class RoleController extends Controller implements HasMiddleware
             'display_order' => $request->display_order,
         ]);
         if (count($request->module_permissions)) {
-            $teamRole->syncPermissions($request->module_permissions);
+            $teamRole->syncPermissions(array_map('intval', $request->module_permissions));
         }
         DB::commit();
 
@@ -87,7 +87,7 @@ class RoleController extends Controller implements HasMiddleware
             'display_order' => $request->display_order,
         ]);
         if (count($request->module_permissions)) {
-            $teamRole->syncPermissions($request->module_permissions);
+            $teamRole->syncPermissions(array_map('intval', $request->module_permissions));
         }
         DB::commit();
 
