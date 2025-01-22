@@ -75,6 +75,25 @@ class RoleController extends Controller implements HasMiddleware
         return redirect()->route('admin.teams.show', ['team' => $team]);
     }
 
+    public function update(FormRequest $request, Team $team, Role $role)
+    {
+        DB::beginTransaction();
+        $role->update(['name' => $request->name]);
+        $teamRole = TeamRole::where('team_id', $team->id)
+            ->where('role_id', $role->id)
+            ->first();
+        $teamRole->update([
+                'name' => "{$team->type->name}:{$team->name}:{$role->name}",
+                'display_order' => $request->display_order,
+            ]);
+        if (count($request->module_permissions)) {
+            $teamRole->syncPermissions($request->module_permissions);
+        }
+        DB::commit();
+
+        return redirect()->route('admin.teams.show', ['team' => $team]);
+    }
+
     public function displayOrder(DisplayOrderRequest $request, Team $team)
     {
         $case = [];
