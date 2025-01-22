@@ -61,8 +61,8 @@
                                                 @csrf
                                                 @method('delete')
                                             </form>
-                                            <button class="btn btn-danger submitButton"form="deleteTeamForm{{ $team->id }}" id="deleteTeam{{ $team->id }}" hidden>Delete</button>
-                                            <button class="btn btn-danger" id="deletingTeam{{ $team->id }}" data-name="{{ $team->name }}" hidden disabled>
+                                            <button class="btn btn-danger submitButton" form="deleteTeamForm{{ $team->id }}" id="deleteTeam{{ $team->id }}"  data-name="{{ $team->name }}" hidden>Delete</button>
+                                            <button class="btn btn-danger" id="deletingTeam{{ $team->id }}" hidden disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 Deleting...
                                             </button>
