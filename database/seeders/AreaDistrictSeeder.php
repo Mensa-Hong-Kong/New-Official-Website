@@ -17,7 +17,7 @@ class AreaDistrictSeeder extends Seeder
             'Eastern',
             'Southern',
         ];
-        foreach($districts as $index => $district) {
+        foreach ($districts as $index => $district) {
             $district = District::firstOrCreate([
                 'area_id' => $area->id,
                 'name' => $district,
@@ -32,7 +32,7 @@ class AreaDistrictSeeder extends Seeder
             'Wong Tai Sin',
             'Kwun Tong',
         ];
-        foreach($districts as $index => $district) {
+        foreach ($districts as $index => $district) {
             $district = District::firstOrCreate([
                 'area_id' => $area->id,
                 'name' => $district,
@@ -51,7 +51,7 @@ class AreaDistrictSeeder extends Seeder
             'Sai Kung',
             'Islands',
         ];
-        foreach($districts as $index => $district) {
+        foreach ($districts as $index => $district) {
             $district = District::firstOrCreate([
                 'area_id' => $area->id,
                 'name' => $district,

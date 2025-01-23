@@ -22,15 +22,15 @@ class AdmissionTestController extends Controller implements HasMiddleware
     public function create()
     {
         $areas = Area::with([
-            'districts' => function($query) {
+            'districts' => function ($query) {
                 $query->orderBy('display_order');
-            }
+            },
         ])->orderBy('display_order')
             ->get();
         $districts = [];
-        foreach($areas as $area) {
+        foreach ($areas as $area) {
             $districts[$area->name] = [];
-            foreach($area->districts as $district) {
+            foreach ($area->districts as $district) {
                 $districts[$area->name][$district->id] = $district->name;
             }
         }

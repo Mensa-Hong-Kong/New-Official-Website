@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin\AdmissionTests;
 
 use App\Models\ModulePermission;
 use App\Models\User;
-use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
