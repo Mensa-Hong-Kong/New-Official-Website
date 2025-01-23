@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdmissionTestController as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -83,5 +84,7 @@ Route::middleware('auth')->group(function () {
                 ->name('permissions.display-order.update');
             Route::resource('permissions', PermissionController::class)
                 ->only(['index', 'update']);
+            Route::resource('admission-tests', AdminAdmissionTestController::class)
+                ->only('store');
         });
 });
