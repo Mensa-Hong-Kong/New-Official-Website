@@ -22,6 +22,7 @@ export default defineConfig({
                 'resources/js/admin/teams/roles/edit.js',
                 'resources/js/admin/permission.js',
                 'resources/js/admin/module.js',
+                'resources/js/admin/admissionTests/create.js',
             ],
             refresh: true,
         }),

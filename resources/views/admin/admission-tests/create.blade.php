@@ -84,3 +84,6 @@
     </section>
 @endsection
 
+@push('after footer')
+    @vite('resources/js/admin/admissionTests/create.js')
+@endpush
