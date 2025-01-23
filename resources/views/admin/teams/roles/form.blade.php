@@ -15,7 +15,7 @@
                 <div class="form-floating">
                     <select class="form-select" id="validationDisplayOrder" name="display_order"
                         @disabled(!old('type_id', $team->type_id ?? '')) required>
-                        <option value="" @selected(old('display_order', $role->pivot->display_order ?? '') === '') disabled>Please display order type</option>
+                        <option value="" @selected(old('display_order', $role->pivot->display_order ?? null) === null) disabled>Please display order type</option>
                         @foreach ($displayOptions as $key => $value)
                             <option value="{{ $key }}" @selected($key === old('display_order', $role->pivot->display_order ?? ''))>
                                 {{ $value }}
