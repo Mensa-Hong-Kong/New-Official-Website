@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\AdmissionTests;
 
+use App\Models\AdmissionTest;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -247,7 +248,11 @@ class StoreTest extends TestCase
             route('admin.admission-tests.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $test = AdmissionTest::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-tests.show',
+            ['admission_test' => $test]
+        );
 
     }
 }

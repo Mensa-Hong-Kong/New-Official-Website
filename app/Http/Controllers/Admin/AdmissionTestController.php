@@ -66,7 +66,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
             'address_id' => $address->id,
             'name' => $request->location,
         ]);
-        AdmissionTest::create([
+        $test = AdmissionTest::create([
             'testing_at' => $request->testing_at,
             'location_id' => $location->id,
             'maximum_candidates' => $request->maximum_candidates,
@@ -74,7 +74,9 @@ class AdmissionTestController extends Controller implements HasMiddleware
         ]);
         DB::commit();
 
-        return redirect()->route('admin.index');
+        return redirect()->route(
+            'admin.admission-tests.show',
+            ['admission_test' => $test]);
     }
 
     public function show(AdmissionTest $admissionTest)
