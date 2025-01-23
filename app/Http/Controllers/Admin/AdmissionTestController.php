@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdmissionTestRequest;
 use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Location;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdmissionTestController extends Controller
 {
-    public function store(Request $request)
+    public function store(AdmissionTestRequest $request)
     {
         DB::beginTransaction();
         $address = Address::firstOrCreate([
