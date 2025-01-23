@@ -266,12 +266,25 @@
                                     ),
                                 ])>
                                     <li>
+                                        <a href="{{ route('admin.admission-tests.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.admission-tests.index',
+                                        ])>Index</a>
+                                    </li>
+                                    <li>
                                         <a href="{{ route('admin.admission-tests.create') }}" @class([
                                             'nav-link',
                                             'align-items-center',
                                             'active' => Route::current()->getName() == 'admin.admission-tests.create',
                                         ])>Create</a>
                                     </li>
+                                    @if(Route::current()->getName() == 'admin.admission-tests.show')
+                                        <li>
+                                            <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
+                                                class="nav-link align-items-center active">Show</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </li>
                         </ul>
