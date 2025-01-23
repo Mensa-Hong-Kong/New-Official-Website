@@ -85,6 +85,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('permissions', PermissionController::class)
                 ->only(['index', 'update']);
             Route::resource('admission-tests', AdminAdmissionTestController::class)
-                ->only(['create', 'store']);
+                ->except(['edit', 'update', 'destroy']);
         });
 });

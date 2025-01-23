@@ -19,6 +19,11 @@ class AdmissionTestController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Admission Test'))];
     }
 
+    public function index()
+    {
+        return view('admin.admission-tests.index');
+    }
+
     public function create()
     {
         $areas = Area::with([
@@ -70,5 +75,10 @@ class AdmissionTestController extends Controller implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.index');
+    }
+
+    public function show(AdmissionTest $admissionTest)
+    {
+        return view('admin.admission-tests.show');
     }
 }
