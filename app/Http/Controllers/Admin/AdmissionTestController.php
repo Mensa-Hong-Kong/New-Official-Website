@@ -85,6 +85,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
 
     public function show(AdmissionTest $admissionTest)
     {
-        return view('admin.admission-tests.show');
+        return view('admin.admission-tests.show')
+            ->with('test', $admissionTest);
     }
 }
