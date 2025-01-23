@@ -7,10 +7,17 @@ use App\Http\Requests\Admin\AdmissionTestRequest;
 use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Location;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class AdmissionTestController extends Controller
+class AdmissionTestController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware('permission:Edit:Admission Test'))];
+    }
+
     public function store(AdmissionTestRequest $request)
     {
         DB::beginTransaction();
