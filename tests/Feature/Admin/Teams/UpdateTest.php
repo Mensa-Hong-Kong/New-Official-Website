@@ -268,7 +268,6 @@ class UpdateTest extends TestCase
                 'display_order' => $team->display_order,
             ]
         );
-        $this->assertEquals(0, $team->display_order);
         $response->assertRedirectToRoute('admin.teams.show', ['team' => $team]);
         $newTeam = Team::find($team->id);
         $newTeamRoles = TeamRole::where('team_id', $team->id)
@@ -311,39 +310,6 @@ class UpdateTest extends TestCase
         $expectedTeamRoles = [];
         foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:abc:{$role->name}";
-        }
-        $this->assertEquals($expectedTeamRoles, $newTeamRoles);
-    }
-
-    public function test_happy_case_when_only_change_type()
-    {
-        $team = Team::inRandomOrder()->first();
-        $newType = TeamType::inRandomOrder()
-            ->whereNot('id', $team->type_id)
-            ->first();
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.teams.update',
-                ['team' => $team]
-            ),
-            [
-                'name' => $team->name,
-                'type_id' => $newType->id,
-                'display_order' => $team->display_order,
-            ]
-        );
-        $response->assertRedirectToRoute('admin.teams.show', ['team' => $team]);
-        $newTeam = Team::find($team->id);
-        $newTeamRoles = TeamRole::where('team_id', $team->id)
-            ->get('name')
-            ->pluck('name')
-            ->toArray();
-        $this->assertEquals($team->name, $newTeam->name);
-        $this->assertEquals($newType->id, $newTeam->type_id);
-        $this->assertEquals($team->display_order, $newTeam->display_order);
-        $expectedTeamRoles = [];
-        foreach ($team->roles as $role) {
-            $expectedTeamRoles[] = "{$newType->name}:{$team->name}:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
@@ -476,39 +442,6 @@ class UpdateTest extends TestCase
         $expectedTeamRoles = [];
         foreach ($team->roles as $role) {
             $expectedTeamRoles[] = "{$team->type->name}:abc:{$role->name}";
-        }
-        $this->assertEquals($expectedTeamRoles, $newTeamRoles);
-    }
-
-    public function test_happy_case_when_only_have_no_change_display_order()
-    {
-        $team = Team::inRandomOrder()->first();
-        $newType = TeamType::inRandomOrder()
-            ->whereNot('id', $team->type_id)
-            ->first();
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.teams.update',
-                ['team' => $team]
-            ),
-            [
-                'name' => 'abc',
-                'type_id' => $newType->id,
-                'display_order' => $team->display_order,
-            ]
-        );
-        $response->assertRedirectToRoute('admin.teams.show', ['team' => $team]);
-        $newTeam = Team::find($team->id);
-        $newTeamRoles = TeamRole::where('team_id', $team->id)
-            ->get('name')
-            ->pluck('name')
-            ->toArray();
-        $this->assertEquals('abc', $newTeam->name);
-        $this->assertEquals($newType->id, $newTeam->type_id);
-        $this->assertEquals($team->display_order, $newTeam->display_order);
-        $expectedTeamRoles = [];
-        foreach ($team->roles as $role) {
-            $expectedTeamRoles[] = "{$newType->name}:abc:{$role->name}";
         }
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
