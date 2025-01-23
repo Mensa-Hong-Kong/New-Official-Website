@@ -21,7 +21,11 @@ class AdmissionTestController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.admission-tests.index');
+        return view('admin.admission-tests.index')
+            ->with(
+                'tests', AdmissionTest::sortable('testing_at')
+                    ->paginate()
+            );
     }
 
     public function create()
