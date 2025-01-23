@@ -242,6 +242,38 @@
                                     'active' => Route::current()->getName() == 'admin.permissions.index',
                                 ])>Permission</a>
                             </li>
+                            <li class="nav-item accordion">
+                                <button role="button"
+                                    data-bs-toggle="collapse" aria-expanded="true"
+                                    data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
+                                    style="height: 0em"
+                                    @class([
+                                        'nav-item',
+                                        'accordion-button',
+                                        'collapsed' => !str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.admission-tests.'
+                                        ),
+                                    ])>
+                                    Admission Tests
+                                </button>
+                                <ul id="asideNavAdminAdmissionTest" @class([
+                                    'accordion-collapse',
+                                    'collapse',
+                                    'show' => str_starts_with(
+                                        Route::current()->getName(),
+                                        'admin.admission-tests.'
+                                    ),
+                                ])>
+                                    <li>
+                                        <a href="{{ route('admin.admission-tests.create') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.admission-tests.create',
+                                        ])>Create</a>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </nav>
                 </div>
