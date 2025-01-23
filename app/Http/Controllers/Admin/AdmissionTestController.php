@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTestRequest;
 use App\Models\Address;
 use App\Models\AdmissionTest;
+use App\Models\Area;
 use App\Models\Location;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -16,6 +17,37 @@ class AdmissionTestController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [(new Middleware('permission:Edit:Admission Test'))];
+    }
+
+    public function create()
+    {
+        $areas = Area::with([
+            'districts' => function($query) {
+                $query->orderBy('display_order');
+            }
+        ])->orderBy('display_order')
+            ->get();
+        $districts = [];
+        foreach($areas as $area) {
+            $districts[$area->name] = [];
+            foreach($area->districts as $district) {
+                $districts[$area->name][$district->id] = $district->name;
+            }
+        }
+
+        return view('admin.admission-tests.create')
+            ->with(
+                'locations', Location::distinct()
+                    ->get('name')
+                    ->pluck('name')
+                    ->toArray()
+            )->with('districts', $districts)
+            ->with(
+                'addresses', Address::distinct()
+                    ->get('address')
+                    ->pluck('address')
+                    ->toArray()
+            );
     }
 
     public function store(AdmissionTestRequest $request)
