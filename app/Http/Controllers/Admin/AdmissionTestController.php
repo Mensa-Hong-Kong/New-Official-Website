@@ -88,4 +88,86 @@ class AdmissionTestController extends Controller implements HasMiddleware
         return view('admin.admission-tests.show')
             ->with('test', $admissionTest);
     }
+
+    public function update(AdmissionTestRequest $request, AdmissionTest $admissionTest)
+    {
+        DB::beginTransaction();
+        $address = $admissionTest->location->address;
+        $newAddress = $address;
+        $location = $admissionTest->location;
+        $newLocation = $location;
+        if(
+            $request->address != $address->address ||
+            $request->district_id != $address->district_id
+        ) {
+            $newAddress = Address::firstWhere([
+                'district_id' => $request->district_id,
+                'address' => $request->address,
+            ]);
+            if(
+                count($address->locations) == 1 &&
+                count($location->admissionTests) == 1
+            ) {
+                if($newAddress) {
+                    $address->delete();
+                } else {
+                    $address->update([
+                        'district_id' => $request->district_id,
+                        'address' => $request->address,
+                    ]);
+                    $newAddress = $address;
+                }
+            }
+        }
+        if(!$newAddress) {
+            $newAddress = Address::create([
+                'district_id' => $request->district_id,
+                'address' => $request->address,
+            ]);
+        }
+        if(
+            $address->id != $newAddress->id ||
+            $location->name != $request->location
+        ) {
+            $newLocation = Location::firstWhere([
+                'name' => $request->location,
+                'address_id' => $newAddress->id,
+            ]);
+            if(count($location->admissionTests) == 1) {
+                if($newLocation) {
+                    $location->delete();
+                } else {
+                    $location->update([
+                        'name' => $request->location,
+                        'address_id' => $newAddress->id,
+                    ]);
+                    $newLocation = $location;
+                }
+            }
+        }
+        if(!$newLocation) {
+            $newLocation = Location::create([
+                'name' => $request->location,
+                'address_id' => $newAddress->id,
+            ]);
+        }
+        $admissionTest->update([
+            'testing_at' => $request->testing_at,
+            'location_id' => $newLocation->id,
+            'maximum_candidates' => $request->maximum_candidates,
+            'is_public' => $request->is_public,
+        ]);
+        $admissionTest->refresh();
+        DB::commit();
+
+        return [
+            'success' => 'The admission test update success!',
+            'testing_at' => $admissionTest->testing_at,
+            'location' => $admissionTest->location->name,
+            'district_id' => $admissionTest->location->address->district_id,
+            'address' => $admissionTest->location->address->address,
+            'maximum_candidates' => $admissionTest->maximum_candidates,
+            'is_public' => $admissionTest->is_public,
+        ];
+    }
 }
