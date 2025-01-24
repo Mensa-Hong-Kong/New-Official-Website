@@ -18,4 +18,9 @@ class Location extends Model
     {
         return $this->belongsTo(Address::class);
     }
+
+    public function admissionTests()
+    {
+        return $this->hasMany(AdmissionTest::class);
+    }
 }
