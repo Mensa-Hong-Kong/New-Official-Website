@@ -9,8 +9,8 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsAdministrator;
 use Illuminate\Support\Facades\Route;
 
@@ -38,7 +38,6 @@ Route::middleware('guest')->group(function () {
         ->name('forget-password');
     Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
         ->name('reset-password');
-
 
     Route::get('/about', function () {
         return view('about');
@@ -78,7 +77,6 @@ Route::middleware('auth')->group(function () {
         ->name('contacts.set-default');
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy']);
-
 
     Route::get('/about', function () {
         return view('about');
