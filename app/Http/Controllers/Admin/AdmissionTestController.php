@@ -89,71 +89,82 @@ class AdmissionTestController extends Controller implements HasMiddleware
             ->with('test', $admissionTest);
     }
 
-    public function update(AdmissionTestRequest $request, AdmissionTest $admissionTest)
+    private function updateAddress(Location $location, string $newAddress, int $newDistrictID)
     {
-        DB::beginTransaction();
-        $address = $admissionTest->location->address;
-        $newAddress = $address;
-        $location = $admissionTest->location;
-        $newLocation = $location;
+        $address = $location->address;
         if(
-            $request->address != $address->address ||
-            $request->district_id != $address->district_id
+            $newAddress != $location->address->address ||
+            $newDistrictID != $location->address->district_id
         ) {
-            $newAddress = Address::firstWhere([
-                'district_id' => $request->district_id,
-                'address' => $request->address,
+            $address = Address::firstWhere([
+                'district_id' => $newDistrictID,
+                'address' => $newAddress,
             ]);
             if(
-                count($address->locations) == 1 &&
-                count($location->admissionTests) == 1
+                $location->address->locations()->count() == 1 &&
+                $location->admissionTests()->count() == 1
             ) {
-                if($newAddress) {
-                    $address->delete();
+                if($address) {
+                    $location->address->delete();
                 } else {
-                    $address->update([
-                        'district_id' => $request->district_id,
-                        'address' => $request->address,
+                    $location->address->update([
+                        'district_id' => $newDistrictID,
+                        'address' => $newAddress,
                     ]);
-                    $newAddress = $address;
+                    $address = $location->address;
                 }
             }
+            if(!$address) {
+                $address = Address::create([
+                    'district_id' => $newDistrictID,
+                    'address' => $newAddress,
+                ]);
+            }
         }
-        if(!$newAddress) {
-            $newAddress = Address::create([
-                'district_id' => $request->district_id,
-                'address' => $request->address,
-            ]);
-        }
-        if(
-            $address->id != $newAddress->id ||
-            $location->name != $request->location
-        ) {
+        return $address;
+    }
+
+    private function updateLocation(Location $location, Address $newAddress, string $newLocationName)
+    {
+        $newLocation = $location;
+        if($location->name != $newLocationName) {
             $newLocation = Location::firstWhere([
-                'name' => $request->location,
+                'name' => $newLocationName,
                 'address_id' => $newAddress->id,
             ]);
-            if(count($location->admissionTests) == 1) {
+            if($location->admissionTests()->count() == 1) {
                 if($newLocation) {
+                    if($location->address->locations()->count() == 1) {
+                        $location->address->delete();
+                    }
                     $location->delete();
                 } else {
                     $location->update([
-                        'name' => $request->location,
+                        'name' => $newLocationName,
                         'address_id' => $newAddress->id,
                     ]);
                     $newLocation = $location;
                 }
             }
+            if(!$newLocation) {
+                $newLocation = Location::create([
+                    'name' => $newLocationName,
+                    'address_id' => $newAddress->id,
+                ]);
+            }
         }
-        if(!$newLocation) {
-            $newLocation = Location::create([
-                'name' => $request->location,
-                'address_id' => $newAddress->id,
-            ]);
-        }
+
+        return $newLocation;
+    }
+
+    public function update(AdmissionTestRequest $request, AdmissionTest $admissionTest)
+    {
+        DB::beginTransaction();
+        $address = $this->updateAddress($admissionTest->location, $request->address, $request->district_id);
+        $location = $this->updateLocation($admissionTest->location, $address, $request->location);
         $admissionTest->update([
             'testing_at' => $request->testing_at,
-            'location_id' => $newLocation->id,
+            'location_id' => $location->id,
             'maximum_candidates' => $request->maximum_candidates,
             'is_public' => $request->is_public,
         ]);
