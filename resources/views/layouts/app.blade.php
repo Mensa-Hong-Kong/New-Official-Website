@@ -10,7 +10,7 @@
 <body class="min-h-screen bg-white">
 <header class="sticky top-0 z-50 border-b bg-white">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-        <a href="{{ route('home') }}" class="flex items-center gap-2">
+        <a href="{{ route('index') }}" class="flex items-center gap-2">
             <img src="{{ asset('images/mensa_hk_logo.jpg') }}" alt="Mensa Logo" class="h-20 w-200">
         </a>
         <nav class="hidden items-center gap-8 md:flex">
