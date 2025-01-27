@@ -7,10 +7,6 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- vite assets -->
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
-
 </head>
 <body class="min-h-screen bg-white">
 <header class="sticky top-0 z-50 border-b bg-white">
@@ -46,7 +42,7 @@
 </header>
 
 <main>
-    @yield('content')
+    @yield('main')
 </main>
 
 <footer class="border-t bg-gray-50">
