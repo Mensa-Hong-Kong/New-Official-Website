@@ -34,6 +34,34 @@ Route::middleware('guest')->group(function () {
         ->name('forget-password');
     Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
         ->name('reset-password');
+
+    Route::get('/', function () {
+        return view('home');
+    })->name('home');
+
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
+
+    Route::get('/join', function () {
+        return view('join');
+    })->name('join');
+
+    Route::get('/events', function () {
+        return view('events');
+    })->name('events');
+
+    Route::get('/contact', function () {
+        return view('contact');
+    })->name('contact');
+
+    Route::get('/test', function () {
+        return view('test');
+    })->name('test');
+
+    Route::get('/benefits', function () {
+        return view('benefits');
+    })->name('benefits');
 });
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
@@ -49,6 +77,34 @@ Route::middleware('auth')->group(function () {
         ->name('contacts.set-default');
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy']);
+
+    Route::get('/', function () {
+        return view('home');
+    })->name('home');
+
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
+
+    Route::get('/join', function () {
+        return view('join');
+    })->name('join');
+
+    Route::get('/events', function () {
+        return view('events');
+    })->name('events');
+
+    Route::get('/contact', function () {
+        return view('contact');
+    })->name('contact');
+
+    Route::get('/test', function () {
+        return view('test');
+    })->name('test');
+
+    Route::get('/benefits', function () {
+        return view('benefits');
+    })->name('benefits');
 
     Route::prefix('admin')->name('admin.')
         ->middleware(IsAdministrator::class)

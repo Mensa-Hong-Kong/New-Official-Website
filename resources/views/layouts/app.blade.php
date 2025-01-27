@@ -1,403 +1,102 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title')Mensa HK</title>
-    @vite('resources/css/app.scss')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-</head>
+    <title>Mensa Hong Kong</title>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<body>
-    <header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
-        <nav class="container-xxl flex-wrap" aria-label="Main navigation">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-controls="bdSidebar" aria-label="Toggle docs navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-            <a class="navbar-brand" href="{{ route('index') }}">Mensa HK</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="bdNavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Board of Directors</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Committees</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Upcoming Events</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Admission Test</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Event</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">SIGS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Mensa Means</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Constitution</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">FAQs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Contact Us</a>
-                    </li>
-                </ul>
-
-                <hr class="d-lg-none text-white-50">
-                <ul class="navbar-nav">
-                    @if(auth()->user() && auth()->user()->isAdmin())
-                        <li class="nav-item">
-                            <a href="{{ route('admin.index') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => str_starts_with(Route::current()->getName(), 'admin.'),
-                            ])>Admin</a>
-                        </li>
-                        <hr class="d-lg-none text-white-50">
-                    @endif
-                    @auth
-                        <li class="nav-item">
-                            <a href="{{ route('profile.show') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'profile.show',
-                            ])>Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('logout') }}" class='nav-link align-items-center'>Logout</a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a href="{{ route('login') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'login',
-                            ])>Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('register') }}" @class([
-                                'nav-link',
-                                'align-items-center',
-                                'active' => Route::current()->getName() == 'register',
-                            ])>Register</a>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <div @class([
-        'container-xxl',
-        'd-flex' => str_starts_with(Route::current()->getName(), 'admin.'),
-    ])>
-        @if(str_starts_with(Route::current()->getName(), 'admin.'))
-            <aside class="flex-column">
-                <div class="offcanvas-lg offcanvas-start" tabindex="-1" aria-labelledby="bdSidebarOffcanvasLabel">
-                    <div class="offcanvas-header border-bottom">
-                        <h5 class="offcanvas-title" id="bdSidebarOffcanvasLabel">Admin</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdSidebar"></button>
-                    </div>
-                    <nav class="offcanvas-body">
-                        <ul class="nav flex-column nav-pills">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.index',
-                                ])>Dashboard</a>
-                            </li>
-                            <li class="nav-item accordion">
-                                <button role="button"
-                                    data-bs-toggle="collapse" aria-expanded="true"
-                                    data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
-                                    style="height: 0em"
-                                    @class([
-                                        'nav-item',
-                                        'accordion-button',
-                                        'collapsed' => !str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.users.'
-                                        ),
-                                    ])>
-                                    Users
-                                </button>
-                                <ul id="asideNavAdminUser" @class([
-                                    'accordion-collapse',
-                                    'collapse',
-                                    'show' => str_starts_with(
-                                        Route::current()->getName(),
-                                        'admin.users.'
-                                    ),
-                                ])>
-                                    <li>
-                                        <a href="{{ route('admin.users.index') }}" @class([
-                                            'nav-link',
-                                            'align-items-center',
-                                            'active' => Route::current()->getName() == 'admin.users.index',
-                                        ])>Index</a>
-                                    </li>
-                                    @if(Route::current()->getName() == 'admin.users.show')
-                                        <a href="#" class="nav-link align-items-center active">Show</a>
-                                    @endif
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.team-types.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.team-types.index',
-                                ])>Team Types</a>
-                            </li>
-                            @if(
-                                in_array(
-                                    Route::current()->getName(),
-                                    [
-                                        'admin.teams.show',
-                                        'admin.teams.edit',
-                                    ]
-                                ) ||
-                                str_starts_with(Route::current()->getName(), 'admin.teams.roles.') ||
-                                (auth()->user() && auth()->user()->can('Edit:Permission'))
-                            )
-                                <li class="nav-item accordion">
-                                    <button role="button"
-                                        data-bs-toggle="collapse" aria-expanded="true"
-                                        data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
-                                        style="height: 0em"
-                                        @class([
-                                            'nav-item',
-                                            'accordion-button',
-                                            'collapsed' => !str_starts_with(
-                                                Route::current()->getName(),
-                                                'admin.teams.'
-                                            ),
-                                        ])>
-                                        Teams
-                                    </button>
-                                    <ul id="asideNavAdminTeam" @class([
-                                        'accordion-collapse',
-                                        'collapse',
-                                        'show' => str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.teams.'
-                                        ),
-                                    ])>
-                                        <li>
-                                            <a href="{{ route('admin.teams.index') }}" @class([
-                                                'nav-link',
-                                                'align-items-center',
-                                                'active' => Route::current()->getName() == 'admin.teams.index',
-                                            ])>Index</a>
-                                        </li>
-                                        @can('Edit:Permission')
-                                            <li>
-                                                <a href="{{ route('admin.teams.create') }}" @class([
-                                                    'nav-link',
-                                                    'align-items-center',
-                                                    'active' => Route::current()->getName() == 'admin.teams.create',
-                                                ])>Create</a>
-                                            </li>
-                                        @endcan
-                                        @if(
-                                            in_array(
-                                                Route::current()->getName(),
-                                                [
-                                                    'admin.teams.show',
-                                                    'admin.teams.edit',
-                                                ]
-                                            ) ||
-                                            str_starts_with(Route::current()->getName(), 'admin.teams.roles.')
-                                        )
-                                            <li>
-                                                <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
-                                                    @class([
-                                                        'nav-link',
-                                                        'align-items-center',
-                                                        'active' => Route::current()->getName() == 'admin.teams.show',
-                                                    ])>Show</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.edit')
-                                            <li>
-                                                <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
-                                                    class="nav-link align-items-center active">Edit</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.roles.create')
-                                            <li>
-                                                <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
-                                                    class="nav-link align-items-center active">Create Role</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.roles.edit')
-                                            <li>
-                                                <a href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}"
-                                                    class="nav-link align-items-center active">Edit Role</a>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </li>
-                            @else
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.teams.index') }}" @class([
-                                        'nav-link',
-                                        'align-items-center',
-                                        'active' => Route::current()->getName() == 'admin.teams.index',
-                                    ])>Teams</a>
-                                </li>
-                            @endif
-                            <li class="nav-item">
-                                <a href="{{ route('admin.modules.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.modules.index',
-                                ])>Module</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.permissions.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.permissions.index',
-                                ])>Permission</a>
-                            </li>
-                            <li class="nav-item accordion">
-                                <button role="button"
-                                    data-bs-toggle="collapse" aria-expanded="true"
-                                    data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
-                                    style="height: 0em"
-                                    @class([
-                                        'nav-item',
-                                        'accordion-button',
-                                        'collapsed' => !str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.admission-tests.'
-                                        ),
-                                    ])>
-                                    Admission Tests
-                                </button>
-                                <ul id="asideNavAdminAdmissionTest" @class([
-                                    'accordion-collapse',
-                                    'collapse',
-                                    'show' => str_starts_with(
-                                        Route::current()->getName(),
-                                        'admin.admission-tests.'
-                                    ),
-                                ])>
-                                    <li>
-                                        <a href="{{ route('admin.admission-tests.index') }}" @class([
-                                            'nav-link',
-                                            'align-items-center',
-                                            'active' => Route::current()->getName() == 'admin.admission-tests.index',
-                                        ])>Index</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('admin.admission-tests.create') }}" @class([
-                                            'nav-link',
-                                            'align-items-center',
-                                            'active' => Route::current()->getName() == 'admin.admission-tests.create',
-                                        ])>Create</a>
-                                    </li>
-                                    @if(Route::current()->getName() == 'admin.admission-tests.show')
-                                        <li>
-                                            <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
-                                                class="nav-link align-items-center active">Show</a>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </aside>
-        @endif
-        <main>
-            @yield('main')
-        </main>
-    </div>
-    <div class="modal alert" id="alert" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Alert</h5>
-                </div>
-                <div class="modal-body">
-                    <p id="alertMessage"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal alert" id="confirm" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmation</h5>
-                </div>
-                <div class="modal-body">
-                    <p id="confirmMessage"></p>
-                </div>
-                <div class="modal-footer">
-                    <button id="confirmButton" type="button" class="btn btn-success">Confirm</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- vite assets -->
+    @vite('resources/css/app.css')
     @vite('resources/js/app.js')
-    <script>
-        function bootstrapAlert(message) {
-            document.getElementById('alertMessage').innerText = message;
-            new bootstrap.Modal(document.getElementById('alert')).show();
-        }
-        function bootstrapConfirm(message, callback, passData) {
-            const confirmButton = document.getElementById('confirmButton');
-            const confirmDiv = document.getElementById('confirm');
-            const confirmModal = new bootstrap.Modal(confirmDiv);
-            const confirmMessage = document.getElementById('confirmMessage');
-            let confirmHandle = function() {
-                confirmModal.hide();
-                callback(passData);
-            }
-            confirmButton.addEventListener('click', confirmHandle);
-            confirmDiv.addEventListener(
-                'hide.bs.modal', function() {
-                    confirmButton.removeEventListener('click', confirmHandle);
-                }
-            );
-            confirmMessage.innerText = message;
-            confirmModal.show();
-        }
-    </script>
-    @error('message')
-        <script>
-            document.addEventListener("DOMContentLoaded", (event) => {
-                bootstrapAlert('{{ $message }}');
-            });
-        </script>
-    @enderror
-    @session('success')
-        <script>
-            document.addEventListener("DOMContentLoaded", (event) => {
-                bootstrapAlert('{{ $value }}');
-            });
-        </script>
-    @endsession
-    @stack('after footer')
-</body>
 
+</head>
+<body class="min-h-screen bg-white">
+<header class="sticky top-0 z-50 border-b bg-white">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+        <a href="{{ route('home') }}" class="flex items-center gap-2">
+            <img src="{{ asset('images/mensa_hk_logo.jpg') }}" alt="Mensa Logo" class="h-20 w-200">
+        </a>
+        <nav class="hidden items-center gap-8 md:flex">
+            <a href="{{ route('about') }}" class="text-sm font-medium hover:text-primary">About Us</a>
+            <a href="{{ route('join') }}" class="text-sm font-medium hover:text-primary">Join Mensa</a>
+            <a href="{{ route('events') }}" class="text-sm font-medium hover:text-primary">Events</a>
+            <a href="{{ route('contact') }}" class="text-sm font-medium hover:text-primary">Contact</a>
+            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                Login
+            </button>
+        </nav>
+        <button class="rounded p-2 hover:bg-gray-100 md:hidden" onclick="toggleMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+    </div>
+    <div id="mobileMenu" class="hidden border-t bg-white px-4 py-4 md:hidden">
+        <nav class="flex flex-col gap-4">
+            <a href="{{ route('about') }}" class="text-sm font-medium hover:text-primary">About Us</a>
+            <a href="{{ route('join') }}" class="text-sm font-medium hover:text-primary">Join Mensa</a>
+            <a href="{{ route('events') }}" class="text-sm font-medium hover:text-primary">Events</a>
+            <a href="{{ route('contact') }}" class="text-sm font-medium hover:text-primary">Contact</a>
+            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                中文
+            </button>
+        </nav>
+    </div>
+</header>
+
+<main>
+    @yield('content')
+</main>
+
+<footer class="border-t bg-gray-50">
+    <div class="mx-auto max-w-7xl px-4 py-12">
+        <div class="grid gap-8 md:grid-cols-4">
+            <div>
+                <h3 class="font-semibold">About Mensa</h3>
+                <nav class="mt-4 flex flex-col gap-2">
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">What is Mensa?</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">History</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Constitution</a>
+                </nav>
+            </div>
+            <div>
+                <h3 class="font-semibold">Membership</h3>
+                <nav class="mt-4 flex flex-col gap-2">
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Join Mensa</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Benefits</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">FAQ</a>
+                </nav>
+            </div>
+            <div>
+                <h3 class="font-semibold">Resources</h3>
+                <nav class="mt-4 flex flex-col gap-2">
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">News</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Events</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Publications</a>
+                </nav>
+            </div>
+            <div>
+                <h3 class="font-semibold">Contact</h3>
+                <nav class="mt-4 flex flex-col gap-2">
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Get in Touch</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Location</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-primary">Media Enquiries</a>
+                </nav>
+            </div>
+        </div>
+        <div class="mt-8 border-t pt-8 text-center text-sm text-gray-600">
+            © {{ date('Y') }} Mensa Hong Kong. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+    }
+</script>
+</body>
 </html>
+
