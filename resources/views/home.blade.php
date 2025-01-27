@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
+@section('main')
     <section class="relative">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-900"></div>
         <div class="relative mx-auto max-w-7xl px-4 py-24 text-white md:py-32">

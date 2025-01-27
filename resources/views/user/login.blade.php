@@ -1,52 +1,31 @@
 @extends('layouts.app')
 
 @section('main')
-    <section class="container">
-        <form id="form" class="mx-auto w-25" method="POST" novalidate>
-            <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-            @csrf
-            <div data-mdb-input-init class="form-outline mb-4">
-                <div class="form-floating">
-                    <input type="text" name="username" class="form-control" id="validationUsername" minlength="8" maxlength="16" placeholder="username" required />
-                    <label for="validationUsername">Username</label>
-                    <div id="usernameFeedback" class="valid-feedback">
-                        Looks good!
-                    </div>
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white p-8 rounded shadow-md w-96">
+            <h2 class="text-2xl font-bold mb-4">Login</h2>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div>
+                    <label for="username" class="block font-medium text-sm text-gray-700">Username</label>
+                    <input id="username" type="text" name="username" value="{{ old('username') }}" required autofocus
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-            </div>
-            <div data-mdb-input-init class="form-outline mb-4">
-                <div class="form-floating">
-                    <input type="password" name="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" required />
-                    <label for="validationPassword">Password</label>
-                    <div id="passwordFeedback" class="valid-feedback">
-                        Looks good!
-                    </div>
+
+                <div class="mt-4">
+                    <label for="password" class="block font-medium text-sm text-gray-700">Password</label>
+                    <input id="password" type="password" name="password" required
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="true" id="rememberMe" name="remember_me" />
-                        <label class="form-check-label" for="rememberMe">Remember Me</label>
-                    </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Login
+                    </button>
                 </div>
-                <div class="col d-flex justify-content-center">
-                    <a href="{{ route('forget-password') }}">Forgot password?</a>
-                </div>
-            </div>
-            <input type="submit" id="loginButton" class="form-control btn btn-primary" value="Login">
-            <div class="alert alert-danger" id="loginFeedback" role="alert" hidden></div>
-            <button class="form-control btn btn-primary" id="loggingInButton" type="button" disabled hidden>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Logging In...
-            </button>
-            <div class="form-control text-center">
-                <p>Not a member? <a href="{{ route('register') }}">Register</a></p>
-            </div>
-        </form>
-    </section>
+            </form>
+        </div>
+    </div>
 @endsection
 
-@push('after footer')
-    @vite('resources/js/user/login.js')
-@endpush

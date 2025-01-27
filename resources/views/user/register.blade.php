@@ -1,111 +1,76 @@
 @extends('layouts.app')
 
 @section('main')
-    <section class="container">
-        <div class="alert alert-primary" role="alert">
-            <ol>
-                <li>
-                    Passport number include inside brackets number but without all symbol<br>
-                    Example 1: A123456(7) should type A1234567
-                    Example 1: 1234567(8) should type 12345678
-                </li>
-                <li>The family name, middle name, given name and gender must match passport</li>
-                <li>Mobile number include country code without "+" and "-"</li>
-            </ol>
-        </div>
-        <form method="POST" class="row g-3" id="form" novalidate>
-            @csrf
-            <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
-            <div class="col-md-4">
-                <label for="validationUsername" class="form-label">Username</label>
-                <input type="text" class="form-control" id="validationUsername" minlength="8" maxlength="16" value="{{ old('username') }}" placeholder="username" required />
-                <div id="usernameFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="mb-4 text-center">
+                <h2 class="text-2xl font-bold">{{ __('Register') }}</h2>
             </div>
-            <div class="col-md-4">
-                <label for="validationPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="validationPassword" minlength="8" maxlength="16" placeholder="password" name="password" required />
-                <div id="passwordFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="confirmPassword" minlength="8" maxlength="16" placeholder="confirm password" name="password_confirmation" required />
-            </div>
-            <div class="col-md-4">
-                <label for="validationFamilyName" class="form-label">Family Name</label>
-                <input type="text" class="form-control" id="validationFamilyName" maxlength="255" value="{{ old('family_name') }}" placeholder="family name" name="family_name" required />
-                <div id="familyNameFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="validationMiddleName" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name') }}" placeholder="middle name" name="middle_name" />
-                <div id="middleNameFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="validationGivenName" class="form-label">Given Name</label>
-                <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name') }}" placeholder="given name" name="given_name" required />
-                <div id="givenNameFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="validationPassportType" class="form-label">Passport Type</label>
-                <select class="form-select" id="validationPassportType" name="passport_type_id" required>
-                    <option value="" selected disabled>Please select passport type</option>
-                    @foreach ($passportTypes as $key => $value)
-                        <option value="{{ $key }}" @selected($key == old('passport_type_id'))>{{ $value }}</option>
-                    @endforeach
-                </select>
-                <div id="passportTypeFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="validationPassportNumber">Passport Number</label>
-                <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" value="{{ old('passport_number') }}" placeholder="passport_number" name="passport_number" required />
-                <div id="passportNumberFeedback" class="valid-feedback"></div>
-            </div>
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <label for="validationGender" class="form-label">Gender</label>
-                <input type="text" class="form-control" id="validationGender" list="genders" maxlength="255" value="{{ old('genders') }}" placeholder="genders" name="genders" required />
-                <div id="genderFeedback" class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <x-datalist :id="'genders'" :values="$genders"></x-datalist>
-            <div class="col-md-4">
-                <label for="validationBirthday">Date of Birth</label>
-                <input type="date" class="form-control" id="validationBirthday" name="birthday" max="{{ $maxBirthday }}" value="{{ old('birthday', $maxBirthday) }}" required />
-                <div id="birthdayFeedback" class="valid-feedback"></div>
-            </div>
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <label for="validationEmail">Email</label>
-                <input type="email" class="form-control" id="validationEmail" maxlength="320" placeholder="dammy@example.com" name="email" value="{{ old('email') }}" required />
-                <div id="emailFeedback" class="valid-feedback"></div>
-            </div>
-            <div class="col-md-4">
-                <label for="validationMobile">Mobile</label>
-                <input type="tel" class="form-control" id="validationMobile" minlength="5" maxlength="15" placeholder="85298765432" name="mobile" value="{{ old('mobile') }}" required />
-                <div id="mobileFeedback" class="valid-feedback"></div>
-            </div>
-            <input type="submit" id="submitButton" class="form-control btn btn-primary" value="Submit">
-            <button class="form-control btn btn-primary" id="submittingButton" type="button" disabled hidden>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Submitting...
-            </button>
-        </form>
-    </section>
-@endsection
 
-@push('after footer')
-    @vite('resources/js/user/register.js')
-@endpush
+            @if ($errors->any())
+                <div class="mb-4">
+                    <div class="font-medium text-red-600">
+                        {{ __('Whoops! Something went wrong.') }}
+                    </div>
+
+                    <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+
+                <!-- Name -->
+                <div>
+                    <label for="name" class="block font-medium text-sm text-gray-700">
+                        {{ __('Name') }}
+                    </label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+                <!-- Email Address -->
+                <div class="mt-4">
+                    <label for="email" class="block font-medium text-sm text-gray-700">
+                        {{ __('Email') }}
+                    </label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+                <!-- Password -->
+                <div class="mt-4">
+                    <label for="password" class="block font-medium text-sm text-gray-700">
+                        {{ __('Password') }}
+                    </label>
+                    <input id="password" type="password" name="password" required autocomplete="new-password"
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mt-4">
+                    <label for="password_confirmation" class="block font-medium text-sm text-gray-700">
+                        {{ __('Confirm Password') }}
+                    </label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required
+                           class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+                <div class="flex items-center justify-end mt-4">
+                    <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
+                        {{ __('Already registered?') }}
+                    </a>
+
+                    <button type="submit"
+                            class="ml-4 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        {{ __('Register') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection
