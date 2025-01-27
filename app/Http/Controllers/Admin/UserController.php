@@ -83,7 +83,7 @@ class UserController extends Controller implements HasMiddleware
                 }
             );
         }
-        $users = $users->sortable()->paginate();
+        $users = $users->sortable('id')->paginate();
         $passportTypes = PassportType::get(['id', 'name'])
             ->pluck('name', 'id')
             ->toArray();

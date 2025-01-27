@@ -129,8 +129,87 @@ function closeEditDisplayName(id) {
     document.getElementById('edit'+id).hidden = false;
 }
 
-function cancelEditDisplayName(event) {
-    closeEditDisplayName(event.target.id.replace('cancel', ''));
+const editTeam = document.getElementById('editTeam');
+const disabledEditTeam = document.getElementById('disabledEditTeam');
+const editRoles = document.getElementsByClassName('editRole');
+const disabledEditRoles = document.getElementsByClassName('disabledEditRole');
+
+function urlGetTeamID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/teams\/([0-9]+)\/roles\/([0-9]+).*/i)[2];
 }
+
+function deleteTeamSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id =  urlGetTeamID(response.request.responseURL);
+    document.getElementById('dataRow'+id).remove();
+    disabledEditTeam.hidden = true;
+    editTeam.hidden = false;
+    for(let disabledEditRole of disabledEditRoles) {
+        disabledEditRole.hidden = true;
+    }
+    for(let editRole of editRoles) {
+        editRole.hidden = false;
+    }
+    enableSubmitting();
+}
+
+function deleteTeamFailCallback(error) {
+    let id = urlGetTeamID(error.request.responseURL);
+    document.getElementById('deletingTeam'+id).hidden = true;
+    document.getElementById('deleteTeam'+id).hidden = false;
+    disabledEditTeam.hidden = true;
+    editTeam.hidden = false;
+    for(let disabledEditRole of disabledEditRoles) {
+        disabledEditRole.hidden = true;
+    }
+    for(let editRole of editRoles) {
+        editRole.hidden = false;
+    }
+    enableSubmitting();
+}
+
+function confirmedDeleteRole(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'deleteRole'+submitAt;
+        let id = event.target.id.replace('deleteRoleForm', '');
+        disableSubmitting();
+        if(submitting == 'deleteRole'+submitAt) {
+            editTeam.hidden = true;
+            disabledEditTeam.hidden = false;
+            for(let editRole of editRoles) {
+                editRole.hidden = true;
+            }
+            for(let disabledEditRole of disabledEditRoles) {
+                disabledEditRole.hidden = false;
+            }
+            document.getElementById('deleteRole'+id).hidden = true;
+            document.getElementById('deletingRole'+id).hidden = false;
+            post(
+                event.target.action,
+                deleteTeamSuccessCallback,
+                deleteTeamFailCallback,
+                'delete'
+            );
+        }
+    }
+}
+
+function deleteRole(event) {
+    event.preventDefault();
+    let message = `Are you sure to delete the role of ${event.submitter.dataset.name}?`;
+    bootstrapConfirm(message, confirmedDeleteRole, event);
+}
+
+document.querySelectorAll('.roleLoader').forEach(
+    function(loader) {
+        let id = loader.id.replace('roleLoader', '');
+        document.getElementById('deleteRoleForm'+id).addEventListener(
+            'submit', deleteRole
+        );
+        loader.remove();
+        document.getElementById('deleteRole'+id).hidden = false;
+    }
+);
 
 submitting = '';

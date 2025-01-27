@@ -23,6 +23,10 @@ class ModuleSeeder extends Seeder
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
+        $module = Module::firstOrCreate(['name' => 'Admission Test']);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     }

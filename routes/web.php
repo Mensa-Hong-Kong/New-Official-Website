@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdmissionTestController as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -67,10 +68,14 @@ Route::middleware('auth')->group(function () {
                 ->name('team-types.display-order.update');
             Route::resource('team-types', TeamTypeController::class)
                 ->only(['index', 'update']);
-            Route::resource('teams', TeamController::class)
-                ->except('destroy');
+            Route::match(['put', 'patch'], 'teams/display-order', [TeamController::class, 'displayOrder'])
+                ->name('teams.display-order.update');
+            Route::resource('teams', TeamController::class);
             Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
                 ->name('teams.roles.display-order.update');
+            Route::resource('teams/{team}/roles', RoleController::class)
+                ->except(['index', 'show'])
+                ->names('teams.roles');
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
                 ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
@@ -79,5 +84,7 @@ Route::middleware('auth')->group(function () {
                 ->name('permissions.display-order.update');
             Route::resource('permissions', PermissionController::class)
                 ->only(['index', 'update']);
+            Route::resource('admission-tests', AdminAdmissionTestController::class)
+                ->except(['edit', 'update', 'destroy']);
         });
 });

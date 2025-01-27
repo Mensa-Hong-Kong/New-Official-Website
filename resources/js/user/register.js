@@ -28,7 +28,7 @@ const mobileFeedback = document.getElementById('mobileFeedback');
 const submitButton = document.getElementById('submitButton');
 const submittingButton = document.getElementById('submittingButton');
 
-var inputs = [
+const inputs = [
     username,  password,  confirmPassword,
     familyName,  middleName, givenName,
     passportType,  passportNumber,

@@ -35,7 +35,7 @@
                                     action="{{ route('admin.permissions.update', ['permission' => $permission]) }}">
                                     @csrf
                                     @method('put')
-                                    <input class="form-control" id="displayNameInput{{ $permission->id }}"
+                                    <input class="form-control" id="displayNameInput{{ $permission->id }}" maxlength="255"
                                         value="{{ $permission->title }}" data-value="{{ $permission->title }}" />
                                 </form>
                             </td>

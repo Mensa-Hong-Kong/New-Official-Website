@@ -2,7 +2,7 @@
             <div class="form-outline mb-4">
                 <div class="form-floating">
                     <input type="text" name="name" class="form-control" id="validationName"
-                        minlength="1" maxlength="255" pattern="(?!.*:).*" placeholder="name"
+                        minlength="1" maxlength="170" pattern="(?!.*:).*" placeholder="name"
                         value="{{ old('name', $team->name ?? '') }}" required />
                     <label for="validationName">Name</label>
                     <div id="nameFeedback" class="valid-feedback">

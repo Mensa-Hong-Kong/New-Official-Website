@@ -169,14 +169,19 @@ function updateDisplayName(event) {
         let input = document.getElementById('displayNameInput'+id);
         disableSubmitting();
         if(submitting == 'updateDisplayName'+submitAt) {
-            input.disabled = true;
-            document.getElementById('save'+id).hidden = true;
-            document.getElementById('cancel'+id).hidden = true;
-            document.getElementById('saving'+id).hidden = false;
-            let data = {
-                name: input.value,
+            if(input.validity.tooLong) {
+                bootstrapAlert(`The name field must not be greater than ${input.maxLength} characters.`);
+                enableSubmitting();
+            } else {
+                input.disabled = true;
+                document.getElementById('save'+id).hidden = true;
+                document.getElementById('cancel'+id).hidden = true;
+                document.getElementById('saving'+id).hidden = false;
+                let data = {
+                    name: input.value,
+                }
+                post(event.target.action, updateDisplayNameSuccessCallback, updateDisplayNameFailCallback, 'put', data);
             }
-            post(event.target.action, updateDisplayNameSuccessCallback, updateDisplayNameFailCallback, 'put', data);
         }
     }
 }

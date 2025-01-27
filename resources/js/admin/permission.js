@@ -85,18 +85,23 @@ saveDisplayOrder.addEventListener(
             submitting = 'updateDisplayOrder'+submitAt;
             disableSubmitting();
             if(submitting == 'updateDisplayOrder'+submitAt) {
-                saveDisplayOrder.hidden = true;
-                cancelDisplayOrder.hidden = true;
-                savingDisplayOrder.hidden = false;
-                let data = {display_order: []};
-                for(let row of dataRows) {
-                    data.display_order.push(row.id.replace('dataRow', ''));
+                if(input.validity.tooLong) {
+                    bootstrapAlert(`The name field must not be greater than ${input.maxLength} characters.`);
+                    enableSubmitting();
+                } else {
+                    saveDisplayOrder.hidden = true;
+                    cancelDisplayOrder.hidden = true;
+                    savingDisplayOrder.hidden = false;
+                    let data = {display_order: []};
+                    for(let row of dataRows) {
+                        data.display_order.push(row.id.replace('dataRow', ''));
+                    }
+                    post(
+                        window.location.href+'/display-order',
+                        updataDisplayOrderSuccessCallback, updataDisplayOrderFailCallback,
+                        'put', data
+                    );
                 }
-                post(
-                    window.location.href+'/display-order',
-                    updataDisplayOrderSuccessCallback, updataDisplayOrderFailCallback,
-                    'put', data
-                );
             }
         }
     }

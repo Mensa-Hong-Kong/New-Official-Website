@@ -763,7 +763,7 @@ function deleteContactSuccessCallback(response) {
 
 function deleteContactFailCallback(error) {
     let id = urlGetContactID(error.request.responseURL);
-    let editContactButton = document.getElementById('editContact'+id)
+    let editContactButton = document.getElementById('editContact'+id);
     editContactButton.addEventListener('click', editContact);
     editContactButton.disabled = false;
     enableSubmitting();

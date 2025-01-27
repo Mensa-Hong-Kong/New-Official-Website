@@ -17,7 +17,7 @@ const emailFeedback = document.getElementById('emailFeedback');
 const mobile = document.getElementById('validationMobile');
 const mobileFeedback = document.getElementById('mobileFeedback');
 
-var inputs = [
+const inputs = [
     familyName,  middleName, givenName,
     passportType,  passportNumber, birthday,
     email, mobile,

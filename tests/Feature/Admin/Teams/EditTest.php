@@ -42,6 +42,19 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_team_is_not_exist()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Permission');
+        $response = $this->actingAs($user)->get(
+            route(
+                'admin.teams.edit',
+                ['team' => 0]
+            )
+        );
+        $response->assertNotFound();
+    }
+
     public function test_happy_case()
     {
         $user = User::factory()->create();

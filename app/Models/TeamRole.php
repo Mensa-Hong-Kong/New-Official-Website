@@ -9,6 +9,8 @@ class TeamRole extends Model
 {
     use HasFactory;
 
+    protected $guard_name = 'web';
+
     protected $fillable = [
         'name',
         'team_id',

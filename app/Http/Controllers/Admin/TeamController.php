@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Team\DisplayOrderRequest;
 use App\Http\Requests\Admin\Team\FormRequest;
+use App\Models\Role;
 use App\Models\Team;
 use App\Models\TeamType;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -14,7 +16,7 @@ class TeamController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware('permission:Edit:Permission'))->except('index')];
+        return [(new Middleware('permission:Edit:Permission'))->except(['index', 'show'])];
     }
 
     public function index()
@@ -144,5 +146,45 @@ class TeamController extends Controller implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.teams.show', ['team' => $team]);
+    }
+
+    public function destroy(Team $team)
+    {
+        DB::beginTransaction();
+        $team->load([
+            'roles' => function ($query) {
+                $query->withCount('teams')
+                    ->having('teams_count', '=', '1');
+            },
+        ]);
+        if ($team->roles->count()) {
+            Role::whereIn('id', $team->roles->pluck('id')->toArray())
+                ->delete();
+        }
+        $team->roles()->detach();
+        DB::commit();
+
+        return ['success' => "The team of $team->name delete success!"];
+    }
+
+    public function displayOrder(DisplayOrderRequest $request)
+    {
+        $case = [];
+        foreach (array_values($request->display_order) as $order => $id) {
+            $case[] = "WHEN id = $id THEN $order";
+        }
+        $case = implode(' ', $case);
+        Team::whereIn('id', $request->display_order)
+            ->where('type_id', $request->type_id)
+            ->update(['display_order' => DB::raw("(CASE $case ELSE display_order END)")]);
+
+        return [
+            'success' => 'The display order update success!',
+            'display_order' => Team::where('type_id', $request->type_id)
+                ->orderBy('display_order')
+                ->get('id')
+                ->pluck('id')
+                ->toArray(),
+        ];
     }
 }
