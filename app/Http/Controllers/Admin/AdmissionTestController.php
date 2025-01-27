@@ -92,7 +92,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
     private function updateAddress(Address $address, string $newAddress, int $newDistrictID)
     {
         $addressModel = $address;
-        if(
+        if (
             $newAddress != $address->address ||
             $newDistrictID != $address->district_id
         ) {
@@ -100,8 +100,8 @@ class AdmissionTestController extends Controller implements HasMiddleware
                 'district_id' => $newDistrictID,
                 'address' => $newAddress,
             ]);
-            if($address->admissionTests()->count() == 1) {
-                if($addressModel) {
+            if ($address->admissionTests()->count() == 1) {
+                if ($addressModel) {
                     $address->delete();
                 } else {
                     $address->update([
@@ -111,25 +111,26 @@ class AdmissionTestController extends Controller implements HasMiddleware
                     $addressModel = $address;
                 }
             }
-            if(!$addressModel) {
+            if (! $addressModel) {
                 $addressModel = Address::create([
                     'district_id' => $newDistrictID,
                     'address' => $newAddress,
                 ]);
             }
         }
+
         return $addressModel;
     }
 
     private function updateLocation(Location $location, string $newLocationName)
     {
         $newLocation = $location;
-        if($location->name != $newLocationName) {
+        if ($location->name != $newLocationName) {
             $newLocation = Location::firstWhere([
-                'name' => $newLocationName
+                'name' => $newLocationName,
             ]);
-            if($location->admissionTests()->count() == 1) {
-                if($newLocation) {
+            if ($location->admissionTests()->count() == 1) {
+                if ($newLocation) {
                     $location->delete();
                 } else {
                     $location->update([
@@ -138,7 +139,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
                     $newLocation = $location;
                 }
             }
-            if(!$newLocation) {
+            if (! $newLocation) {
                 $newLocation = Location::create([
                     'name' => $newLocationName,
                 ]);

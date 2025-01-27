@@ -426,7 +426,7 @@ class UpdateTest extends TestCase
     {
         AdmissionTest::factory()
             ->state([
-                'address_id' => $this->test->address_id
+                'address_id' => $this->test->address_id,
             ])->create();
         $addressID = $this->test->address->id;
         $data = [
@@ -460,7 +460,7 @@ class UpdateTest extends TestCase
     {
         AdmissionTest::factory()
             ->state([
-                'address_id' => $this->test->address_id
+                'address_id' => $this->test->address_id,
             ])->create();
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
@@ -544,7 +544,7 @@ class UpdateTest extends TestCase
     {
         AdmissionTest::factory()
             ->state([
-                'location_id' => $this->test->location_id
+                'location_id' => $this->test->location_id,
             ])->create();
         $locationID = $this->test->location->id;
         $data = [
@@ -575,7 +575,7 @@ class UpdateTest extends TestCase
     {
         AdmissionTest::factory()
             ->state([
-                'location_id' => $this->test->location_id
+                'location_id' => $this->test->location_id,
             ])->create();
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
@@ -601,6 +601,4 @@ class UpdateTest extends TestCase
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
     }
-
-
 }
