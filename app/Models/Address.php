@@ -19,8 +19,8 @@ class Address extends Model
         return $this->belongsTo(District::class);
     }
 
-    public function locations()
+    public function admissionTests()
     {
-        return $this->hasMany(Location::class);
+        return $this->hasMany(AdmissionTest::class);
     }
 }

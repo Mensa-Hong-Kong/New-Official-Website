@@ -62,17 +62,17 @@ class AdmissionTestController extends Controller implements HasMiddleware
     public function store(AdmissionTestRequest $request)
     {
         DB::beginTransaction();
+        $location = Location::firstOrCreate([
+            'name' => $request->location,
+        ]);
         $address = Address::firstOrCreate([
             'district_id' => $request->district_id,
             'address' => $request->address,
         ]);
-        $location = Location::firstOrCreate([
-            'address_id' => $address->id,
-            'name' => $request->location,
-        ]);
         $test = AdmissionTest::create([
             'testing_at' => $request->testing_at,
             'location_id' => $location->id,
+            'address_id' => $address->id,
             'maximum_candidates' => $request->maximum_candidates,
             'is_public' => $request->is_public,
         ]);
@@ -89,59 +89,51 @@ class AdmissionTestController extends Controller implements HasMiddleware
             ->with('test', $admissionTest);
     }
 
-    private function updateAddress(Location $location, string $newAddress, int $newDistrictID)
+    private function updateAddress(Address $address, string $newAddress, int $newDistrictID)
     {
-        $address = $location->address;
+        $addressModel = $address;
         if(
-            $newAddress != $location->address->address ||
-            $newDistrictID != $location->address->district_id
+            $newAddress != $address->address ||
+            $newDistrictID != $address->district_id
         ) {
-            $address = Address::firstWhere([
+            $addressModel = Address::firstWhere([
                 'district_id' => $newDistrictID,
                 'address' => $newAddress,
             ]);
-            if(
-                $location->address->locations()->count() == 1 &&
-                $location->admissionTests()->count() == 1
-            ) {
-                if($address) {
-                    $location->address->delete();
+            if($address->admissionTests()->count() == 1) {
+                if($addressModel) {
+                    $address->delete();
                 } else {
-                    $location->address->update([
+                    $address->update([
                         'district_id' => $newDistrictID,
                         'address' => $newAddress,
                     ]);
-                    $address = $location->address;
+                    $addressModel = $address;
                 }
             }
-            if(!$address) {
-                $address = Address::create([
+            if(!$addressModel) {
+                $addressModel = Address::create([
                     'district_id' => $newDistrictID,
                     'address' => $newAddress,
                 ]);
             }
         }
-        return $address;
+        return $addressModel;
     }
 
-    private function updateLocation(Location $location, Address $newAddress, string $newLocationName)
+    private function updateLocation(Location $location, string $newLocationName)
     {
         $newLocation = $location;
         if($location->name != $newLocationName) {
             $newLocation = Location::firstWhere([
-                'name' => $newLocationName,
-                'address_id' => $newAddress->id,
+                'name' => $newLocationName
             ]);
             if($location->admissionTests()->count() == 1) {
                 if($newLocation) {
-                    if($location->address->locations()->count() == 1) {
-                        $location->address->delete();
-                    }
                     $location->delete();
                 } else {
                     $location->update([
                         'name' => $newLocationName,
-                        'address_id' => $newAddress->id,
                     ]);
                     $newLocation = $location;
                 }
@@ -149,7 +141,6 @@ class AdmissionTestController extends Controller implements HasMiddleware
             if(!$newLocation) {
                 $newLocation = Location::create([
                     'name' => $newLocationName,
-                    'address_id' => $newAddress->id,
                 ]);
             }
         }
@@ -160,11 +151,12 @@ class AdmissionTestController extends Controller implements HasMiddleware
     public function update(AdmissionTestRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        $address = $this->updateAddress($admissionTest->location, $request->address, $request->district_id);
-        $location = $this->updateLocation($admissionTest->location, $address, $request->location);
+        $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);
+        $location = $this->updateLocation($admissionTest->location, $request->location);
         $admissionTest->update([
             'testing_at' => $request->testing_at,
             'location_id' => $location->id,
+            'address_id' => $address->id,
             'maximum_candidates' => $request->maximum_candidates,
             'is_public' => $request->is_public,
         ]);
@@ -175,8 +167,8 @@ class AdmissionTestController extends Controller implements HasMiddleware
             'success' => 'The admission test update success!',
             'testing_at' => $admissionTest->testing_at,
             'location' => $admissionTest->location->name,
-            'district_id' => $admissionTest->location->address->district_id,
-            'address' => $admissionTest->location->address->address,
+            'district_id' => $admissionTest->address->district_id,
+            'address' => $admissionTest->address->address,
             'maximum_candidates' => $admissionTest->maximum_candidates,
             'is_public' => $admissionTest->is_public,
         ];

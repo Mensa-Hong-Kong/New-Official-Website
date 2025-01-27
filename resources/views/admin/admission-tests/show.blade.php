@@ -16,13 +16,13 @@
                 <tr>
                     <th>District</th>
                     <td>
-                        {{ $test->location->address->district->name }},
-                        {{ $test->location->address->district->area->name }}
+                        {{ $test->address->district->name }},
+                        {{ $test->address->district->area->name }}
                     </td>
                 </tr>
                 <tr>
                     <th>Address</th>
-                    <td>{{ $test->location->address->address }}</td>
+                    <td>{{ $test->address->address }}</td>
                 </tr>
                 <tr>
                     <th>Maximum Candidates</th>

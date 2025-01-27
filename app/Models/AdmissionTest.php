@@ -13,6 +13,7 @@ class AdmissionTest extends Model
     protected $fillable = [
         'testing_at',
         'location_id',
+        'address_id',
         'maximum_candidates',
         'is_public',
     ];
@@ -25,5 +26,10 @@ class AdmissionTest extends Model
     public function location()
     {
         return $this->belongsTo(Location::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 }

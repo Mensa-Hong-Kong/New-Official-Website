@@ -13,7 +13,6 @@ class LocationFactory extends Factory
     public function definition(): array
     {
         return [
-            'address_id' => Address::inRandomOrder()->first() ?? Address::factory()->create(),
             'name' => fake()->company(),
         ];
     }

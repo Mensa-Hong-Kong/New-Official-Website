@@ -14,11 +14,6 @@ class Location extends Model
         'name',
     ];
 
-    public function address()
-    {
-        return $this->belongsTo(Address::class);
-    }
-
     public function admissionTests()
     {
         return $this->hasMany(AdmissionTest::class);

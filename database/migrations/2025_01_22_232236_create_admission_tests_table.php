@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('testing_at');
             $table->unsignedBigInteger('location_id');
+            $table->unsignedBigInteger('address_id');
             $table->unsignedInteger('maximum_candidates');
             $table->boolean('is_public');
             $table->timestamps();
