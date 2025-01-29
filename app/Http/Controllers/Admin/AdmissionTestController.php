@@ -98,6 +98,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
                 $districts[$area->name][$district->id] = $district->name;
             }
         }
+
         return view('admin.admission-tests.show')
             ->with('test', $admissionTest)
             ->with(
