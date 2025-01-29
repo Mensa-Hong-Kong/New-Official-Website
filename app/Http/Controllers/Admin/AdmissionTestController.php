@@ -85,8 +85,33 @@ class AdmissionTestController extends Controller implements HasMiddleware
 
     public function show(AdmissionTest $admissionTest)
     {
+        $areas = Area::with([
+            'districts' => function ($query) {
+                $query->orderBy('display_order');
+            },
+        ])->orderBy('display_order')
+            ->get();
+        $districts = [];
+        foreach ($areas as $area) {
+            $districts[$area->name] = [];
+            foreach ($area->districts as $district) {
+                $districts[$area->name][$district->id] = $district->name;
+            }
+        }
         return view('admin.admission-tests.show')
-            ->with('test', $admissionTest);
+            ->with('test', $admissionTest)
+            ->with(
+                'locations', Location::distinct()
+                    ->get('name')
+                    ->pluck('name')
+                    ->toArray()
+            )->with('districts', $districts)
+            ->with(
+                'addresses', Address::distinct()
+                    ->get('address')
+                    ->pluck('address')
+                    ->toArray()
+            );
     }
 
     private function updateAddress(Address $address, string $newAddress, int $newDistrictID)
