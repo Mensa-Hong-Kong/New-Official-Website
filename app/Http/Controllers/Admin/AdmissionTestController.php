@@ -16,7 +16,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware('permission:Edit:Admission Test'))];
+        return [new Middleware('permission:Edit:Admission Test')];
     }
 
     public function index()
