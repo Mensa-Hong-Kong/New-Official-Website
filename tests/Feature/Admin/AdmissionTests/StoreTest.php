@@ -176,17 +176,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field must be a valid date.']);
     }
 
-    public function test_testing_at_before_now()
-    {
-        $data = $this->happyCase;
-        $data['testing_at'] = now()->subSecond()->format('Y-m-d H:i:s');
-        $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-tests.store'),
-            $data
-        );
-        $response->assertInvalid(['testing_at' => 'The testing at field must be a date after now.']);
-    }
-
     public function test_missing_maximum_candidates()
     {
         $data = $this->happyCase;

@@ -21,8 +21,7 @@
                         <th>Testing At</th>
                         <td>
                             <span id="showTestingAt">{{ $test->testing_at }}</span>
-                            <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt"
-                                min="{{ date('Y-m-d\TH:i') }}" placeholder="testing at"
+                            <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt" placeholder="testing at"
                                 value="{{ $test->testing_at }}" data-value="{{ $test->testing_at }}" hidden required />
                             <div id="testingAtFeedback" class="valid-feedback">
                                 Looks good!

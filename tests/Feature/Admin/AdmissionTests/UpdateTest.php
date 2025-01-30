@@ -233,20 +233,6 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field must be a valid date.']);
     }
 
-    public function test_testing_at_before_now()
-    {
-        $data = $this->happyCase;
-        $data['testing_at'] = now()->subSecond()->format('Y-m-d H:i:s');
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-tests.update',
-                ['admission_test' => $this->test]
-            ),
-            $data
-        );
-        $response->assertInvalid(['testing_at' => 'The testing at field must be a date after now.']);
-    }
-
     public function test_missing_maximum_candidates()
     {
         $data = $this->happyCase;
@@ -347,12 +333,12 @@ class UpdateTest extends TestCase
             'is_public' => true,
         ]);
         $data = [
-            'testing_at' => now(),
+            'testing_at' => now()->format('Y-m-d H:i:s'),
             'district_id' => 2,
             'address' => 'abc',
             'location' => 'xyz',
             'maximum_candidates' => 80,
-            'is_public' => false,
+            'is_public' => 0,
         ];
         $response = $this->actingAs($this->user)->putJson(
             route(

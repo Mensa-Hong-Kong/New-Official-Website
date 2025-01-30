@@ -43,10 +43,6 @@ function validation() {
         testingAt.classList.add('is-invalid');
         testingAtFeedback.className = 'invalid-feedback';
         testingAtFeedback.innerText = 'The testing at field is required.';
-    } else if(testingAt.validity.rangeUnderflow) {
-        testingAt.classList.add('is-invalid');
-        testingAtFeedback.className = 'invalid-feedback';
-        testingAtFeedback.innerText = 'The testing at field must be a date after now.';
     }
     if(location.validity.valueMissing) {
         location.classList.add('is-invalid');

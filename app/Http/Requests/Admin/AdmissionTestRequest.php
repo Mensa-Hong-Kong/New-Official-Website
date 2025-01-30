@@ -18,7 +18,7 @@ class AdmissionTestRequest extends FormRequest
             'district_id' => 'required|integer|exists:'.District::class.',id',
             'address' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'testing_at' => 'required|date|after:now',
+            'testing_at' => 'required|date',
             'maximum_candidates' => 'required|integer|min:1',
             'is_public' => 'required|boolean',
         ];

@@ -7,8 +7,7 @@
             @csrf
             <div class="form-outline mb-4">
                 <div class="form-floating">
-                    <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt"
-                        min="{{ date('Y-m-d\TH:i') }}" placeholder="testing at"
+                    <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt" placeholder="testing at"
                         value="{{ old('testing_at', date('Y-m-d\TH:i')) }}" required />
                     <label for="validationTestingAt">Testing At</label>
                     <div id="testingAtFeedback" class="valid-feedback">
