@@ -16,8 +16,10 @@ class ProctorRequest extends FormRequest
     public function rules(): array
     {
         $unique = Rule::unique(AdmissionTestHasProctor::class)
-            ->where('test_id', $this->route('admission_test'))
-            ->ignore($this->route('proctor')->id, 'user_id');
+            ->where('test_id', $this->route('admission_test'));
+        if ($this->method() != 'POST') {
+            $unique = $unique->ignore($this->route('proctor')->id, 'user_id');
+        }
         return ['user_id' => ['required', 'integer', $unique]];
     }
 }
