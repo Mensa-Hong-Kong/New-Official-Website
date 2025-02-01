@@ -35,6 +35,6 @@ class AdmissionTest extends Model
 
     public function proctors()
     {
-        return $this->belongsToMany(User::class, 'admission_test_has_proctors', 'test_id');
+        return $this->belongsToMany(User::class, AdmissionTestHasProctor::class, 'test_id');
     }
 }
