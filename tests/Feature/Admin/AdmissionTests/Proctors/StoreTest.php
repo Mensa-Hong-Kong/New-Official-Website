@@ -20,7 +20,7 @@ class StoreTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo('Edit:Admission Test');
+        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()->create();
     }
 
@@ -39,12 +39,21 @@ class StoreTest extends TestCase
     public function test_have_no_edit_admission_test_permission()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo(
-            ModulePermission::inRandomOrder()
-                ->whereNot('name', 'Edit:Admission Test')
-                ->first()
-                ->name
+        $user->givePermissionTo('View:User');
+        $response = $this->actingAs($user)->postJson(
+            route(
+                'admin.admission-tests.proctors.store',
+                ['admission_test' => $this->test]
+            ),
+            ['user_id' => $this->user->id]
         );
+        $response->assertForbidden();
+    }
+
+    public function test_have_no_view_user_permission()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->postJson(
             route(
                 'admin.admission-tests.proctors.store',
@@ -130,6 +139,10 @@ class StoreTest extends TestCase
             'success' => 'Add proctor success',
             'user_id' => $this->user->id,
             'name' => $this->user->name,
+            'user_show_url' => route(
+                'admin.users.show',
+                ['user' => $this->user]
+            ),
         ]);
     }
 }

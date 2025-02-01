@@ -13,7 +13,10 @@ class ProctorController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [new Middleware('permission:Edit:Admission Test')];
+        return [
+            new Middleware('permission:Edit:Admission Test'),
+            new Middleware('permission:View:User'),
+        ];
     }
 
     public function store(ProctorRequest $request, AdmissionTest $admissionTest)
@@ -25,11 +28,14 @@ class ProctorController extends Controller implements HasMiddleware
             ], 422);
         }
         $admissionTest->proctors()->attach($user->id);
-
         return [
             'success' => 'Add proctor success',
             'user_id' => $user->id,
             'name' => $user->name,
+            'user_show_url' => route(
+                'admin.users.show',
+                ['user' => $user]
+            ),
         ];
     }
 }
