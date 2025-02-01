@@ -142,6 +142,13 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
+            'update_proctor_url' => route(
+                'admin.admission-tests.proctors.update',
+                [
+                    'admission_test' => $this->test,
+                    'proctor' => $this->user,
+                ]
+            ),
         ]);
     }
 }

@@ -52,6 +52,13 @@ class ProctorController extends Controller implements HasMiddleware
                 'admin.users.show',
                 ['user' => $user]
             ),
+            'update_proctor_url' => route(
+                'admin.admission-tests.proctors.update',
+                [
+                    'admission_test' => $admissionTest,
+                    'proctor' => $user,
+                ]
+            ),
         ];
     }
 
