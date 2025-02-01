@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\AdmissionTest;
 
 use App\Models\District;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdmissionTestRequest extends FormRequest
+class TestRequest extends FormRequest
 {
     public function authorize(): bool
     {
