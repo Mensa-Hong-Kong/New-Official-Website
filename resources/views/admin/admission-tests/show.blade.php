@@ -100,6 +100,30 @@
                 </table>
             </form>
         </article>
+        @can('View:User')
+            <article id="proctor">
+                <h3 class="fw-bold mb-2">Proctors</h3>
+                <div class="row g-3">
+                    <div class="col-md-2">User ID</div>
+                    <div class="col-md-4">Name</div>
+                    <div class="col-md-6">Control</div>
+                </div>
+                <form class="row g-3" id="createProctorForm" method="POST" novalidate
+                    action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
+                    @csrf
+                    <input type="text" id="proctorUserIdInput" class="col-md-2" name="user_id" list="users" required />
+                    <div class="col-md-4" id="proctorName"></div>
+                    <div class="col-md-6">
+                        <button class="btn btn-success form-control submitButton" id="addProctorButton">Add</button>
+                        <button class="btn btn-success form-control" id="addingProctorButton" hidden disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Adding
+                        </button>
+                    </div>
+                </form>
+            </article>
+            <x-datalist :id="'users'" :values="$users" isStringKey="true"></x-datalist>
+        @endcan
     </section>
 @endsection
 

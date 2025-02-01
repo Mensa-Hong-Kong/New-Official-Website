@@ -8,6 +8,7 @@ use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Area;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,10 @@ class Controller extends BaseController implements HasMiddleware
                 'addresses', Address::distinct()
                     ->get('address')
                     ->pluck('address')
+                    ->toArray()
+            )->with(
+                'users', User::get(['id', 'family_name', 'middle_name', 'given_name'])
+                    ->pluck('name', 'id')
                     ->toArray()
             );
     }

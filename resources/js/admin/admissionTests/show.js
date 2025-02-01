@@ -24,6 +24,9 @@ const maximumCandidatesInput = document.getElementById('validationMaximumCandida
 const maximumCandidatesFeedback = document.getElementById('maximumCandidatesFeedback');
 const isPublicInput = document.getElementById('isPublic');
 
+let submitting = 'loading';
+const submitButtons = document.getElementsByClassName('submitButton');
+
 const inputs = [testingAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
 
 const feedbacks = [testingAtFeedback, locationFeedback, districtFeedback, addressFeedback, maximumCandidatesFeedback];
@@ -126,6 +129,19 @@ function validation() {
     return !hasError();
 }
 
+function disableSubmitting(){
+    for(let button of submitButtons) {
+        button.disabled = true;
+    }
+}
+
+function enableSubmitting(){
+    submitting = '';
+    for(let button of submitButtons) {
+        button.disabled = false;
+    }
+}
+
 function saveSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     testingAtInput.dataset.value = response.data.testing_at;
@@ -141,6 +157,7 @@ function saveSuccessCallback(response) {
     showAddress.innerText = response.data.address;
     showMaximumCandidates.innerText = response.data.maximum_candidates;
     showIsPublic = response.data.is_public ? 'Public' : 'Private';
+    enableSubmitting();
     for(let showDiv of showInfos) {
         showDiv.hidden = false;
     }
@@ -155,83 +172,88 @@ function saveFailCallback(error) {
     for(let feedback of feedbacks) {
         feedback.className = 'valid-feedback';
         feedback.innerText = 'Looks good!'
-        if(error.status == 422) {
-            for(let key in error.response.data.errors) {
-                let value = error.response.data.errors[key];
-                let feedback;
-                let input;
-                switch(key) {
-                    case 'testing_at':
-                        input = testingAtInput;
-                        feedback = testingAtFeedback;
-                        break;
-                    case 'location':
-                        input = locationInput;
-                        feedback = locationFeedback;
-                        break;
-                    case 'location':
-                        input = locationInput;
-                        feedback = locationFeedback;
-                        break;
-                    case 'district':
-                        input = districtInput;
-                        feedback = districtFeedback;
-                        break;
-                    case 'address':
-                        input = addressInput;
-                        feedback = addressFeedback;
-                        break;
-                    case 'maximum_candidates':
-                        input = maximumCandidatesInput;
-                        feedback = maximumCandidatesFeedback;
-                        break;
-                }
-                if(feedback) {
-                    input.classList.add('is-invalid');
-                    feedback.className = "invalid-feedback";
-                    feedback.innerText = value;
-                } else {
-                    alert('undefine feedback key');
-                }
-            }
-        }
-        for(let input of inputs) {
-            if(
-                input != isPublicInput &&
-                !input.classList.contains('is-invalid')
-            ) {
-                input.classList.add('is-valid');
-            }
-            input.disabled = false;
-        }
-        savingButton.hidden = true;
-        saveButton.hidden = false;
-        cancelButton.hidden = false;
     }
+    if(error.status == 422) {
+        for(let key in error.response.data.errors) {
+            let value = error.response.data.errors[key];
+            let feedback;
+            let input;
+            switch(key) {
+                case 'testing_at':
+                    input = testingAtInput;
+                    feedback = testingAtFeedback;
+                    break;
+                case 'location':
+                    input = locationInput;
+                    feedback = locationFeedback;
+                    break;
+                case 'location':
+                    input = locationInput;
+                    feedback = locationFeedback;
+                    break;
+                case 'district':
+                    input = districtInput;
+                    feedback = districtFeedback;
+                    break;
+                case 'address':
+                    input = addressInput;
+                    feedback = addressFeedback;
+                    break;
+                case 'maximum_candidates':
+                    input = maximumCandidatesInput;
+                    feedback = maximumCandidatesFeedback;
+                    break;
+            }
+            if(feedback) {
+                input.classList.add('is-invalid');
+                feedback.className = "invalid-feedback";
+                feedback.innerText = value;
+            } else {
+                alert('undefine feedback key');
+            }
+        }
+    }
+    for(let input of inputs) {
+        if(
+            input != isPublicInput &&
+            !input.classList.contains('is-invalid')
+        ) {
+            input.classList.add('is-valid');
+        }
+        input.disabled = false;
+    }
+    enableSubmitting();
+    savingButton.hidden = true;
+    saveButton.hidden = false;
+    cancelButton.hidden = false;
 }
 
 editForm.addEventListener(
     'submit', function(event) {
         event.preventDefault();
-        if(! saveButton.hidden) {
-            saveButton.hidden = true;
-            cancelButton.hidden = true;
-            if(validation()) {
-                for(let input of inputs) {
-                    input.disabled = true;
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'updateAdmissionTest'+submitAt;
+            disableSubmitting();
+            if(submitting == 'updateAdmissionTest'+submitAt) {
+                if(validation()) {
+                    saveButton.hidden = true;
+                    cancelButton.hidden = true;
+                    for(let input of inputs) {
+                        input.disabled = true;
+                    }
+                    let data = {
+                        testing_at: testingAtInput.value,
+                        location: locationInput.value,
+                        district_id: districtInput.value,
+                        address: addressInput.value,
+                        maximum_candidates: maximumCandidatesInput.value,
+                        is_public: isPublicInput.checked,
+                    }
+                    post(editForm.action, saveSuccessCallback, saveFailCallback, 'put', data);
+                } else {
+                    enableSubmitting();
                 }
-                let data = {
-                    testing_at: testingAtInput.value,
-                    location: locationInput.value,
-                    district_id: districtInput.value,
-                    address: addressInput.value,
-                    maximum_candidates: maximumCandidatesInput.value,
-                    is_public: isPublicInput.checked,
-                }
-                post(editForm.action, saveSuccessCallback, saveFailCallback, 'put', data);
-            } else {
-                saveButton.hidden = false;
-                cancelButton.hidden = false;
             }
         }
     }
@@ -271,3 +293,92 @@ editButton.addEventListener(
         cancelButton.hidden = false;
     }
 );
+
+const proctor = document.getElementById('proctor');
+const createProctorForm = document.getElementById('createProctorForm');
+const proctorUserIdInput = document.getElementById('proctorUserIdInput');
+const proctorName = document.getElementById('proctorName');
+const addProctorButton = document.getElementById('addProctorButton');
+const addingProctorButton = document.getElementById('addingProctorButton');
+
+let users = {};
+for(let option of document.getElementById('users').options) {
+    users[option.value] = option.innerText;
+}
+
+proctorUserIdInput.addEventListener(
+    'keyup', function(event) {
+        proctorName.innerText = users[event.target.value] ?? '';
+    }
+)
+
+function userIdValidation(input)
+{
+    if(input.validity.valueMissing) {
+        bootstrapAlert('The user id field is required.');
+        return false;
+    }
+    if(input.validity.patternMismatch) {
+        bootstrapAlert('The user id field must be an integer.');
+        return false;
+    }
+    if(typeof users[input.value] == undefined) {
+        bootstrapAlert('The selected user id is invalid.');
+        return false;
+    }
+    return true;
+}
+
+function createProctorSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let rowElement = document.createElement('div');
+    rowElement.className = 'row g-3';
+    rowElement.innerHTML = `
+        <div class="col-md-2">${response.data.user_id}</div>
+        <div class="col-md-4">${response.data.name}</div>
+        <div class="col-md-2">
+            <a href="${response.data.user_show_url}" class="btn btn-primary">Show</a>
+        </div>
+    `;
+    proctor.insertBefore(rowElement, createProctorForm);
+    addingProctorButton.hidden = true;
+    addProctorButton.hidden = false;
+    proctorUserIdInput.value = '';
+    proctorName.innerText = '';
+    proctorUserIdInput.disabled = false;
+    enableSubmitting();
+}
+
+function createProctorFailCallback(error) {
+    if(error.status == 422) {
+        bootstrapAlert(error.response.data.errors.user_id);
+    }
+    addingProctorButton.hidden = true;
+    addProctorButton.hidden = false;
+    proctorUserIdInput.disabled = false;
+    enableSubmitting();
+}
+
+createProctorForm.addEventListener(
+    'submit', function(event) {
+        event.preventDefault();
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'addProctor'+submitAt;
+            disableSubmitting();
+            if(submitting == 'addProctor'+submitAt) {
+                if(userIdValidation(proctorUserIdInput)) {
+                    proctorUserIdInput.disabled = true;
+                    addProctorButton.hidden = true;
+                    addingProctorButton.hidden = false;
+                    let data = {user_id: proctorUserIdInput.value};
+                    post(event.target.action, createProctorSuccessCallback, createProctorFailCallback, 'post', data);
+                } else {
+                    enableSubmitting();
+                }
+            }
+        }
+    }
+);
+
+submitting = '';
