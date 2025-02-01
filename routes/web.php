@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('admission-tests/{admission_test}')->name('admission-tests.')->group(
                 function () {
                     Route::resource('proctors', ProctorController::class)
-                        ->only('store');
+                        ->only(['store', 'update']);
                 }
             );
         });
