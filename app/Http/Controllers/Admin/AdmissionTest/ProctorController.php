@@ -28,6 +28,7 @@ class ProctorController extends Controller implements HasMiddleware
             ], 422);
         }
         $admissionTest->proctors()->attach($user->id);
+
         return [
             'success' => 'Add proctor success',
             'user_id' => $user->id,

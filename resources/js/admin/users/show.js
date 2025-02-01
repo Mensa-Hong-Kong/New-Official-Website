@@ -241,17 +241,6 @@ function validation() {
     return !hasError();
 }
 
-function enableEditForm() {
-    usernameInput.disabled = false;
-    familyNameInput.disabled = false;
-    middleNameInput.disabled = false;
-    givenNameInput.disabled = false;
-    genderInput.disabled = false;
-    passportTypeInput.disabled = false;
-    passportNumberInput.disabled = false;
-    birthdayInput.disabled = false;
-}
-
 function successCallback(response) {
     for(let input of inputs) {
         input.classList.remove('is-valid');
@@ -285,8 +274,9 @@ function successCallback(response) {
     showPassportNumber.innerText = response.data.passport_number;
     showGender.innerText = response.data.gender;
     showBirthday.innerText = response.data.birthday;
-    submitting = '';
-    enableEditForm();
+    for(let input of inputs) {
+        input.disabled = false;
+    }
     enableSubmitting();
     for(let showDiv of showInfos) {
         showDiv.hidden = false;
@@ -356,8 +346,9 @@ function failCallback(error) {
             input.classList.add('is-valid');
         }
     }
-    submitting = '';
-    enableEditForm();
+    for(let input of inputs) {
+        input.disabled = false;
+    }
     enableSubmitting();
     savingButton.hidden = true;
     saveButton.hidden = false;
@@ -373,14 +364,9 @@ editForm.addEventListener(
             disableSubmitting();
             if(submitting == 'updateProfile'+submitAt) {
                 if(validation()) {
-                    usernameInput.disabled = true;
-                    familyNameInput.disabled = true;
-                    middleNameInput.disabled = true;
-                    givenNameInput.disabled = true;
-                    genderInput.disabled = true;
-                    passportTypeInput.disabled = true;
-                    passportNumberInput.disabled = true;
-                    birthdayInput.disabled = true;
+                    for(let input of inputs) {
+                        input.disabled = true;
+                    }
                     saveButton.hidden = true;
                     cancelButton.hidden = true;
                     savingButton.hidden = false;
@@ -396,7 +382,6 @@ editForm.addEventListener(
                     }
                     post(editForm.action, successCallback, failCallback, 'put', data);
                 } else {
-                    enableEditForm();
                     enableSubmitting();
                 }
             }

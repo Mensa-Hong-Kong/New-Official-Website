@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin\AdmissionTests\Proctors;
 
 use App\Models\AdmissionTest;
-use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
