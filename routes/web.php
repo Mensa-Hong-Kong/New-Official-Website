@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('admission-tests', AdminAdmissionTestController::class)
                 ->except(['edit', 'destroy']);
             Route::prefix('admission-tests/{admission_test}')->name('admission-tests.')->group(
-                function() {
+                function () {
                     Route::resource('proctors', ProctorController::class)
                         ->only('store');
                 }

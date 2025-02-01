@@ -8,14 +8,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-use function PHPUnit\Framework\assertNotNull;
-use function PHPUnit\Framework\assertTrue;
-
 class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
     private $user;
+
     private $test;
 
     protected function setUp(): void

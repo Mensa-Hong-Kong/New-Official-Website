@@ -19,7 +19,7 @@ class ProctorController extends Controller implements HasMiddleware
     public function store(ProctorRequest $request, AdmissionTest $admissionTest)
     {
         $user = User::find($request->user_id);
-        if(! $user) {
+        if (! $user) {
             return response([
                 'errors' => ['user_id' => 'The selected user id is invalid.'],
             ], 422);

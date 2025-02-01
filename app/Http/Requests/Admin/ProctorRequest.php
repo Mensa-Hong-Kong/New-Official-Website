@@ -19,7 +19,7 @@ class ProctorRequest extends FormRequest
                 'required', 'integer',
                 Rule::unique('admission_test_has_proctors')
                     ->where('test_id', $this->route('admission_test')),
-            ]
+            ],
         ];
     }
 }
