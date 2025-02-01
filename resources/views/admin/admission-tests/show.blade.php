@@ -108,6 +108,15 @@
                     <div class="col-md-4">Name</div>
                     <div class="col-md-6">Control</div>
                 </div>
+                @foreach ($test->proctors as $proctor)
+                    <div class="row g-3">
+                        <div class="col-md-2">{{ $proctor->id }}</div>
+                        <div class="col-md-4">{{ $proctor->name }}</div>
+                        <div class="col-md-2">
+                            <a href="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}" class="btn btn-primary">Show</a>
+                        </div>
+                    </div>
+                @endforeach
                 <form class="row g-3" id="createProctorForm" method="POST" novalidate
                     action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
                     @csrf
