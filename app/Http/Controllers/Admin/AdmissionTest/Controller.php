@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\AdmissionTest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AdmissionTestRequest;
+use App\Http\Controllers\Controller as BaseController;
+use App\Http\Requests\Admin\AdmissionTest\TestRequest;
 use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Area;
@@ -12,7 +12,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class AdmissionTestController extends Controller implements HasMiddleware
+class Controller extends BaseController implements HasMiddleware
 {
     public static function middleware(): array
     {
@@ -59,7 +59,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
             );
     }
 
-    public function store(AdmissionTestRequest $request)
+    public function store(TestRequest $request)
     {
         DB::beginTransaction();
         $location = Location::firstOrCreate([
@@ -175,7 +175,7 @@ class AdmissionTestController extends Controller implements HasMiddleware
         return $newLocation;
     }
 
-    public function update(AdmissionTestRequest $request, AdmissionTest $admissionTest)
+    public function update(TestRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
         $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);

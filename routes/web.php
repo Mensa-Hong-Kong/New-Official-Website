@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\AdmissionTestController as AdminAdmissionTestController;
+use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
+use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\ProctorController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;

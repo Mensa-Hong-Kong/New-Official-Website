@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\ProctorRequest;
+use App\Http\Requests\Admin\AdmissionTest\ProctorRequest;
 use App\Models\AdmissionTest;
 use App\Models\User;
 use Illuminate\Routing\Controllers\HasMiddleware;
