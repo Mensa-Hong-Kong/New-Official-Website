@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdmissionTestController as AdminAdmissionTestCont
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProctorController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
@@ -86,5 +87,11 @@ Route::middleware('auth')->group(function () {
                 ->only(['index', 'update']);
             Route::resource('admission-tests', AdminAdmissionTestController::class)
                 ->except(['edit', 'destroy']);
+            Route::prefix('admission-tests/{admission_test}')->name('admission-tests.')->group(
+                function() {
+                    Route::resource('proctors', ProctorController::class)
+                        ->only('store');
+                }
+            );
         });
 });
