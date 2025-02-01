@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admission_test_has_proctors', function (Blueprint $table) {
+        Schema::create('admission_test_has_proctor', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('test_id');
             $table->unsignedBigInteger('user_id');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admission_test_has_proctors');
+        Schema::dropIfExists('admission_test_has_proctor');
     }
 };
