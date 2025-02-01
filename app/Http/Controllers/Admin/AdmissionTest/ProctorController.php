@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\AdmissionTest\ProctorRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasProctor;
 use App\Models\User;
+use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -17,6 +19,18 @@ class ProctorController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:Edit:Admission Test'),
             new Middleware('permission:View:User'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    if(
+                        AdmissionTestHasProctor::where('test_id', $request->route('admission_test')->id)
+                            ->where('user_id', $request->route('proctor')->id)
+                            ->exists()
+                    ) {
+                        return $next($request);
+                    }
+                    abort(404);
+                }
+            ))->except('store'),
         ];
     }
 
