@@ -337,7 +337,7 @@ function createProctorSuccessCallback(response) {
         <div class="col-md-2">${response.data.user_id}</div>
         <div class="col-md-4">${response.data.name}</div>
         <div class="col-md-2">
-            <a href="${response.data.user_show_url}" class="btn btn-primary">Show</a>
+            <a href="${response.data.show_user_url}" class="btn btn-primary">Show</a>
         </div>
     `;
     proctor.insertBefore(rowElement, createProctorForm);
