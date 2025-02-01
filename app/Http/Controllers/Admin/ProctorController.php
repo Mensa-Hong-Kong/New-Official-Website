@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ProctorRequest;
 use App\Models\AdmissionTest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -16,7 +16,7 @@ class ProctorController extends Controller implements HasMiddleware
         return [new Middleware('permission:Edit:Admission Test')];
     }
 
-    public function store(Request $request, AdmissionTest $admissionTest)
+    public function store(ProctorRequest $request, AdmissionTest $admissionTest)
     {
         $user = User::find($request->user_id);
         if(! $user) {
