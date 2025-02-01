@@ -48,7 +48,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_user_permission()
+    public function test_have_no_edit_admission_test_permission()
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
