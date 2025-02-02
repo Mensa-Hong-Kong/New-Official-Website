@@ -124,7 +124,7 @@
                             <button class="btn btn-danger col-md-4" id="deleteProctor{{ $proctor->id }}" form="deleteProctorForm{{ $proctor->id }}" hidden>Delete</button>
                         </div>
                     </div>
-                    <form class="row g-3" id="editProctor{{ $proctor->id }}Form" method="POST" novalidate hidden
+                    <form class="row g-3" id="editProctorForm{{ $proctor->id }}" method="POST" novalidate hidden
                         action="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}">
                         @csrf
                         @method('PUT')
