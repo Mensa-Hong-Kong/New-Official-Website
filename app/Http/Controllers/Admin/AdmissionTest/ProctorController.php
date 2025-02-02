@@ -59,6 +59,13 @@ class ProctorController extends Controller implements HasMiddleware
                     'proctor' => $user,
                 ]
             ),
+            'delete_proctor_url' => route(
+                'admin.admission-tests.proctors.destroy',
+                [
+                    'admission_test' => $admissionTest,
+                    'proctor' => $user,
+                ]
+            ),
         ];
     }
 
@@ -84,6 +91,13 @@ class ProctorController extends Controller implements HasMiddleware
             ),
             'update_proctor_url' => route(
                 'admin.admission-tests.proctors.update',
+                [
+                    'admission_test' => $admissionTest,
+                    'proctor' => $user,
+                ]
+            ),
+            'delete_proctor_url' => route(
+                'admin.admission-tests.proctors.destroy',
                 [
                     'admission_test' => $admissionTest,
                     'proctor' => $user,

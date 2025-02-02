@@ -149,6 +149,13 @@ class StoreTest extends TestCase
                     'proctor' => $this->user,
                 ]
             ),
+            'delete_proctor_url' => route(
+                'admin.admission-tests.proctors.destroy',
+                [
+                    'admission_test' => $this->test,
+                    'proctor' => $this->user,
+                ]
+            ),
         ]);
     }
 }

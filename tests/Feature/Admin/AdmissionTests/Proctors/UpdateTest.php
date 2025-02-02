@@ -194,6 +194,13 @@ class UpdateTest extends TestCase
                     'proctor' => $this->user,
                 ]
             ),
+            'delete_proctor_url' => route(
+                'admin.admission-tests.proctors.destroy',
+                [
+                    'admission_test' => $this->test,
+                    'proctor' => $this->user,
+                ]
+            ),
         ]);
     }
 
@@ -221,6 +228,13 @@ class UpdateTest extends TestCase
             ),
             'update_proctor_url' => route(
                 'admin.admission-tests.proctors.update',
+                [
+                    'admission_test' => $this->test,
+                    'proctor' => $user,
+                ]
+            ),
+            'delete_proctor_url' => route(
+                'admin.admission-tests.proctors.destroy',
                 [
                     'admission_test' => $this->test,
                     'proctor' => $user,
