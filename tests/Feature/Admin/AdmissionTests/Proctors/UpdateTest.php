@@ -80,7 +80,7 @@ class UpdateTest extends TestCase
                 'admin.admission-tests.proctors.update',
                 [
                     'admission_test' => 0,
-                    'proctor' => $this->user
+                    'proctor' => $this->user,
                 ]
             ),
             ['user_id' => $this->user->id]
@@ -96,7 +96,7 @@ class UpdateTest extends TestCase
                 'admin.admission-tests.proctors.update',
                 [
                     'admission_test' => $this->test,
-                    'proctor' => $user
+                    'proctor' => $user,
                 ]
             ),
             ['user_id' => $this->user->id]

@@ -21,7 +21,7 @@ class ProctorController extends Controller implements HasMiddleware
             new Middleware('permission:View:User'),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if(
+                    if (
                         AdmissionTestHasProctor::where('test_id', $request->route('admission_test')->id)
                             ->where('user_id', $request->route('proctor')->id)
                             ->exists()

@@ -20,6 +20,7 @@ class ProctorRequest extends FormRequest
         if ($this->method() != 'POST') {
             $unique = $unique->ignore($this->route('proctor')->id, 'user_id');
         }
+
         return ['user_id' => ['required', 'integer', $unique]];
     }
 }
