@@ -110,6 +110,10 @@
                 </div>
                 @foreach ($test->proctors as $proctor)
                     <div class="row g-3" id="showProctor{{ $proctor->id }}">
+                        <form method="POST" id="deleteProctorForm{{ $proctor->id }}" action="{{ route('admin.admission-tests.proctors.destroy', ['admission_test' => $test, 'proctor' => $proctor]) }}" hidden>
+                            @csrf
+                            @method('DELETE')
+                        </form>
                         <div class="col-md-2" id="showProctorId{{ $proctor->id }}">{{ $proctor->id }}</div>
                         <div class="col-md-4" id="showProctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
                         <div class="col-md-6">
@@ -117,6 +121,7 @@
                                 href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
                             <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader{{ $proctor->id }}" role="status" aria-hidden="true"></span>
                             <button class="btn btn-primary col-md-4" id="editProctor{{ $proctor->id }}" hidden>Edit</button>
+                            <button class="btn btn-danger col-md-4" id="deleteProctor{{ $proctor->id }}" form="deleteProctorForm{{ $proctor->id }}" hidden>Delete</button>
                         </div>
                     </div>
                     <form class="row g-3" id="editProctor{{ $proctor->id }}Form" method="POST" novalidate hidden
@@ -127,7 +132,7 @@
                         <div class="col-md-4" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
                         <div class="col-md-6">
                             <button class="btn btn-primary col-md-4 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
-                            <button class="btn btn-primary col-md-4 submitButton" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
+                            <button class="btn btn-primary col-md-4" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
                             <button class="btn btn-danger col-md-4" id="cancelEditProctor{{ $proctor->id }}" onclick="return false">Cancel</button>
                         </div>
                     </form>
