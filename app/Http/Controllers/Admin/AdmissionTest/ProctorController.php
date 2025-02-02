@@ -91,4 +91,10 @@ class ProctorController extends Controller implements HasMiddleware
             ),
         ];
     }
+
+    public function destroy(AdmissionTest $admissionTest, User $proctor)
+    {
+        $admissionTest->proctors()->detach($proctor->id);
+        return ['success' => 'Delete proctor success!'];
+    }
 }
