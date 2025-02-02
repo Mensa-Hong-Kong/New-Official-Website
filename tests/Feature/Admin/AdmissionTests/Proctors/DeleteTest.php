@@ -117,7 +117,7 @@ class DeleteTest extends TestCase
                 ),
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The proctor delete success!"]);
+        $response->assertJson(['success' => 'The proctor delete success!']);
         $this->assertNull(
             AdmissionTestHasProctor::where('test_id', $this->test->id)
                 ->where('user_id', $this->user->id)
