@@ -180,7 +180,7 @@ class UpdateTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'Update proctor success',
+            'success' => 'The proctor update success',
             'user_id' => $this->user->id,
             'name' => $this->user->name,
             'show_user_url' => route(
@@ -219,7 +219,7 @@ class UpdateTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'Update proctor success',
+            'success' => 'The proctor update success',
             'user_id' => $user->id,
             'name' => $user->name,
             'show_user_url' => route(

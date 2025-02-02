@@ -45,7 +45,7 @@ class ProctorController extends Controller implements HasMiddleware
         $admissionTest->proctors()->attach($user->id);
 
         return [
-            'success' => 'Add proctor success',
+            'success' => 'The proctor create success',
             'user_id' => $user->id,
             'name' => $user->name,
             'show_user_url' => route(
@@ -82,7 +82,7 @@ class ProctorController extends Controller implements HasMiddleware
             ->update(['user_id' => $user->id]);
 
         return [
-            'success' => 'Update proctor success',
+            'success' => 'The proctor update success',
             'user_id' => $user->id,
             'name' => $user->name,
             'show_user_url' => route(
@@ -109,6 +109,6 @@ class ProctorController extends Controller implements HasMiddleware
     public function destroy(AdmissionTest $admissionTest, User $proctor)
     {
         $admissionTest->proctors()->detach($proctor->id);
-        return ['success' => 'Delete proctor success!'];
+        return ['success' => 'The proctor delete success!'];
     }
 }

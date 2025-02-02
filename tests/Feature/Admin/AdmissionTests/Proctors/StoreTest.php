@@ -135,7 +135,7 @@ class StoreTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => 'Add proctor success',
+            'success' => 'The proctor create success',
             'user_id' => $this->user->id,
             'name' => $this->user->name,
             'show_user_url' => route(
