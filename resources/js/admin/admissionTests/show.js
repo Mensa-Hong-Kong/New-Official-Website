@@ -294,6 +294,141 @@ editButton.addEventListener(
     }
 );
 
+function userIdValidation(input)
+{
+    if(input.validity.valueMissing) {
+        bootstrapAlert('The user id field is required.');
+        return false;
+    }
+    if(input.validity.patternMismatch) {
+        bootstrapAlert('The user id field must be an integer.');
+        return false;
+    }
+    if(typeof users[input.value] == undefined) {
+        bootstrapAlert('The selected user id is invalid.');
+        return false;
+    }
+    return true;
+}
+
+function urlGetProctorID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/admission-tests\/([0-9]+)\/proctors\/([0-9]+).*/i)[2];
+}
+
+function saveProctorSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id = urlGetProctorID(response.request.responseURL);
+    users[response.data.user_id] = response.data.name;
+    let form = document.getElementById('editProctor'+id+'Form');
+    form.hidden = true;
+    form.id = 'editProctor'+response.data.user_id+'Form';
+    form.action = response.data.update_proctor_url;
+    let savingButton = document.getElementById('savingProctor'+id);
+    savingButton.hidden = true;
+    savingButton.id = 'savingProctor'+response.data.user_id;
+    let saveButton = document.getElementById('saveProctor'+id);
+    saveButton.hidden = false;
+    saveButton.id = 'saveProctor'+response.data.user_id;
+    let cancelButton = document.getElementById('cancelEditProctor'+id)
+    cancelButton.disabled = false;
+    cancelButton.id = 'cancelEditProctor'+response.data.user_id;
+    let input = document.getElementById('proctorUserIdInput'+id)
+    input.value = response.data.user_id;
+    input.dataset.value = input.value;
+    input.id = 'proctorUserIdInput'+response.data.user_id;
+    let proctorName = document.getElementById('proctorName'+id);
+    proctorName.id = 'proctorName'+response.data.name;
+    let showProctorId = document.getElementById('showProctorId'+id);
+    showProctorId.id = 'showProctorId'+response.data.user_id;
+    showProctorId.innerText = response.data.user_id;
+    let showProctorName = document.getElementById('showProctorName'+id);
+    showProctorName.id = 'showProctorName'+response.data.user_id;
+    showProctorName.innerText = response.data.name;
+    let showProctorLink = document.getElementById('showProctorLink'+id);
+    showProctorLink.id = 'showProctorLink' + response.data.user_id;
+    showProctorLink.href = response.data.show_user_url;
+    let editButton = document.getElementById('editProctor'+id);
+    editButton.id = 'editProctor'+response.data.user_id;
+    let showProctor = document.getElementById('showProctor'+id);
+    showProctor.id = 'showProctor'+response.data.user_id;
+    showProctor.hidden = false;
+    enableSubmitting();
+}
+
+function saveProctorFailCallback(error) {
+    let id = urlGetProctorID(response.request.responseURL);
+    if(error.status == 422) {
+        bootstrapAlert(error.response.data.errors.user_id);
+    }
+    document.getElementById('savingProctor'+id).hidden = true;
+    document.getElementById('saveProctor'+id).hidden = false;
+    document.getElementById('cancelEditProctor'+id).disabled = false;
+    enableSubmitting();
+}
+
+function saveProctor(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updateProctor'+submitAt;
+        let id = event.target.id.match(/^editProctor([0-9]+)Form/i)[1];
+        let input = document.getElementById('proctorUserIdInput'+id);
+        disableSubmitting();
+        if(submitting == 'updateProctor'+submitAt) {
+            if(userIdValidation(input)) {
+                input.disabled = true;
+                document.getElementById('saveProctor'+id).hidden = true;
+                document.getElementById('savingProctor'+id).hidden = false;
+                document.getElementById('cancelEditProctor'+id).disabled = true;
+                let data = {user_id: input.value};
+                post(event.target.action, saveProctorSuccessCallback, saveProctorFailCallback, 'put', data);
+            } else {
+                enableSubmitting();
+            }
+        }
+    }
+}
+
+function cancelEditProctor(event) {
+    let id = event.target.id.replace('cancelEditProctor', '');
+    document.getElementById('editProctor'+id+'Form').hidden = true;
+    let input = document.getElementById('proctorUserIdInput'+id);
+    input.value = input.dataset.value;
+    document.getElementById('proctorName'+id).innerText = users[input.value] ?? '';
+    document.getElementById('showProctor'+id).hidden = false;
+}
+
+function editProctor(event) {
+    let id = event.target.id.replace('editProctor', '');
+    document.getElementById('showProctor'+id).hidden = true;
+    document.getElementById('editProctor'+id+'Form').hidden = false;
+}
+
+function setProctorEventListeners(loader) {
+    let id = loader.id.replace('proctorLoader', '');
+    document.getElementById('proctorUserIdInput'+id).addEventListener(
+        'keyup', function(event) {
+            document.getElementById('proctorName'+id).innerText = users[event.target.value] ?? '';
+        }
+    )
+    document.getElementById('editProctor'+id+'Form').addEventListener(
+        'submit', saveProctor
+    )
+    document.getElementById('cancelEditProctor'+id).addEventListener(
+        'click', cancelEditProctor
+    )
+    let editButton = document.getElementById('editProctor'+id);
+    editButton.addEventListener('click', editProctor);
+    loader.remove();
+    editButton.hidden = false;
+}
+
+document.querySelectorAll('.proctorLoader').forEach(
+    (loader) => {
+        setProctorEventListeners(loader);
+    }
+);
+
 const proctor = document.getElementById('proctor');
 const createProctorForm = document.getElementById('createProctorForm');
 const proctorUserIdInput = document.getElementById('proctorUserIdInput');
@@ -312,35 +447,42 @@ proctorUserIdInput.addEventListener(
     }
 )
 
-function userIdValidation(input)
-{
-    if(input.validity.valueMissing) {
-        bootstrapAlert('The user id field is required.');
-        return false;
-    }
-    if(input.validity.patternMismatch) {
-        bootstrapAlert('The user id field must be an integer.');
-        return false;
-    }
-    if(typeof users[input.value] == undefined) {
-        bootstrapAlert('The selected user id is invalid.');
-        return false;
-    }
-    return true;
-}
-
 function createProctorSuccessCallback(response) {
     bootstrapAlert(response.data.success);
-    let rowElement = document.createElement('div');
-    rowElement.className = 'row g-3';
-    rowElement.innerHTML = `
-        <div class="col-md-2">${response.data.user_id}</div>
-        <div class="col-md-4">${response.data.name}</div>
-        <div class="col-md-2">
-            <a href="${response.data.show_user_url}" class="btn btn-primary">Show</a>
+    let formElement = document.createElement('form');
+    formElement.className = 'row g-3';
+    formElement.id = 'editProctor'+response.data.user_id+'Form';
+    formElement.method = 'POST';
+    formElement.noValidate = true;
+    formElement.hidden = true;
+    formElement.action = response.data.update_proctor_url;
+    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+    formElement.innerHTML = `
+        <input type="hidden" name="_token" value="${token}">
+        <input type="hidden" name="_method" value="put">
+        <input type="text" id="proctorUserIdInput${response.data.user_id}" class="col-md-2" name="user_id" list="users" value="${response.data.user_id}" data-value="${response.data.user_id}" required />
+        <div class="col-md-4" id="proctorName${response.data.user_id}">${response.data.name}</div>
+        <div class="col-md-6">
+            <button class="btn btn-primary col-md-4 submitButton" id="saveProctor${response.data.user_id}">Save</button>
+            <button class="btn btn-primary col-md-4 submitButton" id="savingProctor${response.data.user_id}" disabled hidden>Save</button>
+            <button class="btn btn-danger col-md-4" id="cancelEditProctor${response.data.user_id}" onclick="return false">Cancel</button>
         </div>
     `;
-    proctor.insertBefore(rowElement, createProctorForm);
+    proctor.insertBefore(formElement, createProctorForm);
+    let rowElement = document.createElement('div');
+    rowElement.id = 'showProctor'+response.data.user_id;
+    rowElement.className = 'row g-3';
+    rowElement.innerHTML = `
+        <div class="col-md-2" id="showProctorId${response.data.user_id}">${response.data.user_id}</div>
+        <div class="col-md-4" id="showProctorName${response.data.user_id}">${response.data.name}</div>
+        <div class="col-md-6">
+            <a id="showProctorLink${response.data.user_id}" href="${response.data.show_user_url}" class="btn btn-primary col-md-4">Show</a>
+            <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
+            <button class="btn btn-primary col-md-4" id="editProctor${response.data.user_id}" hidden>Edit</button>
+        </div>
+    `;
+    proctor.insertBefore(rowElement, formElement);
+    setProctorEventListeners(document.getElementById('proctorLoader'+response.data.user_id));
     addingProctorButton.hidden = true;
     addProctorButton.hidden = false;
     proctorUserIdInput.value = '';
