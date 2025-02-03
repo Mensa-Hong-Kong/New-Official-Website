@@ -14,8 +14,8 @@ class Location extends Model
         'name',
     ];
 
-    public function address()
+    public function admissionTests()
     {
-        return $this->belongsTo(Address::class);
+        return $this->hasMany(AdmissionTest::class);
     }
 }

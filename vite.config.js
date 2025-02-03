@@ -23,6 +23,7 @@ export default defineConfig({
                 'resources/js/admin/permission.js',
                 'resources/js/admin/module.js',
                 'resources/js/admin/admissionTests/create.js',
+                'resources/js/admin/admissionTests/show.js',
             ],
             refresh: true,
         }),

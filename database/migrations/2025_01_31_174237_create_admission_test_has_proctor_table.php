@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admission_tests', function (Blueprint $table) {
+        Schema::create('admission_test_has_proctor', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('testing_at');
-            $table->unsignedBigInteger('location_id');
-            $table->unsignedBigInteger('address_id');
-            $table->unsignedInteger('maximum_candidates');
-            $table->boolean('is_public');
+            $table->unsignedBigInteger('test_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
+            $table->foreign('test_id')
+                ->references('id') // admission test id
+                ->on('admission_tests')
+                ->onDelete('cascade');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admission_tests');
+        Schema::dropIfExists('admission_test_has_proctor');
     }
 };
