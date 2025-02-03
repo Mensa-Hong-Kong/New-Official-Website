@@ -48,12 +48,12 @@ class UserController extends Controller implements HasMiddleware
         return view('user.register')
             ->with(
                 'genders', Gender::all()
-                ->pluck('name', 'id')
-                ->toArray()
+                    ->pluck('name', 'id')
+                    ->toArray()
             )->with(
                 'passportTypes', PassportType::all()
-                ->pluck('name', 'id')
-                ->toArray()
+                    ->pluck('name', 'id')
+                    ->toArray()
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
@@ -98,16 +98,16 @@ class UserController extends Controller implements HasMiddleware
             ->with('user', $request->user())
             ->with(
                 'genders', Gender::all()
-                ->pluck('name', 'id')
-                ->toArray()
+                    ->pluck('name', 'id')
+                    ->toArray()
             )->with(
                 'passportTypes', PassportType::all()
-                ->pluck('name', 'id')
-                ->toArray()
+                    ->pluck('name', 'id')
+                    ->toArray()
             )->with(
                 'maxBirthday', now()
-                ->subYears(2)
-                ->format('Y-m-d')
+                    ->subYears(2)
+                    ->format('Y-m-d')
             );
     }
 
@@ -188,8 +188,8 @@ class UserController extends Controller implements HasMiddleware
         return view('user.forget-password')
             ->with(
                 'passportTypes', PassportType::all()
-                ->pluck('name', 'id')
-                ->toArray()
+                    ->pluck('name', 'id')
+                    ->toArray()
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
@@ -200,15 +200,15 @@ class UserController extends Controller implements HasMiddleware
             ->where('contact', $request->verified_contact)
             ->whereHas(
                 'user', function ($query) use ($request) {
-                $query->where('passport_type_id', $request->passport_type_id)
-                    ->where('passport_number', $request->passport_number)
-                    ->where('birthday', $request->birthday);
-            }
+                    $query->where('passport_type_id', $request->passport_type_id)
+                        ->where('passport_number', $request->passport_number)
+                        ->where('birthday', $request->birthday);
+                }
             )->whereHas(
                 'verifications', function ($query) {
-                $query->whereNotNull('verified_at')
-                    ->whereNull('expired_at');
-            }
+                    $query->whereNotNull('verified_at')
+                        ->whereNull('expired_at');
+                }
             )->first();
         $log = [
             'passport_type_id' => $request->passport_type_id,
@@ -239,4 +239,3 @@ class UserController extends Controller implements HasMiddleware
         return view('user.login');
     }
 }
-
