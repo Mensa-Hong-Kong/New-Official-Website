@@ -29,6 +29,22 @@ Route::get('/', function () {
     return view('home');
 })->name('index');
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/join', function () {
+    return view('join');
+})->name('join');
+
+Route::get('/events', function () {
+    return view('events');
+})->name('events');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [UserController::class, 'create'])->name('register');
     Route::post('register', [UserController::class, 'store']);
@@ -38,22 +54,6 @@ Route::middleware('guest')->group(function () {
         ->name('forget-password');
     Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
         ->name('reset-password');
-
-    Route::get('/about', function () {
-        return view('about');
-    })->name('about');
-
-    Route::get('/join', function () {
-        return view('join');
-    })->name('join');
-
-    Route::get('/events', function () {
-        return view('events');
-    })->name('events');
-
-    Route::get('/contact', function () {
-        return view('contact');
-    })->name('contact');
 
     Route::get('/test', function () {
         return view('test');
@@ -78,22 +78,6 @@ Route::middleware('auth')->group(function () {
         ->name('contacts.set-default');
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy']);
-
-    Route::get('/about', function () {
-        return view('about');
-    })->name('about');
-
-    Route::get('/join', function () {
-        return view('join');
-    })->name('join');
-
-    Route::get('/events', function () {
-        return view('events');
-    })->name('events');
-
-    Route::get('/contact', function () {
-        return view('contact');
-    })->name('contact');
 
     Route::get('/test', function () {
         return view('test');
