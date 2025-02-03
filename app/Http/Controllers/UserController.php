@@ -158,12 +158,16 @@ class UserController extends Controller implements HasMiddleware
                     ->where('created_at', '>=', now()->subDay());
             },
         ])->firstWhere('username', $request->username);
+
         if ($user) {
             if ($user->loginLogs->count() >= 10) {
                 $firstInRangeLoginFailedTime = $user->loginLogs[0]['created_at'];
 
-                abort(429, "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.");
+                return back()->withErrors([
+                    'failed' => "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.",
+                ])->withInput($request->only('username'));
             }
+
             $log = ['user_id' => $user->id];
             if ($user->checkPassword($request->password)) {
                 $log['status'] = true;
@@ -171,16 +175,16 @@ class UserController extends Controller implements HasMiddleware
                 $user->loginLogs()
                     ->where('status', false)
                     ->delete();
-                Auth::login($user, $request->remember_me);
+                Auth::login($user, $request->remember);
 
-                return redirect()->intended(route('profile.show'));
+                return redirect()->intended(route('index'));
             }
             UserLoginLog::create($log);
         }
 
-        return response([
-            'errors' => ['failed' => 'The provided username or password is incorrect.'],
-        ], 422);
+        return back()->withErrors([
+            'failed' => 'The provided username or password is incorrect.',
+        ])->withInput($request->only('username'));
     }
 
     public function forgetPassword()
