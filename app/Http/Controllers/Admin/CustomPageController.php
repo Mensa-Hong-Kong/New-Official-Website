@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CustomPageRequest;
 use App\Models\CustomPage;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -15,7 +15,7 @@ class CustomPageController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Custom Page'))->except('index')];
     }
 
-    public function store(Request $request)
+    public function store(CustomPageRequest $request)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
         if(str_starts_with($pathname, '/')) {
