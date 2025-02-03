@@ -10,7 +10,6 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsAdministrator;
 use Illuminate\Support\Facades\Route;
@@ -33,8 +32,8 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('register', [UserController::class, 'create'])->name('register');
     Route::post('register', [UserController::class, 'store']);
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [UserController::class, 'login']);
     Route::get('forget-password', [UserController::class, 'forgetPassword'])
         ->name('forget-password');
     Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
@@ -65,11 +64,12 @@ Route::middleware('guest')->group(function () {
     })->name('benefits');
 });
 
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth');
+
 Route::middleware('auth')->group(function () {
-    Route::singleton('profile', UserController::class)
-        ->except('edit', 'destroy')
-        ->destroyable();
+    Route::get('/profile', [UserController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+
     Route::get('contacts/{contact}/send-verify-code', [ContactController::class, 'sendVerifyCode'])
         ->name('contacts.send-verify-code');
     Route::post('contacts/{contact}/verify', [ContactController::class, 'verify'])
