@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\CustomPageController as AdmissionCustomPageController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -93,5 +94,7 @@ Route::middleware('auth')->group(function () {
                         ->only(['store', 'update', 'destroy']);
                 }
             );
+            Route::resource('custom-pages', AdmissionCustomPageController::class)
+                ->only('store');
         });
 });
