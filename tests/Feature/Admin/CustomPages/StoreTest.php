@@ -121,12 +121,12 @@ class StoreTest extends TestCase
     public function test_title_too_long()
     {
         $data = $this->happyCase;
-        $data['title'] = str_repeat('a', 44);
+        $data['title'] = str_repeat('a', 61);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertInvalid(['title' => 'The title field must not be greater than 43 characters.']);
+        $response->assertInvalid(['title' => 'The title field must not be greater than 60 characters.']);
     }
 
     public function test_open_graph_image_url_is_not_string()
@@ -143,12 +143,12 @@ class StoreTest extends TestCase
     public function test_open_graph_image_url_too_long()
     {
         $data = $this->happyCase;
-        $data['og_image_url'] = str_repeat('a', 65536);
+        $data['og_image_url'] = str_repeat('a', 15485);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 16383 characters.']);
+        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 15484 characters.']);
     }
 
     public function test_open_graph_image_url_is_not_a_valid()
@@ -209,7 +209,7 @@ class StoreTest extends TestCase
     public function test_content_too_long()
     {
         $data = $this->happyCase;
-        $data['content'] = str_repeat('a', 65536);
+        $data['content'] = str_repeat('a', 4194304);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-pages.store'),
             $data
