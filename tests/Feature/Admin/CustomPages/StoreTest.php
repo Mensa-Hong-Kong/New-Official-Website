@@ -149,7 +149,7 @@ class StoreTest extends TestCase
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 65535 characters.']);
+        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 16383 characters.']);
     }
 
     public function test_open_graph_image_url_is_not_a_valid()
@@ -215,7 +215,7 @@ class StoreTest extends TestCase
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertInvalid(['content' => 'The content field must not be greater than 65535 characters.']);
+        $response->assertInvalid(['content' => 'The content field must not be greater than 4194303 characters.']);
     }
 
     public function test_happy_case_when_have_no_og_image_url()

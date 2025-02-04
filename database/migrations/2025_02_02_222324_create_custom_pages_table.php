@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('custom_pages', function (Blueprint $table) {
-            $table->string('pathname',  768)->primary(); // Google SERP max 1855 and primary varchar max 768
-            $table->string('title', 43); // max 60 - length of ' | Mensa Hong Kong'
-            $table->string('og_image_url', 65535)->nullable();
+            $table->string('pathname',  768)->primary(); // SEO max 1855 and primary varchar max 768
+            $table->string('title', 60); // SEO max 60
+            $table->string('og_image_url', 16383)->nullable(); // varchar max 16383
             $table->string('description', 65);
-            $table->string('content', 65535)->nullable();
+            $table->mediumText('content')->nullable();
             $table->timestamps();
         });
     }

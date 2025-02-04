@@ -14,7 +14,7 @@
             <div class="row g-3 form-outline mb-3">
                 <label for="validationTitle" class="form-label">Title</label>
                 <input type="text" name="title" class="form-control" id="validationTitle"
-                    maxlength="43" placeholder="title" value="{{ old('title') }}" required />
+                    maxlength="60" placeholder="title" value="{{ old('title') }}" required />
                 <div id="titleFeedback" class="valid-feedback">
                     Looks good!
                 </div>
@@ -22,7 +22,7 @@
             <div class="row g-3 form-outline mb-3">
                 <label for="validationOGImageUrl" class="form-label">Open Graph Image URL</label>
                 <input type="url" name="og_image_url" class="form-control" id="validationOGImageUrl"
-                    maxlength="65535" placeholder="https://google.com" value="{{ old('og_image_url') }}" />
+                    maxlength="16383" placeholder="https://google.com" value="{{ old('og_image_url') }}" />
                 <div id="OGImageUrlFeedback" class="valid-feedback">
                     Looks good!
                 </div>
@@ -37,7 +37,7 @@
             </div>
             <div class="row g-3 form-outline mb-3">
                 <label for="validationContent" class="form-label">content</label>
-                <textarea name="content" id="validationContent" maxlength="65535" required>
+                <textarea name="content" id="validationContent" maxlength="4194303" required>
                     {!! old('content') !!}
                 </textarea>
                 <div id="contentFeedback" class="valid-feedback">
