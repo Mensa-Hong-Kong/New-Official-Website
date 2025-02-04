@@ -287,6 +287,40 @@
                                     @endif
                                 </ul>
                             </li>
+                            @can('Edit:Custom Page')
+                                <li class="nav-item accordion">
+                                    <button role="button"
+                                        data-bs-toggle="collapse" aria-expanded="true"
+                                        data-bs-target="#asideNavCustomPage" aria-controls="asideNavCustomPage"
+                                        style="height: 0em"
+                                        @class([
+                                            'nav-item',
+                                            'accordion-button',
+                                            'collapsed' => !str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.custom-pages.'
+                                            ),
+                                        ])>
+                                        Custom Page
+                                    </button>
+                                    <ul id="asideNavCustomPage" @class([
+                                        'accordion-collapse',
+                                        'collapse',
+                                        'show' => str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.custom-pages.'
+                                        ),
+                                    ])>
+                                        <li>
+                                            <a href="{{ route('admin.custom-pages.create') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.custom-pages.create',
+                                            ])>Create</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endcan
                         </ul>
                     </nav>
                 </div>
