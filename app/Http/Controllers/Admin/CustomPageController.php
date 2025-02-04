@@ -42,6 +42,6 @@ class CustomPageController extends Controller implements HasMiddleware
             'content' => $request->content,
         ]);
 
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.custom-pages.index');
     }
 }

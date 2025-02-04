@@ -223,7 +223,7 @@ class StoreTest extends TestCase
             route('admin.custom-pages.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute('admin.custom-pages.index');
     }
 
     public function test_happy_case_when_has_og_image_url()
@@ -234,6 +234,6 @@ class StoreTest extends TestCase
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute('admin.custom-pages.index');
     }
 }
