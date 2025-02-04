@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\AdmissionTests;
+namespace Tests\Feature\Admin\CustomPages;
 
 use App\Models\ModulePermission;
 use App\Models\User;
