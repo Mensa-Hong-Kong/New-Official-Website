@@ -23,7 +23,7 @@ class CustomPageController extends Controller implements HasMiddleware
     public function store(CustomPageRequest $request)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
-        if(str_starts_with($pathname, '/')) {
+        if (str_starts_with($pathname, '/')) {
             $pathname = substr($request->pathname, 1);
         }
         CustomPage::create([
