@@ -6,6 +6,7 @@ import laravel from 'laravel-vite-plugin';
 
 let input = [
     'resources/css/app.scss',
+    'resources/css/ckEditor.css',
 ];
 
 const exclude = [
