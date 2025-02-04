@@ -4,7 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title')Mensa</title>
+    @hasSection('title')
+        <title>@yield('title') | Mensa Hong Kong</title>
+        <meta name="title" content="@yield('title')">
+    @else
+        <title>Mensa Hong Kong</title>
+    @endif
+    @hasSection('description')
+        <meta name="description" content="@yield('description')">
+    @endif
+    @hasSection('og image url')
+        <meta name="og:image" content="@yield('og_image_url')">
+    @endif
     @vite('resources/css/app.scss')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
