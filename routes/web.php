@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
                 }
             );
             Route::resource('custom-pages', AdmissionCustomPageController::class)
-                ->only(['create', 'store'])
+                ->only(['index', 'create', 'store'])
                 ->whereNumber('custom_page');
         });
 });
