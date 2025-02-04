@@ -23,12 +23,17 @@
                     Login
                 </a>
             @else
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                        Logout
-                    </button>
-                </form>
+                <div class="flex space-x-0.5">
+                    <a href="{{ route('profile.show') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                        Profile
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline-block">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                            Logout
+                        </button>
+                    </form>
+                </div>
             @endguest
         </nav>
         <button class="rounded p-2 hover:bg-gray-100 md:hidden" onclick="toggleMenu()">
@@ -46,12 +51,17 @@
                     Login
                 </a>
             @else
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                        Logout
-                    </button>
-                </form>
+                <div class="flex flex-col space-y-0.5">
+                    <a href="{{ route('profile.show') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                        Profile
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline-block">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 w-full">
+                            Logout
+                        </button>
+                    </form>
+                </div>
             @endguest
         </nav>
     </div>
