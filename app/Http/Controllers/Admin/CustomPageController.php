@@ -15,6 +15,11 @@ class CustomPageController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Custom Page'))->except('index')];
     }
 
+    public function create()
+    {
+        return view('admin.custom-pages.create');
+    }
+
     public function store(CustomPageRequest $request)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
