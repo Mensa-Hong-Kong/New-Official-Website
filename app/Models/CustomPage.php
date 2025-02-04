@@ -9,10 +9,6 @@ class CustomPage extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'pathname';
-
-    public $incrementing = false;
-
     protected $fillable = [
         'pathname',
         'title',

@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('custom_pages', function (Blueprint $table) {
-            $table->string('pathname', 768)->primary(); // SEO max 1855 and primary varchar max 768
+            $table->id();
+            $table->string('pathname', 768)->unique(); // SEO max 1855 - max domain 256 = 1699 but unique varchar max 768
             $table->string('title', 60); // SEO max 60
-            $table->string('og_image_url', 15484)->nullable(); // varchar max 16383 but max row size limit only can 15484
+            $table->string('og_image_url', 8000)->nullable();
             $table->string('description', 65);
             $table->mediumText('content')->nullable();
             $table->timestamps();

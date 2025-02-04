@@ -22,7 +22,7 @@
             <div class="row g-3 form-outline mb-3">
                 <label for="validationOGImageUrl" class="form-label">Open Graph Image URL</label>
                 <input type="url" name="og_image_url" class="form-control" id="validationOGImageUrl"
-                    maxlength="15484" placeholder="https://google.com" value="{{ old('og_image_url') }}" />
+                    maxlength="8000" placeholder="https://google.com" value="{{ old('og_image_url') }}" />
                 <div id="OGImageUrlFeedback" class="valid-feedback">
                     Looks good!
                 </div>

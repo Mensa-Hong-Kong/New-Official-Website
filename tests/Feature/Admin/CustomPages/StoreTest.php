@@ -143,12 +143,12 @@ class StoreTest extends TestCase
     public function test_open_graph_image_url_too_long()
     {
         $data = $this->happyCase;
-        $data['og_image_url'] = str_repeat('a', 15485);
+        $data['og_image_url'] = str_repeat('a', 8001);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-pages.store'),
             $data
         );
-        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 15484 characters.']);
+        $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 8000 characters.']);
     }
 
     public function test_open_graph_image_url_is_not_a_valid()
