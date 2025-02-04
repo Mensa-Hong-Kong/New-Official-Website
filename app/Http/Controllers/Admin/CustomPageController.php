@@ -15,6 +15,14 @@ class CustomPageController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Custom Page'))->except('index')];
     }
 
+    public function index()
+    {
+        $pages = CustomPage::sortable()->paginate();
+
+        return view('admin.custom-pages.index')
+            ->with('pages', $pages);
+    }
+
     public function create()
     {
         return view('admin.custom-pages.create');
