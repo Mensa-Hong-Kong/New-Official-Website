@@ -95,6 +95,6 @@ Route::middleware('auth')->group(function () {
                 }
             );
             Route::resource('custom-pages', AdmissionCustomPageController::class)
-                ->only('store');
+                ->only(['create', 'store']);
         });
 });
