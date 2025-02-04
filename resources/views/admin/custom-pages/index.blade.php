@@ -2,7 +2,7 @@
 
 @section('main')
     <section class="container">
-        <h2 class="fw-bold mb-2 text-uppercase">Admission Tests</h2>
+        <h2 class="fw-bold mb-2 text-uppercase">Custom Pages</h2>
         @if(count($pages))
             <table class="table table-hover">
                 <thead>
