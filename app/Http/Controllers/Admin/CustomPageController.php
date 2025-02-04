@@ -22,7 +22,7 @@ class CustomPageController extends Controller implements HasMiddleware
             $pathname = substr($request->pathname, 1);
         }
         CustomPage::create([
-            'pathname' => $pathname,
+            'pathname' => strtolower($pathname),
             'title' => $request->title,
             'og_image_url' => $request->og_image_url,
             'description' => $request->description,
