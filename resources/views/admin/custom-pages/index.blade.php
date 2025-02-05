@@ -24,6 +24,8 @@
                             <td>
                                 <a href="{{ route('custom-page', ['pathname' => $page->pathname]) }}"
                                     class="btn btn-primary">Show</a>
+                                <a href="{{ route('admin.custom-pages.edit', ['custom_page' => $page]) }}"
+                                    class="btn btn-primary">Edit</a>
                             </td>
                         </tr>
                     @endforeach
