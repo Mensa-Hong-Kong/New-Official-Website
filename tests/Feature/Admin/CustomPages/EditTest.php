@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin\CustomPages;
 
 use App\Models\CustomPage;
 use App\Models\ModulePermission;
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
