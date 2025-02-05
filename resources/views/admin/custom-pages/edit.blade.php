@@ -14,3 +14,7 @@
         </form>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/custom-pages/edit.js')
+@endpush
