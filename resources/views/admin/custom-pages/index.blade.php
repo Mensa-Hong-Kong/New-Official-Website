@@ -31,7 +31,6 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $pages->onEachSide(4)->links() }}
         @else
             <div class="alert alert-danger" role="alert">
                 No Result
