@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\CustomPages;
 
+use App\Models\CustomPage;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -94,6 +95,19 @@ class StoreTest extends TestCase
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname field must only contain letters, numbers, dashes and slash.']);
+    }
+
+    public function test_pathname_is_exist()
+    {
+        CustomPage::factory()
+            ->state(['pathname' => $this->happyCase['pathname']])
+            ->create();
+        $data = $this->happyCase;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.custom-pages.store'),
+            $data
+        );
+        $response->assertInvalid(['pathname' => 'The pathname has already been taken.']);
     }
 
     public function test_missing_title()
