@@ -16,6 +16,9 @@ class CustomPageRequest extends FormRequest
     public function rules(): array
     {
         $unique = Rule::unique(CustomPage::class);
+        if ($this->method() != 'POST') {
+            $unique = $unique->ignore($this->route('custom_page')->id);
+        }
 
         return [
             'pathname' => ['required', 'string', 'max:768', 'regex:/^[A-Za-z0-9-\/]+$/', $unique],
