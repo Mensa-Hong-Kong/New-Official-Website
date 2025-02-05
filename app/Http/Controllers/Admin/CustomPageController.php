@@ -17,7 +17,7 @@ class CustomPageController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $pages = CustomPage::sortable();
+        $pages = CustomPage::sortable()->get();
 
         return view('admin.custom-pages.index')
             ->with('pages', $pages);
