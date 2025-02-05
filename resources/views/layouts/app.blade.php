@@ -323,6 +323,13 @@
                                         ),
                                     ])>
                                         <li>
+                                            <a href="{{ route('admin.custom-pages.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.custom-pages.index',
+                                            ])>Index</a>
+                                        </li>
+                                        <li>
                                             <a href="{{ route('admin.custom-pages.create') }}" @class([
                                                 'nav-link',
                                                 'align-items-center',
