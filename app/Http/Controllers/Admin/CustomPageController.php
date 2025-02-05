@@ -67,4 +67,11 @@ class CustomPageController extends Controller implements HasMiddleware
 
         return redirect()->route('admin.custom-pages.index');
     }
+
+    public function destroy(CustomPage $customPage)
+    {
+        $customPage->delete();
+
+        return ['success' => "The custom page of \"{$customPage->title}\" delete success!"];
+    }
 }
