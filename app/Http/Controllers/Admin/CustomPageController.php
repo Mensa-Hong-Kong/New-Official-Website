@@ -45,6 +45,12 @@ class CustomPageController extends Controller implements HasMiddleware
         return redirect()->route('admin.custom-pages.index');
     }
 
+    public function edit(CustomPage $customPage)
+    {
+        return view('admin.custom-pages.edit')
+            ->with('page', $customPage);
+    }
+
     public function update(CustomPageRequest $request, CustomPage $customPage)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
