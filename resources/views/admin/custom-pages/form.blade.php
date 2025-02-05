@@ -14,7 +14,7 @@
             <div class="row g-3 form-outline mb-3">
                 <label for="validationTitle" class="form-label">Title</label>
                 <input type="text" name="title" class="form-control" id="validationTitle"
-                    maxlength="60" placeholder="title" value="{{ old('title') }}" required />
+                    maxlength="60" placeholder="title..." value="{{ old('title') }}" required />
                 <div id="titleFeedback" class="valid-feedback">
                     Looks good!
                 </div>
@@ -30,7 +30,7 @@
             <div class="row g-3 form-outline mb-3">
                 <label for="validationDescription" class="form-label">Description</label>
                 <input type="text" name="description" class="form-control" id="validationDescription"
-                    maxlength="65" placeholder="https://google.com" value="{{ old('description') }}" required />
+                    maxlength="65" placeholder="description..." value="{{ old('description') }}" required />
                 <div id="descriptionFeedback" class="valid-feedback">
                     Looks good!
                 </div>
