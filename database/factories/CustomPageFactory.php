@@ -17,8 +17,8 @@ class CustomPageFactory extends Factory
                     fake()->numberBetween(1, 4)
                 )
             ),
-            'title' => fake()->sentence(),
-            'og_image_url' => fake()->imageUrl(630, 1200),
+            'title' => fake()->sentence(1),
+            'og_image_url' => fake()->randomElement([true, false]) ? fake()->imageUrl(630, 1200) : null,
             'description' => fake()->sentence(2),
             'content' => fake()->paragraph(3, true),
         ];
