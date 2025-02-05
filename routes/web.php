@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
                 }
             );
             Route::resource('custom-pages', AdmissionCustomPageController::class)
-                ->except(['show', 'edit', 'destroy'])
+                ->except(['show', 'destroy'])
                 ->whereNumber('custom_page');
         });
 });
