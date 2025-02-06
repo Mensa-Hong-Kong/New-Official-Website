@@ -35,6 +35,11 @@ class ModuleSeeder extends Seeder
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
+        $module = Module::firstOrCreate(['name' => 'Navigation Item']);
+        $module->update(['display_order' => 5]);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     }
