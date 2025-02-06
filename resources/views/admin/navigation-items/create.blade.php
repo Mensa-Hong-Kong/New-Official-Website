@@ -15,5 +15,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/admin/navigation-items/create.js')
+    @vite('resources/js/admin/navigationItems/create.js')
 @endpush

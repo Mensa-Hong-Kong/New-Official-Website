@@ -52,5 +52,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/admin/custom-pages/index.js')
+    @vite('resources/js/admin/customPages/index.js')
 @endpush

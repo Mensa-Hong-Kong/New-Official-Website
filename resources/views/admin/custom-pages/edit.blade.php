@@ -16,5 +16,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/admin/custom-pages/edit.js')
+    @vite('resources/js/admin/customPages/edit.js')
 @endpush
