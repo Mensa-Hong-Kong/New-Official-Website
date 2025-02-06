@@ -239,7 +239,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_zero_max_plus_one()
+    public function test_display_order_more_than_max_plus_one()
     {
         $data = $this->happyCase;
         $data['display_order'] = Team::where('type_id', $data['type_id'])

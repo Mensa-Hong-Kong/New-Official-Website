@@ -212,7 +212,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_zero_max_plus_one()
+    public function test_display_order_more_than_max_plus_one()
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
