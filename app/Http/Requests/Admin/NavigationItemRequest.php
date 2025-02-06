@@ -20,13 +20,11 @@ class NavigationItemRequest extends FormRequest
             'url' => 'nullable|string|max:8000|active_url',
             'display_order' => 'required|integer|min:0',
         ];
-        if($this->master_id != '0') {
-            $return['master_id'] .= '|exists:'.NavigationItem::class.',id';
-        }
         if (! is_array($this->master_id)) {
-            if(is_null($this->master_id)) {
+            if($this->master_id == 0) {
                 $maxDisplayOrder = NavigationItem::whereNull('master_id');
             } else {
+                $return['master_id'] .= '|exists:'.NavigationItem::class.',id';
                 $maxDisplayOrder = NavigationItem::where('master_id', $this->master_id);
             }
             $maxDisplayOrder = $maxDisplayOrder->max('display_order');
