@@ -23,7 +23,7 @@ class NavigationItemController extends Controller implements HasMiddleware
             ->where('display_order', '>=', $request->display_order)
             ->increment('display_order');
         NavigationItem::create([
-            'master_id' => $request->master_id,
+            'master_id' => $request->master_id == 0 ? null : $request->master_id ,
             'name' => $request->name,
             'url' => $request->url,
             'display_order' => $request->display_order,
