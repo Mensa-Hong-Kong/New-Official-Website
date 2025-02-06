@@ -13,3 +13,7 @@
         </form>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/navigation-items/create.js')
+@endpush
