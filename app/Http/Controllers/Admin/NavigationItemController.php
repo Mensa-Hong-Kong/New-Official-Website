@@ -16,6 +16,27 @@ class NavigationItemController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Navigation Item'))];
     }
 
+    public function create()
+    {
+        $items = NavigationItem::orderBy('display_order')
+            ->get();
+        $displayOptions = array_fill_keys($items->pluck('id')->toArray(), []);
+        $displayOptions[0] = [];
+        foreach($items as $item) {
+            $displayOptions[$item->master_id ?? 0][$item->display_order] = "before \"$item->name\"";
+        }
+        foreach($displayOptions as $masterID => $array) {
+            if(count($array)) {
+                $displayOptions[$masterID][max(array_keys($array)) + 1] = 'last';
+            } else {
+                $displayOptions[$masterID][0] = 'top';
+            }
+        }
+        return view('admin.navigation-items.create')
+            ->with('items',  $items)
+            ->with('displayOptions',  $displayOptions);
+    }
+
     public function store(NavigationItemRequest $request)
     {
         DB::beginTransaction();
