@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\NavigationItemRequest;
 use App\Models\NavigationItem;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class NavigationItemController extends Controller
 {
-    public function store(Request $request)
+    public function store(NavigationItemRequest $request)
     {
         DB::beginTransaction();
         NavigationItem::where('master_id', $request->master_id)
