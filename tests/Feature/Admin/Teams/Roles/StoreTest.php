@@ -219,7 +219,12 @@ class StoreTest extends TestCase
             ->first();
         $data = $this->happyCase;
         $data['display_order'] = TeamRole::where('team_id', $team->id)
-            ->max('display_order') + 2;
+            ->max('display_order');
+        if($data['display_order'] === null) {
+            ++$data['display_order'];
+        } else {
+            $data['display_order'] += 2;
+        }
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.teams.roles.store',
