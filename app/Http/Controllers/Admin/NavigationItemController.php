@@ -5,10 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\NavigationItemRequest;
 use App\Models\NavigationItem;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class NavigationItemController extends Controller
+class NavigationItemController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware('permission:Edit:Navigation Item'))];
+    }
+
     public function store(NavigationItemRequest $request)
     {
         DB::beginTransaction();
