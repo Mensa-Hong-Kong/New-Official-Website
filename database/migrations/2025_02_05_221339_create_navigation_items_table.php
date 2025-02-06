@@ -18,10 +18,6 @@ return new class extends Migration
             $table->string('url', 8000)->nullable();
             $table->unsignedBigInteger('display_order')->default(0);
             $table->timestamps();
-            $table->foreign('master_id')
-                ->references('id') // navigation item id
-                ->on('navigation_items')
-                ->onDelete('cascade');
         });
     }
 
