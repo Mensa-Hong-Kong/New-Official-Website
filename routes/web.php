@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestCon
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CustomPageController as AdmissionCustomPageController;
+use App\Http\Controllers\Admin\NavigationItemController as AdmissionNavigationItemController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -115,6 +116,9 @@ Route::middleware('auth')->group(function () {
             Route::resource('custom-pages', AdmissionCustomPageController::class)
                 ->except('show')
                 ->whereNumber('custom_page');
+            Route::resource('navigation-items', AdmissionNavigationItemController::class)
+                ->only('store')
+                ->whereNumber('navigation_item');
         });
 });
 
