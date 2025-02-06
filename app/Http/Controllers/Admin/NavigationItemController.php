@@ -19,8 +19,12 @@ class NavigationItemController extends Controller implements HasMiddleware
     public function store(NavigationItemRequest $request)
     {
         DB::beginTransaction();
-        NavigationItem::where('master_id', $request->master_id)
-            ->where('display_order', '>=', $request->display_order)
+        if($request->master_id == 0) {
+            $model = NavigationItem::whereNull('master_id');
+        } else {
+            $model = NavigationItem::where('master_id', $request->master_id);
+        }
+        $model->where('display_order', '>=', $request->display_order)
             ->increment('display_order');
         NavigationItem::create([
             'master_id' => $request->master_id == 0 ? null : $request->master_id ,
