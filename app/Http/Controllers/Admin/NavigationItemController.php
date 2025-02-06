@@ -27,10 +27,9 @@ class NavigationItemController extends Controller implements HasMiddleware
         }
         foreach ($displayOptions as $masterID => $array) {
             if (count($array)) {
-                $displayOptions[$masterID][max(array_keys($array)) + 1] = 'last';
-            } else {
-                $displayOptions[$masterID][0] = 'top';
+                $displayOptions[$masterID][max(array_keys($array)) + 1] = 'latest';
             }
+            $displayOptions[$masterID][0] = 'top';
         }
 
         return view('admin.navigation-items.create')
