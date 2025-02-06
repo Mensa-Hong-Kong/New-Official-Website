@@ -2,10 +2,7 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
-use App\Models\ModulePermission;
 use App\Models\NavigationItem;
-use App\Models\Team;
-use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -104,7 +101,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
     }
 
-
     public function test_url_is_not_string()
     {
         $data = $this->happyCase;
@@ -176,8 +172,8 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = NavigationItem::whereNull('master_id')
             ->max('display_order');
-        if($data['display_order'] === null) {
-            ++$data['display_order'];
+        if ($data['display_order'] === null) {
+            $data['display_order']++;
         } else {
             $data['display_order'] += 2;
         }

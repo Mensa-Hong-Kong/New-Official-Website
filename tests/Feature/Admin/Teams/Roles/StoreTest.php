@@ -220,8 +220,8 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = TeamRole::where('team_id', $team->id)
             ->max('display_order');
-        if($data['display_order'] === null) {
-            ++$data['display_order'];
+        if ($data['display_order'] === null) {
+            $data['display_order']++;
         } else {
             $data['display_order'] += 2;
         }

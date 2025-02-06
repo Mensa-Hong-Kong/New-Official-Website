@@ -179,8 +179,8 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = Team::where('type_id', $data['type_id'])
             ->max('display_order');
-        if($data['display_order'] === null) {
-            ++$data['display_order'];
+        if ($data['display_order'] === null) {
+            $data['display_order']++;
         } else {
             $data['display_order'] += 2;
         }

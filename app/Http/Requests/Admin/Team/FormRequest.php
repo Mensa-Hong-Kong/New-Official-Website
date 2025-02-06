@@ -29,13 +29,13 @@ class FormRequest extends BaseFormRequest
             $maxDisplayOrder = Team::where('type_id', $this->type_id)
                 ->max('display_order');
             if ($this->method() == 'POST') {
-                if($maxDisplayOrder !== null) {
-                    ++$maxDisplayOrder;
+                if ($maxDisplayOrder !== null) {
+                    $maxDisplayOrder++;
                 }
             } else {
                 $unique = $unique->ignore($this->route('team'));
             }
-            if($maxDisplayOrder === null) {
+            if ($maxDisplayOrder === null) {
                 $maxDisplayOrder = 0;
             }
             $return['name'][] = $unique;

@@ -29,13 +29,13 @@ class FormRequest extends BaseFormRequest
                     ->toArray()
             );
         if ($this->method() == 'POST') {
-            if($maxDisplayOrder !== null) {
-                ++$maxDisplayOrder;
+            if ($maxDisplayOrder !== null) {
+                $maxDisplayOrder++;
             }
         } else {
             $unique = $unique->ignore($this->route('role'));
         }
-        if($maxDisplayOrder === null) {
+        if ($maxDisplayOrder === null) {
             $maxDisplayOrder = 0;
         }
         $modulePermissionIDs = ModulePermission::get('id')

@@ -21,17 +21,17 @@ class NavigationItemRequest extends FormRequest
             'display_order' => 'required|integer|min:0',
         ];
         if (! is_array($this->master_id)) {
-            if($this->master_id == 0) {
+            if ($this->master_id == 0) {
                 $maxDisplayOrder = NavigationItem::whereNull('master_id');
             } else {
                 $return['master_id'] .= '|exists:'.NavigationItem::class.',id';
                 $maxDisplayOrder = NavigationItem::where('master_id', $this->master_id);
             }
             $maxDisplayOrder = $maxDisplayOrder->max('display_order');
-            if($maxDisplayOrder === null) {
+            if ($maxDisplayOrder === null) {
                 $maxDisplayOrder = 0;
             } else {
-                ++$maxDisplayOrder;
+                $maxDisplayOrder++;
             }
             $return['display_order'] .= "|max:$maxDisplayOrder";
         }
