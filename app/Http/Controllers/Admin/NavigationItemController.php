@@ -16,6 +16,16 @@ class NavigationItemController extends Controller implements HasMiddleware
         return [(new Middleware('permission:Edit:Navigation Item'))];
     }
 
+    public function index()
+    {
+        return view('admin.navigation-items.index')
+            ->with(
+                'items', NavigationItem::whereNull('master_id')
+                    ->orderBy('display_order')
+                    ->get()
+            );
+    }
+
     public function create()
     {
         $items = NavigationItem::orderBy('display_order')
@@ -55,6 +65,6 @@ class NavigationItemController extends Controller implements HasMiddleware
         ]);
         DB::commit();
 
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.navigation-items.index');
     }
 }
