@@ -18,12 +18,12 @@ class NavigationItem extends Model
 
     public function parent()
     {
-        $this->belongsTo(NavigationItem::class, 'master_id');
+        return $this->belongsTo(NavigationItem::class, 'master_id');
     }
 
     public function children()
     {
-        $this->hasMany(NavigationItem::class, 'master_id')
+        return $this->hasMany(NavigationItem::class, 'master_id')
             ->orderBy('display_order');
     }
 }
