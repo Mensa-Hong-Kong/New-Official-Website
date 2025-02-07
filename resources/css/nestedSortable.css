@@ -1,0 +1,68 @@
+ol.root {
+    min-width: 100%;
+}
+
+ol {
+    max-width: 450px;
+    padding-left: 25px;
+}
+
+ol.sortable,ol.sortable ol {
+    list-style-type: none;
+}
+
+.sortable li div {
+    border: 1px solid #d4d4d4;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    border-color: #D4D4D4 #D4D4D4 #BCBCBC;
+}
+
+li.mjs-nestedSortable-collapsed.mjs-nestedSortable-hovering div {
+    border-color: #999;
+}
+
+.disclose, .expandEditor {
+    cursor: pointer;
+    width: 20px;
+    display: none;
+}
+
+.sortable li.mjs-nestedSortable-collapsed > ol {
+    display: none;
+}
+
+.sortable li.mjs-nestedSortable-branch > div > .disclose {
+    display: inline-block;
+}
+
+.sortable span.ui-icon {
+    display: inline-block;
+}
+
+.menuDiv {
+    background: #EBEBEB;
+}
+
+.menuEdit {
+    background: #FFF;
+}
+
+.itemTitle {
+    vertical-align: middle;
+}
+
+.button {
+    cursor: pointer;
+}
+
+
+ol, ul {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+input {
+    vertical-align: text-bottom;
+}
