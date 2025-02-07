@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\NavigationItemRequest;
+use App\Http\Requests\Admin\NavigationItem\FormRequest;
 use App\Models\NavigationItem;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -47,7 +47,7 @@ class NavigationItemController extends Controller implements HasMiddleware
             ->with('displayOptions', $displayOptions);
     }
 
-    public function store(NavigationItemRequest $request)
+    public function store(FormRequest $request)
     {
         DB::beginTransaction();
         if ($request->master_id == 0) {

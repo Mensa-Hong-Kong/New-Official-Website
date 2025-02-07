@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\NavigationItem;
 
 use App\Models\NavigationItem;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest as BaseFormRequest;
 
-class NavigationItemRequest extends FormRequest
+class FormRequest extends BaseFormRequest
 {
     public function authorize(): bool
     {
