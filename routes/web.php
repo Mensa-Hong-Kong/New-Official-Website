@@ -119,6 +119,8 @@ Route::middleware('auth')->group(function () {
             Route::resource('navigation-items', AdmissionNavigationItemController::class)
                 ->only(['index', 'create', 'store'])
                 ->whereNumber('navigation_item');
+            Route::match(['put', 'patch'], 'navigation-items/display-order', [AdmissionNavigationItemController::class, 'displayOrder'])
+                ->name('navigation-items.display-order.update');
         });
 });
 
