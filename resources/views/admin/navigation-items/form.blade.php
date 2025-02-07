@@ -4,7 +4,7 @@
                 <select class="form-select" id="validationMaster" name="master_id" required>
                     <option value="" selected disabled>Please display order master</option>
                     <option value="0">root</option>
-                    @include('admin.navigation-items.master-option', ['items' => $items, 'masterID' => null, 'layer' => 1])
+                    @include('admin.navigation-items.master-options', ['items' => $items, 'masterID' => null, 'layer' => 1])
                 </select>
                 <div id="masterFeedback" class="valid-feedback">
                     Looks good!
