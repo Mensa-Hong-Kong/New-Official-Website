@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
                 ->except('show')
                 ->whereNumber('custom_page');
             Route::resource('navigation-items', AdmissionNavigationItemController::class)
-                ->only(['create', 'store'])
+                ->only(['index', 'create', 'store'])
                 ->whereNumber('navigation_item');
         });
 });
