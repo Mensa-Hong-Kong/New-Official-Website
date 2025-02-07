@@ -190,7 +190,7 @@ class StoreTest extends TestCase
             route('admin.navigation-items.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute('admin.navigation-items.index');
     }
 
     public function test_happy_case_when_has_url()
@@ -201,6 +201,6 @@ class StoreTest extends TestCase
             route('admin.navigation-items.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute('admin.navigation-items.index');
     }
 }
