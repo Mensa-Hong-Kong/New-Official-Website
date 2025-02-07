@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\NavigationItem\FormRequest;
+use App\Http\Requests\Admin\NavigationItem\DisplayOrderRequest;
 use App\Models\NavigationItem;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -66,5 +67,42 @@ class NavigationItemController extends Controller implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.navigation-items.index');
+    }
+
+    public function displayOrder(DisplayOrderRequest $request)
+    {
+        $IDs = [];
+        $masterIdCase = [];
+        $displayOrderCase = [];
+        foreach($request->display_order as $masterID => $array) {
+            foreach (array_values($array) as $order => $id) {
+                $IDs[] = $id;
+                $masterIdCase[] = "WHEN id = $id THEN " . ($masterID == "0" ? 'NULL' : $masterID);
+                $displayOrderCase[] = "WHEN id = $id THEN $order";
+            }
+        }
+        $masterIdCase = implode(' ', $masterIdCase);
+        $displayOrderCase = implode(' ', $displayOrderCase);
+        NavigationItem::whereIn('id', $IDs)
+            ->update([
+                'master_id' => DB::raw("(CASE $masterIdCase ELSE master_id END)"),
+                'display_order' => DB::raw("(CASE $displayOrderCase ELSE display_order END)"),
+            ]);
+        $return = [
+            'success' => 'The display order update success!',
+            'display_order' => []
+        ];
+        $items = NavigationItem::orderBy('display_order')
+            ->get(['id', 'master_id'])
+            ->pluck('master_id', 'id')
+            ->toArray();
+        foreach(array_unique($items) as $masterID) {
+            $return['display_order'][$masterID ?? 0] = [];
+        }
+        foreach($items as $id => $masterID) {
+            $return['display_order'][$masterID ?? 0][] = $id;
+        }
+
+        return $return;
     }
 }
