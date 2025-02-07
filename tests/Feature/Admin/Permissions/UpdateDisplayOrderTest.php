@@ -24,13 +24,8 @@ class UpdateDisplayOrderTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->putJson(
-            route(
-                'admin.permissions.display-order.update',
+            route('admin.permissions.display-order.update'),
                 [
-                    'permission' => Permission::inRandomOrder()
-                        ->first(),
-                ]
-            ), [
                 'display_order' => Permission::inRandomOrder()
                     ->get('display_order')
                     ->pluck('display_order')
