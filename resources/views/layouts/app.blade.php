@@ -350,7 +350,7 @@
                 </div>
             </aside>
         @endif
-        <main>
+        <main class="w-100">
             @yield('main')
         </main>
     </div>
