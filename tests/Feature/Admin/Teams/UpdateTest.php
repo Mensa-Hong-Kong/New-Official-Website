@@ -247,7 +247,9 @@ class UpdateTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.update',
-                ['team' => Team::inRandomOrder()->first()]
+                [
+                    'team' => Team::where('type_id', $data['type_id'])
+                        ->inRandomOrder()->first()]
             ),
             $data
         );

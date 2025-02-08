@@ -33,6 +33,12 @@ class FormRequest extends BaseFormRequest
                     $maxDisplayOrder++;
                 }
             } else {
+                if (
+                    $maxDisplayOrder !== null &&
+                    $this->type_id != $this->route('team')->type_id
+                ) {
+                    $maxDisplayOrder++;
+                }
                 $unique = $unique->ignore($this->route('team'));
             }
             if ($maxDisplayOrder === null) {

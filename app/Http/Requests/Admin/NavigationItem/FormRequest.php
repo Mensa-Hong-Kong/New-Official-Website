@@ -28,10 +28,18 @@ class FormRequest extends BaseFormRequest
                 $maxDisplayOrder = NavigationItem::where('master_id', $this->master_id);
             }
             $maxDisplayOrder = $maxDisplayOrder->max('display_order');
+            if ($this->method() == 'POST') {
+                if ($maxDisplayOrder !== null) {
+                    ++$maxDisplayOrder;
+                }
+            } else if (
+                $maxDisplayOrder !== null &&
+                $this->master_id != $this->route('navigation_item')->master_id
+            ) {
+                ++$maxDisplayOrder;
+            }
             if ($maxDisplayOrder === null) {
                 $maxDisplayOrder = 0;
-            } else {
-                $maxDisplayOrder++;
             }
             $return['display_order'] .= "|max:$maxDisplayOrder";
         }
