@@ -69,6 +69,32 @@ class NavigationItemController extends Controller implements HasMiddleware
         return redirect()->route('admin.navigation-items.index');
     }
 
+    public function edit(NavigationItem $navigationItem)
+    {
+        $items = NavigationItem::orderBy('display_order')
+            ->get();
+        $displayOptions = array_fill_keys($items->pluck('id')->toArray(), []);
+        $displayOptions[0] = [];
+        foreach ($items as $item) {
+            $displayOptions[$item->master_id ?? 0][$item->display_order] = "before \"$item->name\"";
+        }
+        foreach ($displayOptions as $masterID => $array) {
+            if (count($array)) {
+                if($masterID == $navigationItem->master_id) {
+                    $displayOptions[$masterID][max(array_keys($array))] = 'latest';
+                } else {
+                    $displayOptions[$masterID][max(array_keys($array)) + 1] = 'latest';
+                }
+            }
+            $displayOptions[$masterID][0] = 'top';
+        }
+
+        return view('admin.navigation-items.edit')
+            ->with('item', $navigationItem)
+            ->with('items', $items)
+            ->with('displayOptions', $displayOptions);
+    }
+
     public function update(FormRequest $request, NavigationItem $navigationItem)
     {
         DB::beginTransaction();
