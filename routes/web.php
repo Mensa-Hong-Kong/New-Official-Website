@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
                 ->except('show')
                 ->whereNumber('custom_page');
             Route::resource('navigation-items', AdmissionNavigationItemController::class)
-                ->except(['show', 'edit', 'destroy'])
+                ->except(['show', 'destroy'])
                 ->whereNumber('navigation_item');
             Route::match(['put', 'patch'], 'navigation-items/display-order', [AdmissionNavigationItemController::class, 'displayOrder'])
                 ->name('navigation-items.display-order.update');
