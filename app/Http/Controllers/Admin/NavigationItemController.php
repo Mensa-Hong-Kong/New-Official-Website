@@ -130,6 +130,13 @@ class NavigationItemController extends Controller implements HasMiddleware
         return redirect()->route('admin.navigation-items.index');
     }
 
+    public function destroy(NavigationItem $navigationItem)
+    {
+        $navigationItem->delete();
+
+        return ['success' => 'The display order update success!'];
+    }
+
     public function displayOrder(DisplayOrderRequest $request)
     {
         $IDs = [];
