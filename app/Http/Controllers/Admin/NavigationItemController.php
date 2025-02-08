@@ -80,7 +80,7 @@ class NavigationItemController extends Controller implements HasMiddleware
         }
         foreach ($displayOptions as $masterID => $array) {
             if (count($array)) {
-                if($masterID == $navigationItem->master_id) {
+                if ($masterID == $navigationItem->master_id) {
                     $displayOptions[$masterID][max(array_keys($array))] = 'latest';
                 } else {
                     $displayOptions[$masterID][max(array_keys($array)) + 1] = 'latest';

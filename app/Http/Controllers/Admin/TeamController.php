@@ -111,8 +111,8 @@ class TeamController extends Controller implements HasMiddleware
                     $displayOptions[$type->id][$thisTeam->display_order] = "before \"$team->name\"";
                 }
             }
-            if(count($displayOptions[$type->id])) {
-                if($type->id == $team->type_id) {
+            if (count($displayOptions[$type->id])) {
+                if ($type->id == $team->type_id) {
                     $displayOptions[$type->id][max(array_keys($displayOptions[$type->id]))] = 'latest';
                 } else {
                     $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
