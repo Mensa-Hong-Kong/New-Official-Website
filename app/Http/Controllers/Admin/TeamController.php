@@ -112,7 +112,10 @@ class TeamController extends Controller implements HasMiddleware
                 }
             }
             if (count($displayOptions[$type->id])) {
-                if ($type->id == $team->type_id) {
+                if (
+                    $type->id == $team->type_id &&
+                    $team->display_order == max(array_keys($displayOptions[$type->id]))
+                ) {
                     $displayOptions[$type->id][max(array_keys($displayOptions[$type->id]))] = 'latest';
                 } else {
                     $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
@@ -132,7 +135,15 @@ class TeamController extends Controller implements HasMiddleware
     public function update(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
-        if ($team->display_order > $request->display_order) {
+        if ($request->display_order > $request->maxDisplayOrder) {
+            Team::where('type_id', $team->type_id)
+                ->where('display_order', '>', $team->display_order)
+                ->decrement('display_order');
+            $request->display_order -= 1;
+        } elseif (
+            $team->type_id > $request->type_id ||
+            $team->display_order > $request->display_order
+        ) {
             Team::where('type_id', $request->type_id)
                 ->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');

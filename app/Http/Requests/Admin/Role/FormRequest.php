@@ -28,12 +28,23 @@ class FormRequest extends BaseFormRequest
                     ->pluck('id')
                     ->toArray()
             );
-        if ($this->method() == 'POST') {
-            if ($maxDisplayOrder !== null) {
+        if ($this->method() != 'POST') {
+            $unique = $unique->ignore($this->route('role'));
+            $this->merge([
+                'row' => TeamRole::firstWhere([
+                    'team_id' => $this->route('team')->id,
+                    'role_id' => $this->route('role')->id,
+                ]),
+                'maxDisplayOrder' => $maxDisplayOrder ?? 0,
+            ]);
+        }
+        if ($maxDisplayOrder !== null) {
+            if (
+                $this->method() == 'POST' ||
+                $this->row->display_order ?? $maxDisplayOrder != -1
+            ) {
                 $maxDisplayOrder++;
             }
-        } else {
-            $unique = $unique->ignore($this->route('role'));
         }
         if ($maxDisplayOrder === null) {
             $maxDisplayOrder = 0;

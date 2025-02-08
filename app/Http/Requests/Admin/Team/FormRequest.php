@@ -28,20 +28,20 @@ class FormRequest extends BaseFormRequest
                 ->where('type_id', $this->type_id);
             $maxDisplayOrder = Team::where('type_id', $this->type_id)
                 ->max('display_order');
-            if ($this->method() == 'POST') {
-                if ($maxDisplayOrder !== null) {
-                    $maxDisplayOrder++;
-                }
-            } else {
+            $this->merge(['maxDisplayOrder' => $maxDisplayOrder ?? 0]);
+            if ($this->method() != 'POST') {
+                $unique = $unique->ignore($this->route('team'));
+            }
+            if ($maxDisplayOrder !== null) {
                 if (
-                    $maxDisplayOrder !== null &&
-                    $this->type_id != $this->route('team')->type_id
+                    $this->method() == 'POST' || (
+                        $this->type_id != $this->route('team')->type_id ||
+                        $maxDisplayOrder != $this->route('team')->display_order
+                    )
                 ) {
                     $maxDisplayOrder++;
                 }
-                $unique = $unique->ignore($this->route('team'));
-            }
-            if ($maxDisplayOrder === null) {
+            } else {
                 $maxDisplayOrder = 0;
             }
             $return['name'][] = $unique;

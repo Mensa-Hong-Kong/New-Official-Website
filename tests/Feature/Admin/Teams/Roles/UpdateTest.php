@@ -283,10 +283,13 @@ class UpdateTest extends TestCase
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
             ->first();
-        $role = $team->roles()->inRandomOrder()->first();
+        $maxDisplayOrder = TeamRole::where('team_id', $team->id)
+            ->max('display_order');
+        $role = $team->roles()
+            ->whereNot('display_order', $maxDisplayOrder)
+            ->inRandomOrder()->first();
         $data = $this->happyCase;
-        $data['display_order'] = TeamRole::where('team_id', $team->id)
-            ->max('display_order') + 1;
+        $data['display_order'] = $maxDisplayOrder + 1;
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.teams.roles.update',

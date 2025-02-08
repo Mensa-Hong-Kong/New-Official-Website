@@ -83,11 +83,18 @@ class RoleController extends Controller implements HasMiddleware
             $modulePermissions[$row->module_id][$row->permission_id] = $row->id;
         }
         $displayOptions = [];
-        foreach ($team->roles as $role) {
-            $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
+        foreach ($team->roles as $thisRole) {
+            if ($thisRole->id == $role->id) {
+                $displayOption = $role->display_order;
+            }
+            $displayOptions[$thisRole->pivot->display_order] = "before \"$thisRole->name\"";
         }
         $displayOptions[0] = 'top';
-        $displayOptions[max(array_keys($displayOptions))] = 'latest';
+        if ($displayOption == max(array_keys($displayOptions))) {
+            $displayOptions[max(array_keys($displayOptions))] = 'latest';
+        } else {
+            $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
+        }
         ksort($displayOptions);
         $roleHasModulePermissions = ModulePermission::whereHas(
             'roles', function ($query) use ($team, $role) {
@@ -124,30 +131,32 @@ class RoleController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $role->update(['name' => $request->name]);
-        $teamRole = TeamRole::where('team_id', $team->id)
-            ->where('role_id', $role->id)
-            ->first();
-        if ($teamRole->display_order > $request->display_order) {
+        if ($request->display_order > $request->maxDisplayOrder) {
+            TeamRole::where('team_id', $team->id)
+                ->where('display_order', '>', $request->row->display_order)
+                ->decrement('display_order');
+            $request->display_order -= 1;
+        } elseif ($request->row->display_order > $request->display_order) {
             TeamRole::where('team_id', $team->id)
                 ->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
             TeamRole::where('team_id', $team->id)
-                ->where('display_order', '>', $teamRole->display_order)
+                ->where('display_order', '>', $request->row->display_order)
                 ->decrement('display_order');
-        } elseif ($teamRole->display_order < $request->display_order) {
+        } elseif ($request->row->display_order < $request->display_order) {
             TeamRole::where('team_id', $team->id)
-                ->where('display_order', '>', $teamRole->display_order)
+                ->where('display_order', '>', $request->row->display_order)
                 ->decrement('display_order');
             TeamRole::where('team_id', $team->id)
                 ->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
         }
-        $teamRole->update([
+        $request->row->update([
             'name' => "{$team->type->name}:{$team->name}:{$role->name}",
             'display_order' => $request->display_order,
         ]);
         $modulePermissions = $request->module_permissions ?? [];
-        $teamRole->syncPermissions(array_map('intval', $modulePermissions));
+        $request->row->syncPermissions(array_map('intval', $modulePermissions));
         DB::commit();
 
         return redirect()->route('admin.teams.show', ['team' => $team]);

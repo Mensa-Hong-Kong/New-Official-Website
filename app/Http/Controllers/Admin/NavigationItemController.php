@@ -80,7 +80,10 @@ class NavigationItemController extends Controller implements HasMiddleware
         }
         foreach ($displayOptions as $masterID => $array) {
             if (count($array)) {
-                if ($masterID == $navigationItem->master_id) {
+                if (
+                    $masterID == $navigationItem->master_id &&
+                    $navigationItem->display_order == max(array_keys($array))
+                ) {
                     $displayOptions[$masterID][max(array_keys($array))] = 'latest';
                 } else {
                     $displayOptions[$masterID][max(array_keys($array)) + 1] = 'latest';
@@ -108,7 +111,14 @@ class NavigationItemController extends Controller implements HasMiddleware
         } else {
             $decrement = NavigationItem::where('master_id', $navigationItem->master_id);
         }
-        if ($navigationItem->display_order > $request->display_order) {
+        if ($request->display_order > $request->maxDisplayOrder) {
+            $decrement->where('display_order', '>', $navigationItem->display_order)
+                ->decrement('display_order');
+            $request->display_order -= 1;
+        } elseif (
+            $navigationItem->master_id != $request->master_id ||
+            $navigationItem->display_order > $request->display_order
+        ) {
             $increment->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
             $decrement->where('display_order', '>', $navigationItem->display_order)
