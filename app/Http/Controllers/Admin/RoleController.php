@@ -127,14 +127,14 @@ class RoleController extends Controller implements HasMiddleware
         $teamRole = TeamRole::where('team_id', $team->id)
             ->where('role_id', $role->id)
             ->first();
-        if($teamRole->display_order > $request->display_order) {
+        if ($teamRole->display_order > $request->display_order) {
             TeamRole::where('team_id', $team->id)
                 ->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
             TeamRole::where('team_id', $team->id)
                 ->where('display_order', '>', $teamRole->display_order)
                 ->decrement('display_order');
-        } else if($teamRole->display_order < $request->display_order) {
+        } elseif ($teamRole->display_order < $request->display_order) {
             TeamRole::where('team_id', $team->id)
                 ->where('display_order', '>', $teamRole->display_order)
                 ->decrement('display_order');

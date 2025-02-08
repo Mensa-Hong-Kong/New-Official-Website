@@ -264,17 +264,17 @@ class UpdateTest extends TestCase
         $item = NavigationItem::factory()
             ->state([
                 'master_id' => null,
-                'display_order' => 1
+                'display_order' => 1,
             ])->create();
         $subItem1 = NavigationItem::factory()
             ->state([
                 'master_id' => $item->id,
-                'display_order' => 0
+                'display_order' => 0,
             ])->create();
         $subItem2 = NavigationItem::factory()
             ->state([
                 'master_id' => $item->id,
-                'display_order' => 1
+                'display_order' => 1,
             ])->create();
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -302,17 +302,17 @@ class UpdateTest extends TestCase
         $item = NavigationItem::factory()
             ->state([
                 'master_id' => null,
-                'display_order' => 1
+                'display_order' => 1,
             ])->create();
         $subItem1 = NavigationItem::factory()
             ->state([
                 'master_id' => $item->id,
-                'display_order' => 0
+                'display_order' => 0,
             ])->create();
         $subItem2 = NavigationItem::factory()
             ->state([
                 'master_id' => $item->id,
-                'display_order' => 1
+                'display_order' => 1,
             ])->create();
         $this->item->update(['url' => 'https://google.com']);
         $response = $this->actingAs($this->user)->putJson(

@@ -126,14 +126,14 @@ class TeamController extends Controller implements HasMiddleware
     public function update(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
-        if($team->display_order > $request->display_order) {
+        if ($team->display_order > $request->display_order) {
             Team::where('type_id', $request->type_id)
                 ->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
             Team::where('type_id', $team->type_id)
                 ->where('display_order', '>', $team->display_order)
                 ->decrement('display_order');
-        } else if($team->display_order < $request->display_order) {
+        } elseif ($team->display_order < $request->display_order) {
             Team::where('type_id', $team->type_id)
                 ->where('display_order', '>', $team->display_order)
                 ->decrement('display_order');

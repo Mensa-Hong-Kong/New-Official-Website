@@ -82,12 +82,12 @@ class NavigationItemController extends Controller implements HasMiddleware
         } else {
             $decrement = NavigationItem::where('master_id', $navigationItem->master_id);
         }
-        if($navigationItem->display_order > $request->display_order) {
+        if ($navigationItem->display_order > $request->display_order) {
             $increment->where('display_order', '>=', $request->display_order)
                 ->increment('display_order');
             $decrement->where('display_order', '>', $navigationItem->display_order)
                 ->decrement('display_order');
-        } else if($navigationItem->display_order < $request->display_order) {
+        } elseif ($navigationItem->display_order < $request->display_order) {
             $decrement->where('display_order', '>', $navigationItem->display_order)
                 ->decrement('display_order');
             $increment->where('display_order', '>=', $request->display_order)

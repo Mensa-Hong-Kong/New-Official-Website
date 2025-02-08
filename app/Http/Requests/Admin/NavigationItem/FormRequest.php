@@ -30,13 +30,13 @@ class FormRequest extends BaseFormRequest
             $maxDisplayOrder = $maxDisplayOrder->max('display_order');
             if ($this->method() == 'POST') {
                 if ($maxDisplayOrder !== null) {
-                    ++$maxDisplayOrder;
+                    $maxDisplayOrder++;
                 }
-            } else if (
+            } elseif (
                 $maxDisplayOrder !== null &&
                 $this->master_id != $this->route('navigation_item')->master_id
             ) {
-                ++$maxDisplayOrder;
+                $maxDisplayOrder++;
             }
             if ($maxDisplayOrder === null) {
                 $maxDisplayOrder = 0;
