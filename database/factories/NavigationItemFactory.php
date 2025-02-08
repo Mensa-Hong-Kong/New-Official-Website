@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\District;
 use App\Models\NavigationItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,12 +15,13 @@ class NavigationItemFactory extends Factory
         $masterIDs = NavigationItem::get('id')->pluck('id')->toArray();
         $masterIDs[] = null;
         $masterID = fake()->randomElement($masterIDs);
-        if($masterID) {
+        if ($masterID) {
             $maxDisplayOrder = NavigationItem::where('master_id', $masterID);
         } else {
             $maxDisplayOrder = NavigationItem::whereNull('master_id');
         }
         $maxDisplayOrder = $maxDisplayOrder->max('display_order');
+
         return [
             'master_id' => $masterID,
             'name' => fake()->word(),

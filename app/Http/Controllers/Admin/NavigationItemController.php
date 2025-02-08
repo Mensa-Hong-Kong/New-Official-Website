@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\NavigationItem\FormRequest;
 use App\Http\Requests\Admin\NavigationItem\DisplayOrderRequest;
+use App\Http\Requests\Admin\NavigationItem\FormRequest;
 use App\Models\NavigationItem;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -74,10 +74,10 @@ class NavigationItemController extends Controller implements HasMiddleware
         $IDs = [];
         $masterIdCase = [];
         $displayOrderCase = [];
-        foreach($request->display_order as $masterID => $array) {
+        foreach ($request->display_order as $masterID => $array) {
             foreach (array_values($array) as $order => $id) {
                 $IDs[] = $id;
-                $masterIdCase[] = "WHEN id = $id THEN " . ($masterID == "0" ? 'NULL' : $masterID);
+                $masterIdCase[] = "WHEN id = $id THEN ".($masterID == '0' ? 'NULL' : $masterID);
                 $displayOrderCase[] = "WHEN id = $id THEN $order";
             }
         }
@@ -90,16 +90,16 @@ class NavigationItemController extends Controller implements HasMiddleware
             ]);
         $return = [
             'success' => 'The display order update success!',
-            'display_order' => []
+            'display_order' => [],
         ];
         $items = NavigationItem::orderBy('display_order')
             ->get(['id', 'master_id'])
             ->pluck('master_id', 'id')
             ->toArray();
-        foreach(array_unique($items) as $masterID) {
+        foreach (array_unique($items) as $masterID) {
             $return['display_order'][$masterID ?? 0] = [];
         }
-        foreach($items as $id => $masterID) {
+        foreach ($items as $id => $masterID) {
             $return['display_order'][$masterID ?? 0][] = $id;
         }
 

@@ -35,7 +35,7 @@ class UpdateDisplayOrderTest extends TestCase
         $this->happyCase = [
             'display_order' => [
                 0 => [$item1->id, $item2->id],
-                $item1->id => [$item1point1->id]
+                $item1->id => [$item1point1->id],
             ],
         ];
     }
@@ -197,8 +197,8 @@ class UpdateDisplayOrderTest extends TestCase
         $data = [
             'display_order' => [
                 0 => [$item1point1ID, $item1ID],
-                $item1point1ID => [$item2ID]
-            ]
+                $item1point1ID => [$item2ID],
+            ],
         ];
         $response = $this->actingAs($this->user)->putJson(
             route('admin.navigation-items.display-order.update'),
