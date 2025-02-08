@@ -32,10 +32,7 @@
                         @foreach ($displayOptions as $typeID => $array)
                             @foreach ($array as $key => $value)
                                 <option value="{{ $key }}" data-typeid="{{ $typeID }}"
-                                    @hidden(!(
-                                        $typeID == old('type_id', $team->type_id ?? '') &&
-                                        $key == old('display_order', $team->display_order ?? '')
-                                    ))
+                                    @hidden($typeID != old('type_id', $team->type_id ?? ''))
                                     @selected(
                                         $typeID == old('type_id', $team->type_id ?? '') &&
                                         $key == old('display_order', $team->display_order ?? '')
