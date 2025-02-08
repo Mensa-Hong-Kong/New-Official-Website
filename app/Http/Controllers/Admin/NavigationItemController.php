@@ -69,6 +69,41 @@ class NavigationItemController extends Controller implements HasMiddleware
         return redirect()->route('admin.navigation-items.index');
     }
 
+    public function update(FormRequest $request, NavigationItem $navigationItem)
+    {
+        DB::beginTransaction();
+        if ($request->master_id == 0) {
+            $increment = NavigationItem::whereNull('master_id');
+        } else {
+            $increment = NavigationItem::where('master_id', $request->master_id);
+        }
+        if (! $navigationItem->master_id) {
+            $decrement = NavigationItem::whereNull('master_id');
+        } else {
+            $decrement = NavigationItem::where('master_id', $navigationItem->master_id);
+        }
+        if($navigationItem->display_order > $request->display_order) {
+            $increment->where('display_order', '>=', $request->display_order)
+                ->increment('display_order');
+            $decrement->where('display_order', '>', $navigationItem->display_order)
+                ->decrement('display_order');
+        } else if($navigationItem->display_order < $request->display_order) {
+            $decrement->where('display_order', '>', $navigationItem->display_order)
+                ->decrement('display_order');
+            $increment->where('display_order', '>=', $request->display_order)
+                ->increment('display_order');
+        }
+        $navigationItem->update([
+            'master_id' => $request->master_id == 0 ? null : $request->master_id,
+            'name' => $request->name,
+            'url' => $request->url,
+            'display_order' => $request->display_order,
+        ]);
+        DB::commit();
+
+        return redirect()->route('admin.navigation-items.index');
+    }
+
     public function displayOrder(DisplayOrderRequest $request)
     {
         $IDs = [];
