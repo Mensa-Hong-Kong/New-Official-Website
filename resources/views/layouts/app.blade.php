@@ -312,7 +312,7 @@
                                                 'admin.custom-pages.'
                                             ),
                                         ])>
-                                        Custom Page
+                                        Custom Pages
                                     </button>
                                     <ul id="asideNavCustomPage" @class([
                                         'accordion-collapse',
@@ -359,7 +359,7 @@
                                                 'admin.navigation-items.'
                                             ),
                                         ])>
-                                        Custom Page
+                                        Navigation Items
                                     </button>
                                     <ul id="asideNavNavigationItem" @class([
                                         'accordion-collapse',
@@ -385,7 +385,7 @@
                                         </li>
                                         @if(Route::current()->getName() == 'admin.navigation-items.edit')
                                             <li>
-                                                <a href="{{ route('admin.navigation-items.edit', ['custom_page' => $page]) }}"
+                                                <a href="{{ route('admin.navigation-items.edit', ['custom_page' => $item]) }}"
                                                     class="nav-link align-items-center active">Edit</a>
                                             </li>
                                         @endif
