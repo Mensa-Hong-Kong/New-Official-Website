@@ -385,7 +385,7 @@
                                         </li>
                                         @if(Route::current()->getName() == 'admin.navigation-items.edit')
                                             <li>
-                                                <a href="{{ route('admin.navigation-items.edit', ['custom_page' => $item]) }}"
+                                                <a href="{{ route('admin.navigation-items.edit', ['navigation_item' => $item]) }}"
                                                     class="nav-link align-items-center active">Edit</a>
                                             </li>
                                         @endif
