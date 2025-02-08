@@ -87,7 +87,7 @@ class RoleController extends Controller implements HasMiddleware
             $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
         }
         $displayOptions[0] = 'top';
-        $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
+        $displayOptions[max(array_keys($displayOptions))] = 'latest';
         ksort($displayOptions);
         $roleHasModulePermissions = ModulePermission::whereHas(
             'roles', function ($query) use ($team, $role) {
