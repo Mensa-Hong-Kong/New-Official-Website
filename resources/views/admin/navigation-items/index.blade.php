@@ -4,7 +4,7 @@
     <section class="container">
         <h2 class="fw-bold mb-2 text-uppercase">Navigation Items</h2>
         @if(count($items))
-            @include('admin.navigation-items.navigation-items', ['items' => $items, 'isRoot' => true])
+            @include('admin.navigation-items.navigation-items', ['items' => $items, 'id' => 0])
         @else
             <div class="alert alert-danger" role="alert">
                 No Result
