@@ -345,6 +345,53 @@
                                     </ul>
                                 </li>
                             @endcan
+                            @can('Edit:Navigation Item')
+                                <li class="nav-item accordion">
+                                    <button role="button"
+                                        data-bs-toggle="collapse" aria-expanded="true"
+                                        data-bs-target="#asideNavNavigationItem" aria-controls="asideNavNavigationItem"
+                                        style="height: 0em"
+                                        @class([
+                                            'nav-item',
+                                            'accordion-button',
+                                            'collapsed' => !str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.navigation-items.'
+                                            ),
+                                        ])>
+                                        Custom Page
+                                    </button>
+                                    <ul id="asideNavNavigationItem" @class([
+                                        'accordion-collapse',
+                                        'collapse',
+                                        'show' => str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.navigation-items.'
+                                        ),
+                                    ])>
+                                        <li>
+                                            <a href="{{ route('admin.navigation-items.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.navigation-items.index',
+                                            ])>Index</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('admin.navigation-items.create') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.navigation-items.create',
+                                            ])>Create</a>
+                                        </li>
+                                        @if(Route::current()->getName() == 'admin.navigation-items.edit')
+                                            <li>
+                                                <a href="{{ route('admin.navigation-items.edit', ['custom_page' => $page]) }}"
+                                                    class="nav-link align-items-center active">Edit</a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </li>
+                            @endcan
                         </ul>
                     </nav>
                 </div>
