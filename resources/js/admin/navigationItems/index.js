@@ -3,6 +3,10 @@ import '../../../../node_modules/jquery-ui/dist/themes/smoothness/jquery-ui.min.
 import '../../../../node_modules/jquery-ui/dist/jquery-ui.min';
 import '../../..//css/nestedSortable.css';
 
+import { post } from "../../submitForm";
+
+let submitting = 'loading';
+
 /*
  * jQuery UI Nested Sortable
  * v 2.1a / 2016-02-04
@@ -383,6 +387,7 @@ import '../../..//css/nestedSortable.css';
 
 								if ( !$(itemElement).children(o.listType).length) {
 									itemElement.appendChild(newList);
+                                    newList.id = 'root_'+itemElement.id.replace('menuItem_', ''); // custom by us
 									if (o.isTree) {
 										$(itemElement)
 											.removeClass(o.leafClass)
@@ -922,3 +927,151 @@ $('.disclose').on('click', function() {
     $(this).closest('li').toggleClass('mjs-nestedSortable-collapsed').toggleClass('mjs-nestedSortable-expanded');
     $(this).toggleClass('ui-icon-plusthick').toggleClass('ui-icon-minusthick');
 });
+
+// jQuery UI Nested Sortable end
+
+const editDisplayOrder = document.getElementById('editDisplayOrder');
+const saveDisplayOrder = document.getElementById('saveDisplayOrder');
+const cancelDisplayOrder = document.getElementById('cancelDisplayOrder');
+const savingDisplayOrder = document.getElementById('savingDisplayOrder');
+
+let displayOrder;
+
+function closeEditDisplayOrder() {
+    saveDisplayOrder.hidden = true;
+    cancelDisplayOrder.hidden = true;
+    savingDisplayOrder.hidden = true;
+    for(let div of $('.sortable li div.menuDiv')) {
+        div.style.cursor = 'auto';
+    }
+    let IDs = [];
+    let masterIDs = [];
+    for(let masterID in displayOrder) {
+        masterIDs.push(+masterID)
+        let root = document.getElementById('root_'+masterID);
+        if(!root) {
+            root = document.createElement('ol');
+            root.id = 'root_'+masterID;
+            document.getElementById('menuItem_'+masterID).appendChild(root);
+        }
+        for(let id of displayOrder[masterID]) {
+            IDs.push(+id);
+            root.appendChild(document.getElementById('menuItem_'+id));
+        }
+    }
+    for(let id of IDs.filter(value => !masterIDs.includes(value))) {
+        let root = document.getElementById('root_'+id);
+        if(root) {
+            root.remove();
+        }
+    }
+    editDisplayOrder.hidden = false;
+}
+
+cancelDisplayOrder.addEventListener(
+    'click', function(event) {
+        $('ol.sortable').nestedSortable('destroy');
+        closeEditDisplayOrder();
+    }
+);
+
+function updataDisplayOrderSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    displayOrder = response.data.display_order;
+    closeEditDisplayOrder();
+    submitting = '';
+}
+
+function updataDisplayOrderFailCallback(error) {
+    if(error.status == 422) {
+        bootstrapAlert(error.data.errors.display_order);
+    }
+    savingDisplayOrder.hidden = true;
+    saveDisplayOrder.hidden = false;
+    cancelDisplayOrder.hidden = false;
+    $('ol.sortable').nestedSortable({
+        forcePlaceholderSize: true,
+        handle: 'div',
+        helper:	'clone',
+        items: 'li',
+        opacity: .6,
+        placeholder: 'placeholder',
+        revert: 250,
+        tabSize: 25,
+        tolerance: 'pointer',
+        toleranceElement: '> div',
+        maxLevels: 4,
+        isTree: true,
+        expandOnHover: 700,
+        startCollapsed: false,
+        excludeRoot: true,
+        rootID:"root_0"
+    });
+    submitting = '';
+}
+
+saveDisplayOrder.addEventListener(
+    'click', function(event) {
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'updateDisplayOrder'+submitAt;
+            if(submitting == 'updateDisplayOrder'+submitAt) {
+                let result = $('ol.sortable').nestedSortable('toArray', {startDepthCount: 0})
+                $('ol.sortable').nestedSortable('destroy');
+                saveDisplayOrder.hidden = true;
+                cancelDisplayOrder.hidden = true;
+                savingDisplayOrder.hidden = false;
+                let data = {display_order: {}};
+                for(let item of result) {
+                    if(!data['display_order'][item.parent_id == 'root_0' ? '0' : item.parent_id]) {
+                        data['display_order'][item.parent_id == 'root_0' ? '0' : item.parent_id] = [];
+                    }
+                    data['display_order'][item.parent_id == 'root_0' ? '0' : item.parent_id].push(item.id);
+                }
+                post(
+                    window.location.href+'/display-order',
+                    updataDisplayOrderSuccessCallback, updataDisplayOrderFailCallback,
+                    'put', data
+                );
+            }
+        }
+    }
+);
+
+editDisplayOrder.addEventListener(
+    'click', function(event) {
+        for(let div of $('.sortable li div.menuDiv')) {
+            div.style.cursor = 'move';
+        }
+        event.target.hidden = true;
+        $('ol.sortable').nestedSortable({
+            forcePlaceholderSize: true,
+            handle: 'div',
+            helper:	'clone',
+            items: 'li',
+            opacity: .6,
+            placeholder: 'placeholder',
+            revert: 250,
+            tabSize: 25,
+            tolerance: 'pointer',
+            toleranceElement: '> div',
+            maxLevels: 4,
+            isTree: true,
+            expandOnHover: 700,
+            startCollapsed: false,
+            excludeRoot: true,
+            rootID:"root_0"
+        });
+        displayOrder = {};
+        for(let item of $('ol.sortable').nestedSortable('toArray', {startDepthCount: 0})) {
+            if(!displayOrder[item.parent_id == 'root_0' ? '0' : item.parent_id]) {
+                displayOrder[item.parent_id == 'root_0' ? '0' : item.parent_id] = [];
+            }
+            displayOrder[item.parent_id == 'root_0' ? '0' : item.parent_id].push(item.id);
+        }
+        saveDisplayOrder.hidden = false;
+        cancelDisplayOrder.hidden = false;
+    }
+);
+
+submitting = '';
