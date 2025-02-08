@@ -11,10 +11,11 @@
                 </div>
                 <div class="col text-end">
                     @if($item->url)
-                        <a href="{{ $item->url }}" class="btn button btn-secondary">Url</a>
+                        <a href="{{ $item->url }}" class="btn button btn-primary">Url</a>
                     @else
                         <button class="btn button btn-secondary">Url</button>
                     @endif
+                    <a href="{{ route('admin.navigation-items.edit', ['navigation_item' => $item]) }}" class="btn button btn-primary">Edit</a>
                 </div>
             </div>
             @isset($item->children)
