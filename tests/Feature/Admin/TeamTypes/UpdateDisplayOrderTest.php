@@ -121,7 +121,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
     }
 
-    public function test_display_order_value_is_exists_on_database()
+    public function test_display_order_value_is_noy_exists_on_database()
     {
         $IDs = TeamType::inRandomOrder()
             ->get('id')

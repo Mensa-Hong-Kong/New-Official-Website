@@ -24,13 +24,8 @@ class UpdateDisplayOrderTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->putJson(
-            route(
-                'admin.permissions.display-order.update',
-                [
-                    'permission' => Permission::inRandomOrder()
-                        ->first(),
-                ]
-            ), [
+            route('admin.permissions.display-order.update'),
+            [
                 'display_order' => Permission::inRandomOrder()
                     ->get('display_order')
                     ->pluck('display_order')
@@ -126,7 +121,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
     }
 
-    public function test_display_order_value_is_exists_on_database()
+    public function test_display_order_value_is_not_exists_on_database()
     {
         $IDs = Permission::inRandomOrder()
             ->get('id')

@@ -141,7 +141,7 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $users->onEachSide(4)->links() }}
+            {{ $users->appends($append)->onEachSide(4)->links() }}
         @else
             <div class="alert alert-danger" role="alert">
                 No Result

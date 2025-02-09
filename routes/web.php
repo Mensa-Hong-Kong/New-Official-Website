@@ -3,13 +3,16 @@
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\CustomPageController as AdmissionCustomPageController;
 use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\NavigationItemController as AdmissionNavigationItemController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsAdministrator;
 use Illuminate\Support\Facades\Route;
@@ -71,13 +74,17 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
     Route::get('contacts/{contact}/send-verify-code', [ContactController::class, 'sendVerifyCode'])
-        ->name('contacts.send-verify-code');
+        ->name('contacts.send-verify-code')
+        ->whereNumber('contact');
     Route::post('contacts/{contact}/verify', [ContactController::class, 'verify'])
-        ->name('contacts.verify');
+        ->name('contacts.verify')
+        ->whereNumber('contact');
     Route::match(['put', 'patch'], 'contacts/{contact}/set-default', [ContactController::class, 'setDefault'])
-        ->name('contacts.set-default');
+        ->name('contacts.set-default')
+        ->whereNumber('contact');
     Route::resource('/contacts', ContactController::class)
-        ->only(['store', 'update', 'destroy']);
+        ->only(['store', 'update', 'destroy'])
+        ->whereNumber('contact');
 
     Route::get('/test', function () {
         return view('test');
@@ -92,42 +99,67 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::view('/', 'admin.index')->name('index');
             Route::resource('users', AdminUserController::class)
-                ->only(['index', 'show', 'update']);
+                ->only(['index', 'show', 'update'])
+                ->whereNumber('user');
             Route::match(['put', 'patch'], 'users/{user}/password', [AdminUserController::class, 'resetPassword'])
-                ->name('users.reset-password');
+                ->name('users.reset-password')
+                ->whereNumber('user');
             Route::resource('contacts', AdminContactController::class)
-                ->only(['store', 'update', 'destroy']);
+                ->only(['store', 'update', 'destroy'])
+                ->whereNumber('contact');
             Route::match(['put', 'patch'], 'contacts/{contact}/verify', [AdminContactController::class, 'verify'])
-                ->name('contacts.verify');
+                ->name('contacts.verify')
+                ->whereNumber('contact');
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
-                ->name('contacts.default');
+                ->name('contacts.default')
+                ->whereNumber('contact');
             Route::match(['put', 'patch'], 'team-types/display-order', [TeamTypeController::class, 'displayOrder'])
                 ->name('team-types.display-order.update');
             Route::resource('team-types', TeamTypeController::class)
-                ->only(['index', 'update']);
+                ->only(['index', 'update'])
+                ->whereNumber('team_type');
             Route::match(['put', 'patch'], 'teams/display-order', [TeamController::class, 'displayOrder'])
                 ->name('teams.display-order.update');
-            Route::resource('teams', TeamController::class);
+            Route::resource('teams', TeamController::class)
+                ->whereNumber('team');
             Route::match(['put', 'patch'], 'teams/{team}/roles/display-order', [RoleController::class, 'displayOrder'])
-                ->name('teams.roles.display-order.update');
+                ->name('teams.roles.display-order.update')
+                ->whereNumber('team');
             Route::resource('teams/{team}/roles', RoleController::class)
                 ->except(['index', 'show'])
-                ->names('teams.roles');
+                ->names('teams.roles')
+                ->whereNumber(['team', 'role']);
             Route::match(['put', 'patch'], 'modules/display-order', [ModuleController::class, 'displayOrder'])
                 ->name('modules.display-order.update');
             Route::resource('modules', ModuleController::class)
-                ->only(['index', 'update']);
+                ->only(['index', 'update'])
+                ->whereNumber('module');
             Route::match(['put', 'patch'], 'permissions/display-order', [PermissionController::class, 'displayOrder'])
                 ->name('permissions.display-order.update');
             Route::resource('permissions', PermissionController::class)
-                ->only(['index', 'update']);
+                ->only(['index', 'update'])
+                ->whereNumber('permission');
             Route::resource('admission-tests', AdminAdmissionTestController::class)
-                ->except(['edit', 'destroy']);
+                ->except(['edit', 'destroy'])
+                ->whereNumber('admission_test');
             Route::prefix('admission-tests/{admission_test}')->name('admission-tests.')->group(
                 function () {
                     Route::resource('proctors', ProctorController::class)
-                        ->only(['store', 'update', 'destroy']);
+                        ->only(['store', 'update', 'destroy'])
+                        ->whereNumber(['admission_test', 'proctor']);
                 }
             );
+            Route::resource('custom-pages', AdmissionCustomPageController::class)
+                ->except('show')
+                ->whereNumber('custom_page');
+            Route::resource('navigation-items', AdmissionNavigationItemController::class)
+                ->except(['show', 'destroy'])
+                ->whereNumber('navigation_item');
+            Route::match(['put', 'patch'], 'navigation-items/display-order', [AdmissionNavigationItemController::class, 'displayOrder'])
+                ->name('navigation-items.display-order.update');
         });
 });
+
+Route::get('/{pathname}', [PageController::class, 'customPage'])
+    ->where('pathname', '(.*)?')
+    ->name('custom-page');
