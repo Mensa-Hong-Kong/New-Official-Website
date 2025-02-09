@@ -10,10 +10,11 @@ class NavbarRoot extends Component
 {
     public array $items = [];
 
-    private function children($items, $masterID) {
+    private function children($items, $masterID)
+    {
         $return = [];
-        foreach($items as $id => $thisItem) {
-            if($thisItem['master_id'] == $masterID) {
+        foreach ($items as $id => $thisItem) {
+            if ($thisItem['master_id'] == $masterID) {
                 $item = [
                     'name' => $thisItem['name'],
                     'url' => $thisItem['url'],
@@ -21,7 +22,7 @@ class NavbarRoot extends Component
                 unset($items[$id]);
                 $children = $this->children($items, $id);
                 $items = array_diff_key($items, $children);
-                if(count($children)) {
+                if (count($children)) {
                     $item['children'] = $children;
                 }
                 $return[$id] = $item;
@@ -31,7 +32,8 @@ class NavbarRoot extends Component
         return $return;
     }
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->items = $this->children(
             NavigationItem::orderBy('display_order')
                 ->get(['id', 'master_id', 'name', 'url'])
