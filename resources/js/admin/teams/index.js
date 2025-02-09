@@ -10,6 +10,9 @@ const saveDisplayOrder = document.getElementById('saveDisplayOrder');
 const cancelDisplayOrder = document.getElementById('cancelDisplayOrder');
 const savingDisplayOrder = document.getElementById('savingDisplayOrder');
 
+const showTeams = document.getElementsByClassName('showTeam');
+const disabledShowTeams = document.getElementsByClassName('disabledShowTeam');
+
 function disableSubmitting(){
     if(saveDisplayOrder.hidden) {
         for(let tab of teamTypeTabs) {
@@ -162,9 +165,6 @@ editDisplayOrder.addEventListener(
         cancelDisplayOrder.hidden = false;
     }
 );
-
-const showTeams = document.getElementsByClassName('showTeam');
-const disabledShowTeams = document.getElementsByClassName('disabledShowTeam');
 
 function urlGetTeamID(url) {
     return (new URL(url).pathname).match(/^\/admin\/teams\/([0-9]+).*/i)[1];

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
-use App\Models\NavigationItem;
 use App\Models\ModulePermission;
+use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

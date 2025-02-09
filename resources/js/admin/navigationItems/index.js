@@ -278,7 +278,7 @@ let submitting = 'loading';
 		    	};
 
 			//Rearrange
-			for (i = this.items.length - 1; i >= 0; i--) {
+			for (i = this.items.length - 1; i >= 0; --i) {
 
 				//Cache variables and intersection, continue if no intersection
 				item = this.items[i];
@@ -667,7 +667,7 @@ let submitting = 'loading';
 			}
 
 			// mjs - clean last empty ul/ol
-			for (i = this.items.length - 1; i >= 0; i--) {
+			for (i = this.items.length - 1; i >= 0; --i) {
 				item = this.items[i].item[0];
 				this._clearEmpty(item);
 			}
@@ -763,7 +763,7 @@ let submitting = 'loading';
 					"left": left,
 					"right": ($(o.items, this.element).length + 1) * 2
 				});
-				left++;
+				++left;
 			}
 
 			$(this.element).children(o.items).each(function() {
@@ -782,11 +782,11 @@ let submitting = 'loading';
 					parentItem;
 
 				if ($(item).children(o.listType).children(o.items).length > 0) {
-					depth++;
+					++depth;
 					$(item).children(o.listType).children(o.items).each(function() {
 						right = _recursiveArray($(this), depth, right);
 					});
-					depth--;
+					--depth;
 				}
 
 				id = ($(item).attr(o.attribute || "id") || "").match(o.expression || (/(.+)[-=_](.+)/));
@@ -855,7 +855,7 @@ let submitting = 'loading';
 			if (this.options.listType) {
 				list = item.closest(this.options.listType);
 				while (list && list.length > 0 && !list.is(".ui-sortable")) {
-					level++;
+					++level;
 					list = list.parent().closest(this.options.listType);
 				}
 			}
