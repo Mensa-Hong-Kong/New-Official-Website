@@ -14,3 +14,26 @@ $bootstrap-icons-font-src: url("../../node_modules/bootstrap-icons/font/fonts/bo
 .draggable {
     cursor: move;
 }
+
+.dropdown-item {
+    color: #fff;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+    background: #212529;
+}
+.dropdown:hover > .dropdown-menu,
+.dropend:hover > .dropdown-menu {
+    display: block;
+}
+@media screen and (min-width:769px) {
+    .dropend:hover > .dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 100%;
+    }
+    .dropend .dropdown-toggle {
+        margin-left: 0.5em;
+    }
+}

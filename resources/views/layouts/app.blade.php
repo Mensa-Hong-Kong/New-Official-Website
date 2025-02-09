@@ -31,11 +31,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="bdNavbar">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Dummy</a>
-                    </li>
-                </ul>
+                <x-navbar-root></x-navbar-root>
                 <hr class="d-lg-none text-white-50">
                 <ul class="navbar-nav">
                     @if(auth()->user() && auth()->user()->isAdmin())
