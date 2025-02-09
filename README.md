@@ -24,3 +24,7 @@ php artisan serve
 ```shell
 npm run dev
 ```
+
+### As Known Issues
+
+1. nav responsive dropdown not work
