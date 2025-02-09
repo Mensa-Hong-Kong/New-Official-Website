@@ -935,6 +935,49 @@ const saveDisplayOrder = document.getElementById('saveDisplayOrder');
 const cancelDisplayOrder = document.getElementById('cancelDisplayOrder');
 const savingDisplayOrder = document.getElementById('savingDisplayOrder');
 
+const submitButtons = document.getElementsByClassName('submitButton');
+const showUrls = document.getElementsByClassName('showUrl');
+const disabledUrls = document.getElementsByClassName('disabledUrl');
+const showEdits = document.getElementsByClassName('showEdit');
+const disabledEdits = document.getElementsByClassName('disabledEdit');
+
+function disableSubmitting() {
+    for(let showUrl of showUrls) {
+        showUrl.hidden = true;
+    }
+    for(let disabledUrl of disabledUrls) {
+        disabledUrl.hidden = false;
+    }
+    for(let showEdit of showEdits) {
+        showEdit.hidden = true;
+    }
+    for(let disabledEdit of disabledEdits) {
+        disabledEdit.hidden = false;
+    }
+    for(let submitButton of submitButtons) {
+        submitButton.disabled = true;
+    }
+}
+
+function enableSubmitting() {
+    submitting = '';
+    for(let disabledUrl of disabledUrls) {
+        disabledUrl.hidden = false;
+    }
+    for(let showUrl of showUrls) {
+        showUrl.hidden = true;
+    }
+    for(let disabledEdit of disabledEdits) {
+        disabledEdit.hidden = false;
+    }
+    for(let showEdit of showEdits) {
+        showEdit.hidden = true;
+    }
+    for(let submitButton of submitButtons) {
+        submitButton.disabled = true;
+    }
+}
+
 let displayOrder;
 
 function closeEditDisplayOrder() {
@@ -979,7 +1022,7 @@ function updataDisplayOrderSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     displayOrder = response.data.display_order;
     closeEditDisplayOrder();
-    submitting = '';
+    enableSubmitting();
 }
 
 function updataDisplayOrderFailCallback(error) {
@@ -1007,7 +1050,7 @@ function updataDisplayOrderFailCallback(error) {
         excludeRoot: true,
         rootID:"root_0"
     });
-    submitting = '';
+    enableSubmitting();
 }
 
 saveDisplayOrder.addEventListener(
@@ -1015,6 +1058,7 @@ saveDisplayOrder.addEventListener(
         if(submitting == '') {
             let submitAt = Date.now();
             submitting = 'updateDisplayOrder'+submitAt;
+            disableSubmitting();
             if(submitting == 'updateDisplayOrder'+submitAt) {
                 let result = $('ol.sortable').nestedSortable('toArray', {startDepthCount: 0})
                 $('ol.sortable').nestedSortable('destroy');
@@ -1071,6 +1115,66 @@ editDisplayOrder.addEventListener(
         }
         saveDisplayOrder.hidden = false;
         cancelDisplayOrder.hidden = false;
+    }
+);
+
+function urlGetItemID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/navigation-items\/([0-9]+).*/i)[1];
+}
+
+function deleteItemSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id =  urlGetItemID(response.request.responseURL);
+    document.getElementById('menuItem_'+id).remove();
+    enableSubmitting();
+    editDisplayOrder.disabled = false;
+}
+
+function deleteItemFailCallback(error) {
+    let id = urlGetItemID(error.request.responseURL);
+    document.getElementById('deletingTeam'+id).hidden = true;
+    document.getElementById('deleteTeam'+id).hidden = false;
+    enableSubmitting();
+    editDisplayOrder.disabled = false;
+}
+
+function confirmedDeleteItem(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'deleteItem'+submitAt;
+        let id = event.target.id.replace('deleteItemForm', '');
+        disableSubmitting();
+        editDisplayOrder.disabled = true;
+        if(submitting == 'deleteItem'+submitAt) {
+            if(!saveDisplayOrder.hidden) {
+                closeEditDisplayOrder();
+            }
+            document.getElementById('deleteItem'+id).hidden = true;
+            document.getElementById('deletingItem'+id).hidden = false;
+            post(
+                event.target.action,
+                deleteItemSuccessCallback,
+                deleteItemFailCallback,
+                'delete'
+            );
+        }
+    }
+}
+
+function deleteItem(event) {
+    event.preventDefault();
+    let message = `Are you sure to delete the item of ${event.submitter.dataset.name}?`;
+    bootstrapConfirm(message, confirmedDeleteItem, event);
+}
+
+document.querySelectorAll('.itemLoader').forEach(
+    function(loader) {
+        let id = loader.id.replace('itemLoader', '');
+        document.getElementById('deleteItemForm'+id).addEventListener(
+            'submit', deleteItem
+        );
+        loader.remove();
+        document.getElementById('deleteItem'+id).hidden = false;
     }
 );
 
