@@ -8,13 +8,15 @@
                 @method('put')
                 <h3 class="fw-bold mb-2">
                     Info
-                    <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Saving...
-                    </button>
-                    <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
-                    <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
-                    <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
+                    @can('Edit:Admission Test')
+                        <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Saving...
+                        </button>
+                        <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
+                        <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
+                        <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
+                    @endcan
                 </h3>
                 <table class="table">
                     <tr>
@@ -101,56 +103,58 @@
             </form>
         </article>
         @can('View:User')
-            <article id="proctor">
-                <h3 class="fw-bold mb-2">Proctors</h3>
-                <div class="row g-3">
-                    <div class="col-md-2">User ID</div>
-                    <div class="col-md-4">Name</div>
-                    <div class="col-md-6">Control</div>
-                </div>
-                @foreach ($test->proctors as $proctor)
-                    <div class="row g-3" id="showProctor{{ $proctor->id }}">
-                        <form method="POST" id="deleteProctorForm{{ $proctor->id }}" action="{{ route('admin.admission-tests.proctors.destroy', ['admission_test' => $test, 'proctor' => $proctor]) }}" hidden>
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                        <div class="col-md-2" id="showProctorId{{ $proctor->id }}">{{ $proctor->id }}</div>
-                        <div class="col-md-4" id="showProctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
-                        <div class="col-md-6">
-                            <a class="btn btn-primary col-md-4" id="showProctorLink{{ $proctor->id }}"
-                                href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
-                            <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader{{ $proctor->id }}" role="status" aria-hidden="true"></span>
-                            <button class="btn btn-primary col-md-4" id="editProctor{{ $proctor->id }}" hidden>Edit</button>
-                            <button class="btn btn-danger col-md-4" id="deleteProctor{{ $proctor->id }}" form="deleteProctorForm{{ $proctor->id }}" hidden>Delete</button>
-                        </div>
+            @can('Edit:Admission Test')
+                <article id="proctor">
+                    <h3 class="fw-bold mb-2">Proctors</h3>
+                    <div class="row g-3">
+                        <div class="col-md-2">User ID</div>
+                        <div class="col-md-4">Name</div>
+                        <div class="col-md-6">Control</div>
                     </div>
-                    <form class="row g-3" id="editProctorForm{{ $proctor->id }}" method="POST" novalidate hidden
-                        action="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}">
+                    @foreach ($test->proctors as $proctor)
+                        <div class="row g-3" id="showProctor{{ $proctor->id }}">
+                            <form method="POST" id="deleteProctorForm{{ $proctor->id }}" action="{{ route('admin.admission-tests.proctors.destroy', ['admission_test' => $test, 'proctor' => $proctor]) }}" hidden>
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                            <div class="col-md-2" id="showProctorId{{ $proctor->id }}">{{ $proctor->id }}</div>
+                            <div class="col-md-4" id="showProctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary col-md-4" id="showProctorLink{{ $proctor->id }}"
+                                    href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
+                                <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader{{ $proctor->id }}" role="status" aria-hidden="true"></span>
+                                <button class="btn btn-primary col-md-4" id="editProctor{{ $proctor->id }}" hidden>Edit</button>
+                                <button class="btn btn-danger col-md-4" id="deleteProctor{{ $proctor->id }}" form="deleteProctorForm{{ $proctor->id }}" hidden>Delete</button>
+                            </div>
+                        </div>
+                        <form class="row g-3" id="editProctorForm{{ $proctor->id }}" method="POST" novalidate hidden
+                            action="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-2" name="user_id" list="users" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
+                            <div class="col-md-4" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary col-md-4 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
+                                <button class="btn btn-primary col-md-4" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
+                                <button class="btn btn-danger col-md-4" id="cancelEditProctor{{ $proctor->id }}" onclick="return false">Cancel</button>
+                            </div>
+                        </form>
+                    @endforeach
+                    <form class="row g-3" id="createProctorForm" method="POST" novalidate
+                        action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
                         @csrf
-                        @method('PUT')
-                        <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-2" name="user_id" list="users" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
-                        <div class="col-md-4" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
+                        <input type="text" id="proctorUserIdInput" class="col-md-2" name="user_id" list="users" required />
+                        <div class="col-md-4" id="proctorName"></div>
                         <div class="col-md-6">
-                            <button class="btn btn-primary col-md-4 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
-                            <button class="btn btn-primary col-md-4" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
-                            <button class="btn btn-danger col-md-4" id="cancelEditProctor{{ $proctor->id }}" onclick="return false">Cancel</button>
+                            <button class="btn btn-success form-control submitButton" id="addProctorButton">Add</button>
+                            <button class="btn btn-success form-control" id="addingProctorButton" hidden disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Adding
+                            </button>
                         </div>
                     </form>
-                @endforeach
-                <form class="row g-3" id="createProctorForm" method="POST" novalidate
-                    action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
-                    @csrf
-                    <input type="text" id="proctorUserIdInput" class="col-md-2" name="user_id" list="users" required />
-                    <div class="col-md-4" id="proctorName"></div>
-                    <div class="col-md-6">
-                        <button class="btn btn-success form-control submitButton" id="addProctorButton">Add</button>
-                        <button class="btn btn-success form-control" id="addingProctorButton" hidden disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Adding
-                        </button>
-                    </div>
-                </form>
-            </article>
+                </article>
+            @endcan
             <x-datalist :id="'users'" :values="$users" isStringKey="true"></x-datalist>
         @endcan
     </section>
