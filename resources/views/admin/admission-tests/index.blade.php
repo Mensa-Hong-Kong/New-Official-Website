@@ -24,8 +24,15 @@
                             <td>0/{{ $test->maximum_candidates }}</td>
                             <td>{{ $test->is_public ? 'Public' : 'Private' }}</td>
                             <td>
-                                <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
-                                    class="btn btn-primary">Show</a>
+                                @if(
+                                    $test->inTestingTimeRange() ||
+                                    auth()->user()->can('Edit:Admission Test')
+                                )
+                                    <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
+                                        class="btn btn-primary">Show</a>
+                                @else
+                                    <button class="btn btn-secondary">Show</button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
