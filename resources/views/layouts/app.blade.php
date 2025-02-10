@@ -44,6 +44,16 @@
                         </li>
                         <hr class="d-lg-none text-white-50">
                     @endif
+                    @if(auth()->user() && count(auth()->user()->proctorTests))
+                        <li class="nav-item">
+                            <a href="{{ route('admin.admission-tests.index') }}" @class([
+                                'nav-link',
+                                'align-items-center',
+                                'active' => str_starts_with(Route::current()->getName(), 'admin.admission-tests.'),
+                            ])>Admin</a>
+                        </li>
+                        <hr class="d-lg-none text-white-50">
+                    @endif
                     @auth
                         <li class="nav-item">
                             <a href="{{ route('profile.show') }}" @class([
@@ -88,212 +98,249 @@
                     </div>
                     <nav class="offcanvas-body">
                         <ul class="nav flex-column nav-pills">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.index',
-                                ])>Dashboard</a>
-                            </li>
-                            <li class="nav-item accordion">
-                                <button role="button"
-                                    data-bs-toggle="collapse" aria-expanded="true"
-                                    data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
-                                    style="height: 0em"
-                                    @class([
-                                        'nav-item',
-                                        'accordion-button',
-                                        'collapsed' => !str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.users.'
-                                        ),
-                                    ])>
-                                    Users
-                                </button>
-                                <ul id="asideNavAdminUser" @class([
-                                    'accordion-collapse',
-                                    'collapse',
-                                    'show' => str_starts_with(
-                                        Route::current()->getName(),
-                                        'admin.users.'
-                                    ),
-                                ])>
-                                    <li>
-                                        <a href="{{ route('admin.users.index') }}" @class([
-                                            'nav-link',
-                                            'align-items-center',
-                                            'active' => Route::current()->getName() == 'admin.users.index',
-                                        ])>Index</a>
-                                    </li>
+                            @if(auth()->user() && auth()->user()->isAdmin())
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.index') }}" @class([
+                                        'nav-link',
+                                        'align-items-center',
+                                        'active' => Route::current()->getName() == 'admin.index',
+                                    ])>Dashboard</a>
+                                </li>
+                                @can('View:User')
                                     @if(Route::current()->getName() == 'admin.users.show')
-                                        <a href="#" class="nav-link align-items-center active">Show</a>
+                                        <li class="nav-item accordion">
+                                            <button role="button"
+                                                data-bs-toggle="collapse" aria-expanded="true"
+                                                data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
+                                                style="height: 0em"
+                                                @class([
+                                                    'nav-item',
+                                                    'accordion-button',
+                                                    'collapsed' => !str_starts_with(
+                                                        Route::current()->getName(),
+                                                        'admin.users.'
+                                                    ),
+                                                ])>
+                                                Users
+                                            </button>
+                                            <ul id="asideNavAdminUser" @class([
+                                                'accordion-collapse',
+                                                'collapse',
+                                                'show' => str_starts_with(
+                                                    Route::current()->getName(),
+                                                    'admin.users.'
+                                                ),
+                                            ])>
+                                                <li>
+                                                    <a href="{{ route('admin.users.index') }}" @class([
+                                                        'nav-link',
+                                                        'align-items-center',
+                                                        'active' => Route::current()->getName() == 'admin.users.index',
+                                                    ])>Index</a>
+                                                </li>
+                                                @if(Route::current()->getName() == 'admin.users.show')
+                                                    <a href="{{ route('admin.users.show', ['user' => $user]) }}" class="nav-link align-items-center active">Show</a>
+                                                @endif
+                                            </ul>
+                                        </li>
+                                    @else
+                                        <li class="nav-item">
+                                            <a href="{{ route('admin.users.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.users.index',
+                                            ])>Users</a>
+                                        </li>
                                     @endif
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.team-types.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.team-types.index',
-                                ])>Team Types</a>
-                            </li>
-                            @if(
-                                in_array(
-                                    Route::current()->getName(),
-                                    [
-                                        'admin.teams.show',
-                                        'admin.teams.edit',
-                                    ]
-                                ) ||
-                                str_starts_with(Route::current()->getName(), 'admin.teams.roles.') ||
-                                (auth()->user() && auth()->user()->can('Edit:Permission'))
-                            )
-                                <li class="nav-item accordion">
-                                    <button role="button"
-                                        data-bs-toggle="collapse" aria-expanded="true"
-                                        data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
-                                        style="height: 0em"
-                                        @class([
-                                            'nav-item',
-                                            'accordion-button',
-                                            'collapsed' => !str_starts_with(
+                                @endcan
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.team-types.index') }}" @class([
+                                        'nav-link',
+                                        'align-items-center',
+                                        'active' => Route::current()->getName() == 'admin.team-types.index',
+                                    ])>Team Types</a>
+                                </li>
+                                @if(
+                                    in_array(
+                                        Route::current()->getName(),
+                                        [
+                                            'admin.teams.show',
+                                            'admin.teams.edit',
+                                        ]
+                                    ) ||
+                                    str_starts_with(Route::current()->getName(), 'admin.teams.roles.') ||
+                                    (auth()->user() && auth()->user()->can('Edit:Permission'))
+                                )
+                                    <li class="nav-item accordion">
+                                        <button role="button"
+                                            data-bs-toggle="collapse" aria-expanded="true"
+                                            data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
+                                            style="height: 0em"
+                                            @class([
+                                                'nav-item',
+                                                'accordion-button',
+                                                'collapsed' => !str_starts_with(
+                                                    Route::current()->getName(),
+                                                    'admin.teams.'
+                                                ),
+                                            ])>
+                                            Teams
+                                        </button>
+                                        <ul id="asideNavAdminTeam" @class([
+                                            'accordion-collapse',
+                                            'collapse',
+                                            'show' => str_starts_with(
                                                 Route::current()->getName(),
                                                 'admin.teams.'
                                             ),
                                         ])>
-                                        Teams
-                                    </button>
-                                    <ul id="asideNavAdminTeam" @class([
-                                        'accordion-collapse',
-                                        'collapse',
-                                        'show' => str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.teams.'
-                                        ),
-                                    ])>
-                                        <li>
-                                            <a href="{{ route('admin.teams.index') }}" @class([
-                                                'nav-link',
-                                                'align-items-center',
-                                                'active' => Route::current()->getName() == 'admin.teams.index',
-                                            ])>Index</a>
-                                        </li>
-                                        @can('Edit:Permission')
                                             <li>
-                                                <a href="{{ route('admin.teams.create') }}" @class([
+                                                <a href="{{ route('admin.teams.index') }}" @class([
                                                     'nav-link',
                                                     'align-items-center',
-                                                    'active' => Route::current()->getName() == 'admin.teams.create',
-                                                ])>Create</a>
+                                                    'active' => Route::current()->getName() == 'admin.teams.index',
+                                                ])>Index</a>
                                             </li>
-                                        @endcan
-                                        @if(
-                                            in_array(
-                                                Route::current()->getName(),
-                                                [
-                                                    'admin.teams.show',
-                                                    'admin.teams.edit',
-                                                ]
-                                            ) ||
-                                            str_starts_with(Route::current()->getName(), 'admin.teams.roles.')
-                                        )
-                                            <li>
-                                                <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
-                                                    @class([
+                                            @can('Edit:Permission')
+                                                <li>
+                                                    <a href="{{ route('admin.teams.create') }}" @class([
                                                         'nav-link',
                                                         'align-items-center',
-                                                        'active' => Route::current()->getName() == 'admin.teams.show',
-                                                    ])>Show</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.edit')
-                                            <li>
-                                                <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
-                                                    class="nav-link align-items-center active">Edit</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.roles.create')
-                                            <li>
-                                                <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
-                                                    class="nav-link align-items-center active">Create Role</a>
-                                            </li>
-                                        @endif
-                                        @if(Route::current()->getName() == 'admin.teams.roles.edit')
-                                            <li>
-                                                <a href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}"
-                                                    class="nav-link align-items-center active">Edit Role</a>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </li>
-                            @else
+                                                        'active' => Route::current()->getName() == 'admin.teams.create',
+                                                    ])>Create</a>
+                                                </li>
+                                            @endcan
+                                            @if(
+                                                in_array(
+                                                    Route::current()->getName(),
+                                                    [
+                                                        'admin.teams.show',
+                                                        'admin.teams.edit',
+                                                    ]
+                                                ) ||
+                                                str_starts_with(Route::current()->getName(), 'admin.teams.roles.')
+                                            )
+                                                <li>
+                                                    <a href="{{ route('admin.teams.show', ['team' => $team]) }}"
+                                                        @class([
+                                                            'nav-link',
+                                                            'align-items-center',
+                                                            'active' => Route::current()->getName() == 'admin.teams.show',
+                                                        ])>Show</a>
+                                                </li>
+                                            @endif
+                                            @if(Route::current()->getName() == 'admin.teams.edit')
+                                                <li>
+                                                    <a href="{{ route('admin.teams.edit', ['team' => $team]) }}"
+                                                        class="nav-link align-items-center active">Edit</a>
+                                                </li>
+                                            @endif
+                                            @if(Route::current()->getName() == 'admin.teams.roles.create')
+                                                <li>
+                                                    <a href="{{ route('admin.teams.roles.create', ['team' => $team]) }}"
+                                                        class="nav-link align-items-center active">Create Role</a>
+                                                </li>
+                                            @endif
+                                            @if(Route::current()->getName() == 'admin.teams.roles.edit')
+                                                <li>
+                                                    <a href="{{ route('admin.teams.roles.edit', ['team' => $team, 'role' => $role]) }}"
+                                                        class="nav-link align-items-center active">Edit Role</a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </li>
+                                @else
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.teams.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.teams.index',
+                                        ])>Teams</a>
+                                    </li>
+                                @endif
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.teams.index') }}" @class([
+                                    <a href="{{ route('admin.modules.index') }}" @class([
                                         'nav-link',
                                         'align-items-center',
-                                        'active' => Route::current()->getName() == 'admin.teams.index',
-                                    ])>Teams</a>
+                                        'active' => Route::current()->getName() == 'admin.modules.index',
+                                    ])>Module</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.permissions.index') }}" @class([
+                                        'nav-link',
+                                        'align-items-center',
+                                        'active' => Route::current()->getName() == 'admin.permissions.index',
+                                    ])>Permission</a>
                                 </li>
                             @endif
-                            <li class="nav-item">
-                                <a href="{{ route('admin.modules.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.modules.index',
-                                ])>Module</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.permissions.index') }}" @class([
-                                    'nav-link',
-                                    'align-items-center',
-                                    'active' => Route::current()->getName() == 'admin.permissions.index',
-                                ])>Permission</a>
-                            </li>
-                            <li class="nav-item accordion">
-                                <button role="button"
-                                    data-bs-toggle="collapse" aria-expanded="true"
-                                    data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
-                                    style="height: 0em"
-                                    @class([
-                                        'nav-item',
-                                        'accordion-button',
-                                        'collapsed' => !str_starts_with(
-                                            Route::current()->getName(),
-                                            'admin.admission-tests.'
-                                        ),
-                                    ])>
-                                    Admission Tests
-                                </button>
-                                <ul id="asideNavAdminAdmissionTest" @class([
-                                    'accordion-collapse',
-                                    'collapse',
-                                    'show' => str_starts_with(
-                                        Route::current()->getName(),
-                                        'admin.admission-tests.'
-                                    ),
-                                ])>
-                                    <li>
+                            @if(
+                                auth()->user() && (
+                                    count(auth()->user()->proctorTests) ||
+                                    auth()->user()->can('Edit:Admission Test')
+                                )
+                            )
+                                @if(
+                                    auth()->user() &&
+                                    !auth()->user()->can('Edit:Admission Test') &&
+                                    !Route::current()->getName() == 'admin.admission-tests.show'
+                                )
+                                    <li class="nav-item">
                                         <a href="{{ route('admin.admission-tests.index') }}" @class([
                                             'nav-link',
                                             'align-items-center',
                                             'active' => Route::current()->getName() == 'admin.admission-tests.index',
-                                        ])>Index</a>
+                                        ])>Admission Tests</a>
                                     </li>
-                                    <li>
-                                        <a href="{{ route('admin.admission-tests.create') }}" @class([
-                                            'nav-link',
-                                            'align-items-center',
-                                            'active' => Route::current()->getName() == 'admin.admission-tests.create',
-                                        ])>Create</a>
+                                @else
+                                    <li class="nav-item accordion">
+                                        <button role="button"
+                                            data-bs-toggle="collapse" aria-expanded="true"
+                                            data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
+                                            style="height: 0em"
+                                            @class([
+                                                'nav-item',
+                                                'accordion-button',
+                                                'collapsed' => !str_starts_with(
+                                                    Route::current()->getName(),
+                                                    'admin.admission-tests.'
+                                                ),
+                                            ])>
+                                            Admission Tests
+                                        </button>
+                                        <ul id="asideNavAdminAdmissionTest" @class([
+                                            'accordion-collapse',
+                                            'collapse',
+                                            'show' => str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.admission-tests.'
+                                            ),
+                                        ])>
+                                            <li>
+                                                <a href="{{ route('admin.admission-tests.index') }}" @class([
+                                                    'nav-link',
+                                                    'align-items-center',
+                                                    'active' => Route::current()->getName() == 'admin.admission-tests.index',
+                                                ])>Index</a>
+                                            </li>
+                                            @can('Edit:Admission Test')
+                                                <li>
+                                                    <a href="{{ route('admin.admission-tests.create') }}" @class([
+                                                        'nav-link',
+                                                        'align-items-center',
+                                                        'active' => Route::current()->getName() == 'admin.admission-tests.create',
+                                                    ])>Create</a>
+                                                </li>
+                                            @endcan
+                                            @if(Route::current()->getName() == 'admin.admission-tests.show')
+                                                <li>
+                                                    <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
+                                                        class="nav-link align-items-center active">Show</a>
+                                                </li>
+                                            @endif
+                                        </ul>
                                     </li>
-                                    @if(Route::current()->getName() == 'admin.admission-tests.show')
-                                        <li>
-                                            <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
-                                                class="nav-link align-items-center active">Show</a>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </li>
+                                @endif
+                            @endif
                             @can('Edit:Custom Page')
                                 <li class="nav-item accordion">
                                     <button role="button"
