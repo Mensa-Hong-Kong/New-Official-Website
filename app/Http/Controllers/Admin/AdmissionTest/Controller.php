@@ -21,8 +21,8 @@ class Controller extends BaseController implements HasMiddleware
     {
         return [
             (new Middleware(
-                function(Request $request, Closure $next) {
-                    if(
+                function (Request $request, Closure $next) {
+                    if (
                         $request->user()->proctorTests()->count() ||
                         $request->user()->can('Edit:Admission Test')
                     ) {
@@ -32,9 +32,9 @@ class Controller extends BaseController implements HasMiddleware
                 }
             ))->only('index'),
             (new Middleware(
-                function(Request $request, Closure $next) {
+                function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
-                    if(
+                    if (
                         $request->user()->can('Edit:Admission Test') || (
                             $test->inTestingTimeRange() &&
                             in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
@@ -51,12 +51,13 @@ class Controller extends BaseController implements HasMiddleware
 
     public function index(Request $request)
     {
-        if($request->user()->can('Edit:Admission Test')) {
+        if ($request->user()->can('Edit:Admission Test')) {
             $tests = new AdmissionTest;
         } else {
             $tests = $request->user()->proctorTests();
         }
         $tests = $tests->sortable('testing_at')->paginate();
+
         return view('admin.admission-tests.index')
             ->with('tests', $tests);
     }

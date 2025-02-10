@@ -89,7 +89,7 @@ Route::middleware('auth')->group(function () {
                     Route::resource('permissions', PermissionController::class)
                         ->only(['index', 'update'])
                         ->whereNumber('permission');
-            });
+                });
             Route::resource('users', AdminUserController::class)
                 ->only(['index', 'show', 'update'])
                 ->whereNumber('user');
