@@ -9,6 +9,8 @@ use App\Models\AdmissionTest;
 use App\Models\Area;
 use App\Models\Location;
 use App\Models\User;
+use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -17,16 +19,46 @@ class Controller extends BaseController implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [new Middleware('permission:Edit:Admission Test')];
+        return [
+            (new Middleware(
+                function(Request $request, Closure $next) {
+                    if(
+                        $request->user()->proctorTests()->count() ||
+                        $request->user()->can('Edit:Admission Test')
+                    ) {
+                        return $next($request);
+                    }
+                    abort(403);
+                }
+            ))->only('index'),
+            (new Middleware(
+                function(Request $request, Closure $next) {
+                    $test = $request->route('admission_test');
+                    if(
+                        $request->user()->can('Edit:Admission Test') || (
+                            $test->inTestingTimeRange() &&
+                            in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
+                        )
+                    ) {
+                        return $next($request);
+                    }
+                    abort(403);
+                }
+            ))->only('show'),
+            (new Middleware('permission:Edit:Admission Test'))->except(['index', 'show']),
+        ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        if($request->user()->can('Edit:Admission Test')) {
+            $tests = new AdmissionTest;
+        } else {
+            $tests = $request->user()->proctorTests();
+        }
+        $tests = $tests->sortable('testing_at')->paginate();
         return view('admin.admission-tests.index')
-            ->with(
-                'tests', AdmissionTest::sortable('testing_at')
-                    ->paginate()
-            );
+            ->with('tests', $tests);
     }
 
     public function create()
