@@ -31,7 +31,7 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_view_user_permission()
+    public function test_have_no_view_user_permission_and_user_is_not_proctor()
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -50,10 +50,56 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case()
+    public function test_user_have_no_permission_and_is_proctor_but_no_in_testing_time_range()
+    {
+        $user = User::factory()->create();
+        $this->test->update(['testing_at' => now()->subHours(2)->subSecond()]);
+        $this->test->proctors()->attach($user->id);
+        $response = $this->actingAs($user)
+            ->get(
+                route(
+                    'admin.admission-tests.show',
+                    ['admission_test' => $this->test]
+                )
+            );
+        $response->assertForbidden();
+    }
+
+    public function test_happy_case_when_user_only_has_permission()
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
+        $response = $this->actingAs($user)
+            ->get(
+                route(
+                    'admin.admission-tests.show',
+                    ['admission_test' => $this->test]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_only_is_proctor()
+    {
+        $user = User::factory()->create();
+        $this->test->update(['testing_at' => now()]);
+        $this->test->proctors()->attach($user->id);
+        $response = $this->actingAs($user)
+            ->get(
+                route(
+                    'admin.admission-tests.show',
+                    ['admission_test' => $this->test]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_has_permission_and_is_proctor()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Admission Test');
+        $this->test->update(['testing_at' => now()]);
+        $this->test->proctors()->attach($user->id);
         $response = $this->actingAs($user)
             ->get(
                 route(
