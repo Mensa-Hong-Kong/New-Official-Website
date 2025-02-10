@@ -37,4 +37,9 @@ class AdmissionTest extends Model
     {
         return $this->belongsToMany(User::class, AdmissionTestHasProctor::class, 'test_id');
     }
+
+    public function inTestingTimeRange()
+    {
+        return $this->testing_at >= now()->subHours(2) && $this->testing_at <= now()->addHours(2);
+    }
 }
