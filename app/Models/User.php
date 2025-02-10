@@ -170,4 +170,9 @@ class User extends Authenticatable
     {
         return (bool) $this->member;
     }
+
+    public function proctorTests()
+    {
+        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasProctor::class, 'user_id', 'test_id');
+    }
 }
