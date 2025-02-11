@@ -105,6 +105,7 @@ class Controller extends BaseController implements HasMiddleware
         ]);
         $test = AdmissionTest::create([
             'testing_at' => $request->testing_at,
+            'expect_end_at' => $request->expect_end_at,
             'location_id' => $location->id,
             'address_id' => $address->id,
             'maximum_candidates' => $request->maximum_candidates,
@@ -220,6 +221,7 @@ class Controller extends BaseController implements HasMiddleware
         $location = $this->updateLocation($admissionTest->location, $request->location);
         $admissionTest->update([
             'testing_at' => $request->testing_at,
+            'expect_end_at' => $request->expect_end_at,
             'location_id' => $location->id,
             'address_id' => $address->id,
             'maximum_candidates' => $request->maximum_candidates,
@@ -231,6 +233,7 @@ class Controller extends BaseController implements HasMiddleware
         return [
             'success' => 'The admission test update success!',
             'testing_at' => $admissionTest->testing_at,
+            'expect_end_at' => $admissionTest->expect_end_at,
             'location' => $admissionTest->location->name,
             'district_id' => $admissionTest->address->district_id,
             'address' => $admissionTest->address->address,
