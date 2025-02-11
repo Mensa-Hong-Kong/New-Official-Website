@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Address;
 use App\Models\Location;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,11 +14,14 @@ class AdmissionTestFactory extends Factory
 {
     public function definition(): array
     {
+        $testingAtTimestamp = fake()->dateTimeBetween(
+            now()->addWeek(),
+            now()->addYear()
+        )->getTimestamp();
+        $testingAt = Carbon::createFromTimeStamp($testingAtTimestamp);
         return [
-            'testing_at' => fake()->dateTimeBetween(
-                now()->addWeek(),
-                now()->addYear()
-            ),
+            'testing_at' => $testingAt->format('Y-m-d H:i:s'),
+            'expect_end_at' => $testingAt->addMinutes(30)->format('Y-m-d H:i:s'),
             'location_id' => fake()->randomElement([true, false]) ?
                 Location::factory()->create() :
                 Location::inRandomOrder()->first() ?? Location::factory()->create(),
