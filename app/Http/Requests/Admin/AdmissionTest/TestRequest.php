@@ -19,6 +19,7 @@ class TestRequest extends FormRequest
             'address' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'testing_at' => 'required|date',
+            'expect_end_at' => 'required|date|after:testing_at',
             'maximum_candidates' => 'required|integer|min:1',
             'is_public' => 'required|boolean',
         ];
