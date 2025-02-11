@@ -173,7 +173,7 @@ if(editForm) {
         showDistrict.innerText = districts[response.data.district_id];
         showAddress.innerText = response.data.address;
         showMaximumCandidates.innerText = response.data.maximum_candidates;
-        showIsPublic = response.data.is_public ? 'Public' : 'Private';
+        showIsPublic.innerText = response.data.is_public ? 'Public' : 'Private';
         enableSubmitting();
         for(let showDiv of showInfos) {
             showDiv.hidden = false;
