@@ -12,6 +12,7 @@ class AdmissionTest extends Model
 
     protected $fillable = [
         'testing_at',
+        'expect_end_at',
         'location_id',
         'address_id',
         'maximum_candidates',
@@ -40,6 +41,6 @@ class AdmissionTest extends Model
 
     public function inTestingTimeRange()
     {
-        return $this->testing_at >= now()->subHours(2) && $this->testing_at <= now()->addHours(2);
+        return $this->testing_at >= now()->subHours(2) && $this->expect_end_at <= now()->addHours(1);
     }
 }
