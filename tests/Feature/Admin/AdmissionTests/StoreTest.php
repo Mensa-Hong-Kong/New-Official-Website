@@ -27,7 +27,9 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
-        $this->happyCase['testing_at'] = now()->addMinute()->format('Y-m-d H:i:s');
+        $testingAt = now()->addMinute();
+        $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i:s');
+        $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i:s');
     }
 
     public function test_have_no_login()
@@ -174,6 +176,39 @@ class StoreTest extends TestCase
             $data
         );
         $response->assertInvalid(['testing_at' => 'The testing at field must be a valid date.']);
+    }
+
+    public function test_missing_expect_end_at()
+    {
+        $data = $this->happyCase;
+        unset($data['expect_end_at']);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['expect_end_at' => 'The expect end at field is required.']);
+    }
+
+    public function test_expect_end_at_is_not_date()
+    {
+        $data = $this->happyCase;
+        $data['expect_end_at'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a valid date.']);
+    }
+
+    public function test_expect_end_at_before_testing_at()
+    {
+        $data = $this->happyCase;
+        $data['expect_end_at'] = now()->subMinute()->format('Y-m-d H:i:s');
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['expect_end_at' => "The expect end at field must be a date after testing at."]);
     }
 
     public function test_missing_maximum_candidates()
