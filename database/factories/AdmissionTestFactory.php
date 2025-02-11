@@ -19,6 +19,7 @@ class AdmissionTestFactory extends Factory
             now()->addYear()
         )->getTimestamp();
         $testingAt = Carbon::createFromTimeStamp($testingAtTimestamp);
+
         return [
             'testing_at' => $testingAt->format('Y-m-d H:i:s'),
             'expect_end_at' => $testingAt->addMinutes(30)->format('Y-m-d H:i:s'),
