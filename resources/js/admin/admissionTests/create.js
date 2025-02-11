@@ -3,6 +3,8 @@ import { post } from "../../submitForm";
 const form = document.getElementById('form');
 const testingAt = document.getElementById('validationTestingAt');
 const testingAtFeedback = document.getElementById('testingAtFeedback');
+const expectEndAt = document.getElementById('validationExpectEndAt');
+const expectEndAtFeedback = document.getElementById('expectEndAtFeedback');
 const location = document.getElementById('validationLocation');
 const locationFeedback = document.getElementById('locationFeedback');
 const district = document.getElementById('validationDistrict');
@@ -15,10 +17,10 @@ const isPublic = document.getElementById('isPublic');
 const createButton = document.getElementById('createButton');
 const creatingButton = document.getElementById('creatingButton');
 
-const inputs = [testingAt, location, district, address, maximumCandidates];
+const inputs = [testingAt, expectEndAt, location, district, address, maximumCandidates];
 
 const feedbacks = [
-    testingAtFeedback, locationFeedback, districtFeedback,
+    testingAtFeedback, expectEndAtFeedback, locationFeedback, districtFeedback,
     addressFeedback, maximumCandidatesFeedback];
 
 function hasError() {
@@ -43,6 +45,15 @@ function validation() {
         testingAt.classList.add('is-invalid');
         testingAtFeedback.className = 'invalid-feedback';
         testingAtFeedback.innerText = 'The testing at field is required.';
+    }
+    if(expectEndAt.validity.valueMissing) {
+        expectEndAt.classList.add('is-invalid');
+        expectEndAtFeedback.className = 'invalid-feedback';
+        expectEndAtFeedback.innerText = 'The expect end at field is required.';
+    } else if(testingAt.value > expectEndAt.value) {
+        expectEndAt.classList.add('is-invalid');
+        expectEndAtFeedback.className = 'invalid-feedback';
+        expectEndAtFeedback.innerText = 'The expect end at field must be a date after testing at.';
     }
     if(location.validity.valueMissing) {
         location.classList.add('is-invalid');
@@ -103,6 +114,10 @@ function failCallback(error) {
                     input = testingAt;
                     feedback = testingAtFeedback;
                     break;
+                case 'expect_end_at':
+                    input = expectEndAt;
+                    feedback = expectEndAtFeedback;
+                    break;
                 case 'location':
                     input = location;
                     feedback = locationFeedback;
@@ -147,6 +162,7 @@ form.addEventListener(
                 creatingButton.hidden = false;
                 let data = {
                     testing_at: testingAt.value,
+                    expect_end_at: expectEndAt.value,
                     location: location.value,
                     district_id: district.value,
                     address: address.value,

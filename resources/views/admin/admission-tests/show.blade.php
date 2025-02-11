@@ -8,7 +8,6 @@
                 @method('put')
                 <h3 class="fw-bold mb-2">
                     Info
-                    @can('Edit:Admission Test')
                         <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Saving...
@@ -16,7 +15,6 @@
                         <button onclick="return false" class="btn btn-outline-primary" id="editButton">Edit</button>
                         <button type="submit" class="btn btn-outline-primary submitButton" id="saveButton" hidden>Save</button>
                         <button onclick="return false" class="btn btn-outline-danger" id="cancelButton" hidden>Cancel</button>
-                    @endcan
                 </h3>
                 <table class="table">
                     <tr>
@@ -26,6 +24,17 @@
                             <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt" placeholder="testing at"
                                 value="{{ $test->testing_at }}" data-value="{{ $test->testing_at }}" hidden required />
                             <div id="testingAtFeedback" class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Expect End At</th>
+                        <td>
+                            <span id="showExpectEndAt">{{ $test->expect_end_at }}</span>
+                            <input type="datetime-local" name="expect_end_at" class="form-control" id="validationExpectEndAt" placeholder="expect end at"
+                                value="{{ $test->expect_end_at }}" data-value="{{ $test->expect_end_at }}" hidden required />
+                            <div id="expectEndAtFeedback" class="valid-feedback">
                                 Looks good!
                             </div>
                         </td>

@@ -4,6 +4,19 @@ import stringToBoolean from "../../stringToBoolean";
 let submitting = 'loading';
 const submitButtons = document.getElementsByClassName('submitButton');
 
+function disableSubmitting(){
+    for(let button of submitButtons) {
+        button.disabled = true;
+    }
+}
+
+function enableSubmitting(){
+    submitting = '';
+    for(let button of submitButtons) {
+        button.disabled = false;
+    }
+}
+
 const editForm = document.getElementById('form');
 
 if(editForm) {
@@ -12,6 +25,7 @@ if(editForm) {
     const cancelButton = document.getElementById('cancelButton');
     const editButton = document.getElementById('editButton');
     const showTestingAt = document.getElementById('showTestingAt');
+    const showExpectEndAt = document.getElementById('showExpectEndAt');
     const showLocation = document.getElementById('showLocation');
     const showDistrict = document.getElementById('showDistrict');
     const showAddress = document.getElementById('showAddress');
@@ -19,6 +33,8 @@ if(editForm) {
     const showIsPublic = document.getElementById('showIsPublic');
     const testingAtInput = document.getElementById('validationTestingAt');
     const testingAtFeedback = document.getElementById('testingAtFeedback');
+    const expectEndAtInput = document.getElementById('validationExpectEndAt');
+    const expectEndAtFeedback = document.getElementById('expectEndAtFeedback');
     const locationInput = document.getElementById('validationLocation');
     const locationFeedback = document.getElementById('locationFeedback');
     const districtInput = document.getElementById('validationDistrict');
@@ -29,11 +45,11 @@ if(editForm) {
     const maximumCandidatesFeedback = document.getElementById('maximumCandidatesFeedback');
     const isPublicInput = document.getElementById('isPublic');
 
-    const inputs = [testingAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
+    const inputs = [testingAtInput, expectEndAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
 
-    const feedbacks = [testingAtFeedback, locationFeedback, districtFeedback, addressFeedback, maximumCandidatesFeedback];
+    const feedbacks = [testingAtFeedback, expectEndAtFeedback, locationFeedback, districtFeedback, addressFeedback, maximumCandidatesFeedback];
 
-    const showInfos = [showTestingAt, showLocation, showDistrict, showAddress, showMaximumCandidates, showIsPublic];
+    const showInfos = [showTestingAt, showExpectEndAt, showLocation, showDistrict, showAddress, showMaximumCandidates, showIsPublic];
 
     let districts = {};
 
@@ -55,6 +71,7 @@ if(editForm) {
             feedback.innerText = 'Looks good!'
         }
         testingAtInput.value = testingAtInput.dataset.value;
+        expectEndAtInput.value = expectEndAtInput.dataset.value;
         locationInput.value = locationInput.dataset.value;
         districtInput.value = districtInput.dataset.value;
         addressInput.value = addressInput.dataset.value;
@@ -87,6 +104,15 @@ if(editForm) {
             testingAtInput.classList.add('is-invalid');
             testingAtFeedback.className = 'invalid-feedback';
             testingAtFeedback.innerText = 'The testing at field is required.';
+        }
+        if(expectEndAtInput.validity.valueMissing) {
+            expectEndAtInput.classList.add('is-invalid');
+            expectEndAtFeedback.className = 'invalid-feedback';
+            expectEndAtFeedback.innerText = 'The expect end at field is required.';
+        } else if(testingAtInput.value > expectEndAtInput.value) {
+            expectEndAtInput.classList.add('is-invalid');
+            expectEndAtFeedback.className = 'invalid-feedback';
+            expectEndAtFeedback.innerText = 'The expect end at field must be a date after testing at.';
         }
         if(locationInput.validity.valueMissing) {
             locationInput.classList.add('is-invalid');
@@ -131,22 +157,10 @@ if(editForm) {
         return !hasError();
     }
 
-    function disableSubmitting(){
-        for(let button of submitButtons) {
-            button.disabled = true;
-        }
-    }
-
-    function enableSubmitting(){
-        submitting = '';
-        for(let button of submitButtons) {
-            button.disabled = false;
-        }
-    }
-
     function saveSuccessCallback(response) {
         bootstrapAlert(response.data.success);
         testingAtInput.dataset.value = response.data.testing_at;
+        expectEndAtInput.dataset.value = response.data.expect_end_at;
         locationInput.dataset.value = response.data.location;
         districtInput.dataset.value = response.data.district_id;
         addressInput.dataset.value = response.data.address;
@@ -154,6 +168,7 @@ if(editForm) {
         isPublicInput.dataset.value = response.data.is_public;
         fillInputValues()
         showTestingAt.innerText = response.data.testing_at;
+        showExpectEndAt.innerText = response.data.expect_end_at;
         showLocation.innerText = response.data.location;
         showDistrict.innerText = districts[response.data.district_id];
         showAddress.innerText = response.data.address;
@@ -184,6 +199,10 @@ if(editForm) {
                     case 'testing_at':
                         input = testingAtInput;
                         feedback = testingAtFeedback;
+                        break;
+                    case 'expect_end_at':
+                        input = expectEndAtInput;
+                        feedback = expectEndAtFeedback;
                         break;
                     case 'location':
                         input = locationInput;
@@ -246,6 +265,7 @@ if(editForm) {
                         }
                         let data = {
                             testing_at: testingAtInput.value,
+                            expect_end_at: expectEndAtInput.value,
                             location: locationInput.value,
                             district_id: districtInput.value,
                             address: addressInput.value,
@@ -295,24 +315,28 @@ if(editForm) {
             cancelButton.hidden = false;
         }
     );
+}
 
-    function userIdValidation(input)
-    {
-        if(input.validity.valueMissing) {
-            bootstrapAlert('The user id field is required.');
-            return false;
-        }
-        if(input.validity.patternMismatch) {
-            bootstrapAlert('The user id field must be an integer.');
-            return false;
-        }
-        if(typeof users[input.value] == undefined) {
-            bootstrapAlert('The selected user id is invalid.');
-            return false;
-        }
-        return true;
+function userIdValidation(input)
+{
+    if(input.validity.valueMissing) {
+        bootstrapAlert('The user id field is required.');
+        return false;
     }
+    if(input.validity.patternMismatch) {
+        bootstrapAlert('The user id field must be an integer.');
+        return false;
+    }
+    if(typeof users[input.value] == undefined) {
+        bootstrapAlert('The selected user id is invalid.');
+        return false;
+    }
+    return true;
+}
 
+const proctor = document.getElementById('proctor');
+
+if(proctor) {
     function urlGetProctorID(url) {
         return (new URL(url).pathname).match(/^\/admin\/admission-tests\/([0-9]+)\/proctors\/([0-9]+).*/i)[2];
     }
@@ -489,7 +513,6 @@ if(editForm) {
         }
     );
 
-    const proctor = document.getElementById('proctor');
     const createProctorForm = document.getElementById('createProctorForm');
     const proctorUserIdInput = document.getElementById('proctorUserIdInput');
     const proctorName = document.getElementById('proctorName');

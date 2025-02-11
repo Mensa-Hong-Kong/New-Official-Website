@@ -17,6 +17,16 @@
             </div>
             <div class="form-outline mb-4">
                 <div class="form-floating">
+                    <input type="datetime-local" name="expect_end_at" class="form-control" id="validationExpectEndAt" placeholder="expect end at"
+                        value="{{ old('expect_end_at', date('Y-m-d\TH:i')) }}" required />
+                    <label for="validationExpectEndAt">Expect End At</label>
+                    <div id="expectEndAtFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+            <div class="form-outline mb-4">
+                <div class="form-floating">
                     <input type="text" name="location" class="form-control" id="validationLocation" maxlength="255"
                         placeholder="location" value="{{ old('location') }}" list="locations" required />
                     <label for="validationLocation">Location</label>
