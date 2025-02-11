@@ -53,7 +53,10 @@ class ShowTest extends TestCase
     public function test_user_have_no_permission_and_is_proctor_but_no_in_testing_time_range()
     {
         $user = User::factory()->create();
-        $this->test->update(['testing_at' => now()->subHours(2)->subSecond()]);
+        $this->test->update([
+            'testing_at' => now()->subHours(2)->subSecond(),
+            'expect_end_at' => now()->subHour()->subSecond(),
+        ]);
         $this->test->proctors()->attach($user->id);
         $response = $this->actingAs($user)
             ->get(
@@ -79,10 +82,13 @@ class ShowTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_is_proctor()
+    public function test_happy_case_when_user_only_is_proctor_and_in_testing_time_range()
     {
         $user = User::factory()->create();
-        $this->test->update(['testing_at' => now()]);
+        $this->test->update([
+            'testing_at' => now()->subMinutes(30),
+            'expect_end_at' => now()->addMinutes(30),
+        ]);
         $this->test->proctors()->attach($user->id);
         $response = $this->actingAs($user)
             ->get(
