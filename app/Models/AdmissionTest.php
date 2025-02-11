@@ -41,6 +41,6 @@ class AdmissionTest extends Model
 
     public function inTestingTimeRange()
     {
-        return $this->testing_at >= now()->subHours(2) && $this->expect_end_at <= now()->addHours(1);
+        return $this->testing_at <= now()->addHours(2) && $this->expect_end_at >= now()->subHours(1);
     }
 }
