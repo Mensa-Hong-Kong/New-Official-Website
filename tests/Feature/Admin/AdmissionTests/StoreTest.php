@@ -28,8 +28,8 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
         $testingAt = now()->addMinute();
-        $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i:s');
-        $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i:s');
+        $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i');
+        $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i');
     }
 
     public function test_have_no_login()
@@ -203,7 +203,7 @@ class StoreTest extends TestCase
     public function test_expect_end_at_before_testing_at()
     {
         $data = $this->happyCase;
-        $data['expect_end_at'] = now()->subMinute()->format('Y-m-d H:i:s');
+        $data['expect_end_at'] = now()->subMinute()->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-tests.store'),
             $data

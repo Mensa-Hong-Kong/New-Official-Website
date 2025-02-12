@@ -24,6 +24,11 @@ class AdmissionTest extends Model
         'testing_at',
     ];
 
+    protected $casts = [
+        'testing_at' => 'datetime',
+        'expect_end_at' => 'datetime',
+    ];
+
     public function location()
     {
         return $this->belongsTo(Location::class);
