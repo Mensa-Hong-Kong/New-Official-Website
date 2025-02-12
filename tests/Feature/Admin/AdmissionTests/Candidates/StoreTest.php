@@ -138,6 +138,32 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
     }
 
+    public function test_user_id_of_user_of_passport_has_already_been_qualification_for_membership()
+    {
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id, [
+            'is_present' => 1,
+            'is_pass' => 1,
+        ]);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            ['user_id' => $this->user->id]
+        );
+        $response->assertInvalid(['user_id' => 'The passport of selected user id has already been qualification for membership.']);
+    }
+
     public function test_user_id_of_user_of_passport_has_already_been_taken_within_6_months()
     {
         $newTestingAt = now()->addDay();
@@ -159,6 +185,34 @@ class StoreTest extends TestCase
             ['user_id' => $this->user->id]
         );
         $response->assertInvalid(['user_id' => 'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
+    }
+
+    public function test_user_id_of_user_of_passport_has_failed_two_times()
+    {
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        foreach(range(1, 2) as $times) {
+            $oldTest = AdmissionTest::factory()
+                ->state([
+                    'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),
+                    'expect_end_at' => $this->test->expect_end_at->subMonths(6)->subDay(),
+                ])->create();
+            $oldTest->candidates()->attach($this->user->id, [
+                'is_present' => 1,
+                'is_pass' => 0,
+            ]);
+        }
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            ['user_id' => $this->user->id]
+        );
+        $response->assertInvalid(['user_id' => 'The passport of selected user id tested two times admission test.']);
     }
 
     public function test_happy_case_when_user_have_no_other_admission_test_after_than_now_and_have_no_other_same_passport()

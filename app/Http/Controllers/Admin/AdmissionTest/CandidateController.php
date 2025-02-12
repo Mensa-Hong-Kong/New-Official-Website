@@ -42,6 +42,19 @@ class CandidateController extends Controller implements HasMiddleware
             ], 422);
         }
         if(
+            AdmissionTestHasCandidate::whereHas(
+                'candidate', function($query) use($user) {
+                    $query->where('passport_type_id', $user->passport_type_id)
+                        ->where('passport_number', $user->passport_number);
+                }
+            )->where('is_pass', true)
+            ->exists()
+        ) {
+            return response([
+                'errors' => ['user_id' => 'The passport of selected user id has already been qualification for membership.'],
+            ], 422);
+        }
+        if(
             User::where('passport_type_id', $user->passport_type_id)
                 ->where('passport_number', $user->passport_number)
                 ->whereHas(
@@ -52,6 +65,19 @@ class CandidateController extends Controller implements HasMiddleware
         ) {
             return response([
                 'errors' => ['user_id' => 'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'],
+            ], 422);
+        }
+        if(
+            AdmissionTestHasCandidate::whereHas(
+                'candidate', function($query) use($user) {
+                    $query->where('passport_type_id', $user->passport_type_id)
+                        ->where('passport_number', $user->passport_number);
+                }
+            )->where('is_pass', false)
+            ->count() == 2
+        ) {
+            return response([
+                'errors' => ['user_id' => 'The passport of selected user id tested two times admission test.'],
             ], 422);
         }
         AdmissionTestHasCandidate::where('user_id', $user->id)
