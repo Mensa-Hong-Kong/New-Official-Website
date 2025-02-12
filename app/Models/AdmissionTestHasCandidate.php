@@ -23,6 +23,6 @@ class AdmissionTestHasCandidate extends Pivot
 
     public function candidate()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
