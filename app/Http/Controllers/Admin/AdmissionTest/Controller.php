@@ -115,7 +115,8 @@ class Controller extends BaseController implements HasMiddleware
 
         return redirect()->route(
             'admin.admission-tests.show',
-            ['admission_test' => $test]);
+            ['admission_test' => $test]
+        );
     }
 
     public function show(AdmissionTest $admissionTest)
