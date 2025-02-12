@@ -123,11 +123,6 @@ class UserController extends Controller implements HasMiddleware
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
         $update = [
             'username' => $request->username,
-            'family_name' => $request->family_name,
-            'middle_name' => $request->middle_name,
-            'given_name' => $request->given_name,
-            'passport_type_id' => $request->passport_type_id,
-            'passport_number' => $request->passport_number,
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
         ];
