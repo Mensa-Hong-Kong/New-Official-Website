@@ -57,7 +57,7 @@ class CandidateController extends Controller implements HasMiddleware
         AdmissionTestHasCandidate::where('user_id', $user->id)
             ->whereHas(
                 'test', function($query) use($now) {
-                    $query->where('testing_at', '>=', $now);
+                    $query->where('testing_at', '>', $now);
                 }
             )->delete();
         $admissionTest->candidates()->attach(
