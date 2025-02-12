@@ -34,75 +34,29 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(CandidateRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        $user = User::find($request->user_id);
-        $now = now();
-        if (! $user) {
-            return response([
-                'errors' => ['user_id' => 'The selected user id is invalid.'],
-            ], 422);
-        }
-        if(
-            AdmissionTestHasCandidate::whereHas(
-                'candidate', function($query) use($user) {
-                    $query->where('passport_type_id', $user->passport_type_id)
-                        ->where('passport_number', $user->passport_number);
-                }
-            )->where('is_pass', true)
-            ->exists()
-        ) {
-            return response([
-                'errors' => ['user_id' => 'The passport of selected user id has already been qualification for membership.'],
-            ], 422);
-        }
-        if(
-            User::where('passport_type_id', $user->passport_type_id)
-                ->where('passport_number', $user->passport_number)
-                ->whereHas(
-                    'admissionTests', function($query) use($admissionTest, $now) {
-                        $query->whereBetween('testing_at', [$admissionTest->testing_at->subMonths(6), $now]);
-                    }
-                )->exists()
-        ) {
-            return response([
-                'errors' => ['user_id' => 'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'],
-            ], 422);
-        }
-        if(
-            AdmissionTestHasCandidate::whereHas(
-                'candidate', function($query) use($user) {
-                    $query->where('passport_type_id', $user->passport_type_id)
-                        ->where('passport_number', $user->passport_number);
-                }
-            )->where('is_pass', false)
-            ->count() == 2
-        ) {
-            return response([
-                'errors' => ['user_id' => 'The passport of selected user id tested two times admission test.'],
-            ], 422);
-        }
-        AdmissionTestHasCandidate::where('user_id', $user->id)
+        AdmissionTestHasCandidate::where('user_id', $request->user->id)
             ->whereHas(
-                'test', function($query) use($now) {
-                    $query->where('testing_at', '>', $now);
+                'test', function($query) use($request) {
+                    $query->where('testing_at', '>', $request->now);
                 }
             )->delete();
-        $admissionTest->candidates()->attach($user->id);
+        $admissionTest->candidates()->attach($request->user->id);
         DB::commit();
 
         return [
             'success' => 'The candidate create success',
-            'user_id' => $user->id,
-            'name' => $user->name,
-            'passport_type' => $user->passportType->name,
-            'passport_number' => $user->passport_number,
-            'has_same_passport' => User::whereNot('id', $user->id)
-                ->where('passport_type_id', $user->passport_type_id)
-                ->where('passport_number', $user->passport_number)
+            'user_id' => $request->user->id,
+            'name' => $request->user->name,
+            'passport_type' => $request->user->passportType->name,
+            'passport_number' => $request->user->passport_number,
+            'has_same_passport' => User::whereNot('id', $request->user->id)
+                ->where('passport_type_id', $request->user->passport_type_id)
+                ->where('passport_number', $request->user->passport_number)
                 ->has('admissionTests')
                 ->exists(),
             'show_user_url' => route(
                 'admin.users.show',
-                ['user' => $user]
+                ['user' => $request->user]
             ),
         ];
     }

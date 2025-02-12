@@ -36,34 +36,28 @@ class ProctorController extends Controller implements HasMiddleware
 
     public function store(ProctorRequest $request, AdmissionTest $admissionTest)
     {
-        $user = User::find($request->user_id);
-        if (! $user) {
-            return response([
-                'errors' => ['user_id' => 'The selected user id is invalid.'],
-            ], 422);
-        }
-        $admissionTest->proctors()->attach($user->id);
+        $admissionTest->proctors()->attach($request->user->id);
 
         return [
             'success' => 'The proctor create success',
-            'user_id' => $user->id,
-            'name' => $user->name,
+            'user_id' => $request->user->id,
+            'name' => $request->user->name,
             'show_user_url' => route(
                 'admin.users.show',
-                ['user' => $user]
+                ['user' => $request->user]
             ),
             'update_proctor_url' => route(
                 'admin.admission-tests.proctors.update',
                 [
                     'admission_test' => $admissionTest,
-                    'proctor' => $user,
+                    'proctor' => $request->user,
                 ]
             ),
             'delete_proctor_url' => route(
                 'admin.admission-tests.proctors.destroy',
                 [
                     'admission_test' => $admissionTest,
-                    'proctor' => $user,
+                    'proctor' => $request->user,
                 ]
             ),
         ];
@@ -71,36 +65,30 @@ class ProctorController extends Controller implements HasMiddleware
 
     public function update(ProctorRequest $request, AdmissionTest $admissionTest, User $proctor)
     {
-        $user = User::find($request->user_id);
-        if (! $user) {
-            return response([
-                'errors' => ['user_id' => 'The selected user id is invalid.'],
-            ], 422);
-        }
         AdmissionTestHasProctor::where('test_id', $admissionTest->id)
             ->where('user_id', $proctor->id)
-            ->update(['user_id' => $user->id]);
+            ->update(['user_id' => $request->user->id]);
 
         return [
             'success' => 'The proctor update success',
-            'user_id' => $user->id,
-            'name' => $user->name,
+            'user_id' => $request->user->id,
+            'name' => $request->user->name,
             'show_user_url' => route(
                 'admin.users.show',
-                ['user' => $user]
+                ['user' => $request->user]
             ),
             'update_proctor_url' => route(
                 'admin.admission-tests.proctors.update',
                 [
                     'admission_test' => $admissionTest,
-                    'proctor' => $user,
+                    'proctor' => $request->user,
                 ]
             ),
             'delete_proctor_url' => route(
                 'admin.admission-tests.proctors.destroy',
                 [
                     'admission_test' => $admissionTest,
-                    'proctor' => $user,
+                    'proctor' => $request->user,
                 ]
             ),
         ];
