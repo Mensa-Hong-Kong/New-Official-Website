@@ -65,20 +65,12 @@
                 </div>
                 <div class="col-md-3"></div>
                 <div class="col-md-4">
-                    <label for="validationFamilyName" class="form-label">Family Name</label>
-                    <div id="showFamilyName">{{ $user->family_name }}</div>
-                    <input type="text" class="form-control" id="validationFamilyName" maxlength="255" value="{{ old('family_name', $user->family_name) }}" placeholder="family name" name="family_name" required hidden />
-                    <div id="familyNameFeedback" class="valid-feedback">
-                        Looks good!
-                    </div>
+                    <label class="form-label">Family Name</label>
+                    <div>{{ $user->family_name }}</div>
                 </div>
                 <div class="col-md-4">
-                    <label for="validationMiddleName" class="form-label">Middle Name</label>
-                    <div id="showMiddleName">{{ $user->middle_name }}</div>
-                    <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name', $user->middle_name) }}" placeholder="middle name" name="middle_name" hidden />
-                    <div id="middleNameFeedback" class="valid-feedback">
-                        Looks good!
-                    </div>
+                    <label class="form-label">Middle Name</label>
+                    <div>{{ $user->middle_name }}</div>
                 </div>
                 <div class="col-md-4">
                     <label for="validationGivenName" class="form-label">Given Name</label>

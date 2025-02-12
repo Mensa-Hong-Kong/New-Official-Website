@@ -27,11 +27,6 @@ class UpdateRequest extends FormRequest
                 'string', 'min:8', 'max:16',
             ],
             'new_password' => 'nullable|string|min:8|max:16|confirmed',
-            'family_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'given_name' => 'required|string|max:255',
-            'passport_type_id' => 'required|integer|exists:'.PassportType::class.',id',
-            'passport_number' => 'required|regex:/^[A-Z0-9]+$/|min:8|max:18',
             'gender' => 'required|string|max:255',
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
         ];
@@ -39,10 +34,6 @@ class UpdateRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
-            'password.required' => 'The password field is required when you change the username or password.',
-            'passport_type_id.required' => 'The passport type field is required.',
-            'passport_type_id.exists' => 'The selected passport type is invalid.',
-        ];
+        return ['password.required' => 'The password field is required when you change the username or password.'];
     }
 }

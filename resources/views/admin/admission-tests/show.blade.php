@@ -163,8 +163,8 @@
                         </div>
                     </form>
                 </article>
+                <x-datalist :id="'users'" :values="$users" isStringKey="true"></x-datalist>
             @endcan
-            <x-datalist :id="'users'" :values="$users" isStringKey="true"></x-datalist>
         @endcan
     </section>
 @endsection

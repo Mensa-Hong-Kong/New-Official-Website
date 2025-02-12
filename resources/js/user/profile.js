@@ -19,26 +19,6 @@ const newPasswordInput = document.getElementById('validationNewPassword');
 const newPasswordFeedback = document.getElementById('newPasswordFeedback');
 const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
 
-const showFamilyName = document.getElementById('showFamilyName');
-const familyNameInput = document.getElementById('validationFamilyName');
-const familyNameFeedback = document.getElementById('familyNameFeedback');
-
-const showMiddleName = document.getElementById('showMiddleName');
-const middleNameInput = document.getElementById('validationMiddleName');
-const middleNameFeedback = document.getElementById('middleNameFeedback');
-
-const showGivenName = document.getElementById('showGivenName');
-const givenNameInput = document.getElementById('validationGivenName');
-const givenNameFeedback = document.getElementById('givenNameFeedback');
-
-const showPassportType = document.getElementById('showPassportType');
-const passportTypeInput = document.getElementById('validationPassportType');
-const passportTypeFeedback = document.getElementById('passportTypeFeedback');
-
-const showPassportNumber = document.getElementById('showPassportNumber');
-const passportNumberInput = document.getElementById('validationPassportNumber');
-const passportNumberFeedback = document.getElementById('passportNumberFeedback');
-
 const showGender = document.getElementById('showGender');
 const genderInput = document.getElementById('validationGender');
 const genderFeedback = document.getElementById('genderFeedback');
@@ -53,34 +33,23 @@ const editInfoRemind = document.getElementById('editInfoRemind');
 
 const showInfos = [
     showUsername, showPassword,
-    showFamilyName, showMiddleName, showGivenName,
-    showPassportType, showPassportNumber,
     showGender, showBirthday,
 ];
 
 const inputs = [
     usernameInput, passwordInput,
     newPasswordInput, confirmNewPasswordInput,
-    familyNameInput, middleNameInput, givenNameInput,
-    passportTypeInput, passportNumberInput,
     genderInput, birthdayInput,
 ];
 
 let inputValues = {
     username: usernameInput.value,
-    familyName: familyNameInput.value,
-    middleName: middleNameInput.value,
-    givenName: givenNameInput.value,
-    passportType: passportTypeInput.value,
-    passportNumber: passportNumberInput.value,
     gender: genderInput.value,
     birthday: birthdayInput.value,
 };
 
 const feedbacks = [
     usernameFeedback, passwordFeedback, newPasswordFeedback,
-    familyNameFeedback, middleNameFeedback, givenNameFeedback,
-    passportTypeFeedback, passportNumberFeedback,
     genderFeedback, birthdayFeedback,
 ];
 
@@ -132,11 +101,6 @@ function fillInputValues() {
     passwordInput.value = '';
     newPasswordInput.value = '';
     confirmNewPasswordInput.value = '';
-    familyNameInput.value = inputValues.familyName;
-    middleNameInput.value = inputValues.middleName;
-    givenNameInput.value = inputValues.givenName;
-    passportTypeInput.value = inputValues.passportType;
-    passportNumberInput.value = inputValues.passportNumber;
     genderInput.value = inputValues.gender;
     birthdayInput.value = inputValues.birthday;
 }
@@ -225,47 +189,6 @@ function validation() {
             newPasswordFeedback.innerText = 'The new password confirmation does not match.';
         }
     }
-    if(familyNameInput.validity.valueMissing) {
-        familyNameInput.classList.add('is-invalid');
-        familyNameFeedback.className = 'invalid-feedback';
-        familyNameFeedback.innerText = 'The family name field is required.';
-    } else if(familyNameInput.validity.tooLong) {
-        familyNameInput.classList.add('is-invalid');
-        familyNameFeedback.className = 'invalid-feedback';
-        familyNameFeedback.innerText = `The family name not be greater than ${familyName.maxLength} characters.`;
-    }
-    if(middleNameInput.value && middleNameInput.validity.tooLong) {
-        middleNameInput.classList.add('is-invalid');
-        middleNameFeedback.className = 'invalid-feedback';
-        middleNameFeedback.innerText = `The middle name not be greater than ${middleName.maxLength} characters.`;
-    }
-    if(givenNameInput.validity.valueMissing) {
-        givenNameInput.classList.add('is-invalid');
-        givenNameFeedback.className = 'invalid-feedback';
-        givenNameFeedback.innerText = 'The given name field is required.';
-    } else if(givenNameInput.validity.tooLong) {
-        givenNameInput.classList.add('is-invalid');
-        givenNameFeedback.className = 'invalid-feedback';
-        givenNameFeedback.innerText = `The given name not be greater than ${givenName.maxLength} characters.`;
-    }
-    if(passportTypeInput.validity.valueMissing) {
-        passportTypeInput.classList.add('is-invalid');
-        passportTypeFeedback.className = 'invalid-feedback';
-        passportTypeFeedback.innerText = 'The passport type field is required.';
-    }
-    if(passportNumberInput.validity.valueMissing) {
-        passportNumberInput.classList.add('is-invalid');
-        passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = 'The passport number field is required.';
-    } else if(passportNumberInput.validity.tooShort) {
-        passportNumberInput.classList.add('is-invalid');
-        passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = `The passport number must be at least ${passportNumber.minLength} characters.`;
-    } else if(passportNumberInput.validity.tooLong) {
-        passportNumberInput.classList.add('is-invalid');
-        passportNumberFeedback.className = 'invalid-feedback';
-        passportNumberFeedback.innerText = `The passport number not be greater than ${passportNumber.maxLength} characters.`;
-    }
     if(genderInput.validity.valueMissing) {
         genderInput.classList.add('is-invalid');
         genderFeedback.className = 'invalid-feedback';
@@ -297,12 +220,7 @@ function enableEditForm() {
     passwordInput.disabled = false;
     newPasswordInput.disabled = false;
     confirmNewPasswordInput.disabled = false;
-    familyNameInput.disabled = false;
-    middleNameInput.disabled = false;
-    givenNameInput.disabled = false;
     genderInput.disabled = false;
-    passportTypeInput.disabled = false;
-    passportNumberInput.disabled = false;
     birthdayInput.disabled = false;
 }
 
@@ -313,11 +231,6 @@ function successCallback(response) {
         input.hidden = true;
     }
     inputValues.username = response.data.username;
-    inputValues.familyName = response.data.family_name;
-    inputValues.middleName = response.data.middle_name;
-    inputValues.givenName = response.data.given_name;
-    inputValues.passportType = response.data.passport_type_id;
-    inputValues.passportNumber = response.data.passport_number;
     inputValues.gender = response.data.gender;
     inputValues.birthday = response.data.birthday;
     for(let column of newPasswordColumns) {
@@ -336,11 +249,6 @@ function successCallback(response) {
         gendersDatalist.appendChild(newOption);
     }
     showUsername.innerText = response.data.username;
-    showFamilyName.innerText = response.data.family_name;
-    showMiddleName.innerText = response.data.middle_name;
-    showGivenName.innerText = response.data.given_name;
-    showPassportType.innerText = passportTypeInput.options[passportTypeInput.selectedIndex].text;
-    showPassportNumber.innerText = response.data.passport_number;
     showGender.innerText = response.data.gender;
     showBirthday.innerText = response.data.birthday;
     submitting = '';
@@ -378,26 +286,6 @@ function failCallback(error) {
                 case 'new_password':
                     input = newPasswordInput;
                     feedback = passwordFeedback;
-                    break;
-                case 'family_name':
-                    input = familyNameInput;
-                    feedback = familyNameFeedback;
-                    break;
-                case 'middle_name':
-                    input = middleNameInput;
-                    feedback = middleNameFeedback;
-                    break;
-                case 'given_name':
-                    input = givenNameInput;
-                    feedback = givenNameFeedback;
-                    break;
-                case 'passport_type_id':
-                    input = passportTypeInput;
-                    feedback = passportTypeFeedback;
-                    break;
-                case 'passport_number':
-                    input = passportNumberInput;
-                    feedback = passportNumberFeedback;
                     break;
                 case 'gender':
                     input = genderInput;
@@ -443,28 +331,22 @@ editForm.addEventListener(
                     passwordInput.disabled = true;
                     newPasswordInput.disabled = true;
                     confirmNewPasswordInput.disabled = true;
-                    familyNameInput.disabled = true;
-                    middleNameInput.disabled = true;
-                    givenNameInput.disabled = true;
                     genderInput.disabled = true;
-                    passportTypeInput.disabled = true;
-                    passportNumberInput.disabled = true;
                     birthdayInput.disabled = true;
                     saveButton.hidden = true;
                     cancelButton.hidden = true;
                     savingButton.hidden = false;
                     let data = {
                         username: usernameInput.value,
-                        password: passwordInput.value,
-                        new_password: newPasswordInput.value,
-                        new_password_confirmation: confirmNewPasswordInput.value,
-                        family_name: familyNameInput.value,
-                        middle_name: middleNameInput.value,
-                        given_name: givenNameInput.value,
                         gender: genderInput.value,
-                        passport_type_id: passportTypeInput.value,
-                        passport_number: passportNumberInput.value,
                         birthday: birthdayInput.value,
+                    }
+                    if(newPasswordInput.value || usernameInput.value != inputValues.username) {
+                        data[password] = passwordInput.value;
+                    }
+                    if(newPasswordInput.value) {
+                        data[new_password] = newPasswordInput.value;
+                        data[new_password_confirmation] = confirmNewPasswordInput.value;
                     }
                     post(editForm.action, successCallback, failCallback, 'put', data);
                 } else {
@@ -510,7 +392,7 @@ function requestVerifyCodeSuccessCallback(response) {
     enableSubmitting();
 }
 
-function requestNewVerifyCodefailCallback(error) {
+function requestNewVerifyCodeFailCallback(error) {
     let id = urlGetContactID(error.request.responseURL);
     document.getElementById('requestingContactButton'+id).hidden = true;
     document.getElementById('verifyCodeInput'+id).disabled = false;
@@ -546,7 +428,7 @@ function requestNewVerifyCode(event) {
             get(
                 event.target.parentElement.dataset.requestVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
-                requestNewVerifyCodefailCallback
+                requestNewVerifyCodeFailCallback
             );
         }
     }
@@ -650,7 +532,7 @@ function cancelVerifyContact(event) {
     }
 }
 
-function requestVerifyCodefailCallback(error) {
+function requestVerifyCodeFailCallback(error) {
     let id = urlGetContactID(error.request.responseURL);
     if(error.status == 410) {
         verified(id);
@@ -675,13 +557,13 @@ function verifyContact(event) {
             get(
                 event.target.parentElement.dataset.requestVerifyCodeUrl,
                 requestVerifyCodeSuccessCallback,
-                requestVerifyCodefailCallback
+                requestVerifyCodeFailCallback
             );
         }
     }
 }
 
-function showDefaul(id) {
+function showDefault(id) {
     document.getElementById('settingDefault'+id).hidden = true;
     let defaultContact = document.getElementById('defaultContact'+id);
     let type = defaultContact.dataset.type;
@@ -704,7 +586,7 @@ function setDefaultSuccessCallback(response) {
         response.status == 201 ?
         response.data.message : response.data.success
     );
-    showDefaul(urlGetContactID(response.request.responseURL))
+    showDefault(urlGetContactID(response.request.responseURL))
     enableSubmitting();
 }
 
@@ -810,7 +692,7 @@ function updateContactSuccessCallback(response) {
         response.data[`default_${input.type}_id`] != id &&
         ! document.getElementById('defaultContact'+id).hidden
     ) {
-        showDefaul(response.data[`default_${input.type}_id`]);
+        showDefault(response.data[`default_${input.type}_id`]);
     }
     document.getElementById('savingContact'+id).hidden = true;
     closeEdit(id);
