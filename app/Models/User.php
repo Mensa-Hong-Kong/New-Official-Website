@@ -175,4 +175,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasProctor::class, 'user_id', 'test_id');
     }
+
+    public function admissionTests()
+    {
+        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'test_id')
+            ->withPivot(['is_present', 'is_pass']);
+    }
 }

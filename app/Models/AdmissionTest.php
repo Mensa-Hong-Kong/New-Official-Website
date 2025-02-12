@@ -48,4 +48,15 @@ class AdmissionTest extends Model
     {
         return $this->testing_at <= now()->addHours(2) && $this->expect_end_at >= now()->subHour();
     }
+
+    public function candidates()
+    {
+        return $this->belongsToMany(User::class, AdmissionTestHasCandidate::class, 'test_id')
+            ->withPivot(['is_present', 'is_pass', 'passport_type_id', 'passport_number']);
+    }
+
+    public function bundleCandidates()
+    {
+        return $this->hasMany(AdmissionTestHasCandidate::class, 'test_id');
+    }
 }
