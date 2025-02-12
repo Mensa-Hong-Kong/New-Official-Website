@@ -14,8 +14,6 @@ class AdmissionTestHasCandidate extends Pivot
         'user_id',
         'is_present',
         'is_pass',
-        'passport_type_id',
-        'passport_number',
     ];
 
     public function test()

@@ -42,10 +42,10 @@ class CandidateController extends Controller implements HasMiddleware
             ], 422);
         }
         if(
-            AdmissionTestHasCandidate::where('passport_type_id', $user->passport_type_id)
+            User::where('passport_type_id', $user->passport_type_id)
                 ->where('passport_number', $user->passport_number)
                 ->whereHas(
-                    'test', function($query) use($admissionTest, $now) {
+                    'admissionTests', function($query) use($admissionTest, $now) {
                         $query->whereBetween('testing_at', [$admissionTest->testing_at->subMonths(6), $now]);
                     }
                 )->exists()
@@ -60,12 +60,7 @@ class CandidateController extends Controller implements HasMiddleware
                     $query->where('testing_at', '>', $now);
                 }
             )->delete();
-        $admissionTest->candidates()->attach(
-            $user->id, [
-                'passport_type_id' => $user->passport_type_id,
-                'passport_number' => $user->passport_number,
-            ]
-        );
+        $admissionTest->candidates()->attach($user->id);
         DB::commit();
 
         return [
@@ -74,9 +69,10 @@ class CandidateController extends Controller implements HasMiddleware
             'name' => $user->name,
             'passport_type' => $user->passportType->name,
             'passport_number' => $user->passport_number,
-            'has_same_passport' => AdmissionTestHasCandidate::whereNot('user_id', $user->id)
+            'has_same_passport' => User::whereNot('id', $user->id)
                 ->where('passport_type_id', $user->passport_type_id)
                 ->where('passport_number', $user->passport_number)
+                ->has('admissionTests')
                 ->exists(),
             'show_user_url' => route(
                 'admin.users.show',

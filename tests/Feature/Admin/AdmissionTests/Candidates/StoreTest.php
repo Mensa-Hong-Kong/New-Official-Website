@@ -150,10 +150,7 @@ class StoreTest extends TestCase
                 'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
                 'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
             ])->create();
-        $oldTest->candidates()->attach($this->user->id, [
-            'passport_type_id' => $this->user->passport_type_id,
-            'passport_number' => $this->user->passport_number,
-        ]);
+        $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -201,10 +198,7 @@ class StoreTest extends TestCase
                 'testing_at' => $newTestingAt,
                 'expect_end_at' => $newTestingAt->addHour(),
             ])->create();
-        $oldTest->candidates()->attach($this->user->id, [
-            'passport_type_id' => $this->user->passport_type_id,
-            'passport_number' => $this->user->passport_number,
-        ]);
+        $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -234,12 +228,7 @@ class StoreTest extends TestCase
                 'passport_type_id' => $this->user->passport_type_id,
                 'passport_number' => $this->user->passport_number,
             ])->create();
-        $this->test->candidates()->attach(
-            $user->id, [
-                'passport_type_id' => $user->passport_type_id,
-                'passport_number' => $user->passport_number,
-            ]
-        );
+        $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -274,21 +263,13 @@ class StoreTest extends TestCase
                 'testing_at' => $newTestingAt,
                 'expect_end_at' => $newTestingAt->addHour(),
             ])->create();
-        $oldTest->candidates()->attach($this->user->id, [
-            'passport_type_id' => $this->user->passport_type_id,
-            'passport_number' => $this->user->passport_number,
-        ]);
+        $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
             ->state([
                 'passport_type_id' => $this->user->passport_type_id,
                 'passport_number' => $this->user->passport_number,
             ])->create();
-        $this->test->candidates()->attach(
-            $user->id, [
-                'passport_type_id' => $user->passport_type_id,
-                'passport_number' => $user->passport_number,
-            ]
-        );
+        $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
