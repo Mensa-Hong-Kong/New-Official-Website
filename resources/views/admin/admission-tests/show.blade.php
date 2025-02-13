@@ -179,7 +179,15 @@
                         <div class="col-md-1">{{ $candidate->gender->name }}</div>
                         <div class="col-md-2">{{ $candidate->name }}</div>
                         <div class="col-md-2">{{ $candidate->passportType->name }}</div>
-                        <div class="col-md-2">{{ $candidate->passport_number }}</div>
+                        <div @class([
+                            'col-md-2',
+                            'text-warning' => $candidate->hasSamePassportTested(),
+                            'text-danger' => $candidate->hasSamePassportTestedTwoTimes() ||
+                                $candidate->hasSamePassportAlreadyQualificationOfMembership() ||
+                                $candidate->hasSamePassportTestedWithinDateRange(
+                                    $admissionTest->testing_at->subMonths(6), now()
+                                ),
+                        ])>{{ $candidate->passport_number }}</div>
                         @can('Edit:Admission Test')
                             <a class="btn btn-primary col-md-1" id="showProctorLink{{ $proctor->id }}"
                                 href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
