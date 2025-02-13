@@ -208,7 +208,7 @@ class StoreTest extends TestCase
             route('admin.admission-tests.store'),
             $data
         );
-        $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a date after testing at.']);
+        $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a date after than testing at.']);
     }
 
     public function test_missing_maximum_candidates()
