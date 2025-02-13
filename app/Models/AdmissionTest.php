@@ -52,7 +52,7 @@ class AdmissionTest extends Model
     public function candidates()
     {
         return $this->belongsToMany(User::class, AdmissionTestHasCandidate::class, 'test_id')
-            ->withPivot(['is_present', 'is_pass', 'passport_type_id', 'passport_number']);
+            ->withPivot(['is_present', 'is_pass']);
     }
 
     public function bundleCandidates()
