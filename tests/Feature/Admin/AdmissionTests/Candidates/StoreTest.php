@@ -176,7 +176,7 @@ class StoreTest extends TestCase
                 'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
                 'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
             ])->create();
-        $oldTest->candidates()->attach($this->user->id);
+        $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',

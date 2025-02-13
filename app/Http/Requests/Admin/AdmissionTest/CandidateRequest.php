@@ -58,7 +58,8 @@ class CandidateRequest extends FormRequest
                             ->where('passport_number', $user->passport_number)
                             ->whereHas(
                                 'admissionTests', function($query) use($admissionTest, $now) {
-                                    $query->whereBetween('testing_at', [$admissionTest->testing_at->subMonths(6), $now]);
+                                    $query->where('is_present', true)
+                                        ->whereBetween('testing_at', [$admissionTest->testing_at->subMonths(6), $now]);
                                 }
                             )->exists()
                     ) {
