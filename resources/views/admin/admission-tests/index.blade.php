@@ -21,7 +21,7 @@
                             <th scope="row">{{ $test->id }}</th>
                             <td>{{ $test->testing_at }}</td>
                             <td>{{ $test->location->name }}</td>
-                            <td>0/{{ $test->maximum_candidates }}</td>
+                            <td>{{ $test->candidates()->count() }}/{{ $test->maximum_candidates }}</td>
                             <td>{{ $test->is_public ? 'Public' : 'Private' }}</td>
                             <td>
                                 @if(
