@@ -592,68 +592,70 @@ const candidate = document.getElementById('candidate');
 
 if(candidate) {
     const createCandidateForm = document.getElementById('createCandidateForm');
-    const candidateUserIdInput = document.getElementById('candidateUserIdInput');
-    const addCandidateButton = document.getElementById('addCandidateButton');
-    const addingCandidateButton = document.getElementById('addingCandidateButton');
+    if(createCandidateForm) {
+        const candidateUserIdInput = document.getElementById('candidateUserIdInput');
+        const addCandidateButton = document.getElementById('addCandidateButton');
+        const addingCandidateButton = document.getElementById('addingCandidateButton');
 
-    function createCandidateSuccessCallback(response) {
-        let rowElement = document.createElement('div');
-        rowElement.id = 'showProctor'+response.data.user_id;
-        rowElement.className = 'row g-3';
-        rowElement.innerHTML = `
-            <div class="col-md-1">${response.data.user_id}</div>
-            <div class="col-md-1">${response.data.gender}</div>
-            <div class="col-md-2">${response.data.name}</div>
-            <div class="col-md-2">${response.data.passport_type}</div>
-        `;
-        if(response.data.has_same_passport) {
-            rowElement.innerHTML += `<div class="col-md-2 text-warning">${response.data.passport_number}</div>`;
-        } else {
-            rowElement.innerHTML += `<div class="col-md-2">${response.data.passport_number}</div>`;
+        function createCandidateSuccessCallback(response) {
+            let rowElement = document.createElement('div');
+            rowElement.id = 'showProctor'+response.data.user_id;
+            rowElement.className = 'row g-3';
+            rowElement.innerHTML = `
+                <div class="col-md-1">${response.data.user_id}</div>
+                <div class="col-md-1">${response.data.gender}</div>
+                <div class="col-md-2">${response.data.name}</div>
+                <div class="col-md-2">${response.data.passport_type}</div>
+            `;
+            if(response.data.has_same_passport) {
+                rowElement.innerHTML += `<div class="col-md-2 text-warning">${response.data.passport_number}</div>`;
+            } else {
+                rowElement.innerHTML += `<div class="col-md-2">${response.data.passport_number}</div>`;
+            }
+            rowElement.innerHTML += `
+                <a class="btn btn-primary col-md-1" id="showProctorLink${response.data.user_id}"
+                    href="${response.data.show_user_url}">Show</a>
+            `;
+            candidate.insertBefore(rowElement, createCandidateForm);
+            addingCandidateButton.hidden = true;
+            addCandidateButton.hidden = false;
+            candidateUserIdInput.value = '';
+            candidateUserIdInput.disabled = false;
+            enableSubmitting();
         }
-        rowElement.innerHTML += `
-            <a class="btn btn-primary col-md-1" id="showProctorLink${response.data.user_id}"
-                href="${response.data.show_user_url}">Show</a>
-        `;
-        candidate.insertBefore(rowElement, createCandidateForm);
-        addingCandidateButton.hidden = true;
-        addCandidateButton.hidden = false;
-        candidateUserIdInput.value = '';
-        candidateUserIdInput.disabled = false;
-        enableSubmitting();
-    }
 
-    function createCandidateFailCallback(error) {
-        if(error.status == 422) {
-            bootstrapAlert(error.response.data.errors.user_id);
+        function createCandidateFailCallback(error) {
+            if(error.status == 422) {
+                bootstrapAlert(error.response.data.errors.user_id);
+            }
+            addingCandidateButton.hidden = true;
+            addCandidateButton.hidden = false;
+            candidateUserIdInput.disabled = false;
+            enableSubmitting();
         }
-        addingCandidateButton.hidden = true;
-        addCandidateButton.hidden = false;
-        candidateUserIdInput.disabled = false;
-        enableSubmitting();
-    }
 
-    createCandidateForm.addEventListener(
-        'submit', function(event) {
-            event.preventDefault();
-            if(submitting == '') {
-                let submitAt = Date.now();
-                submitting = 'addCandidate'+submitAt;
-                disableSubmitting();
-                if(submitting == 'addCandidate'+submitAt) {
-                    if(userIdValidation(candidateUserIdInput)) {
-                        candidateUserIdInput.disabled = true;
-                        addCandidateButton.hidden = true;
-                        addingCandidateButton.hidden = false;
-                        let data = {user_id: candidateUserIdInput.value};
-                        post(event.target.action, createCandidateSuccessCallback, createCandidateFailCallback, 'post', data);
-                    } else {
-                        enableSubmitting();
+        createCandidateForm.addEventListener(
+            'submit', function(event) {
+                event.preventDefault();
+                if(submitting == '') {
+                    let submitAt = Date.now();
+                    submitting = 'addCandidate'+submitAt;
+                    disableSubmitting();
+                    if(submitting == 'addCandidate'+submitAt) {
+                        if(userIdValidation(candidateUserIdInput)) {
+                            candidateUserIdInput.disabled = true;
+                            addCandidateButton.hidden = true;
+                            addingCandidateButton.hidden = false;
+                            let data = {user_id: candidateUserIdInput.value};
+                            post(event.target.action, createCandidateSuccessCallback, createCandidateFailCallback, 'post', data);
+                        } else {
+                            enableSubmitting();
+                        }
                     }
                 }
             }
-        }
-    );
+        );
+    }
 }
 
 submitting = '';
