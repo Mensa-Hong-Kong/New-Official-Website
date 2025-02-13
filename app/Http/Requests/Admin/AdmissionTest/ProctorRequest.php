@@ -39,7 +39,7 @@ class ProctorRequest extends FormRequest
                 } else {
                     $this->merge(['user' => $user]);
                 }
-            }
+            },
         ];
     }
 }

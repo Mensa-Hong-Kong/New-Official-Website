@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
-use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -194,7 +193,7 @@ class StoreTest extends TestCase
             'testing_at' => $newTestingAt,
             'expect_end_at' => $newTestingAt->addHour(),
         ]);
-        foreach(range(1, 2) as $times) {
+        foreach (range(1, 2) as $times) {
             $oldTest = AdmissionTest::factory()
                 ->state([
                     'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),

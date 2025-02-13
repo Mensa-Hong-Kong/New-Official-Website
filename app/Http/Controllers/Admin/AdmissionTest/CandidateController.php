@@ -22,9 +22,10 @@ class CandidateController extends Controller implements HasMiddleware
             new Middleware('permission:View:User'),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if($request->route('admission_test')->expect_end_at->addHour() < now()) {
+                    if ($request->route('admission_test')->expect_end_at->addHour() < now()) {
                         abort(410, 'Can not change candidate after than expect end time one hour.');
                     }
+
                     return $next($request);
                 }
             )),
@@ -36,7 +37,7 @@ class CandidateController extends Controller implements HasMiddleware
         DB::beginTransaction();
         AdmissionTestHasCandidate::where('user_id', $request->user->id)
             ->whereHas(
-                'test', function($query) use($request) {
+                'test', function ($query) use ($request) {
                     $query->where('testing_at', '>', $request->now);
                 }
             )->delete();
