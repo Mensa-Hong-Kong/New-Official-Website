@@ -181,4 +181,52 @@ class User extends Authenticatable
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'test_id')
             ->withPivot(['is_present', 'is_pass']);
     }
+
+    public function hasSamePassportAlreadyQualificationOfMembership()
+    {
+        return User::where('passport_type_id', $this->passport_type_id)
+            ->where('passport_number', $this->passport_number)
+            ->whereHas(
+                'admissionTests', function($query) {
+                    $query->where('is_pass', true);
+                }
+            )->exists();
+    }
+
+    public function hasSamePassportTestedWithinDateRange($form, $to)
+    {
+        return User::where('passport_type_id', $this->passport_type_id)
+            ->where('passport_number', $this->passport_number)
+            ->whereHas(
+                'admissionTests', function($query) use ($form, $to) {
+                    $query->where('is_present', true)
+                        ->whereBetween('testing_at', [$form, $to]);
+                }
+            )->exists();
+    }
+
+    public function hasSamePassportTestedTwoTimes()
+    {
+        $user = $this;
+
+        return AdmissionTestHasCandidate::whereHas(
+            'candidate', function ($query) use ($user) {
+                $query->where('passport_type_id', $user->passport_type_id)
+                    ->where('passport_number', $user->passport_number);
+            }
+        )->where('is_pass', false)
+            ->count() == 2;
+    }
+
+    public function hasOtherUserSamePassportJoinedFutureTest()
+    {
+        return User::whereNot('id', $this->id)
+            ->where('passport_type_id', $this->passport_type_id)
+            ->where('passport_number', $this->passport_number)
+            ->whereHas(
+                'admissionTests', function($query) {
+                    $query->where('testing_at', '>', now());
+                }
+            )->exists();
+    }
 }

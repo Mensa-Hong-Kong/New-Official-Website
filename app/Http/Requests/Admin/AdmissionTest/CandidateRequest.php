@@ -40,42 +40,17 @@ class CandidateRequest extends FormRequest
                         'user' => $user,
                         'now' => $now,
                     ]);
-                    if (
-                        AdmissionTestHasCandidate::whereHas(
-                            'candidate', function ($query) use ($user) {
-                                $query->where('passport_type_id', $user->passport_type_id)
-                                    ->where('passport_number', $user->passport_number);
-                            }
-                        )->where('is_pass', true)
-                            ->exists()
-                    ) {
+                    if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id has already been qualification for membership.'
                         );
-                    } elseif (
-                        User::where('passport_type_id', $user->passport_type_id)
-                            ->where('passport_number', $user->passport_number)
-                            ->whereHas(
-                                'admissionTests', function ($query) use ($admissionTest, $now) {
-                                    $query->where('is_present', true)
-                                        ->whereBetween('testing_at', [$admissionTest->testing_at->subMonths(6), $now]);
-                                }
-                            )->exists()
-                    ) {
+                    } elseif ($user->hasSamePassportTestedWithinDateRange($admissionTest->testing_at->subMonths(6), $now)) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'
                         );
-                    } elseif (
-                        AdmissionTestHasCandidate::whereHas(
-                            'candidate', function ($query) use ($user) {
-                                $query->where('passport_type_id', $user->passport_type_id)
-                                    ->where('passport_number', $user->passport_number);
-                            }
-                        )->where('is_pass', false)
-                            ->count() == 2
-                    ) {
+                    } elseif ($user->hasSamePassportFailedTwoTimes()) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id tested two times admission test.'

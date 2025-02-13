@@ -51,11 +51,7 @@ class CandidateController extends Controller implements HasMiddleware
             'name' => $request->user->name,
             'passport_type' => $request->user->passportType->name,
             'passport_number' => $request->user->passport_number,
-            'has_same_passport' => User::whereNot('id', $request->user->id)
-                ->where('passport_type_id', $request->user->passport_type_id)
-                ->where('passport_number', $request->user->passport_number)
-                ->has('admissionTests')
-                ->exists(),
+            'has_same_passport' => $request->user->hasOtherUserSamePassportJoinedFutureTest(),
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $request->user]
