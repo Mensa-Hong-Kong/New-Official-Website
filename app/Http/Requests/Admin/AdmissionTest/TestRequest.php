@@ -31,7 +31,7 @@ class TestRequest extends FormRequest
             'district_id.required' => 'The district field is required.',
             'district_id.integer' => 'The district field must be an integer.',
             'district_id.exists' => 'The selected district is invalid.',
-            'expect_end_at.after' => 'The expect end at field must be a date than after testing at.',
+            'expect_end_at.after' => 'The expect end at field must be a date after than testing at.',
         ];
     }
 }
