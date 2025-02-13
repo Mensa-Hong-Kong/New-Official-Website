@@ -504,7 +504,6 @@ if(proctor) {
 
     const createProctorForm = document.getElementById('createProctorForm');
     const proctorUserIdInput = document.getElementById('proctorUserIdInput');
-    const proctorName = document.getElementById('proctorName');
     const addProctorButton = document.getElementById('addProctorButton');
     const addingProctorButton = document.getElementById('addingProctorButton');
 
@@ -552,7 +551,6 @@ if(proctor) {
         addingProctorButton.hidden = true;
         addProctorButton.hidden = false;
         proctorUserIdInput.value = '';
-        proctorName.innerText = '';
         proctorUserIdInput.disabled = false;
         enableSubmitting();
     }
