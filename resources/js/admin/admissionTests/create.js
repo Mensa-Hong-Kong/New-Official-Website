@@ -53,7 +53,7 @@ function validation() {
     } else if(testingAt.value > expectEndAt.value) {
         expectEndAt.classList.add('is-invalid');
         expectEndAtFeedback.className = 'invalid-feedback';
-        expectEndAtFeedback.innerText = 'The expect end at field must be a date after testing at.';
+        expectEndAtFeedback.innerText = 'The expect end at field must be a date after than testing at.';
     }
     if(location.validity.valueMissing) {
         location.classList.add('is-invalid');

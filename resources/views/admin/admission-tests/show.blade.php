@@ -140,7 +140,7 @@
                             action="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}">
                             @csrf
                             @method('PUT')
-                            <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-2" name="user_id" list="users" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
+                            <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-2" name="user_id" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
                             <div class="col-md-4" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
                             <div class="col-md-6">
                                 <button class="btn btn-primary col-md-4 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
@@ -152,7 +152,7 @@
                     <form class="row g-3" id="createProctorForm" method="POST" novalidate
                         action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
                         @csrf
-                        <input type="text" id="proctorUserIdInput" class="col-md-2" name="user_id" list="users" required />
+                        <input type="text" id="proctorUserIdInput" class="col-md-2" name="user_id" required />
                         <div class="col-md-4" id="proctorName"></div>
                         <div class="col-md-6">
                             <button class="btn btn-success form-control submitButton" id="addProctorButton">Add</button>
@@ -163,7 +163,6 @@
                         </div>
                     </form>
                 </article>
-                <x-datalist :id="'users'" :values="$users" isStringKey="true"></x-datalist>
             @endcan
         @endcan
     </section>

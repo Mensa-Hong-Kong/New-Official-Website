@@ -327,10 +327,6 @@ function userIdValidation(input)
         bootstrapAlert('The user id field must be an integer.');
         return false;
     }
-    if(typeof users[input.value] == undefined) {
-        bootstrapAlert('The selected user id is invalid.');
-        return false;
-    }
     return true;
 }
 
@@ -344,7 +340,6 @@ if(proctor) {
     function saveProctorSuccessCallback(response) {
         bootstrapAlert(response.data.success);
         let id = urlGetProctorID(response.request.responseURL);
-        users[response.data.user_id] = response.data.name;
         let form = document.getElementById('editProctorForm'+id);
         form.hidden = true;
         form.id = 'editProctorForm'+response.data.user_id;
@@ -427,7 +422,6 @@ if(proctor) {
         document.getElementById('editProctorForm'+id).hidden = true;
         let input = document.getElementById('proctorUserIdInput'+id);
         input.value = input.dataset.value;
-        document.getElementById('proctorName'+id).innerText = users[input.value] ?? '';
         document.getElementById('showProctor'+id).hidden = false;
     }
 
@@ -486,11 +480,6 @@ if(proctor) {
 
     function setProctorEventListeners(loader) {
         let id = loader.id.replace('proctorLoader', '');
-        document.getElementById('proctorUserIdInput'+id).addEventListener(
-            'keyup', function(event) {
-                document.getElementById('proctorName'+id).innerText = users[event.target.value] ?? '';
-            }
-        )
         document.getElementById('editProctorForm'+id).addEventListener(
             'submit', saveProctor
         )
@@ -519,17 +508,6 @@ if(proctor) {
     const addProctorButton = document.getElementById('addProctorButton');
     const addingProctorButton = document.getElementById('addingProctorButton');
 
-    let users = {};
-    for(let option of document.getElementById('users').options) {
-        users[option.value] = option.innerText;
-    }
-
-    proctorUserIdInput.addEventListener(
-        'keyup', function(event) {
-            proctorName.innerText = users[event.target.value] ?? '';
-        }
-    )
-
     function createProctorSuccessCallback(response) {
         bootstrapAlert(response.data.success);
         let formElement = document.createElement('form');
@@ -543,7 +521,7 @@ if(proctor) {
         formElement.innerHTML = `
             <input type="hidden" name="_token" value="${token}">
             <input type="hidden" name="_method" value="put">
-            <input type="text" id="proctorUserIdInput${response.data.user_id}" class="col-md-2" name="user_id" list="users" value="${response.data.user_id}" data-value="${response.data.user_id}" required />
+            <input type="text" id="proctorUserIdInput${response.data.user_id}" class="col-md-2" name="user_id" value="${response.data.user_id}" data-value="${response.data.user_id}" required />
             <div class="col-md-4" id="proctorName${response.data.user_id}">${response.data.name}</div>
             <div class="col-md-6">
                 <button class="btn btn-primary col-md-4 submitButton" id="saveProctor${response.data.user_id}">Save</button>

@@ -139,18 +139,16 @@ class Controller extends BaseController implements HasMiddleware
             ->with('test', $admissionTest)
             ->with(
                 'locations', Location::distinct()
+                    ->has('admissionTests')
                     ->get('name')
                     ->pluck('name')
                     ->toArray()
             )->with('districts', $districts)
             ->with(
                 'addresses', Address::distinct()
+                    ->has('admissionTests')
                     ->get('address')
                     ->pluck('address')
-                    ->toArray()
-            )->with(
-                'users', User::get(['id', 'family_name', 'middle_name', 'given_name'])
-                    ->pluck('name', 'id')
                     ->toArray()
             );
     }
