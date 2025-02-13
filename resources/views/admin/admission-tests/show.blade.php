@@ -159,6 +159,48 @@
                 </article>
             @endcan
         @endcan
+        @if(
+            $test->inTestingTimeRange() ||
+            auth()->user()->can('View:User')
+        )
+            <article id="candidate">
+                <h3 class="fw-bold mb-2">Candidates</h3>
+                <div class="row g-3">
+                    <div class="col-md-1">User ID</div>
+                    <div class="col-md-1">Gender</div>
+                    <div class="col-md-2">Name</div>
+                    <div class="col-md-2">Passport Type</div>
+                    <div class="col-md-2">Passport Number</div>
+                    <div class="col-md-3">Control</div>
+                </div>
+                @foreach ($test->candidates as $candidate)
+                    <div class="row g-3">
+                        <div class="col-md-1">{{ $candidate->id }}</div>
+                        <div class="col-md-1">{{ $candidate->gender->name }}</div>
+                        <div class="col-md-2">{{ $candidate->name }}</div>
+                        <div class="col-md-2">{{ $candidate->passportType->name }}</div>
+                        <div class="col-md-2">{{ $candidate->passport_number }}</div>
+                        @can('Edit:Admission Test')
+                            <a class="btn btn-primary col-md-1" id="showProctorLink{{ $proctor->id }}"
+                                href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
+                        @endcan
+                    </div>
+                @endforeach
+                @can('Edit:Admission Test')
+                    <form class="row g-3" id="createCandidateForm" method="POST" novalidate
+                        action="{{ route('admin.admission-tests.candidates.store', ['admission_test' => $test]) }}">
+                        @csrf
+                        <input type="text" id="candidateUserIdInput" class="col-md-1" name="user_id" required />
+                        <div class="col-md-7"></div>
+                        <button class="btn btn-success col-md-3 submitButton" id="addCandidateButton">Add</button>
+                        <button class="btn btn-success col-md-3" id="addingCandidateButton" hidden disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Adding
+                        </button>
+                    </form>
+                @endcan
+            </article>
+        @endif
     </section>
 @endsection
 
