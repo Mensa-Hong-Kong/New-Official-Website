@@ -96,7 +96,7 @@
                     </tr>
                     <tr>
                         <th>Current Candidates</th>
-                        <td>{{ $test->candidates->count() }}</td>
+                        <td id="showCurrentCandidates">{{ $test->candidates->count() }}</td>
                     </tr>
                     <tr>
                         <th>Is Public</th>

@@ -596,6 +596,7 @@ if(candidate) {
         const candidateUserIdInput = document.getElementById('candidateUserIdInput');
         const addCandidateButton = document.getElementById('addCandidateButton');
         const addingCandidateButton = document.getElementById('addingCandidateButton');
+        const showCurrentCandidates = document.getElementById('showCurrentCandidates');
 
         function createCandidateSuccessCallback(response) {
             let rowElement = document.createElement('div');
@@ -617,6 +618,7 @@ if(candidate) {
                     href="${response.data.show_user_url}">Show</a>
             `;
             candidate.insertBefore(rowElement, createCandidateForm);
+            showCurrentCandidates.innerText = + showCurrentCandidates.innerText + 1;
             addingCandidateButton.hidden = true;
             addCandidateButton.hidden = false;
             candidateUserIdInput.value = '';
