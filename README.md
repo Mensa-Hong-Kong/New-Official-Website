@@ -25,6 +25,12 @@ php artisan serve
 npm run dev
 ```
 
+### add Super Administrator For Local Actual Test
+
+```shell
+php artisan db:seed --class=UserSeeder
+```
+
 ### As Known Issues
 
 1. nav responsive dropdown not work
