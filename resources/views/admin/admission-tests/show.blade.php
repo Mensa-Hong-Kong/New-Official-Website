@@ -117,7 +117,7 @@
                     <h3 class="fw-bold mb-2">Proctors</h3>
                     <div class="row g-3">
                         <div class="col-md-1">User ID</div>
-                        <div class="col-md-4">Name</div>
+                        <div class="col-md-2">Name</div>
                         <div class="col-md-3">Control</div>
                     </div>
                     @foreach ($test->proctors as $proctor)
@@ -138,7 +138,7 @@
                             action="{{ route('admin.admission-tests.proctors.update', ['admission_test' => $test, 'proctor' => $proctor]) }}">
                             @csrf
                             @method('PUT')
-                            <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-2" name="user_id" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
+                            <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-1" name="user_id" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
                             <div class="col-md-2" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
                             <button class="btn btn-primary col-md-1 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
                             <button class="btn btn-primary col-md-1" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
@@ -149,7 +149,7 @@
                         action="{{ route('admin.admission-tests.proctors.store', ['admission_test' => $test]) }}">
                         @csrf
                         <input type="text" id="proctorUserIdInput" class="col-md-1" name="user_id" required />
-                        <div class="col-md-4"></div>
+                        <div class="col-md-2"></div>
                         <button class="btn btn-success col-md-3 submitButton" id="addProctorButton">Add</button>
                         <button class="btn btn-success col-md-3" id="addingProctorButton" hidden disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -181,16 +181,16 @@
                         <div class="col-md-2">{{ $candidate->passportType->name }}</div>
                         <div @class([
                             'col-md-2',
-                            'text-warning' => $candidate->hasSamePassportTested(),
+                            'text-warning' => $candidate->hasOtherUserSamePassportJoinedFutureTest(),
                             'text-danger' => $candidate->hasSamePassportTestedTwoTimes() ||
                                 $candidate->hasSamePassportAlreadyQualificationOfMembership() ||
                                 $candidate->hasSamePassportTestedWithinDateRange(
-                                    $admissionTest->testing_at->subMonths(6), now()
+                                    $test->testing_at->subMonths(6), now()
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
                         @can('Edit:Admission Test')
-                            <a class="btn btn-primary col-md-1" id="showProctorLink{{ $proctor->id }}"
-                                href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
+                            <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
+                                href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                         @endcan
                     </div>
                 @endforeach
