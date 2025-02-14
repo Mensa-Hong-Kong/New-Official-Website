@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\CandidateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -17,17 +18,51 @@ class CandidateController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:Edit:Admission Test'),
-            new Middleware('permission:View:User'),
             (new Middleware(
                 function (Request $request, Closure $next) {
+                    if(
+                        !$request->user()->can('View:User') &&
+                        !$request->user()->can('Edit:Admission Test')
+                    ) {
+                        abort(403);
+                    }
                     if ($request->route('admission_test')->expect_end_at->addHour() < now()) {
                         abort(410, 'Can not change candidate after than expect end time one hour.');
                     }
 
                     return $next($request);
                 }
-            )),
+            ))->only('store'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    if (
+                        !AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
+                            ->where('user_id', $request->route('candidate')->id)
+                            ->exists()
+                    ) {
+                        abort(404);
+                    }
+                    $test = $request->route('admission_test');
+                    if($test->testing_at > now()->addHours(2)) {
+                        abort(409, 'Could not access before than testing time 2 hours.');
+                    }
+                    if($test->expect_end_at < now()->subHour()) {
+                        abort(410, 'Could not access after than expect end time 1 hour.');
+                    }
+                    if (
+                        (
+                            $request->user()->can('View:User') &&
+                            $request->user()->can('Edit:Admission Test')
+                        ) || (
+                            $test->inTestingTimeRange() &&
+                            in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
+                        )
+                    ) {
+                        return $next($request);
+                    }
+                    abort(403);
+                }
+            ))->only('show'),
         ];
     }
 
@@ -56,5 +91,12 @@ class CandidateController extends Controller implements HasMiddleware
                 ['user' => $request->user]
             ),
         ];
+    }
+
+    public function show(AdmissionTest $admissionTest, User $candidate)
+    {
+        return view('admin.admission-tests.candidates.show')
+            ->with('test', $admissionTest)
+            ->with('user', $candidate);
     }
 }
