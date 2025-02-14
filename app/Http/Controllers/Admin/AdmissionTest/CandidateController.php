@@ -20,9 +20,9 @@ class CandidateController extends Controller implements HasMiddleware
         return [
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if(
-                        !$request->user()->can('View:User') &&
-                        !$request->user()->can('Edit:Admission Test')
+                    if (
+                        ! $request->user()->can('View:User') &&
+                        ! $request->user()->can('Edit:Admission Test')
                     ) {
                         abort(403);
                     }
@@ -36,17 +36,17 @@ class CandidateController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (
-                        !AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
+                        ! AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
                             ->where('user_id', $request->route('candidate')->id)
                             ->exists()
                     ) {
                         abort(404);
                     }
                     $test = $request->route('admission_test');
-                    if($test->testing_at > now()->addHours(2)) {
+                    if ($test->testing_at > now()->addHours(2)) {
                         abort(409, 'Could not access before than testing time 2 hours.');
                     }
-                    if($test->expect_end_at < now()->subHour()) {
+                    if ($test->expect_end_at < now()->subHour()) {
                         abort(410, 'Could not access after than expect end time 1 hour.');
                     }
                     if (
