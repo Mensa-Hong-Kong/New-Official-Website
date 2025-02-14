@@ -520,31 +520,27 @@ if(proctor) {
         formElement.innerHTML = `
             <input type="hidden" name="_token" value="${token}">
             <input type="hidden" name="_method" value="put">
-            <input type="text" id="proctorUserIdInput${response.data.user_id}" class="col-md-2" name="user_id" value="${response.data.user_id}" data-value="${response.data.user_id}" required />
-            <div class="col-md-4" id="proctorName${response.data.user_id}">${response.data.name}</div>
-            <div class="col-md-6">
-                <button class="btn btn-primary col-md-4 submitButton" id="saveProctor${response.data.user_id}">Save</button>
-                <button class="btn btn-primary col-md-4 submitButton" id="savingProctor${response.data.user_id}" disabled hidden>Save</button>
-                <button class="btn btn-danger col-md-4" id="cancelEditProctor${response.data.user_id}" onclick="return false">Cancel</button>
-            </div>
+            <input type="text" id="proctorUserIdInput${response.data.user_id}" class="col-md-1" name="user_id" value="${response.data.user_id}" data-value="${response.data.user_id}" required />
+            <div class="col-md-2" id="proctorName${response.data.user_id}">${response.data.name}</div>
+            <button class="btn btn-primary col-md-1 submitButton" id="saveProctor${response.data.user_id}">Save</button>
+            <button class="btn btn-primary col-md-1 submitButton" id="savingProctor${response.data.user_id}" disabled hidden>Save</button>
+            <button class="btn btn-danger col-md-1" id="cancelEditProctor${response.data.user_id}" onclick="return false">Cancel</button>
         `;
         proctor.insertBefore(formElement, createProctorForm);
         let rowElement = document.createElement('div');
         rowElement.id = 'showProctor'+response.data.user_id;
         rowElement.className = 'row g-3';
         rowElement.innerHTML = `
-            <div class="col-md-2" id="showProctorId${response.data.user_id}">${response.data.user_id}</div>
-            <div class="col-md-4" id="showProctorName${response.data.user_id}">${response.data.name}</div>
-            <div class="col-md-6">
-                <form method="POST" id="deleteProctorForm${response.data.user_id}" action="${response.data.delete_proctor_url}" hidden>
-                    @csrf
-                    @method('DELETE')
-                </form>
-                <a id="showProctorLink${response.data.user_id}" href="${response.data.show_user_url}" class="btn btn-primary col-md-4">Show</a>
-                <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
-                <button class="btn btn-primary col-md-4" id="editProctor${response.data.user_id}" hidden>Edit</button>
-                <button class="btn btn-danger col-md-4" id="deleteProctor${response.data.user_id}" form="deleteProctorForm${response.data.user_id}" hidden>Delete</button>
-            </div>
+            <form method="POST" id="deleteProctorForm${response.data.user_id}" action="${response.data.delete_proctor_url}" hidden>
+                @csrf
+                @method('DELETE')
+            </form>
+            <div class="col-md-1" id="showProctorId${response.data.user_id}">${response.data.user_id}</div>
+            <div class="col-md-2" id="showProctorName${response.data.user_id}">${response.data.name}</div>
+            <a id="showProctorLink${response.data.user_id}" href="${response.data.show_user_url}" class="btn btn-primary col-md-1">Show</a>
+            <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
+            <button class="btn btn-primary col-md-1" id="editProctor${response.data.user_id}" hidden>Edit</button>
+            <button class="btn btn-danger col-md-1" id="deleteProctor${response.data.user_id}" form="deleteProctorForm${response.data.user_id}" hidden>Delete</button>
         `;
         proctor.insertBefore(rowElement, formElement);
         setProctorEventListeners(document.getElementById('proctorLoader'+response.data.user_id));
