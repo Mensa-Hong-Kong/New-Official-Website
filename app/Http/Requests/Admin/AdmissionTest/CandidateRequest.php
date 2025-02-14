@@ -50,7 +50,7 @@ class CandidateRequest extends FormRequest
                             'user_id',
                             'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'
                         );
-                    } elseif ($user->hasSamePassportFailedTwoTimes()) {
+                    } elseif ($user->hasSamePassportTestedTwoTimes()) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id tested two times admission test.'
