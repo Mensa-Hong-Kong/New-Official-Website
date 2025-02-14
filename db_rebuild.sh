@@ -23,4 +23,4 @@ cd "$SCRIPT_DIR/ansible"
 ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
 
 cd $SCRIPT_DIR
-php artisan migrate --seed
+php artisan migrate
