@@ -37,3 +37,7 @@ $bootstrap-icons-font-src: url("../../node_modules/bootstrap-icons/font/fonts/bo
         margin-left: 0.5em;
     }
 }
+
+aside.flex-column nav ul.nav.flex-column li.nav-item {
+    width: max-content;
+}
