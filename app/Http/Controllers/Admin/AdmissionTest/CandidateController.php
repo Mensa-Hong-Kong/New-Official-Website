@@ -21,7 +21,7 @@ class CandidateController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (
-                        ! $request->user()->can('View:User') &&
+                        ! $request->user()->can('View:User') ||
                         ! $request->user()->can('Edit:Admission Test')
                     ) {
                         abort(403);
