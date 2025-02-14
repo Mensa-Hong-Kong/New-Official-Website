@@ -187,7 +187,7 @@ class User extends Authenticatable
         return User::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
             ->whereHas(
-                'admissionTests', function($query) {
+                'admissionTests', function ($query) {
                     $query->where('is_pass', true);
                 }
             )->exists();
@@ -198,7 +198,7 @@ class User extends Authenticatable
         return User::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
             ->whereHas(
-                'admissionTests', function($query) use ($form, $to) {
+                'admissionTests', function ($query) use ($form, $to) {
                     $query->where('is_present', true)
                         ->whereBetween('testing_at', [$form, $to]);
                 }
@@ -224,7 +224,7 @@ class User extends Authenticatable
             ->where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
             ->whereHas(
-                'admissionTests', function($query) {
+                'admissionTests', function ($query) {
                     $query->where('testing_at', '>', now());
                 }
             )->exists();

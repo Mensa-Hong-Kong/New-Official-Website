@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\CandidateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
