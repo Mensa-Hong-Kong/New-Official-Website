@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "chillerlan/php-qrcode": "^5.0",
         "kyslik/column-sortable": "^6.6",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
