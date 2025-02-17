@@ -188,9 +188,12 @@
                                     $test->testing_at->subMonths(6), now()
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
-                        @can('Edit:Admission Test')
+                        @can('View:User')
                             <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
+                        @else
+                            <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
+                                href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}">Show</a>
                         @endcan
                     </div>
                 @endforeach
