@@ -3,8 +3,12 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\ContactHasVerification;
 use App\Models\User;
+use App\Models\UserHasContact;
+use App\Notifications\AssignAdmissionTest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -21,6 +25,19 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()->create();
+        $contact = UserHasContact::factory()
+            ->state([
+                'user_id' => $this->user->id,
+                'is_default' => true,
+            ])->create();
+        ContactHasVerification::create([
+            'contact_id' => $contact->id,
+            'contact' => $contact->contact,
+            'type' => $contact->type,
+            'verified_at' => now(),
+            'creator_id' => $this->user->id,
+            'creator_ip' => '127.0.0.1',
+        ]);
     }
 
     public function test_have_no_login()
@@ -214,8 +231,22 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The passport of selected user id tested two times admission test.']);
     }
 
+    public function test_user_id_of_user_have_no_any_default_contact()
+    {
+        UserHasContact::first()->delete();
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            ['user_id' => $this->user->id]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user must at least has default contact.']);
+    }
+
     public function test_happy_case_when_user_have_no_other_admission_test_after_than_now_and_have_no_other_same_passport()
     {
+        Notification::fake();
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -236,10 +267,15 @@ class StoreTest extends TestCase
                 ['user' => $this->user]
             ),
         ]);
+        $this->user->notify(new AssignAdmissionTest($this->test));
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
     }
 
     public function test_happy_case_when_user_has_other_admission_test_after_than_now_and_have_no_other_same_passport()
     {
+        Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([
@@ -273,10 +309,14 @@ class StoreTest extends TestCase
             ),
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
     }
 
     public function test_happy_case_when_user_have_no_other_admission_test_after_than_now_and_has_other_same_passport()
     {
+        Notification::fake();
         $this->user = User::find($this->user->id);
         $user = User::factory()
             ->state([
@@ -303,10 +343,14 @@ class StoreTest extends TestCase
                 ['user' => $this->user]
             ),
         ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
     }
 
     public function test_happy_case_when_user_has_other_admission_test_after_than_now_and_has_other_same_passport()
     {
+        Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([
@@ -346,5 +390,8 @@ class StoreTest extends TestCase
             ),
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
     }
 }
