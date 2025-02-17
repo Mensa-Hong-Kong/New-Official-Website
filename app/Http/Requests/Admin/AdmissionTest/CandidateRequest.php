@@ -55,7 +55,7 @@ class CandidateRequest extends FormRequest
                             'user_id',
                             'The passport of selected user id tested two times admission test.'
                         );
-                    } elseif(!$user->defaultEmail && !$user->defaultEmail) {
+                    } elseif(!$user->defaultEmail && !$user->defaultMobile) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user must at least has default contact.'
