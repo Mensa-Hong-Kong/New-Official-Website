@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\AdmissionTest\CandidateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
+use App\Notifications\AssignAdmissionTest;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -76,6 +77,7 @@ class CandidateController extends Controller implements HasMiddleware
                 }
             )->delete();
         $admissionTest->candidates()->attach($request->user->id);
+        $request->user->notify(new AssignAdmissionTest($admissionTest));
         DB::commit();
 
         return [
