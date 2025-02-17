@@ -57,6 +57,9 @@ class AssignAdmissionTest extends Notification
     public function via(object $notifiable): array
     {
         $return = [];
+        if($notifiable->defaultEmail) {
+            $return[] = 'mail';
+        }
         if($notifiable->defaultMobile) {
             $return[] = Channel::class;
         }
