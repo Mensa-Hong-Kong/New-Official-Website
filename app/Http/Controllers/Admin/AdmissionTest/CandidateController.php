@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
-use App\Models\Gender;
 use App\Models\User;
 use App\Notifications\AssignAdmissionTest;
 use Closure;
@@ -110,10 +109,8 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function update(UpdateRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
-        $gender = Gender::firstOrCreate(['name' => $request->gender]);
-        if($gender->id != $candidate->gender->id && $candidate->gender->users()->count() == 1) {
-            $candidate->gender->delete();
-        }
+        DB::beginTransaction();
+        $gender = $candidate->gender->updateName($request->gender);
         $candidate->update([
             'family_name' => $request->family_name,
             'middle_name' => $request->middle_name,
@@ -122,6 +119,7 @@ class CandidateController extends Controller implements HasMiddleware
             'passport_type_id' => $request->passport_type_id,
             'passport_number' => $request->passport_number,
         ]);
+        DB::commit();
 
         return redirect()->route(
             'admin.admission-tests.candidates.show',

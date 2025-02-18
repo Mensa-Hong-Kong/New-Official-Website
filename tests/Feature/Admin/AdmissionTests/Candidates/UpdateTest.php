@@ -456,64 +456,8 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['gender' => 'The gender field must not be greater than 255 characters.']);
     }
 
-    public function test_happy_case_when_gender_have_no_change()
+    public function test_happy_case_without_middle_name()
     {
-        $data = $this->happyCase;
-        $data['gender'] = $this->user->gender->name;
-        $genderID =  $this->user->gender->id;
-        $response = $this->actingAs($this->user)
-            ->putJson(
-                route(
-                    'admin.admission-tests.candidates.update',
-                    [
-                        'admission_test' => $this->test,
-                        'candidate' => $this->user,
-                    ]
-                ),
-                $data
-            );
-        $response->assertRedirectToRoute(
-            'admin.admission-tests.candidates.show',
-            [
-                'admission_test' => $this->test,
-                'candidate' => $this->user,
-            ]
-        );
-        $this->assertTrue(Gender::where('id', $genderID)->exists());
-    }
-
-    public function test_happy_case_when_change_gender_and_gender_have_no_other_user()
-    {
-        $data = $this->happyCase;
-        $genderID =  $this->user->gender->id;
-        $data['gender'] = 'abc';
-        $response = $this->actingAs($this->user)
-            ->putJson(
-                route(
-                    'admin.admission-tests.candidates.update',
-                    [
-                        'admission_test' => $this->test,
-                        'candidate' => $this->user,
-                    ]
-                ),
-                $data
-            );
-        $response->assertRedirectToRoute(
-            'admin.admission-tests.candidates.show',
-            [
-                'admission_test' => $this->test,
-                'candidate' => $this->user,
-            ]
-        );
-        $this->assertFalse(Gender::where('id', $genderID)->exists());
-    }
-
-    public function test_happy_case_when_change_gender_and_gender_has_other_user()
-    {
-        $data = $this->happyCase;
-        $genderID =  $this->user->gender->id;
-        User::factory()->state(['gender_id' => $genderID])->create();
-        $data['gender'] = 'abc';
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -532,6 +476,41 @@ class UpdateTest extends TestCase
                 'candidate' => $this->user,
             ]
         );
-        $this->assertTrue(Gender::where('id', $genderID)->exists());
+        $this->user->refresh();
+        $this->assertEquals($this->happyCase['family_name'], $this->user->family_name);
+        $this->assertEquals($this->happyCase['given_name'], $this->user->given_name);
+        $this->assertEquals($this->happyCase['passport_type_id'], $this->user->passport_type_id);
+        $this->assertEquals($this->happyCase['passport_number'], $this->user->passport_number);
+        $this->assertEquals($this->happyCase['gender'], $this->user->gender->name);
+    }
+    public function test_happy_case_with_middle_name()
+    {
+        $data = $this->happyCase;
+        $data['middle_name'] = 'intelligent';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.admission-tests.candidates.update',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                ),
+                $data
+            );
+        $response->assertRedirectToRoute(
+            'admin.admission-tests.candidates.show',
+            [
+                'admission_test' => $this->test,
+                'candidate' => $this->user,
+            ]
+        );
+        $this->user->refresh();
+        $this->assertEquals($data['family_name'], $this->user->family_name);
+        $this->assertEquals($data['middle_name'], $this->user->middle_name);
+        $this->assertEquals($data['given_name'], $this->user->given_name);
+        $this->assertEquals($data['passport_type_id'], $this->user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $this->user->passport_number);
+        $this->assertEquals($data['gender'], $this->user->gender->name);
     }
 }
