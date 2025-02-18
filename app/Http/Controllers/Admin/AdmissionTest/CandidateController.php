@@ -125,7 +125,7 @@ class CandidateController extends Controller implements HasMiddleware
             'admin.admission-tests.candidates.show',
             [
                 'admission_test' => $admissionTest,
-                'candidate' => $candidate
+                'candidate' => $candidate,
             ]
         )->with('success', 'The candidate data update success!');
     }

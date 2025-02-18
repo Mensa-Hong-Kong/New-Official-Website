@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
-use App\Models\Gender;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -483,6 +482,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($this->happyCase['passport_number'], $this->user->passport_number);
         $this->assertEquals($this->happyCase['gender'], $this->user->gender->name);
     }
+
     public function test_happy_case_with_middle_name()
     {
         $data = $this->happyCase;

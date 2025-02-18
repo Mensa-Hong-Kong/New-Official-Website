@@ -15,20 +15,22 @@ class Gender extends Model
 
     public function updateName($name)
     {
-        if($name == $this->name) {
+        if ($name == $this->name) {
             return $this;
         }
         $gender = Gender::firstWhere(['name' => $name]);
-        if($this->users()->count() == 1) {
-            if(! $gender) {
+        if ($this->users()->count() == 1) {
+            if (! $gender) {
                 $this->update(['name' => $name]);
+
                 return $this;
             } else {
                 $this->delete();
             }
-        } elseif(!$gender) {
+        } elseif (! $gender) {
             $gender = Gender::create(['name' => $name]);
         }
+
         return $gender;
     }
 
