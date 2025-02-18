@@ -27,8 +27,12 @@ class CandidateController extends Controller implements HasMiddleware
                     ) {
                         abort(403);
                     }
-                    if ($request->route('admission_test')->expect_end_at->addHour() < now()) {
+                    $test = $request->route('admission_test');
+                    if ($test->expect_end_at->addHour() < now()) {
                         abort(410, 'Can not change candidate after than expect end time one hour.');
+                    }
+                    if ($test->candidates()->count() >= $test->maximum_candidates) {
+                        return response(['errors' => ['user_id' => 'The admission test is fulled.']], 422);
                     }
 
                     return $next($request);

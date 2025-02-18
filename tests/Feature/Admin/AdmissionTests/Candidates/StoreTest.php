@@ -244,6 +244,21 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user must at least has default contact.']);
     }
 
+    public function test_admission_test_is_fulled()
+    {
+        $user = User::factory()->create();
+        $this->test->update(['maximum_candidates' => 1]);
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            ['user_id' => $this->user->id]
+        );
+        $response->assertInvalid(['user_id' => 'The admission test is fulled.']);
+    }
+
     public function test_happy_case_when_user_have_no_other_admission_test_after_than_now_and_have_no_other_same_passport()
     {
         Notification::fake();
