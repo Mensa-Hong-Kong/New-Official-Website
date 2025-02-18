@@ -4,11 +4,16 @@ namespace Tests\Feature\Admin\AdmissionTests;
 
 use App\Models\Address;
 use App\Models\AdmissionTest;
+use App\Models\ContactHasVerification;
 use App\Models\District;
 use App\Models\Location;
 use App\Models\ModulePermission;
 use App\Models\User;
+use App\Models\UserHasContact;
+use App\Notifications\UpdateAdmissionTest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\SendQueuedNotifications;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -36,6 +41,19 @@ class UpdateTest extends TestCase
         $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i:s');
         $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i:s');
         $this->test = AdmissionTest::factory()->create();
+        $contact = UserHasContact::factory()
+            ->state([
+                'user_id' => $this->user->id,
+                'is_default' => true,
+            ])->create();
+        ContactHasVerification::create([
+            'contact_id' => $contact->id,
+            'contact' => $contact->contact,
+            'type' => $contact->type,
+            'verified_at' => now(),
+            'creator_id' => $this->user->id,
+            'creator_ip' => '127.0.0.1',
+        ]);
     }
 
     public function test_have_no_login()
@@ -338,7 +356,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['is_public' => 'The is public field must be true or false.']);
     }
 
-    public function test_happy_case_with_no_change()
+    public function test_happy_case_when_have_no_candidate_and_with_no_change()
     {
         $data = [
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
@@ -361,7 +379,7 @@ class UpdateTest extends TestCase
         $response->assertJson($data);
     }
 
-    public function test_happy_case_change_all_without_address_and_location()
+    public function test_happy_case_when_have_no_candidate_and_change_all_without_address_and_location()
     {
         $this->test->update([
             'district_id' => 1,
@@ -390,7 +408,7 @@ class UpdateTest extends TestCase
         $response->assertJson($data);
     }
 
-    public function test_happy_case_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database()
     {
         $addressID = $this->test->address->id;
         $data = [
@@ -420,7 +438,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($addressID, $this->test->address->id);
     }
 
-    public function test_happy_case_only_change_address_have_no_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database()
     {
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
@@ -448,7 +466,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newAddress->id, $this->test->address->id);
     }
 
-    public function test_happy_case_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database()
     {
         AdmissionTest::factory()
             ->state([
@@ -483,7 +501,7 @@ class UpdateTest extends TestCase
         $this->assertNotEquals($addressID, $this->test->address->id);
     }
 
-    public function test_happy_case_only_change_address_has_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database()
     {
         AdmissionTest::factory()
             ->state([
@@ -515,7 +533,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newAddress->id, $this->test->address->id);
     }
 
-    public function test_happy_case_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database()
     {
         $locationID = $this->test->location->id;
         $data = [
@@ -542,7 +560,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($locationID, $this->test->location->id);
     }
 
-    public function test_happy_case_only_change_location_have_no_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database()
     {
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
@@ -570,7 +588,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newLocation->id, $this->test->location->id);
     }
 
-    public function test_happy_case_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database()
     {
         AdmissionTest::factory()
             ->state([
@@ -602,7 +620,7 @@ class UpdateTest extends TestCase
         $this->assertNotEquals($locationID, $this->test->location->id);
     }
 
-    public function test_happy_case_only_change_location_has_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database()
     {
         AdmissionTest::factory()
             ->state([
@@ -632,5 +650,398 @@ class UpdateTest extends TestCase
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
+    }
+
+    public function test_happy_case_when_has_candidate_and_with_no_change()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_maximum_candidates()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $maximumCandidates = array_diff(
+            range(1, 10000),
+            [$this->test->maximum_candidates]
+        );
+        shuffle($maximumCandidates);
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => array_shift($maximumCandidates),
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_happy_case_when_has_candidate_and_change_all_without_address_and_location()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $this->test->update([
+            'district_id' => 1,
+            'maximum_candidates' => 40,
+            'is_public' => true,
+        ]);
+        $now = now();
+        $data = [
+            'testing_at' => $now->format('Y-m-d H:i'),
+            'expect_end_at' => $now->addMinutes(30)->format('Y-m-d H:i'),
+            'district_id' => 2,
+            'address' => 'abc',
+            'location' => 'xyz',
+            'maximum_candidates' => 80,
+            'is_public' => 0,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $addressID = $this->test->address->id;
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => District::inRandomOrder()
+                ->whereNot('id', $this->test->address->district_id)
+                ->first()
+                ->id,
+            'address' => $this->test->address->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Address::find($addressID));
+        $this->assertEquals($addressID, $this->test->address->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $addressID = $this->test->address->id;
+        $newAddress = Address::factory()->create();
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $newAddress->district_id,
+            'address' => $newAddress->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNull(Address::find($addressID));
+        $this->assertEquals($newAddress->id, $this->test->address->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        AdmissionTest::factory()
+            ->state([
+                'address_id' => $this->test->address_id,
+            ])->create();
+        $addressID = $this->test->address->id;
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => District::inRandomOrder()
+                ->whereNot('id', $this->test->address->district_id)
+                ->first()
+                ->id,
+            'address' => $this->test->address->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Address::find($addressID));
+        $this->assertNotNull($this->test->address);
+        $this->assertNotEquals($addressID, $this->test->address->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        AdmissionTest::factory()
+            ->state([
+                'address_id' => $this->test->address_id,
+            ])->create();
+        $addressID = $this->test->address->id;
+        $newAddress = Address::factory()->create();
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $newAddress->district_id,
+            'address' => $newAddress->address,
+            'location' => $this->test->location->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Address::find($addressID));
+        $this->assertEquals($newAddress->id, $this->test->address->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $locationID = $this->test->location->id;
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => fake()->company(),
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Location::find($locationID));
+        $this->assertEquals($locationID, $this->test->location->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        $locationID = $this->test->location->id;
+        $newLocation = Location::factory()->create();
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => $newLocation->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNull(Location::find($locationID));
+        $this->assertEquals($newLocation->id, $this->test->location->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        AdmissionTest::factory()
+            ->state([
+                'location_id' => $this->test->location_id,
+            ])->create();
+        $locationID = $this->test->location->id;
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => fake()->company(),
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Location::find($locationID));
+        $this->assertNotNull($this->test->location);
+        $this->assertNotEquals($locationID, $this->test->location->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
+    }
+
+    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database()
+    {
+        Queue::fake();
+        $this->test->candidates()->attach($this->user->id);
+        AdmissionTest::factory()
+            ->state([
+                'location_id' => $this->test->location_id,
+            ])->create();
+        $locationID = $this->test->location->id;
+        $newLocation = Location::factory()->create();
+        $data = [
+            'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
+            'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
+            'district_id' => $this->test->address->district_id,
+            'address' => $this->test->address->address,
+            'location' => $newLocation->name,
+            'maximum_candidates' => $this->test->maximum_candidates,
+            'is_public' => $this->test->is_public,
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $data['success'] = 'The admission test update success!';
+        $this->test->refresh();
+        $response->assertSuccessful();
+        $response->assertJson($data);
+        $this->assertNotNull(Location::find($locationID));
+        $this->assertEquals($newLocation->id, $this->test->location->id);
+        Queue::assertPushed(
+            SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
+                return $job->notification::class === UpdateAdmissionTest::class;
+            }
+        );
     }
 }

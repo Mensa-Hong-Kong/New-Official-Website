@@ -8,6 +8,7 @@ use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Area;
 use App\Models\Location;
+use App\Notifications\UpdateAdmissionTest;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -215,6 +216,13 @@ class Controller extends BaseController implements HasMiddleware
     public function update(TestRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
+        $from = [
+            'testing_date' => $admissionTest->testing_at->format('Y-m-d'),
+            'testing_time' => $admissionTest->testing_at->format('H:i'),
+            'expect_end_time' => $admissionTest->expect_end_at->format('H:i'),
+            'location' => $admissionTest->location->name,
+            'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
+        ];
         $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);
         $location = $this->updateLocation($admissionTest->location, $request->location);
         $admissionTest->update([
@@ -226,6 +234,24 @@ class Controller extends BaseController implements HasMiddleware
             'is_public' => $request->is_public,
         ]);
         $admissionTest->refresh();
+        $to = [
+            'testing_date' => $admissionTest->testing_at->format('Y-m-d'),
+            'testing_time' => $admissionTest->testing_at->format('H:i'),
+            'expect_end_time' => $admissionTest->expect_end_at->format('H:i'),
+            'location' => $admissionTest->location->name,
+            'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
+        ];
+        if(
+            $from['testing_date'] != $to['testing_date'] ||
+            $from['testing_time'] != $to['testing_time'] ||
+            $from['expect_end_time'] != $to['expect_end_time'] ||
+            $from['location'] != $to['location'] ||
+            $from['address'] != $to['address']
+        ) {
+            foreach($admissionTest->candidates as $index => $candidate) {
+                $candidate->notify((new UpdateAdmissionTest($from, $to))->delay($index));
+            }
+        }
         DB::commit();
 
         return [
