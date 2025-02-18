@@ -120,7 +120,7 @@ class UserController extends Controller implements HasMiddleware
             ], 422);
         }
         DB::beginTransaction();
-        $gender = Gender::firstOrCreate(['name' => $request->gender]);
+        $gender = $user->gender->updateName($request->gender);
         $update = [
             'username' => $request->username,
             'gender_id' => $gender->id,
