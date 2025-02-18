@@ -68,7 +68,7 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     abort(403);
                 }
-            ))->only('show'),
+            ))->only(['show', 'update']),
         ];
     }
 
@@ -105,5 +105,29 @@ class CandidateController extends Controller implements HasMiddleware
         return view('admin.admission-tests.candidates.show')
             ->with('test', $admissionTest)
             ->with('user', $candidate);
+    }
+
+    public function update(Request $request, AdmissionTest $admissionTest, User $candidate)
+    {
+        $gender = Gender::firstOrCreate(['name' => $request->gender]);
+        if($gender->id != $candidate->gender->id && $candidate->gender->users()->count() == 1) {
+            $candidate->gender->delete();
+        }
+        $candidate->update([
+            'family_name' => $request->family_name,
+            'middle_name' => $request->middle_name,
+            'given_name' => $request->given_name,
+            'gender_id' => $gender->id,
+            'passport_type_id' => $request->passport_type_id,
+            'passport_number' => $request->passport_number,
+        ]);
+
+        return redirect()->route(
+            'admin.admission-tests.candidates.show',
+            [
+                'admission_test' => $admissionTest,
+                'candidate' => $candidate
+            ]
+        )->with('success', 'The candidate data update success!');
     }
 }
