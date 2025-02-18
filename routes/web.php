@@ -114,7 +114,7 @@ Route::middleware('auth')->group(function () {
                     Route::resource('proctors', ProctorController::class)
                         ->only(['store', 'update', 'destroy']);
                     Route::resource('candidates', CandidateController::class)
-                        ->only('store', 'show');
+                        ->only('store', 'show', 'update');
                 }
             )->whereNumber(['admission_test', 'proctor']);
             Route::resource('custom-pages', AdmissionCustomPageController::class)
