@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AdmissionTest\CandidateRequest;
+use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
+use App\Models\Gender;
 use App\Models\User;
 use App\Notifications\AssignAdmissionTest;
 use Closure;
@@ -71,7 +72,7 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
-    public function store(CandidateRequest $request, AdmissionTest $admissionTest)
+    public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
         AdmissionTestHasCandidate::where('user_id', $request->user->id)

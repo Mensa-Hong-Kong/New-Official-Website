@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\AdmissionTest;
+namespace App\Http\Requests\Admin\AdmissionTest\Candidate;
 
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CandidateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
