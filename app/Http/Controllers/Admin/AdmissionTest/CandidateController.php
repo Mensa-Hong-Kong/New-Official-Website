@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
+use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\Gender;
@@ -107,7 +108,7 @@ class CandidateController extends Controller implements HasMiddleware
             ->with('user', $candidate);
     }
 
-    public function update(Request $request, AdmissionTest $admissionTest, User $candidate)
+    public function update(UpdateRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
         if($gender->id != $candidate->gender->id && $candidate->gender->users()->count() == 1) {
