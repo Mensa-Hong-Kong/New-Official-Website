@@ -2,8 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Channels\Whatsapp\Messages\Message;
 use App\Channels\Whatsapp\Message as Channel;
+use App\Channels\Whatsapp\Messages\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -29,12 +29,13 @@ class UpdateAdmissionTest extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         $return = [];
-        if($notifiable->defaultEmail) {
+        if ($notifiable->defaultEmail) {
             $return[] = 'mail';
         }
-        if($notifiable->defaultMobile) {
+        if ($notifiable->defaultMobile) {
             $return[] = Channel::class;
         }
+
         return $return;
     }
 
@@ -58,7 +59,7 @@ class UpdateAdmissionTest extends Notification implements ShouldQueue
             ->line("Location: {$this->to['location']}")
             ->line("Address: {$this->to['address']}")
             ->line('')
-            ->line('If you need to reschedule, please contact "test@mensa.org.hk".',);
+            ->line('If you need to reschedule, please contact "test@mensa.org.hk".');
     }
 
     public function toWhatsApp(object $notifiable)

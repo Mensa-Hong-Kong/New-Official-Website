@@ -2,11 +2,12 @@
 
 namespace App\Notifications;
 
-use App\Channels\Whatsapp\Messages\Message;
 use App\Channels\Whatsapp\Message as Channel;
-use chillerlan\QRCode\{QRCode, QROptions};
+use App\Channels\Whatsapp\Messages\Message;
 use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\Output\QRMarkupHTML;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
@@ -24,19 +25,18 @@ class AssignAdmissionTest extends Notification
     {
         $options = new QROptions;
 
-        $options->version         = 5;
+        $options->version = 5;
         $options->outputInterface = QRMarkupHTML::class;
-        $options->cssClass        = 'qrcode';
-        $options->moduleValues    = [
+        $options->cssClass = 'qrcode';
+        $options->moduleValues = [
             // finder
-            QRMatrix::M_FINDER_DARK    => '#A71111', // dark (true)
-            QRMatrix::M_FINDER_DOT     => '#A71111', // finder dot, dark (true)
-            QRMatrix::M_FINDER         => '#FFBFBF', // light (false)
+            QRMatrix::M_FINDER_DARK => '#A71111', // dark (true)
+            QRMatrix::M_FINDER_DOT => '#A71111', // finder dot, dark (true)
+            QRMatrix::M_FINDER => '#FFBFBF', // light (false)
             // alignment
             QRMatrix::M_ALIGNMENT_DARK => '#A70364',
-            QRMatrix::M_ALIGNMENT      => '#FFC9C9',
+            QRMatrix::M_ALIGNMENT => '#FFC9C9',
         ];
-
 
         $out = (new QRCode($options))->render(
             route(
@@ -46,6 +46,7 @@ class AssignAdmissionTest extends Notification
                 ]
             )
         );
+
         return $out;
     }
 
@@ -57,12 +58,13 @@ class AssignAdmissionTest extends Notification
     public function via(object $notifiable): array
     {
         $return = [];
-        if($notifiable->defaultEmail) {
+        if ($notifiable->defaultEmail) {
             $return[] = 'mail';
         }
-        if($notifiable->defaultMobile) {
+        if ($notifiable->defaultMobile) {
             $return[] = Channel::class;
         }
+
         return $return;
     }
 
@@ -73,9 +75,9 @@ class AssignAdmissionTest extends Notification
     {
         return (new MailMessage)
             ->subject('We are assigned admission test to you.')
-            ->line("Date: ".$this->test->testing_at->format('Y-m-d'))
-            ->line("Time: ".$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'))
-            ->line("Location: ".$this->test->location->name)
+            ->line('Date: '.$this->test->testing_at->format('Y-m-d'))
+            ->line('Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'))
+            ->line('Location: '.$this->test->location->name)
             ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}")
             ->line('Ticket:')
             ->line(new HtmlString('<img src="'.$this->qrCode($notifiable).'">'))
@@ -94,8 +96,8 @@ class AssignAdmissionTest extends Notification
                 implode(
                     "\n", [
                         'We are assigned admission test to you.',
-                        "Time: ".$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
-                        "Location: ".$this->test->location->name,
+                        'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
+                        'Location: '.$this->test->location->name,
                         "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
                         '',
                         'Remember:',

@@ -14,7 +14,7 @@ class Message extends Channel
             'from' => 'whatsapp:'.$this->from,
             'body' => $message->content,
         ];
-        if($message->mediaUrl) {
+        if ($message->mediaUrl) {
             $options['mediaUrl'] = $message->mediaUrl;
         }
 

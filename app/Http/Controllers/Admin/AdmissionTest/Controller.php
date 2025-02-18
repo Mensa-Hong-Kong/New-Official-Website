@@ -241,14 +241,14 @@ class Controller extends BaseController implements HasMiddleware
             'location' => $admissionTest->location->name,
             'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
-        if(
+        if (
             $from['testing_date'] != $to['testing_date'] ||
             $from['testing_time'] != $to['testing_time'] ||
             $from['expect_end_time'] != $to['expect_end_time'] ||
             $from['location'] != $to['location'] ||
             $from['address'] != $to['address']
         ) {
-            foreach($admissionTest->candidates as $index => $candidate) {
+            foreach ($admissionTest->candidates as $index => $candidate) {
                 $candidate->notify((new UpdateAdmissionTest($from, $to))->delay($index));
             }
         }
