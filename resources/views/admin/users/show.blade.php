@@ -65,24 +65,48 @@
                 </div>
                 <div class="col-md-3"></div>
                 <div class="col-md-4">
-                    <label class="form-label">Family Name</label>
-                    <div>{{ $user->family_name }}</div>
+                    <label for="validationFamilyName" class="form-label">Family Name</label>
+                    <div id="showFamilyName">{{ $user->family_name }}</div>
+                    <input type="text" class="form-control" id="validationFamilyName" maxlength="255" value="{{ old('family_name', $user->family_name) }}" placeholder="family name" name="family_name" required hidden />
+                    <div id="familyNameFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Middle Name</label>
-                    <div>{{ $user->middle_name }}</div>
+                    <label for="validationMiddleName" class="form-label">Middle Name</label>
+                    <div id="showMiddleName">{{ $user->middle_name }}</div>
+                    <input type="text" class="form-control" id="validationMiddleName" maxlength="255" value="{{ old('middle_name', $user->middle_name) }}" placeholder="middle name" name="middle_name" hidden />
+                    <div id="middleNameFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Given Name</label>
+                    <label for="validationGivenName" class="form-label">Given Name</label>
                     <div id="showGivenName">{{ $user->given_name }}</div>
+                    <input type="text" class="form-control" id="validationGivenName" maxlength="255" value="{{ old('given_name', $user->given_name) }}" placeholder="given name" name="given_name" required hidden />
+                    <div id="givenNameFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Passport Type</label>
-                    <div>{{ $user->passportType->name }}</div>
+                    <label for="validationPassportType" class="form-label">Passport Type</label>
+                    <div id="showPassportType">{{ $user->passportType->name }}</div>
+                    <select class="form-select" id="validationPassportType" name="passport_type_id" required hidden>
+                        @foreach ($passportTypes as $key => $value)
+                            <option value="{{ $key }}" @selected($key == old('passport_type_id', $user->passport_type_id))>{{ $value }}</option>
+                        @endforeach
+                    </select>
+                    <div id="passportTypeFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label>Passport Number</label>
-                    <div>{{ $user->passport_number }}</div>
+                    <label for="validationPassportNumber">Passport Number</label>
+                    <div id="showPassportNumber">{{ $user->passport_number }}</div>
+                    <input type="text" class="form-control" id="validationPassportNumber" minlength="8" maxlength="18" value="{{ old('passport_number', $user->passport_number) }}" placeholder="passport_number" name="passport_number" required hidden />
+                    <div id="passportNumberFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
