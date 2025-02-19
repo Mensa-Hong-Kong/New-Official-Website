@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\AdmissionTest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
+use App\Http\Requests\StatusRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\Gender;
@@ -70,7 +71,7 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     abort(403);
                 }
-            ))->only(['show', 'edit', 'update']),
+            ))->except('store'),
         ];
     }
 
@@ -146,5 +147,17 @@ class CandidateController extends Controller implements HasMiddleware
                 'candidate' => $candidate,
             ]
         );
+    }
+
+    public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
+    {
+        AdmissionTestHasCandidate::where('test_id', $admissionTest->id)
+            ->where('user_id', $candidate->id)
+            ->update(['is_present' => $request->status]);
+
+        return [
+            'success' => "The candidate of $candidate->name changed to be ".($request->status ? 'present.' : 'absent.'),
+            'status' => $request->status,
+        ];
     }
 }
