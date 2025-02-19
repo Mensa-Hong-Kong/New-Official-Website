@@ -38,10 +38,10 @@ function failCallback(error) {
         } else {
             alert('undefine feedback key');
         }
-        disabledEditLink.hidden = true;
-        editLink.hidden = false;
-        presentButton.disabled = false;
     }
+    disabledEditLink.hidden = true;
+    editLink.hidden = false;
+    presentButton.disabled = false;
 }
 
 presentForm.addEventListener(
