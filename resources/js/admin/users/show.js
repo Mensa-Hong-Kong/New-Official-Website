@@ -1001,6 +1001,21 @@ function createContact(event) {
 }
 
 for(let form of document.getElementsByClassName('createContact')) {
+    let type = form.id.replace('CreateForm', '');
+    document.getElementById(type+'IsDefaultCheckbox').addEventListener(
+        'change', function(event) {
+            if(event.target.checked) {
+                document.getElementById(type+'IsVerifiedCheckbox').checked = true;
+            }
+        }
+    );
+    document.getElementById(type+'IsVerifiedCheckbox').addEventListener(
+        'change', function(event) {
+            if(! event.target.checked) {
+                document.getElementById(type+'IsDefaultCheckbox').checked = false;
+            }
+        }
+    );
     form.addEventListener('submit', createContact)
 }
 
