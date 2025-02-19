@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
+use App\Models\Gender;
+use App\Models\PassportType;
 use App\Models\User;
 use App\Notifications\AssignAdmissionTest;
 use Closure;
@@ -82,7 +84,7 @@ class CandidateController extends Controller implements HasMiddleware
                 }
             )->delete();
         $admissionTest->candidates()->attach($request->user->id);
-        $request->user->notify(new AssignAdmissionTest($admissionTest));
+        // $request->user->notify(new AssignAdmissionTest($admissionTest));
         DB::commit();
 
         return [
@@ -105,6 +107,22 @@ class CandidateController extends Controller implements HasMiddleware
         return view('admin.admission-tests.candidates.show')
             ->with('test', $admissionTest)
             ->with('user', $candidate);
+    }
+
+    public function edit(AdmissionTest $admissionTest, User $candidate)
+    {
+        return view('admin.admission-tests.candidates.edit')
+            ->with('test', $admissionTest)
+            ->with('user', $candidate)
+            ->with(
+                'genders', Gender::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
+                'passportTypes', PassportType::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            );
     }
 
     public function update(UpdateRequest $request, AdmissionTest $admissionTest, User $candidate)
