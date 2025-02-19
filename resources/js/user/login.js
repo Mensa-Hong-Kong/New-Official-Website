@@ -70,6 +70,8 @@ function validation() {
 }
 
 function successCallback(response) {
+    loggingInButton.hidden = true;
+    loginButton.hidden = false;
     window.location.href = response.request.responseURL;
 }
 

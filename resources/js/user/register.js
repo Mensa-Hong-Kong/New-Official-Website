@@ -188,6 +188,8 @@ function validation() {
 }
 
 function successCallback(response) {
+    submittingButton.hidden = true;
+    submitButton.hidden = false;
     window.location.href = response.request.responseURL;
 }
 
