@@ -112,9 +112,14 @@ Route::middleware('auth')->group(function () {
             Route::prefix('admission-tests/{admission_test}')->name('admission-tests.')->group(
                 function () {
                     Route::resource('proctors', ProctorController::class)
-                        ->only(['store', 'update', 'destroy']);
+                        ->only(['store', 'update', 'destroy'])
+                        ->whereNumber('proctor');
+                    Route::match(['put', 'patch'], '/candidates/{candidate}/present', [CandidateController::class, 'present'])
+                        ->name('candidates.present')
+                        ->whereNumber('candidate');
                     Route::resource('candidates', CandidateController::class)
-                        ->except('index', 'create', 'destroy');
+                        ->except('index', 'create', 'destroy')
+                        ->whereNumber('candidate');
                 }
             )->whereNumber(['admission_test', 'proctor']);
             Route::resource('custom-pages', AdmissionCustomPageController::class)
