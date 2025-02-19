@@ -124,7 +124,13 @@ class CandidateController extends Controller implements HasMiddleware
     {
         return view('admin.admission-tests.candidates.show')
             ->with('test', $admissionTest)
-            ->with('user', $candidate);
+            ->with('user', $candidate)
+            ->with(
+                'isPresent', AdmissionTestHasCandidate::where('test_id', $admissionTest->id)
+                    ->where('user_id', $candidate->id)
+                    ->first('is_present')
+                    ->is_present
+            );
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)
