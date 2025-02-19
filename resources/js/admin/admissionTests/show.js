@@ -600,7 +600,6 @@ if(candidate) {
             rowElement.className = 'row g-3';
             rowElement.innerHTML = `
                 <div class="col-md-1">${response.data.user_id}</div>
-                <div class="col-md-1">${response.data.gender}</div>
                 <div class="col-md-2">${response.data.name}</div>
                 <div class="col-md-2">${response.data.passport_type}</div>
             `;

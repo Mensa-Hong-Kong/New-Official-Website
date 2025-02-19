@@ -167,16 +167,14 @@
                 <h3 class="fw-bold mb-2">Candidates</h3>
                 <div class="row g-3">
                     <div class="col-md-1">User ID</div>
-                    <div class="col-md-1">Gender</div>
                     <div class="col-md-2">Name</div>
                     <div class="col-md-2">Passport Type</div>
                     <div class="col-md-2">Passport Number</div>
-                    <div class="col-md-3">Control</div>
+                    <div class="col-md-4">Control</div>
                 </div>
                 @foreach ($test->candidates as $candidate)
                     <div class="row g-3">
                         <div class="col-md-1">{{ $candidate->id }}</div>
-                        <div class="col-md-1">{{ $candidate->gender->name }}</div>
                         <div class="col-md-2">{{ $candidate->name }}</div>
                         <div class="col-md-2">{{ $candidate->passportType->name }}</div>
                         <div @class([
@@ -212,9 +210,9 @@
                         action="{{ route('admin.admission-tests.candidates.store', ['admission_test' => $test]) }}">
                         @csrf
                         <input type="text" id="candidateUserIdInput" class="col-md-1" name="user_id" required />
-                        <div class="col-md-7"></div>
-                        <button class="btn btn-success col-md-3 submitButton" id="addCandidateButton">Add</button>
-                        <button class="btn btn-success col-md-3" id="addingCandidateButton" hidden disabled>
+                        <div class="col-md-6"></div>
+                        <button class="btn btn-success col-md-4 submitButton" id="addCandidateButton">Add</button>
+                        <button class="btn btn-success col-md-4" id="addingCandidateButton" hidden disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Adding
                         </button>
