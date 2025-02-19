@@ -193,11 +193,21 @@
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                         @else
                             <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
-                                href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}">Show</a>
+                                href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Show</a>
                         @endcan
+                        @if(
+                            !auth()->user()->can('View:User') ||
+                            !auth()->user()->can('Edit:Admission Test')
+                        )
+                            <a class="btn btn-primary col-md-1" id="editCandidateLink{{ $candidate->id }}"
+                                href="{{ route('admin.admission-tests.candidates.edit', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Edit</a>
+                        @endif
                     </div>
                 @endforeach
-                @can('Edit:Admission Test')
+                @if(
+                    auth()->user()->can('View:User') &&
+                    auth()->user()->can('Edit:Admission Test')
+                )
                     <form class="row g-3" id="createCandidateForm" method="POST" novalidate
                         action="{{ route('admin.admission-tests.candidates.store', ['admission_test' => $test]) }}">
                         @csrf
@@ -209,7 +219,7 @@
                             Adding
                         </button>
                     </form>
-                @endcan
+                @endif
             </article>
         @endif
     </section>

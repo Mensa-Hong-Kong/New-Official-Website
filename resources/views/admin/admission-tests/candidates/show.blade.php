@@ -2,6 +2,11 @@
 
 @section('main')
     <section class="container">
+        <h2 class="fw-bold mb-2">
+            Candidate
+            <a class="btn btn-primary"
+                href="{{ route('admin.admission-tests.candidates.edit', ['admission_test' => $test, 'candidate' => $user]) }}">Edit</a>
+        </h2>
         <table class="table">
             <tr>
                 <th>Gender</th>

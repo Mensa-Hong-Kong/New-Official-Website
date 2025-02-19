@@ -6,7 +6,7 @@
             action="{{ route('admin.admission-tests.candidates.update', ['admission_test' => $test, 'candidate' => $user]) }}">
             @csrf
             @method('put')
-            <h2 class="fw-bold mb-2 text-uppercase">Edit Candidate</h2>
+            <h2 class="fw-bold mb-2">Edit Candidate</h2>
             <div data-mdb-input-init class="form-outline mb-4">
                 <div class="form-floating">
                     <input type="text" name="family_name" class="form-control" id="validationFamilyName" maxlength="255" placeholder="family name" value="{{ old('family_name', $user->family_name) }}" required />
