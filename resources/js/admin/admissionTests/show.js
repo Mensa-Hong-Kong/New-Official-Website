@@ -3,10 +3,18 @@ import stringToBoolean from "../../stringToBoolean";
 
 let submitting = 'loading';
 const submitButtons = document.getElementsByClassName('submitButton');
+const showCandidateLink = document.getElementsByClassName('showCandidateLink');
+const disableDShowCandidateLink = document.getElementsByClassName('showCandidateLink');
 
 function disableSubmitting(){
     for(let button of submitButtons) {
         button.disabled = true;
+    }
+    for(let link of showCandidateLink) {
+        link.hidden = true;
+    }
+    for(let link of disableDShowCandidateLink) {
+        link.hidden = false;
     }
 }
 
@@ -14,6 +22,12 @@ function enableSubmitting(){
     submitting = '';
     for(let button of submitButtons) {
         button.disabled = false;
+    }
+    for(let link of disableDShowCandidateLink) {
+        link.hidden = true;
+    }
+    for(let link of showCandidateLink) {
+        link.hidden = false;
     }
 }
 

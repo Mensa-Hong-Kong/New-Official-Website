@@ -187,12 +187,13 @@
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
                         @can('View:User')
-                            <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
+                            <a class="btn btn-primary col-md-1 showCandidateLink"
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                         @else
-                            <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
+                            <a class="btn btn-primary col-md-1 showCandidateLink"
                                 href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Show</a>
                         @endcan
+                        <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
                     </div>
                 @endforeach
                 @if(
