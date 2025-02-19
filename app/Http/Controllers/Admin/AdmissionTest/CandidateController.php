@@ -84,7 +84,7 @@ class CandidateController extends Controller implements HasMiddleware
                 }
             )->delete();
         $admissionTest->candidates()->attach($request->user->id);
-        // $request->user->notify(new AssignAdmissionTest($admissionTest));
+        $request->user->notify(new AssignAdmissionTest($admissionTest));
         DB::commit();
 
         return [
@@ -145,6 +145,6 @@ class CandidateController extends Controller implements HasMiddleware
                 'admission_test' => $admissionTest,
                 'candidate' => $candidate,
             ]
-        )->with('success', 'The candidate data update success!');
+        );
     }
 }
