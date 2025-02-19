@@ -70,7 +70,7 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     abort(403);
                 }
-            ))->only(['show', 'update']),
+            ))->only(['show', 'edit', 'update']),
         ];
     }
 
