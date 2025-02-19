@@ -53,7 +53,7 @@ class User extends Authenticatable
                     '1' => $attributes['given_name'],
                     '3' => $attributes['family_name'],
                 ];
-                if (! is_null($attributes['middle_name'])) {
+                if ($attributes['middle_name'] != '') {
                     $name['2'] = $attributes['middle_name'];
                 }
                 ksort($name);
