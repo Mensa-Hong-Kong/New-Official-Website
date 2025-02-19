@@ -140,6 +140,13 @@ function failCallback(error) {
                     feedback = genderFeedback;
                     break;
             }
+            if(feedback) {
+                input.classList.add('is-invalid');
+                feedback.className = "invalid-feedback";
+                feedback.innerText = value;
+            } else {
+                alert('undefine feedback key');
+            }
         }
     }
     for(let input of inputs) {
