@@ -193,13 +193,6 @@
                             <a class="btn btn-primary col-md-1" id="showCandidateLink{{ $candidate->id }}"
                                 href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Show</a>
                         @endcan
-                        @if(
-                            !auth()->user()->can('View:User') ||
-                            !auth()->user()->can('Edit:Admission Test')
-                        )
-                            <a class="btn btn-primary col-md-1" id="editCandidateLink{{ $candidate->id }}"
-                                href="{{ route('admin.admission-tests.candidates.edit', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Edit</a>
-                        @endif
                     </div>
                 @endforeach
                 @if(
