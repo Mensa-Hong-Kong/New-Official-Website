@@ -54,9 +54,4 @@ class AdmissionTest extends Model
         return $this->belongsToMany(User::class, AdmissionTestHasCandidate::class, 'test_id')
             ->withPivot(['is_present', 'is_pass']);
     }
-
-    public function bundleCandidates()
-    {
-        return $this->hasMany(AdmissionTestHasCandidate::class, 'test_id');
-    }
 }
