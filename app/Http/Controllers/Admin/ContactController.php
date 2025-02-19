@@ -83,7 +83,7 @@ class ContactController extends Controller implements HasMiddleware
             'contact' => $request->contact,
             'is_default' => $request->is_default ?? false,
         ]);
-        if ($request->is_verified ?? false || $contact->is_default ?? false) {
+        if (($request->is_verified ?? false) || ($contact->is_default ?? false)) {
             $this->verified($contact);
         }
 
