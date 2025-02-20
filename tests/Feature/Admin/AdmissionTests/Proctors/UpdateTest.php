@@ -73,7 +73,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_not_exist_admission_test()
+    public function test_admission_test_is_not_exist()
     {
         $response = $this->actingAs($this->user)->putJson(
             route(

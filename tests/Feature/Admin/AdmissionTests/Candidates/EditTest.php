@@ -93,13 +93,14 @@ class EditTest extends TestCase
 
     public function test_candidate_is_not_exists()
     {
+        $user = User::factory()->create();
         $response = $this->actingAs($this->user)
             ->get(
                 route(
                     'admin.admission-tests.candidates.edit',
                     [
                         'admission_test' => $this->test,
-                        'candidate' => 0,
+                        'candidate' => $user,
                     ]
                 )
             );

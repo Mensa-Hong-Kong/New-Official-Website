@@ -96,7 +96,7 @@ class ResultTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_not_exist_admission_test()
+    public function test_admission_test_is_not_exist()
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -111,14 +111,15 @@ class ResultTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_not_exist_candidate()
+    public function test_candidate_is_not_exists()
     {
+        $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.result',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => 0,
+                    'candidate' => $user,
                 ]
             ),
             ['status' => 1]
