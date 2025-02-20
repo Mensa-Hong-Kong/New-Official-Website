@@ -90,15 +90,16 @@ class CandidateController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
+                    $test = $request->route('admission_test');
                     if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
                         abort(409, 'The passport of user has already been qualification for membership.');
                     } elseif (
                         $user->hasSamePassportTestedWithinDateRange(
-                            $request->route('admission_test')->testing_at->subMonths(6), now()
+                            $test->testing_at->subMonths(6), now(), $test
                         )
                     ) {
                         abort(409, 'The passport of user has admission test record within 6 months(count from testing at of this test sub 6 months to now).');
-                    } elseif ($user->hasSamePassportTestedTwoTimes()) {
+                    } elseif ($user->hasSamePassportTestedTwoTimes($test)) {
                         abort(409, 'The passport of user tested two times admission test.');
                     }
 
