@@ -117,6 +117,9 @@ Route::middleware('auth')->group(function () {
                     Route::match(['put', 'patch'], '/candidates/{candidate}/present', [CandidateController::class, 'present'])
                         ->name('candidates.present')
                         ->whereNumber('candidate');
+                    Route::match(['put', 'patch'], '/candidates/{candidate}/result', [CandidateController::class, 'result'])
+                        ->name('candidates.result')
+                        ->whereNumber('candidate');
                     Route::resource('candidates', CandidateController::class)
                         ->except('index', 'create', 'destroy')
                         ->whereNumber('candidate');
