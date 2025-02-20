@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestHasCandidate;
 use App\Models\ContactHasVerification;
 use App\Models\User;
 use App\Models\UserHasContact;
@@ -27,10 +28,10 @@ class ResultTest extends TestCase
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()
             ->state([
-                'testing_at' => now()->subSecond(),
-                'expect_end_at' => now()->subSecond()->subHour(),
+                'testing_at' => now()->subSecond()->subHour(),
+                'expect_end_at' => now()->subSecond(),
             ])->create();
-        $this->test->candidates()->attach($this->user->id);
+        $this->test->candidates()->attach($this->user->id, ['is_present' => true]);
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -140,6 +141,26 @@ class ResultTest extends TestCase
         );
         $response->assertConflict();
         $response->assertJson(['message' => 'Cannot add result before expect end time.']);
+    }
+
+    public function test_candidate_is_absent()
+    {
+        AdmissionTestHasCandidate::where('test_id', $this->test->id)
+            ->where('user_id', $this->user->id)
+            ->update(['is_present' => false]);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.result',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => 1]
+        );
+        $response->assertConflict();
+        $response->assertJson(['message' => 'Cannot add result to absent candidate.']);
+
     }
 
     public function test_missing_status()
