@@ -21,7 +21,14 @@ function disableSubmitting(){
 function enableSubmitting(){
     submitting = '';
     for(let button of submitButtons) {
-        button.disabled = false;
+        if(
+            button.id.startsWith('resultPassButton') ||
+            button.id.startsWith('resultFailButton')
+        ) {
+            button.disabled = stringToBoolean(button.dataset.disabled);
+        } else {
+            button.disabled = false;
+        }
     }
     for(let link of disableDShowCandidateLink) {
         link.hidden = true;
@@ -32,32 +39,32 @@ function enableSubmitting(){
 }
 
 const editForm = document.getElementById('form');
+const savingButton = document.getElementById('savingButton');
+const saveButton = document.getElementById('saveButton');
+const cancelButton = document.getElementById('cancelButton');
+const editButton = document.getElementById('editButton');
+const showTestingAt = document.getElementById('showTestingAt');
+const showExpectEndAt = document.getElementById('showExpectEndAt');
+const showLocation = document.getElementById('showLocation');
+const showDistrict = document.getElementById('showDistrict');
+const showAddress = document.getElementById('showAddress');
+const showMaximumCandidates = document.getElementById('showMaximumCandidates');
+const showIsPublic = document.getElementById('showIsPublic');
+const testingAtInput = document.getElementById('validationTestingAt');
+const testingAtFeedback = document.getElementById('testingAtFeedback');
+const expectEndAtInput = document.getElementById('validationExpectEndAt');
+const expectEndAtFeedback = document.getElementById('expectEndAtFeedback');
+const locationInput = document.getElementById('validationLocation');
+const locationFeedback = document.getElementById('locationFeedback');
+const districtInput = document.getElementById('validationDistrict');
+const districtFeedback = document.getElementById('districtFeedback');
+const addressInput = document.getElementById('validationAddress');
+const addressFeedback = document.getElementById('addressFeedback');
+const maximumCandidatesInput = document.getElementById('validationMaximumCandidates');
+const maximumCandidatesFeedback = document.getElementById('maximumCandidatesFeedback');
+const isPublicInput = document.getElementById('isPublic');
 
 if(editForm) {
-    const savingButton = document.getElementById('savingButton');
-    const saveButton = document.getElementById('saveButton');
-    const cancelButton = document.getElementById('cancelButton');
-    const editButton = document.getElementById('editButton');
-    const showTestingAt = document.getElementById('showTestingAt');
-    const showExpectEndAt = document.getElementById('showExpectEndAt');
-    const showLocation = document.getElementById('showLocation');
-    const showDistrict = document.getElementById('showDistrict');
-    const showAddress = document.getElementById('showAddress');
-    const showMaximumCandidates = document.getElementById('showMaximumCandidates');
-    const showIsPublic = document.getElementById('showIsPublic');
-    const testingAtInput = document.getElementById('validationTestingAt');
-    const testingAtFeedback = document.getElementById('testingAtFeedback');
-    const expectEndAtInput = document.getElementById('validationExpectEndAt');
-    const expectEndAtFeedback = document.getElementById('expectEndAtFeedback');
-    const locationInput = document.getElementById('validationLocation');
-    const locationFeedback = document.getElementById('locationFeedback');
-    const districtInput = document.getElementById('validationDistrict');
-    const districtFeedback = document.getElementById('districtFeedback');
-    const addressInput = document.getElementById('validationAddress');
-    const addressFeedback = document.getElementById('addressFeedback');
-    const maximumCandidatesInput = document.getElementById('validationMaximumCandidates');
-    const maximumCandidatesFeedback = document.getElementById('maximumCandidatesFeedback');
-    const isPublicInput = document.getElementById('isPublic');
 
     const inputs = [testingAtInput, expectEndAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
 
@@ -652,15 +659,57 @@ function updatePresentStatue(event) {
     }
 }
 
+function updateResultSuccessCallback(response) {
+    let id = urlGetCandidateID(response.request.responseURL);
+    let passButton = document.getElementById('resultPassButton'+id);
+    let failButton = document.getElementById('resultFailButton'+id);
+    passButton.dataset.disabled = response.data.status;
+    failButton.dataset.disabled = ! response.data.status;
+    enableSubmitting();
+}
+
+function updateResultFailCallback(error) {
+    if(error.status == 422) {
+        if(error.response.data.errors.status) {
+            bootstrapAlert(error.response.data.errors.status);
+        } else {
+            alert('undefine feedback key');
+        }
+    }
+    enableSubmitting();
+}
+
+function updateResult(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updatePresentStatue'+submitAt;
+        disableSubmitting();
+        if(submitting == 'updatePresentStatue'+submitAt) {
+            console.log(event.submitter);
+            let data = {status: stringToBoolean(event.submitter.value)};
+            post(event.target.action, updateResultSuccessCallback, updateResultFailCallback, 'put', data);
+        }
+    }
+}
+
 function setCandidateEventLister(loader) {
     let id = loader.id.replace('candidateLoader', '');
-    let presentForm = document.getElementById('presentForm'+id)
-    if(presentForm) {
-        presentForm.addEventListener(
-            'submit', updatePresentStatue
+    document.getElementById('presentForm'+id).addEventListener(
+        'submit', updatePresentStatue
+    );
+    let resultPassButton = document.getElementById('resultPassButton'+id);
+    let resultFailButton = document.getElementById('resultFailButton'+id);
+    if(resultPassButton) {
+        document.getElementById('resultForm'+id).addEventListener(
+            'submit', updateResult
         );
-        loader.remove();
-        document.getElementById('presentButton'+id).hidden = false;
+    }
+    loader.remove();
+    document.getElementById('presentButton'+id).hidden = false;
+    if(resultPassButton) {
+        resultPassButton.hidden = false;
+        resultFailButton.hidden = false;
     }
 }
 
@@ -690,6 +739,11 @@ if(candidate) {
                     <input type="hidden" name="_token" value="${token}">
                     <input type="hidden" name="_method" value="put">
                 </form>
+                <form id="resultForm${response.data.user_id}" hidden method="POST"
+                    action="${response.data.result_url}">
+                    <input type="hidden" name="_token" value="${token}">
+                    <input type="hidden" name="_method" value="put">
+                </form>
                 <div class="col-md-1">${response.data.user_id}</div>
                 <div class="col-md-2">${response.data.name}</div>
                 <div class="col-md-2">${response.data.passport_type}</div>
@@ -701,6 +755,7 @@ if(candidate) {
             }
             html += `
                 <a class="btn btn-primary col-md-1 showCandidateLink" href="${response.data.show_user_url}">Show</a>
+                <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
                 <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
                 <button name="status" id="presentButton${response.data.user_id}" form="presentForm${response.data.user_id}" value="true"
             `;
@@ -709,7 +764,14 @@ if(candidate) {
             }
             html += `
                     class="btn btn-danger col-md-1 submitButton" hidden>Absent</button>
-                <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
+                    <button name="status" id="resultPassButton${response.data.user_id}" form="resultForm${response.data.user_id}"
+                        value="1" data-disabled="1" hidden disabled
+                        class="btn btn-success col-md-1 submitButton">Pass</button>
+                    <button name="status" id="resultFailButton${response.data.user_id}" form="resultForm${response.data.user_id}"
+                        value="0"  data-disabled="1" hidden disabled
+            `;
+            html += `
+                        class="btn btn-danger col-md-1 submitButton">Fail</button>
             `;
             rowElement.innerHTML = html;
             candidate.insertBefore(rowElement, createCandidateForm);

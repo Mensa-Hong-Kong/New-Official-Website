@@ -179,6 +179,11 @@
                             @csrf
                             @method("put")
                         </form>
+                        <form id="resultForm{{ $candidate->id }}" hidden method="POST"
+                            action="{{ route('admin.admission-tests.candidates.result', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
+                            @csrf
+                            @method("put")
+                        </form>
                         <div class="col-md-1">{{ $candidate->id }}</div>
                         <div class="col-md-2">{{ $candidate->name }}</div>
                         <div class="col-md-2">{{ $candidate->passportType->name }}</div>
@@ -192,6 +197,7 @@
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
                         @can('View:User')
+                            <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
                             <a class="btn btn-primary col-md-1 showCandidateLink"
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                             <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader{{ $candidate->id }}" role="status" aria-hidden="true"></span>
@@ -202,7 +208,14 @@
                                 'col-md-1',
                                 'submitButton',
                             ]) hidden>{{ $candidate->pivot->is_present ? 'Present' : 'Absent' }}</button>
-                            <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
+                            @can('Edit:Admission Test')
+                                <button name="status" id="resultPassButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
+                                    value="1" @disabled($candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
+                                    class="btn btn-success col-md-1 submitButton" data-disabled="{{ $candidate->pivot->is_pass || $test->expect_end_at > now() }}">Pass</button>
+                                <button name="status" id="resultFailButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
+                                    value="0" @disabled(! $candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
+                                    class="btn btn-danger col-md-1 submitButton" data-disabled="{{ ! $candidate->pivot->is_pass || $test->expect_end_at > now() }}">Fail</button>
+                            @endcan
                         @else
                             <a class="btn btn-primary col-md-1 showCandidateLink"
                                 href="{{ route('admin.admission-tests.candidates.show', ['admission_test' => $test, 'candidate' => $candidate]) }}" target="_blank">Show</a>
