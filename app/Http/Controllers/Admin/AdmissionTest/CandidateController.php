@@ -52,12 +52,6 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(404);
                     }
                     $test = $request->route('admission_test');
-                    if ($test->testing_at > now()->addHours(2)) {
-                        abort(409, 'Could not access before than testing time 2 hours.');
-                    }
-                    if ($test->expect_end_at < now()->subHour()) {
-                        abort(410, 'Could not access after than expect end time 1 hour.');
-                    }
                     if (
                         (
                             $request->user()->can('View:User') &&
@@ -72,6 +66,19 @@ class CandidateController extends Controller implements HasMiddleware
                     abort(403);
                 }
             ))->except('store'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $test = $request->route('admission_test');
+                    if ($test->testing_at > now()->addHours(2)) {
+                        abort(409, 'Could not access before than testing time 2 hours.');
+                    }
+                    if ($test->expect_end_at < now()->subHour()) {
+                        abort(410, 'Could not access after than expect end time 1 hour.');
+                    }
+
+                    return $next($request);
+                }
+            ))->except(['store', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
