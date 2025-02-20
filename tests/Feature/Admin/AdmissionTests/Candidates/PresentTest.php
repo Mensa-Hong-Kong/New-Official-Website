@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -140,6 +141,32 @@ class PresentTest extends TestCase
         );
         $response->assertGone();
         $response->assertJson(['message' => 'Could not access after than expect end time 1 hour.']);
+    }
+
+    public function test_candidate_result_exists()
+    {
+        $this->test->update([
+            'testing_at' => now()->subHour()->subSecond(),
+            'expect_end_at' => now()->subSecond(),
+        ]);
+        AdmissionTestHasCandidate::where('test_id', $this->test->id)
+            ->where('user_id', $this->user->id)
+            ->update([
+                'is_present' => true,
+                'is_pass' => true,
+            ]);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => 0]
+        );
+        $response->assertGone();
+        $response->assertJson(['message' => 'Cannot change exists result candidate present status.']);
     }
 
     public function test_has_same_passport_already_qualification_of_membership()

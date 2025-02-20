@@ -23,7 +23,8 @@ function enableSubmitting(){
     for(let button of submitButtons) {
         if(
             button.id.startsWith('resultPassButton') ||
-            button.id.startsWith('resultFailButton')
+            button.id.startsWith('resultFailButton') ||
+            button.id.startsWith('presentButton')
         ) {
             button.disabled = stringToBoolean(button.dataset.disabled);
         } else {
@@ -661,10 +662,9 @@ function updatePresentStatue(event) {
 
 function updateResultSuccessCallback(response) {
     let id = urlGetCandidateID(response.request.responseURL);
-    let passButton = document.getElementById('resultPassButton'+id);
-    let failButton = document.getElementById('resultFailButton'+id);
-    passButton.dataset.disabled = response.data.status;
-    failButton.dataset.disabled = ! response.data.status;
+    document.getElementById('resultPassButton'+id).dataset.disabled = response.data.status;
+    document.getElementById('resultFailButton'+id).disabled = ! response.data.status;
+    document.getElementById('presentButton'+id).disabled = true;
     enableSubmitting();
 }
 
@@ -760,7 +760,9 @@ if(candidate) {
                 <button name="status" id="presentButton${response.data.user_id}" form="presentForm${response.data.user_id}" value="true"
             `;
             if(! response.data.in_testing_time_range) {
-                html += 'disabled';
+                html += 'disabled data-disabled"1"';
+            } else {
+                html += 'data-disabled"0"';
             }
             html += `
                     class="btn btn-danger col-md-1 submitButton" hidden>Absent</button>

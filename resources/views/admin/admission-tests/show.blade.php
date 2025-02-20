@@ -201,7 +201,12 @@
                             <a class="btn btn-primary col-md-1 showCandidateLink"
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                             <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader{{ $candidate->id }}" role="status" aria-hidden="true"></span>
-                            <button name="status" id="presentButton{{ $candidate->id }}" form="presentForm{{ $candidate->id }}" value="{{ !$candidate->pivot->is_present }}" @disabled(! $test->inTestingTimeRange()) @class([
+                            <button name="status" id="presentButton{{ $candidate->id }}" form="presentForm{{ $candidate->id }}" value="{{ !$candidate->pivot->is_present }}"
+                                data-disabled="{{ ! $test->inTestingTimeRange() || in_array($candidate->pivot->is_pass, ['0', '1']) }}"
+                                @disabled(
+                                    ! $test->inTestingTimeRange() ||
+                                    in_array($candidate->pivot->is_pass, ['0', '1'])
+                                ) @class([
                                 'btn',
                                 'btn-success' => $candidate->pivot->is_present,
                                 'btn-danger' => !$candidate->pivot->is_present,

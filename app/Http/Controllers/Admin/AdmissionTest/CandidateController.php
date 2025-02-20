@@ -91,7 +91,9 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
                     $test = $request->route('admission_test');
-                    if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
+                    if (in_array($request->pivot->is_pass, ['0', '1'])) {
+                        abort(410, 'Cannot change exists result candidate present status.');
+                    } elseif ($user->hasSamePassportAlreadyQualificationOfMembership()) {
                         abort(409, 'The passport of user has already been qualification for membership.');
                     } elseif (
                         $user->hasSamePassportTestedWithinDateRange(
