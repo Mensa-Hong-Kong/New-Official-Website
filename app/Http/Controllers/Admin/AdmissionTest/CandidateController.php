@@ -151,6 +151,13 @@ class CandidateController extends Controller implements HasMiddleware
                     'candidate' => $request->user,
                 ]
             ),
+            'result_url' => route(
+                'admin.admission-tests.candidates.result',
+                [
+                    'admission_test' => $admissionTest,
+                    'candidate' => $request->user,
+                ]
+            ),
         ];
     }
 
