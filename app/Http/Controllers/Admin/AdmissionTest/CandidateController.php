@@ -32,8 +32,8 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(403);
                     }
                     $test = $request->route('admission_test');
-                    if ($test->expect_end_at->addHour() < now()) {
-                        abort(410, 'Can not change candidate after than expect end time one hour.');
+                    if ($test->testing_at <= now()) {
+                        abort(410, 'Can not add candidate after than testing time.');
                     }
                     if ($test->candidates()->count() >= $test->maximum_candidates) {
                         return response(['errors' => ['user_id' => 'The admission test is fulled.']], 422);
@@ -115,6 +115,14 @@ class CandidateController extends Controller implements HasMiddleware
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $request->user]
+            ),
+            'in_testing_time_range' => $admissionTest->inTestingTimeRange(),
+            'present_url' => route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $admissionTest,
+                    'candidate' => $request->user,
+                ]
             ),
         ];
     }

@@ -94,7 +94,7 @@ class StoreTest extends TestCase
 
     public function test_not_admission_test_ended_more_than_one_hour()
     {
-        $this->test->update(['expect_end_at' => now()->subHour()->subSecond()]);
+        $this->test->update(['testing_at' => now()->subSecond()]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -103,7 +103,7 @@ class StoreTest extends TestCase
             ['user_id' => $this->user->id]
         );
         $response->assertGone();
-        $response->assertJson(['message' => 'Can not change candidate after than expect end time one hour.']);
+        $response->assertJson(['message' => 'Can not add candidate after than testing time.']);
     }
 
     public function test_missing_user_id()
@@ -280,6 +280,14 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
+            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'present_url' => route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
         ]);
         $this->user->notify(new AssignAdmissionTest($this->test));
         Notification::assertSentTo(
@@ -320,6 +328,14 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
+            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'present_url' => route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -353,6 +369,14 @@ class StoreTest extends TestCase
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $this->user]
+            ),
+            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'present_url' => route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
             ),
         ]);
         Notification::assertSentTo(
@@ -398,6 +422,14 @@ class StoreTest extends TestCase
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $this->user]
+            ),
+            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'present_url' => route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
             ),
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
