@@ -33,6 +33,12 @@ class CandidateController extends Controller implements HasMiddleware
                     ) {
                         abort(403);
                     }
+
+                    return $next($request);
+                }
+            ))->only(['store', 'result']),
+            (new Middleware(
+                function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
                     if ($test->testing_at <= now()) {
                         abort(410, 'Can not add candidate after than testing time.');
@@ -93,6 +99,15 @@ class CandidateController extends Controller implements HasMiddleware
                     return $next($request);
                 }
             ))->only('present'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    if($request->route('admission_test')->expect_end_at > now()) {
+                        abort(409, 'Cannot add result before expect end time.');
+                    }
+
+                    return $next($request);
+                }
+            ))->only('result'),
         ];
     }
 
