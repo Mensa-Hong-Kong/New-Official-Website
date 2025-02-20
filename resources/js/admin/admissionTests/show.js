@@ -331,6 +331,8 @@ if(editForm) {
     );
 }
 
+let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+
 function userIdValidation(input)
 {
     if(input.validity.valueMissing) {
@@ -546,8 +548,8 @@ if(proctor) {
         rowElement.className = 'row g-3';
         rowElement.innerHTML = `
             <form method="POST" id="deleteProctorForm${response.data.user_id}" action="${response.data.delete_proctor_url}" hidden>
-                @csrf
-                @method('DELETE')
+                <input type="hidden" name="_token" value="${token}">
+                <input type="hidden" name="_method" value="DELETE">
             </form>
             <div class="col-md-1" id="showProctorId${response.data.user_id}">${response.data.user_id}</div>
             <div class="col-md-2" id="showProctorName${response.data.user_id}">${response.data.name}</div>
@@ -598,6 +600,76 @@ if(proctor) {
     );
 }
 
+function urlGetCandidateID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/admission-tests\/([0-9]+)\/candidates\/([0-9]+).*/i)[2];
+}
+
+function updatePresentStatueSuccessCallback(response) {
+    let id = urlGetCandidateID(response.request.responseURL);
+    let button = document.getElementById('presentButton'+id);
+    button.value = !response.data.status;
+    if(response.data.status) {
+        button.innerText = 'Present';
+        if(button.classList.contains('btn-danger')) {
+            button.classList.remove('btn-danger');
+        }
+        if(!button.classList.contains('btn-success')) {
+            button.classList.add('btn-success');
+        }
+    } else {
+        button.innerText = 'Absent';
+        if(button.classList.contains('btn-success')) {
+            button.classList.remove('btn-success');
+        }
+        if(!button.classList.contains('btn-danger')) {
+            button.classList.add('btn-danger');
+        }
+    }
+    enableSubmitting();
+}
+
+function updatePresentStatueFailCallback(error) {
+    if(error.status == 422) {
+        if(error.response.data.errors.status) {
+            bootstrapAlert(error.response.data.errors.status);
+        } else {
+            alert('undefine feedback key');
+        }
+    }
+    enableSubmitting();
+}
+
+function updatePresentStatue(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updatePresentStatue'+submitAt;
+        disableSubmitting();
+        if(submitting == 'updatePresentStatue'+submitAt) {
+            let data = {status: stringToBoolean(event.submitter.value)};
+            post(event.target.action, updatePresentStatueSuccessCallback, updatePresentStatueFailCallback, 'put', data);
+        }
+    }
+}
+
+function setCandidateEventLister(loader) {
+    let id = loader.id.replace('candidateLoader', '');
+    let presentForm = document.getElementById('presentForm'+id)
+    if(presentForm) {
+        presentForm.addEventListener(
+            'submit', updatePresentStatue
+        );
+        loader.remove();
+        document.getElementById('presentButton'+id).hidden = false;
+    }
+}
+
+document.querySelectorAll('.candidateLoader').forEach(
+    (loader) => {
+        setCandidateEventLister(loader);
+    }
+);
+
 const candidate = document.getElementById('candidate');
 
 if(candidate) {
@@ -612,21 +684,36 @@ if(candidate) {
             let rowElement = document.createElement('div');
             rowElement.id = 'showProctor'+response.data.user_id;
             rowElement.className = 'row g-3';
-            rowElement.innerHTML = `
+            let html = `
+                <form id="presentForm${response.data.user_id}" hidden method="POST"
+                    action="${response.data.present_url}">
+                    <input type="hidden" name="_token" value="${token}">
+                    <input type="hidden" name="_method" value="put">
+                </form>
                 <div class="col-md-1">${response.data.user_id}</div>
                 <div class="col-md-2">${response.data.name}</div>
                 <div class="col-md-2">${response.data.passport_type}</div>
             `;
             if(response.data.has_same_passport) {
-                rowElement.innerHTML += `<div class="col-md-2 text-warning">${response.data.passport_number}</div>`;
+                html += `<div class="col-md-2 text-warning">${response.data.passport_number}</div>`;
             } else {
-                rowElement.innerHTML += `<div class="col-md-2">${response.data.passport_number}</div>`;
+                html += `<div class="col-md-2">${response.data.passport_number}</div>`;
             }
-            rowElement.innerHTML += `
-                <a class="btn btn-primary col-md-1" id="showProctorLink${response.data.user_id}"
-                    href="${response.data.show_user_url}">Show</a>
+            html += `
+                <a class="btn btn-primary col-md-1 showCandidateLink" href="${response.data.show_user_url}">Show</a>
+                <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
+                <button name="status" id="presentButton${response.data.user_id}" form="presentForm${response.data.user_id}" value="true"
             `;
+            if(! response.data.in_testing_time_range) {
+                html += 'disabled';
+            }
+            html += `
+                    class="btn btn-danger col-md-1 submitButton" hidden>Absent</button>
+                <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
+            `;
+            rowElement.innerHTML = html;
             candidate.insertBefore(rowElement, createCandidateForm);
+            setCandidateEventLister(document.getElementById('candidateLoader'+response.data.user_id));
             showCurrentCandidates.innerText = + showCurrentCandidates.innerText + 1;
             addingCandidateButton.hidden = true;
             addCandidateButton.hidden = false;
