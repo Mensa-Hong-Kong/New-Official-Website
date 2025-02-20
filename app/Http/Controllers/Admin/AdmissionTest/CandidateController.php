@@ -53,22 +53,16 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     $test = $request->route('admission_test');
                     if (
-                        (
+                        ! (
                             $request->user()->can('View:User') &&
                             $request->user()->can('Edit:Admission Test')
-                        ) || (
+                        ) && ! (
                             $test->inTestingTimeRange() &&
                             in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
                         )
                     ) {
-                        return $next($request);
+                        abort(403);
                     }
-                    abort(403);
-                }
-            ))->except('store'),
-            (new Middleware(
-                function (Request $request, Closure $next) {
-                    $test = $request->route('admission_test');
                     if ($test->testing_at > now()->addHours(2)) {
                         abort(409, 'Could not access before than testing time 2 hours.');
                     }
