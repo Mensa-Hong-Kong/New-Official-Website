@@ -86,6 +86,7 @@ class CandidateController extends Controller implements HasMiddleware
                     } elseif ($user->hasSamePassportTestedTwoTimes()) {
                         abort(409, 'The passport of user tested two times admission test.');
                     }
+
                     return $next($request);
                 }
             ))->only('present'),
