@@ -12,6 +12,8 @@ use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
 use App\Notifications\AssignAdmissionTest;
+use App\Notifications\FailAdmissionTest;
+use App\Notifications\PassAdmissionTest;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -189,6 +191,25 @@ class CandidateController extends Controller implements HasMiddleware
 
         return [
             'success' => "The candidate of $candidate->name changed to be ".($request->status ? 'present.' : 'absent.'),
+            'status' => $request->status,
+        ];
+    }
+
+    public function result(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
+    {
+        DB::beginTransaction();
+        AdmissionTestHasCandidate::where('test_id', $admissionTest->id)
+            ->where('user_id', $candidate->id)
+            ->update(['is_pass' => $request->status]);
+        if($request->status) {
+            $candidate->notify(new PassAdmissionTest);
+        } else {
+            $candidate->notify(new FailAdmissionTest($admissionTest));
+        }
+        DB::commit();
+
+        return [
+            'success' => "The candidate of $candidate->name changed to be ".($request->status ? 'pass.' : 'fail.'),
             'status' => $request->status,
         ];
     }
