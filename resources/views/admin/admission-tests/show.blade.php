@@ -173,7 +173,7 @@
                     <div class="col-md-4">Control</div>
                 </div>
                 @foreach ($test->candidates as $candidate)
-                    <div class="row g-3">
+                    <div class="row g-3" id="candidateRow{{ $candidate->id }}">
                         <form id="presentForm{{ $candidate->id }}" hidden method="POST"
                             action="{{ route('admin.admission-tests.candidates.present', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
                             @csrf
@@ -183,6 +183,11 @@
                             action="{{ route('admin.admission-tests.candidates.result', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
                             @csrf
                             @method("put")
+                        </form>
+                        <form method="POST" id="deleteCandidateForm{{ $candidate->id }}" hidden method="POST"
+                            action="{{ route('admin.admission-tests.candidates.destroy', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
+                            @csrf
+                            @method('delete')
                         </form>
                         <div class="col-md-1">{{ $candidate->id }}</div>
                         <div class="col-md-2">{{ $candidate->name }}</div>
@@ -222,6 +227,12 @@
                                     value="0" @disabled(! $candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
                                     class="btn btn-danger col-md-1 submitButton" data-disabled="{{ ! $candidate->pivot->is_pass || $test->expect_end_at > now() }}"
                                     data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}">Fail</button>
+                                <button class="btn btn-danger col-md-1 submitButton" form="deleteCandidateForm{{ $candidate->id }}" id="deleteCandidate{{ $candidate->id }}"
+                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}" hidden>Delete</button>
+                                <button class="btn btn-danger col-md-1" id="deletingCandidate{{ $candidate->id }}" hidden disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Deleting...
+                                </button>
                             @endcan
                         @else
                             <a class="btn btn-primary col-md-1 showCandidateLink"

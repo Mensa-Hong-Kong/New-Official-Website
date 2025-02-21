@@ -694,9 +694,9 @@ function updateResultFailCallback(error) {
 function confirmedUpdateResult(event) {
     if(submitting == '') {
         let submitAt = Date.now();
-        submitting = 'updatePresentStatue'+submitAt;
+        submitting = 'updateResult'+submitAt;
         disableSubmitting();
-        if(submitting == 'updatePresentStatue'+submitAt) {
+        if(submitting == 'updateResult'+submitAt) {
             let data = {status: stringToBoolean(event.submitter.value)};
             post(event.target.action, updateResultSuccessCallback, updateResultFailCallback, 'put', data);
         }
@@ -705,13 +705,44 @@ function confirmedUpdateResult(event) {
 
 function updateResult(event) {
     event.preventDefault();
-    let message = `Are you sure to delete the custom page of ${event.submitter.dataset.name}(${event.submitter.dataset.passport}) result to `;
+    let message = `Are you sure to update candidate of ${event.submitter.dataset.name}(${event.submitter.dataset.passport}) result to `;
     if(stringToBoolean(event.submitter.value)) {
         message += 'pass?'
     } else {
         message += 'fail?'
     }
     bootstrapConfirm(message, confirmedUpdateResult, event);
+}
+
+function deleteCandidateSuccessCallback(response) {
+    bootstrapAlert(response.data.success);
+    let id = urlGetCandidateID(response.request.responseURL);
+    document.getElementById('candidateRow'+id).remove();
+    enableSubmitting();
+}
+
+function deleteCandidateFailCallback(error) {
+    enableSubmitting();
+}
+
+function confirmedDeleteCandidate(event) {
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'deleteCandidate'+submitAt;
+        let id = event.target.id.replace('deleteCandidateForm', '');
+        disableSubmitting();
+        if(submitting == 'deleteCandidate'+submitAt) {
+            document.getElementById('deleteCandidate'+id).hidden = true;
+            document.getElementById('deletingCandidate'+id).hidden = false;
+            post(event.target.action, deleteCandidateSuccessCallback, deleteCandidateFailCallback, 'delete');
+        }
+    }
+}
+
+function deleteCandidate(event) {
+    event.preventDefault();
+    let message = `Are you sure to delete candidate of ${event.submitter.dataset.name}(${event.submitter.dataset.passport})?`;
+    bootstrapConfirm(message, confirmedDeleteCandidate, event);
 }
 
 function setCandidateEventLister(loader) {
@@ -721,9 +752,13 @@ function setCandidateEventLister(loader) {
     );
     let resultPassButton = document.getElementById('resultPassButton'+id);
     let resultFailButton = document.getElementById('resultFailButton'+id);
+    let deleteButton = document.getElementById('deleteCandidate'+id);
     if(resultPassButton) {
         document.getElementById('resultForm'+id).addEventListener(
             'submit', updateResult
+        );
+        document.getElementById('deleteCandidateForm'+id).addEventListener(
+            'submit', deleteCandidate
         );
     }
     loader.remove();
@@ -731,6 +766,7 @@ function setCandidateEventLister(loader) {
     if(resultPassButton) {
         resultPassButton.hidden = false;
         resultFailButton.hidden = false;
+        deleteButton.hidden = false;
     }
 }
 
@@ -752,7 +788,7 @@ if(candidate) {
 
         function createCandidateSuccessCallback(response) {
             let rowElement = document.createElement('div');
-            rowElement.id = 'showProctor'+response.data.user_id;
+            rowElement.id = 'candidateRow'+response.data.user_id;
             rowElement.className = 'row g-3';
             let html = `
                 <form id="presentForm${response.data.user_id}" hidden method="POST"
@@ -762,6 +798,11 @@ if(candidate) {
                 </form>
                 <form id="resultForm${response.data.user_id}" hidden method="POST"
                     action="${response.data.result_url}">
+                    <input type="hidden" name="_token" value="${token}">
+                    <input type="hidden" name="_method" value="put">
+                </form>
+                <form method="POST" id="deleteCandidateForm${response.data.user_id}" hidden method="POST"
+                    action="${response.data.delete_url}">
                     <input type="hidden" name="_token" value="${token}">
                     <input type="hidden" name="_method" value="put">
                 </form>
@@ -776,7 +817,7 @@ if(candidate) {
             }
             html += `
                 <a class="btn btn-primary col-md-1 showCandidateLink" href="${response.data.show_user_url}">Show</a>
-                <button class="btn btn-primary col-md-1 disableDShowCandidateLink" hidden disabled>Show</button>
+                <button class="btn btn-primary col-md-1 disabledShowCandidateLink" hidden disabled>Show</button>
                 <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader${response.data.user_id}" role="status" aria-hidden="true"></span>
                 <button name="status" id="presentButton${response.data.user_id}" form="presentForm${response.data.user_id}" value="true"
             `;
@@ -787,12 +828,18 @@ if(candidate) {
             }
             html += `
                     class="btn btn-danger col-md-1 submitButton" hidden>Absent</button>
-                    <button name="status" id="resultPassButton${response.data.user_id}" form="resultForm${response.data.user_id}"
-                        value="1" data-disabled="1" hidden disabled
-                        class="btn btn-success col-md-1 submitButton">Pass</button>
-                    <button name="status" id="resultFailButton${response.data.user_id}" form="resultForm${response.data.user_id}"
-                        value="0"  data-disabled="1" hidden disabled
-                        class="btn btn-danger col-md-1 submitButton">Fail</button>
+                <button name="status" id="resultPassButton${response.data.user_id}" form="resultForm${response.data.user_id}"
+                    value="1" data-disabled="1" hidden disabled data-name="${response.data.name}" data-passport="${response.data.passport_number}"
+                    class="btn btn-success col-md-1 submitButton">Pass</button>
+                <button name="status" id="resultFailButton${response.data.user_id}" form="resultForm${response.data.user_id}"
+                    value="0"  data-disabled="1" hidden disabled data-name="${response.data.name}" data-passport="${response.data.passport_number}"
+                    class="btn btn-danger col-md-1 submitButton">Fail</button>
+                <button name="status" id="deleteCandidate${response.data.user_id}" form="deleteCandidateForm${response.data.user_id}" hidden
+                    data-name="${response.data.name}" data-passport="${response.data.passport_number}" class="btn btn-danger col-md-1 submitButton">Delete</button>
+                <button class="btn btn-danger col-md-1" id="deletingCandidate${response.data.user_id}" hidden disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Deleting...
+                </button>
             `;
             rowElement.innerHTML = html;
             candidate.insertBefore(rowElement, createCandidateForm);
