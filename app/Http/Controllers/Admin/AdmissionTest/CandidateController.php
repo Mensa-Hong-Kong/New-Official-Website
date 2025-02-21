@@ -12,8 +12,10 @@ use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\User;
 use App\Notifications\AssignAdmissionTest;
+use App\Notifications\CanceledAdmissionTestAppointment;
 use App\Notifications\FailAdmissionTest;
 use App\Notifications\PassAdmissionTest;
+use App\Notifications\RemovedAdmissionTestRecord;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -36,7 +38,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->only(['store', 'result']),
+            ))->only(['store', 'result', 'destroy']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
@@ -86,7 +88,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->except(['store', 'result']),
+            ))->except(['show', 'edit', 'update', 'present']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
@@ -209,6 +211,18 @@ class CandidateController extends Controller implements HasMiddleware
                 'candidate' => $candidate,
             ]
         );
+    }
+
+    public function destroy(Request $request, AdmissionTest $admissionTest, User $candidate)
+    {
+        $admissionTest->candidates()->detach($candidate->id);
+        if(in_array($request->pivot->is_pass, ['0', '1'])) {
+            $candidate->notify(new RemovedAdmissionTestRecord($admissionTest));
+        } else {
+            $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest, $request->pivot));
+        }
+
+        return ['success' => 'The candidate delete success!'];
     }
 
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
