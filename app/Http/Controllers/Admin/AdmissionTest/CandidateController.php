@@ -88,7 +88,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->except(['show', 'edit', 'update', 'present']),
+            ))->only(['show', 'edit', 'update', 'present']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
