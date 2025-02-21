@@ -216,10 +216,12 @@
                             @can('Edit:Admission Test')
                                 <button name="status" id="resultPassButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
                                     value="1" @disabled($candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
-                                    class="btn btn-success col-md-1 submitButton" data-disabled="{{ $candidate->pivot->is_pass || $test->expect_end_at > now() }}">Pass</button>
+                                    class="btn btn-success col-md-1 submitButton" data-disabled="{{ $candidate->pivot->is_pass || $test->expect_end_at > now() }}"
+                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}">Pass</button>
                                 <button name="status" id="resultFailButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
                                     value="0" @disabled(! $candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
-                                    class="btn btn-danger col-md-1 submitButton" data-disabled="{{ ! $candidate->pivot->is_pass || $test->expect_end_at > now() }}">Fail</button>
+                                    class="btn btn-danger col-md-1 submitButton" data-disabled="{{ ! $candidate->pivot->is_pass || $test->expect_end_at > now() }}"
+                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}">Fail</button>
                             @endcan
                         @else
                             <a class="btn btn-primary col-md-1 showCandidateLink"

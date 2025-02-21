@@ -663,8 +663,8 @@ function updatePresentStatue(event) {
 function updateResultSuccessCallback(response) {
     let id = urlGetCandidateID(response.request.responseURL);
     document.getElementById('resultPassButton'+id).dataset.disabled = response.data.status;
-    document.getElementById('resultFailButton'+id).disabled = ! response.data.status;
-    document.getElementById('presentButton'+id).disabled = true;
+    document.getElementById('resultFailButton'+id).dataset.disabled = ! response.data.status;
+    document.getElementById('presentButton'+id).dataset.disabled = true;
     enableSubmitting();
 }
 
@@ -679,18 +679,27 @@ function updateResultFailCallback(error) {
     enableSubmitting();
 }
 
-function updateResult(event) {
-    event.preventDefault();
+function confirmedUpdateResult(event) {
     if(submitting == '') {
         let submitAt = Date.now();
         submitting = 'updatePresentStatue'+submitAt;
         disableSubmitting();
         if(submitting == 'updatePresentStatue'+submitAt) {
-            console.log(event.submitter);
             let data = {status: stringToBoolean(event.submitter.value)};
             post(event.target.action, updateResultSuccessCallback, updateResultFailCallback, 'put', data);
         }
     }
+}
+
+function updateResult(event) {
+    event.preventDefault();
+    let message = `Are you sure to delete the custom page of ${event.submitter.dataset.name}(${event.submitter.dataset.passport}) result to `;
+    if(stringToBoolean(event.submitter.value)) {
+        message += 'pass?'
+    } else {
+        message += 'fail?'
+    }
+    bootstrapConfirm(message, confirmedUpdateResult, event);
 }
 
 function setCandidateEventLister(loader) {
@@ -760,9 +769,9 @@ if(candidate) {
                 <button name="status" id="presentButton${response.data.user_id}" form="presentForm${response.data.user_id}" value="true"
             `;
             if(! response.data.in_testing_time_range) {
-                html += 'disabled data-disabled"1"';
+                html += 'disabled data-disabled="1"';
             } else {
-                html += 'data-disabled"0"';
+                html += 'data-disabled="0"';
             }
             html += `
                     class="btn btn-danger col-md-1 submitButton" hidden>Absent</button>
@@ -771,8 +780,6 @@ if(candidate) {
                         class="btn btn-success col-md-1 submitButton">Pass</button>
                     <button name="status" id="resultFailButton${response.data.user_id}" form="resultForm${response.data.user_id}"
                         value="0"  data-disabled="1" hidden disabled
-            `;
-            html += `
                         class="btn btn-danger col-md-1 submitButton">Fail</button>
             `;
             rowElement.innerHTML = html;
