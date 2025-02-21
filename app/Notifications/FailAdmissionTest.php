@@ -11,12 +11,14 @@ use Illuminate\Notifications\Notification;
 class FailAdmissionTest extends Notification
 {
     private $date;
+
     private $time;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(AdmissionTest $test) {
+    public function __construct(AdmissionTest $test)
+    {
         $this->date = $test->testing_at->format('Y-m-d');
         $this->time = $test->testing_at->format('H:i');
     }

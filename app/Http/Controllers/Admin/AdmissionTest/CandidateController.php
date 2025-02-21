@@ -55,7 +55,7 @@ class CandidateController extends Controller implements HasMiddleware
                     $pivot = AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
                         ->where('user_id', $request->route('candidate')->id)
                         ->first();
-                    if(!$pivot) {
+                    if (! $pivot) {
                         abort(404);
                     }
                     $request->merge(['pivot' => $pivot]);
@@ -110,10 +110,10 @@ class CandidateController extends Controller implements HasMiddleware
             ))->only('present'),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if($request->route('admission_test')->expect_end_at > now()) {
+                    if ($request->route('admission_test')->expect_end_at > now()) {
                         abort(409, 'Cannot add result before expect end time.');
                     }
-                    if($request->pivot->is_present) {
+                    if ($request->pivot->is_present) {
                         return $next($request);
                     }
                     abort(409, 'Cannot add result to absent candidate.');
@@ -225,7 +225,7 @@ class CandidateController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $request->pivot->update(['is_pass' => $request->status]);
-        if($request->pivot->is_pass) {
+        if ($request->pivot->is_pass) {
             $candidate->notify(new PassAdmissionTest);
         } else {
             $candidate->notify(new FailAdmissionTest($admissionTest));

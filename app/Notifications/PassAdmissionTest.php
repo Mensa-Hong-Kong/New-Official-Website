@@ -34,7 +34,7 @@ class PassAdmissionTest extends Notification
     {
         return (new MailMessage)
             ->subject('Mensa HK - Admission Test Result.')
-            ->line("Further to the supervised Mensa entry test, which you took at Zetland Hall on {{date}} at {{time}}, we are pleased to inform you that based on your test score, your intelligence quotient (IQ) appears to be in the top 2% of the population.")
+            ->line('Further to the supervised Mensa entry test, which you took at Zetland Hall on {{date}} at {{time}}, we are pleased to inform you that based on your test score, your intelligence quotient (IQ) appears to be in the top 2% of the population.')
             ->line('')
             ->line('We are pleased to invite you to join Mensa Hong Kong, which is part of the worldwide Mensa organisation that currently has around 150,000 members in over 50 countries.')
             ->line('')
@@ -77,7 +77,7 @@ class PassAdmissionTest extends Notification
                 implode(
                     "\n", [
                         'Mensa HK - Admission Test Result.',
-                        "Further to the supervised Mensa entry test, which you took at Zetland Hall on {{date}} at {{time}}, we are pleased to inform you that based on your test score, your intelligence quotient (IQ) appears to be in the top 2% of the population.",
+                        'Further to the supervised Mensa entry test, which you took at Zetland Hall on {{date}} at {{time}}, we are pleased to inform you that based on your test score, your intelligence quotient (IQ) appears to be in the top 2% of the population.',
                         '',
                         'We are pleased to invite you to join Mensa Hong Kong, which is part of the worldwide Mensa organisation that currently has around 150,000 members in over 50 countries.',
                         '',

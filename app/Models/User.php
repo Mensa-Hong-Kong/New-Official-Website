@@ -193,7 +193,7 @@ class User extends Authenticatable
             )->exists();
     }
 
-    public function hasSamePassportTestedWithinDateRange($form, $to, AdmissionTest|null $ignore = null)
+    public function hasSamePassportTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)
     {
         return User::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
@@ -201,14 +201,14 @@ class User extends Authenticatable
                 'admissionTests', function ($query) use ($form, $to, $ignore) {
                     $query->where('is_present', true)
                         ->whereBetween('testing_at', [$form, $to]);
-                    if($ignore) {
+                    if ($ignore) {
                         $query->whereNot('test_id', $ignore->id);
                     }
                 }
             )->exists();
     }
 
-    public function hasSamePassportTestedTwoTimes(AdmissionTest|null $ignore = null)
+    public function hasSamePassportTestedTwoTimes(?AdmissionTest $ignore = null)
     {
         $user = $this;
 
@@ -218,7 +218,7 @@ class User extends Authenticatable
                     ->where('passport_number', $user->passport_number);
             }
         )->where('is_pass', false);
-        if($ignore) {
+        if ($ignore) {
             $model = $model->whereNot('test_id', $ignore->id);
         }
 
