@@ -222,12 +222,14 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function destroy(Request $request, AdmissionTest $admissionTest, User $candidate)
     {
+        DB::beginTransaction();
         $admissionTest->candidates()->detach($candidate->id);
         if (in_array($request->pivot->is_pass, ['0', '1'])) {
             $candidate->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
         } else {
             $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest));
         }
+        DB::commit();
 
         return ['success' => 'The candidate delete success!'];
     }
