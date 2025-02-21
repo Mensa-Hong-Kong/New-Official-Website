@@ -121,7 +121,7 @@ Route::middleware('auth')->group(function () {
                         ->name('candidates.result')
                         ->whereNumber('candidate');
                     Route::resource('candidates', CandidateController::class)
-                        ->except('index', 'create', 'destroy')
+                        ->except('index', 'create')
                         ->whereNumber('candidate');
                 }
             )->whereNumber(['admission_test', 'proctor']);
