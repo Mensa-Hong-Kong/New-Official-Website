@@ -624,6 +624,14 @@ function updatePresentStatueSuccessCallback(response) {
         if(!button.classList.contains('btn-success')) {
             button.classList.add('btn-success');
         }
+        if(Date.parse(showExpectEndAt.innerText) <= Date.now()) {
+            let passButton = document.getElementById('resultPassButton'+id);
+            let failButton = document.getElementById('resultFailButton'+id);
+            if(passButton) {
+                passButton.dataset.disabled = false;
+                failButton.dataset.disabled = false;
+            }
+        }
     } else {
         button.innerText = 'Absent';
         if(button.classList.contains('btn-success')) {
@@ -631,6 +639,10 @@ function updatePresentStatueSuccessCallback(response) {
         }
         if(!button.classList.contains('btn-danger')) {
             button.classList.add('btn-danger');
+        }
+        if(passButton) {
+            passButton.dataset.disabled = true;
+            failButton.dataset.disabled = true;
         }
     }
     enableSubmitting();
