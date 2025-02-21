@@ -295,6 +295,13 @@ class StoreTest extends TestCase
                     'candidate' => $this->user,
                 ]
             ),
+            'delete_url' => route(
+                'admin.admission-tests.candidates.destroy',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
         ]);
         $this->user->notify(new AssignAdmissionTest($this->test));
         Notification::assertSentTo(
@@ -350,6 +357,13 @@ class StoreTest extends TestCase
                     'candidate' => $this->user,
                 ]
             ),
+            'delete_url' => route(
+                'admin.admission-tests.candidates.destroy',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -394,6 +408,13 @@ class StoreTest extends TestCase
             ),
             'result_url' => route(
                 'admin.admission-tests.candidates.result',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            'delete_url' => route(
+                'admin.admission-tests.candidates.destroy',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -454,6 +475,13 @@ class StoreTest extends TestCase
             ),
             'result_url' => route(
                 'admin.admission-tests.candidates.result',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            'delete_url' => route(
+                'admin.admission-tests.candidates.destroy',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,

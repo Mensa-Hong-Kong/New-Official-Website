@@ -163,6 +163,13 @@ class CandidateController extends Controller implements HasMiddleware
                     'candidate' => $request->user,
                 ]
             ),
+            'delete_url' => route(
+                'admin.admission-tests.candidates.destroy',
+                [
+                    'admission_test' => $admissionTest,
+                    'candidate' => $request->user,
+                ]
+            ),
         ];
     }
 
