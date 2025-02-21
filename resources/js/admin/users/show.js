@@ -842,12 +842,10 @@ function createContactSuccess(response) {
     contactInput.value = '';
     isVerified.checked = false;
     isDefault.checked = false;
-    enableSubmitting();
-    contactInput.disabled = false;
-    isVerified.disabled = false;
-    isDefault.disabled = false;
-    document.getElementById(type+'CreatingContact').hidden = true;
-    document.getElementById(type+'CreateButton').hidden = false;
+    if(response.data.is_default) {
+        updateAllDefaultCheckboxToFalse(type);
+        updateAllDefaultButtonToNonDefault(type);
+    }
     let contact = response.data.contact;
     let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     let formElement = document.createElement('form');
@@ -941,7 +939,15 @@ function createContactSuccess(response) {
     `;
     rowElement.innerHTML = rowInnerHtml;
     document.getElementById(type).insertBefore(rowElement, formElement);
+    let name = document.getElementById('contactInput'+id).name;
     setContactEventListeners(document.getElementById('contactLoader'+id));
+    updateContactDefaultStatusButton(id, true);
+    enableSubmitting();
+    contactInput.disabled = false;
+    isVerified.disabled = false;
+    isDefault.disabled = false;
+    document.getElementById(type+'CreatingContact').hidden = true;
+    document.getElementById(type+'CreateButton').hidden = false;
 }
 
 function createContactFail(error) {
