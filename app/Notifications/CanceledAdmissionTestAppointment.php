@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Channels\Whatsapp\Message as Channel;
 use App\Channels\Whatsapp\Messages\Message;
 use App\Models\AdmissionTest;
-use App\Models\AdmissionTestHasCandidate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -15,8 +14,7 @@ class CanceledAdmissionTestAppointment extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        private AdmissionTest $test,
-        private AdmissionTestHasCandidate $pivot,
+        private AdmissionTest $test
     ) {}
 
     /**
@@ -43,12 +41,11 @@ class CanceledAdmissionTestAppointment extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('We are removed your admission test record.')
+            ->subject('We are canceled your admission test appointment.')
             ->line('Date: '.$this->test->testing_at->format('Y-m-d'))
             ->line('Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'))
             ->line('Location: '.$this->test->location->name)
-            ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}")
-            ->line('Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail'));
+            ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}");
     }
 
     public function toWhatsApp(object $notifiable)
@@ -57,11 +54,10 @@ class CanceledAdmissionTestAppointment extends Notification
             ->content(
                 implode(
                     "\n", [
-                        'We are removed your admission test record.',
+                        'We are canceled your admission test appointment.',
                         'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
                         'Location: '.$this->test->location->name,
                         "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
-                        'Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail'),
                     ]
                 ),
             );

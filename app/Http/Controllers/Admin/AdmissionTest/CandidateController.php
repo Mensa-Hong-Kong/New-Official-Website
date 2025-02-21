@@ -224,9 +224,9 @@ class CandidateController extends Controller implements HasMiddleware
     {
         $admissionTest->candidates()->detach($candidate->id);
         if (in_array($request->pivot->is_pass, ['0', '1'])) {
-            $candidate->notify(new RemovedAdmissionTestRecord($admissionTest));
+            $candidate->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
         } else {
-            $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest, $request->pivot));
+            $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest));
         }
 
         return ['success' => 'The candidate delete success!'];
