@@ -42,28 +42,29 @@ class RemovedAdmissionTestRecord extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        $return = (new MailMessage)
             ->subject('We are removed your admission test record.')
             ->line('Date: '.$this->test->testing_at->format('Y-m-d'))
             ->line('Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'))
             ->line('Location: '.$this->test->location->name)
-            ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}")
-            ->line('Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail'));
+            ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}");
+        if(in_array($this->pivot->is_pass, ['0', '1'])) {
+            $return = $return->line('Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail'));
+        }
+        return $return;
     }
 
     public function toWhatsApp(object $notifiable)
     {
-        return (new Message)
-            ->content(
-                implode(
-                    "\n", [
-                        'We are removed your admission test record.',
-                        'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
-                        'Location: '.$this->test->location->name,
-                        "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
-                        'Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail'),
-                    ]
-                ),
-            );
+        $message = [
+            'We are removed your admission test record.',
+            'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
+            'Location: '.$this->test->location->name,
+            "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
+        ];
+        if(in_array($this->pivot->is_pass, ['0', '1'])) {
+            $message[] = 'Result: '.($this->pivot->is_pass ? 'Pass' : 'Fail');
+        }
+        return (new Message)->content(implode("\n", $message));
     }
 }
