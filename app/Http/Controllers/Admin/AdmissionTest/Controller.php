@@ -8,7 +8,7 @@ use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Area;
 use App\Models\Location;
-use App\Notifications\UpdateAdmissionTest;
+use App\Notifications\AdmissionTest\Admin\UpdateAdmissionTest;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;

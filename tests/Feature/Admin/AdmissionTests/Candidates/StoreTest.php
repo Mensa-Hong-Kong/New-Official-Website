@@ -6,7 +6,7 @@ use App\Models\AdmissionTest;
 use App\Models\ContactHasVerification;
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Notifications\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\AdmissionTest\Admin;
 
 use App\Channels\Whatsapp\Message as Channel;
 use App\Channels\Whatsapp\Messages\Message;

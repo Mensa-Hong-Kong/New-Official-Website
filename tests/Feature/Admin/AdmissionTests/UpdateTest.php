@@ -10,7 +10,7 @@ use App\Models\Location;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Notifications\UpdateAdmissionTest;
+use App\Notifications\AdmissionTest\Admin\UpdateAdmissionTest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Support\Facades\Queue;
