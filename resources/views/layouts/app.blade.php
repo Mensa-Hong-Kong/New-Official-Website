@@ -477,9 +477,18 @@
     </div>
     @vite('resources/js/app.js')
     <script>
-        function bootstrapAlert(message) {
+        function bootstrapAlert(message, closedEvent = null) {
             document.getElementById('alertMessage').innerText = message;
-            new bootstrap.Modal(document.getElementById('alert')).show();
+            let alertDiv = document.getElementById('alert')
+            let alertModal = new bootstrap.Modal(alertDiv);
+            if(closedEvent) {
+                let closedHandle = function() {
+                    alertDiv.removeEventListener('hide.bs.modal', closedHandle);
+                    closedEvent();
+                }
+                alertDiv.addEventListener('hide.bs.modal', closedHandle);
+            }
+            alertModal.show();
         }
         function bootstrapConfirm(message, callback, passData) {
             const confirmButton = document.getElementById('confirmButton');
