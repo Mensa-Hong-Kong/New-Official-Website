@@ -91,9 +91,9 @@ class DeleteTest extends TestCase
     {
         Notification::fake();
         $this->test->update([
-                'testing_at' => now()->addHour(),
-                'expect_end_at' => now()->addHour()->addSecond(),
-            ]);
+            'testing_at' => now()->addHour(),
+            'expect_end_at' => now()->addHour()->addSecond(),
+        ]);
         $response = $this->actingAs($this->user)->deleteJson(
             route(
                 'admin.admission-tests.destroy',

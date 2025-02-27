@@ -275,13 +275,13 @@ class Controller extends BaseController implements HasMiddleware
         $test = clone $admissionTest;
         $candidates = $test->candidates;
         $admissionTest->delete();
-        foreach($candidates as $candidate) {
-            if($test->testing_at > now()) {
+        foreach ($candidates as $candidate) {
+            if ($test->testing_at > now()) {
                 $candidate->notify((new CanceledAdmissionTest($test))->delay($index));
             } else {
                 $candidate->notify((new RemovedAdmissionTestRecordByQueue($test, $candidate->pivot))->delay($index));
             }
-            ++$index;
+            $index++;
         }
         DB::commit();
 
