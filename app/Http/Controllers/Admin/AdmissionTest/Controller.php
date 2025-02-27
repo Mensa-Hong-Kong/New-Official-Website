@@ -8,6 +8,8 @@ use App\Models\Address;
 use App\Models\AdmissionTest;
 use App\Models\Area;
 use App\Models\Location;
+use App\Notifications\AdmissionTest\Admin\CanceledAdmissionTest;
+use App\Notifications\AdmissionTest\Admin\RemovedAdmissionTestRecordByQueue;
 use App\Notifications\AdmissionTest\Admin\UpdateAdmissionTest;
 use Closure;
 use Illuminate\Http\Request;
@@ -264,5 +266,25 @@ class Controller extends BaseController implements HasMiddleware
             'maximum_candidates' => $admissionTest->maximum_candidates,
             'is_public' => $admissionTest->is_public,
         ];
+    }
+
+    public function destroy(AdmissionTest $admissionTest)
+    {
+        DB::beginTransaction();
+        $index = 0;
+        $test = clone $admissionTest;
+        $candidates = $test->candidates;
+        $admissionTest->delete();
+        foreach($candidates as $candidate) {
+            if($test->testing_at > now()) {
+                $candidate->notify((new CanceledAdmissionTest($test))->delay($index));
+            } else {
+                $candidate->notify((new RemovedAdmissionTestRecordByQueue($test, $candidate->pivot))->delay($index));
+            }
+            ++$index;
+        }
+        DB::commit();
+
+        return ['success' => 'The admission test delete success!'];
     }
 }
