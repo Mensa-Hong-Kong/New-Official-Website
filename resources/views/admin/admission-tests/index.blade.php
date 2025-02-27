@@ -29,7 +29,16 @@
                                     auth()->user()->can('Edit:Admission Test')
                                 )
                                     <a href="{{ route('admin.admission-tests.show', ['admission_test' => $test]) }}"
-                                        class="btn btn-primary">Show</a>
+                                        class="btn btn-primary showTest">Show</a>
+                                    <button class="btn btn-secondary disabledShowTest" hidden>Show</button>
+                                    <form id="deleteTestForm{{ $test->id }}" hidden method="POST"
+                                        action="{{ route('admin.admission-tests.destroy', ['admission_test' => $test]) }}">
+                                        @csrf
+                                        @method("delete")
+                                    </form>
+                                    <span class="spinner-border spinner-border-sm testLoader" id="testLoader{{ $test->id }}" role="status" aria-hidden="true"></span>
+                                    <button class="btn btn-danger submitButton" id="deleteTest{{ $test->id }}" form="deleteTestForm{{ $test->id }}" hidden
+                                        data-location="{{ $test->location->name }}" data-testingat>Delete</button>
                                 @else
                                     <button class="btn btn-secondary">Show</button>
                                 @endif
@@ -46,3 +55,7 @@
         @endif
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/admissionTests/index.js')
+@endpush
