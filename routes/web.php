@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\AdmissionTestController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
@@ -40,6 +41,10 @@ Route::middleware('guest')->group(function () {
     Route::match(['put', 'patch'], 'reset-password', [UserController::class, 'resetPassword'])
         ->name('reset-password');
 });
+
+Route::resource('admission-tests', AdmissionTestController::class)
+    ->only('index')
+    ->whereNumber('admission_test');
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
