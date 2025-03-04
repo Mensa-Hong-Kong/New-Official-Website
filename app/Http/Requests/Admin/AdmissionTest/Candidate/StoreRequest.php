@@ -45,15 +45,15 @@ class StoreRequest extends FormRequest
                             'user_id',
                             'The passport of selected user id has already been qualification for membership.'
                         );
-                    } elseif ($user->hasSamePassportTestedWithinDateRange($admissionTest->testing_at->subMonths(6), $now)) {
+                    } elseif ($user->hasOtherSamePassportUserTested()) {
                         $validator->errors()->add(
                             'user_id',
-                            'The passport of selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'
+                            'The selected user id has other same passport user account tested.'
                         );
-                    } elseif ($user->hasSamePassportTestedTwoTimes()) {
+                    } elseif ($user->hasTestedWithinDateRange($admissionTest->testing_at->subMonths(6), $now)) {
                         $validator->errors()->add(
                             'user_id',
-                            'The passport of selected user id tested two times admission test.'
+                            'The selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'
                         );
                     } elseif (! $user->defaultEmail && ! $user->defaultMobile) {
                         $validator->errors()->add(

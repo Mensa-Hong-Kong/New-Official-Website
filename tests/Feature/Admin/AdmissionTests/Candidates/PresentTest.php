@@ -189,7 +189,37 @@ class PresentTest extends TestCase
             ['status' => 1]
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The passport of user has already been qualification for membership.']);
+        $response->assertJson(['message' => 'The candidate has already been qualification for membership.']);
+    }
+
+    public function test_has_other_same_passport_user_account_tested()
+    {
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->subDay(),
+            ])->create();
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $oldTest->candidates()->attach($user->id, [
+            'is_present' => 1,
+            'is_pass' => 0,
+        ]);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => 1]
+        );
+        $response->assertConflict();
+        $response->assertJson(['message' => 'The candidate has other same passport user account tested.']);
     }
 
     public function test_has_same_passport_tested_within_date_range()
@@ -211,34 +241,7 @@ class PresentTest extends TestCase
             ['status' => 1]
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The passport of user has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
-    }
-
-    public function test_has_same_passport_tested_two_times()
-    {
-        foreach (range(1, 2) as $times) {
-            $oldTest = AdmissionTest::factory()
-                ->state([
-                    'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),
-                    'expect_end_at' => $this->test->expect_end_at->subMonths(6)->subDay(),
-                ])->create();
-            $oldTest->candidates()->attach($this->user->id, [
-                'is_present' => 1,
-                'is_pass' => 0,
-            ]);
-        }
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-tests.candidates.present',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            ['status' => 1]
-        );
-        $response->assertConflict();
-        $response->assertJson(['message' => 'The passport of user tested two times admission test.']);
+        $response->assertJson(['message' => 'The candidate has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
     }
 
     public function test_missing_status()

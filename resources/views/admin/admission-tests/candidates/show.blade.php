@@ -33,10 +33,10 @@
                 <th>Passport Number</th>
                 <td @class([
                     'text-warning' => $user->hasOtherUserSamePassportJoinedFutureTest(),
-                    'text-danger' => $user->hasSamePassportTestedTwoTimes() ||
+                    'text-danger' => $user->hasOtherSamePassportUserTested() ||
                         $user->hasSamePassportAlreadyQualificationOfMembership() ||
-                        $user->hasSamePassportTestedWithinDateRange(
-                            $test->testing_at->subMonths(6), now()
+                        $user->hasTestedWithinDateRange(
+                            $test->testing_at->subMonths(6), now(), $test
                         ),
                 ])>{{ $user->passport_number }}</td>
             </tr>

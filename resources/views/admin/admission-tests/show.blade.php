@@ -195,10 +195,10 @@
                         <div @class([
                             'col-md-2',
                             'text-warning' => $candidate->hasOtherUserSamePassportJoinedFutureTest(),
-                            'text-danger' => $candidate->hasSamePassportTestedTwoTimes() ||
+                            'text-danger' => $candidate->hasOtherSamePassportUserTested() ||
                                 $candidate->hasSamePassportAlreadyQualificationOfMembership() ||
-                                $candidate->hasSamePassportTestedWithinDateRange(
-                                    $test->testing_at->subMonths(6), now()
+                                $candidate->hasTestedWithinDateRange(
+                                    $test->testing_at->subMonths(6), now(), $test
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
                         @can('View:User')

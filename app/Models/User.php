@@ -193,14 +193,15 @@ class User extends Authenticatable
             )->exists();
     }
 
-    public function hasSamePassportTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)
+    public function hasOtherSamePassportUserTested(?AdmissionTest $ignore = null)
     {
-        return User::where('passport_type_id', $this->passport_type_id)
+        return self::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
+            ->whereNot('id', $this->id)
             ->whereHas(
-                'admissionTests', function ($query) use ($form, $to, $ignore) {
+                'admissionTests', function ($query) use ($ignore) {
                     $query->where('is_present', true)
-                        ->whereBetween('testing_at', [$form, $to]);
+                        ->where('testing_at', '<', now());
                     if ($ignore) {
                         $query->whereNot('test_id', $ignore->id);
                     }
@@ -208,21 +209,16 @@ class User extends Authenticatable
             )->exists();
     }
 
-    public function hasSamePassportTestedTwoTimes(?AdmissionTest $ignore = null)
+    public function hasTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)
     {
-        $user = $this;
-
-        $model = AdmissionTestHasCandidate::whereHas(
-            'candidate', function ($query) use ($user) {
-                $query->where('passport_type_id', $user->passport_type_id)
-                    ->where('passport_number', $user->passport_number);
-            }
-        )->where('is_pass', false);
+        $return = $this->admissionTests()
+            ->whereBetween('testing_at', [$form, $to])
+            ->where('is_present', true);
         if ($ignore) {
-            $model = $model->whereNot('test_id', $ignore->id);
+            $return = $return->whereNot('test_id', $ignore->id);
         }
 
-        return $model->count() == 2;
+        return $return->exists();
     }
 
     public function hasOtherUserSamePassportJoinedFutureTest()

@@ -59,6 +59,7 @@ class RemovedAdmissionTestRecord extends Notification
     {
         $message = [
             'We are removed your admission test record.',
+            'Date: '.$this->test->testing_at->format('Y-m-d'),
             'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
             'Location: '.$this->test->location->name,
             "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
