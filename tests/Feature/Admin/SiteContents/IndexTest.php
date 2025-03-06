@@ -31,7 +31,7 @@ class IndexTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case_when_user_has_permission_and_proctor_tests()
+    public function test_happy_case()
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Site Content');
