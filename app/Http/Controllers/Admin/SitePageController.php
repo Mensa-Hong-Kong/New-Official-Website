@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SiteContentRequest;
 use App\Models\SiteContent;
 use App\Models\SitePage;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -22,7 +22,7 @@ class SitePageController extends Controller implements HasMiddleware
             ->with('pages', SitePage::all());
     }
 
-    public function update(Request $request, SiteContent $siteContent)
+    public function update(SiteContentRequest $request, SiteContent $siteContent)
     {
         $siteContent->update(['content' => $request->content]);
 
