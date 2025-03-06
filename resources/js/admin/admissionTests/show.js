@@ -782,7 +782,7 @@ if(candidate) {
     const createCandidateForm = document.getElementById('createCandidateForm');
     if(createCandidateForm) {
         const candidateUserIdInput = document.getElementById('candidateUserIdInput');
-        const addCandidateButton = document.getElementById('addCandidateButton');
+        const addCandidateButtons = document.getElementsByClassName('addCandidateButton');
         const addingCandidateButton = document.getElementById('addingCandidateButton');
         const showCurrentCandidates = document.getElementById('showCurrentCandidates');
 
@@ -846,7 +846,9 @@ if(candidate) {
             setCandidateEventLister(document.getElementById('candidateLoader'+response.data.user_id));
             showCurrentCandidates.innerText = + showCurrentCandidates.innerText + 1;
             addingCandidateButton.hidden = true;
-            addCandidateButton.hidden = false;
+            for(let addCandidateButton of addCandidateButtons) {
+                addCandidateButton.hidden = false;
+            }
             candidateUserIdInput.value = '';
             candidateUserIdInput.disabled = false;
             enableSubmitting();
@@ -857,7 +859,9 @@ if(candidate) {
                 bootstrapAlert(error.response.data.errors.user_id);
             }
             addingCandidateButton.hidden = true;
-            addCandidateButton.hidden = false;
+            for(let addCandidateButton of addCandidateButtons) {
+                addCandidateButton.hidden = false;
+            }
             candidateUserIdInput.disabled = false;
             enableSubmitting();
         }
@@ -872,9 +876,15 @@ if(candidate) {
                     if(submitting == 'addCandidate'+submitAt) {
                         if(userIdValidation(candidateUserIdInput)) {
                             candidateUserIdInput.disabled = true;
-                            addCandidateButton.hidden = true;
+                            for(let addCandidateButton of addCandidateButtons) {
+                                addCandidateButton.hidden = true;
+                            }
                             addingCandidateButton.hidden = false;
-                            let data = {user_id: candidateUserIdInput.value};
+                            let data = {
+                                user_id: candidateUserIdInput.value,
+                                function: event.submitter.value,
+                            };
+                            event.target.action
                             post(event.target.action, createCandidateSuccessCallback, createCandidateFailCallback, 'post', data);
                         } else {
                             enableSubmitting();
