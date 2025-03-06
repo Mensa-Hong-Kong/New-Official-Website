@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin\SiteContents;
 
-use App\Models\AdmissionTest;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
