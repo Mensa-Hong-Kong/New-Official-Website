@@ -9,7 +9,7 @@ use App\Models\SitePage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class SitePageController extends Controller implements HasMiddleware
+class SiteContentController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
