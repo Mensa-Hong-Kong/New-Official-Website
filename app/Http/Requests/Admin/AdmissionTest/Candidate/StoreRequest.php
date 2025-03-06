@@ -20,7 +20,18 @@ class StoreRequest extends FormRequest
         $unique = Rule::unique(AdmissionTestHasCandidate::class)
             ->where('test_id', $this->route('admission_test'));
 
-        return ['user_id' => ['required', 'integer', $unique]];
+        return [
+            'user_id' => ['required', 'integer', $unique],
+            'function' => 'required|string|in:schedule,reschedule',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'passport_type_id.required' => 'The passport type field is required.',
+            'function.in' => 'The function field does not exist in schedule, reschedule.',
+        ];
     }
 
     public function after()
@@ -39,8 +50,21 @@ class StoreRequest extends FormRequest
                     $this->merge([
                         'user' => $user,
                         'now' => $now,
+                        'futureTest' => $user->admissionTests()
+                            ->where('testing_at', '>', $now)
+                            ->first(),
                     ]);
-                    if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
+                    if ($this->function == 'schedule' && $this->futureTest) {
+                        $validator->errors()->add(
+                            'user_id',
+                            'The selected user id has already schedule other admission test.'
+                        );
+                    } elseif ($this->function == 'reschedule' && ! $this->futureTest) {
+                        $validator->errors()->add(
+                            'user_id',
+                            'The selected user id have no scheduled other admission test.'
+                        );
+                    } elseif ($user->hasSamePassportAlreadyQualificationOfMembership()) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id has already been qualification for membership.'
