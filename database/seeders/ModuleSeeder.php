@@ -31,12 +31,17 @@ class ModuleSeeder extends Seeder
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
         $module = Module::firstOrCreate(['name' => 'Custom Page']);
-        $module->update(['display_order' => 4]);
+        $module->update(['display_order' => 5]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
         $module = Module::firstOrCreate(['name' => 'Navigation Item']);
-        $module->update(['display_order' => 5]);
+        $module->update(['display_order' => 6]);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+        $module = Module::firstOrCreate(['name' => 'Site Content']);
+        $module->update(['display_order' => 4]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
