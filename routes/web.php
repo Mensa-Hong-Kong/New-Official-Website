@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\NavigationItemController as AdmissionNavigationItemController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SitePageController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -130,6 +131,9 @@ Route::middleware('auth')->group(function () {
                         ->whereNumber('candidate');
                 }
             )->whereNumber(['admission_test', 'proctor']);
+            Route::resource('site-contents', SitePageController::class)
+                ->only('index')
+                ->whereNumber('site_content');
             Route::resource('custom-pages', AdmissionCustomPageController::class)
                 ->except('show')
                 ->whereNumber('custom_page');
