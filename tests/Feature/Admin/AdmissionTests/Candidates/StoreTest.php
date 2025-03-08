@@ -222,6 +222,22 @@ class StoreTest extends TestCase
         $response->assertInvalid(['function' => 'The function field does not exist in schedule, reschedule.']);
     }
 
+    public function test_user_id_already_schedule_this_admission_test()
+    {
+        $this->test->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id has already schedule this admission test.']);
+    }
+
     public function test_schedule_function_but_user_has_other_admission_test_on_future()
     {
         $newTestTestingAt = now()->addDay();
@@ -259,7 +275,7 @@ class StoreTest extends TestCase
                 'function' => 'reschedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no scheduled other admission test.']);
+        $response->assertInvalid(['user_id' => 'The selected user id have no scheduled other admission test after than now.']);
     }
 
     public function test_user_id_of_user_of_passport_has_already_been_qualification_for_membership()

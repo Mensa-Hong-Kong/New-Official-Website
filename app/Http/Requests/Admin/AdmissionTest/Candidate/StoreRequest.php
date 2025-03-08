@@ -51,7 +51,12 @@ class StoreRequest extends FormRequest
                             ->where('testing_at', '>', $now)
                             ->first(),
                     ]);
-                    if ($this->function == 'schedule' && $this->futureTest) {
+                    if($this->futureTest && $this->futureTest->id == $admissionTest->id) {
+                        $validator->errors()->add(
+                            'user_id',
+                            'The selected user id has already schedule this admission test.'
+                        );
+                    } elseif ($this->function == 'schedule' && $this->futureTest) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has already schedule other admission test.'
@@ -59,7 +64,7 @@ class StoreRequest extends FormRequest
                     } elseif ($this->function == 'reschedule' && ! $this->futureTest) {
                         $validator->errors()->add(
                             'user_id',
-                            'The selected user id have no scheduled other admission test.'
+                            'The selected user id have no scheduled other admission test after than now.'
                         );
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership()) {
                         $validator->errors()->add(
