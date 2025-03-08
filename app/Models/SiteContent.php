@@ -14,4 +14,9 @@ class SiteContent extends Model
         'name',
         'content',
     ];
+
+    public function page()
+    {
+        return $this->belongsTo(SitePage::class, 'page_id');
+    }
 }
