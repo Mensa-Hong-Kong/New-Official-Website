@@ -43,9 +43,8 @@ Route::middleware('guest')->group(function () {
         ->name('reset-password');
 });
 
-Route::resource('admission-tests', AdmissionTestController::class)
-    ->only('index')
-    ->whereNumber('admission_test');
+Route::get('admission-tests', [PageController::class, 'admissionTests'])
+    ->name('admission-tests.index');
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
