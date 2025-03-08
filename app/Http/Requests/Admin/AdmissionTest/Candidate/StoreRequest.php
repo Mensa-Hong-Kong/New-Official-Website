@@ -28,10 +28,7 @@ class StoreRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
-            'passport_type_id.required' => 'The passport type field is required.',
-            'function.in' => 'The function field does not exist in schedule, reschedule.',
-        ];
+        return ['function.in' => 'The function field does not exist in schedule, reschedule.'];
     }
 
     public function after()
