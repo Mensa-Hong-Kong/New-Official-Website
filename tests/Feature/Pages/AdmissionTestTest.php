@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Feature\AdmissionTests;
+namespace Tests\Feature\Pages;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class IndexTest extends TestCase
+class AdmissionTestTest extends TestCase
 {
     use RefreshDatabase;
 
