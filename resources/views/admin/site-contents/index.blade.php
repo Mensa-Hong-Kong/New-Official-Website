@@ -25,7 +25,10 @@
                                         <tr>
                                             <td scope="row">{{ $content->id }}</td>
                                             <td>{{ $content->name }}</td>
-                                            <td></td>
+                                            <td>
+                                                <a href="{{ route('admin.site-contents.edit', ['site_content' => $content]) }}"
+                                                    class="btn btn-primary">Edit</a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
