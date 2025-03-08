@@ -341,6 +341,35 @@
                                     </li>
                                 @endif
                             @endif
+                            @can('Edit:Site Content')
+                                @if(Route::current()->getName() == 'admin.site-contents.edit')
+                                    <li class="nav-item accordion">
+                                        <button role="button"
+                                            data-bs-toggle="collapse" aria-expanded="true"
+                                            data-bs-target="#asideNavSiteContent" aria-controls="asideNavSiteContent"
+                                            style="height: 0em" class="nav-item accordion-button">
+                                            Site Content
+                                        </button>
+                                        <ul id="asideNavSiteContent" class="accordion-collapse collapse show">
+                                            <li>
+                                                <a href="{{ route('admin.site-contents.index') }}" class="nav-link align-items-center">Index</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.site-contents.edit', ['site_content' => $content]) }}"
+                                                    class="nav-link align-items-center active">Edit</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @else
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.site-contents.index') }}" @class([
+                                            'nav-link',
+                                            'align-items-center',
+                                            'active' => Route::current()->getName() == 'admin.site-contents.index',
+                                        ])>Site Content</a>
+                                    </li>
+                                @endif
+                            @endcan
                             @can('Edit:Custom Page')
                                 <li class="nav-item accordion">
                                     <button role="button"
