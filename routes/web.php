@@ -132,7 +132,7 @@ Route::middleware('auth')->group(function () {
                 }
             )->whereNumber(['admission_test', 'proctor']);
             Route::resource('site-contents', SiteContentController::class)
-                ->only(['index', 'update'])
+                ->only(['index', 'edit', 'update'])
                 ->whereNumber('site_content');
             Route::resource('custom-pages', AdmissionCustomPageController::class)
                 ->except('show')
