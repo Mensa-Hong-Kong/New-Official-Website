@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="row g-3 form-outline mb-3">
-                <label for="validationContent" class="form-label">content</label>
+                <label for="validationContent" class="form-label">Content</label>
                 <textarea name="content" id="validationContent" maxlength="4194303" required>
                     {!! old('content', $page->content ?? '') !!}
                 </textarea>
