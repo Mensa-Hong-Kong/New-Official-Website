@@ -445,7 +445,6 @@ class StoreTest extends TestCase
                 ]
             ),
         ]);
-        $this->user->notify(new AssignAdmissionTest($this->test));
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
         );
