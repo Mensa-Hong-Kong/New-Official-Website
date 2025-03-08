@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CandidateRequest;
 use App\Models\AdmissionTest;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
-    public function store(Request $request, AdmissionTest $admissionTest)
+    public function store(CandidateRequest $request, AdmissionTest $admissionTest)
     {
         $user = $request->user();
         DB::beginTransaction();
