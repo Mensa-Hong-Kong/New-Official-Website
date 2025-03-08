@@ -12,10 +12,10 @@ class AdmissionTestController extends Controller
         return view('admission-tests.index')
             ->with(
                 'contents', SiteContent::whereHas(
-                        'page', function($query) {
-                            $query->where('name', 'Admission Test');
-                        }
-                    )->get()
+                    'page', function ($query) {
+                        $query->where('name', 'Admission Test');
+                    }
+                )->get()
                     ->pluck('content', 'name')
                     ->toArray()
             )->with(
