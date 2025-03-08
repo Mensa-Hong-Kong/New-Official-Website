@@ -22,6 +22,12 @@ class SiteContentController extends Controller implements HasMiddleware
             ->with('pages', SitePage::all());
     }
 
+    public function edit(SiteContent $siteContent)
+    {
+        return view('admin.site-contents.edit')
+            ->with('content', $siteContent);
+    }
+
     public function update(SiteContentRequest $request, SiteContent $siteContent)
     {
         $siteContent->update(['content' => $request->content]);
