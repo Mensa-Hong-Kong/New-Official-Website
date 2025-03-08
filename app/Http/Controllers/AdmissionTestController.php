@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdmissionTest;
+use App\Models\SiteContent;
 
 class AdmissionTestController extends Controller
 {
@@ -10,6 +11,14 @@ class AdmissionTestController extends Controller
     {
         return view('admission-tests.index')
             ->with(
+                'contents', SiteContent::whereHas(
+                        'page', function($query) {
+                            $query->where('name', 'Admission Test');
+                        }
+                    )->get()
+                    ->pluck('content', 'name')
+                    ->toArray()
+            )->with(
                 'tests', AdmissionTest::where('testing_at', '>=', now())
                     ->where(
                         function ($query) {
