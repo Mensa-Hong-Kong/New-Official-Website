@@ -30,9 +30,6 @@ const creatingButton = document.getElementById('creatingButton');
 const inputs = [pathname, title, OGImageUrl, description, content];
 const feedbacks = [pathnameFeedback, titleFeedback, OGImageUrlFeedback, descriptionFeedback, contentFeedback];
 
-let contentEditorReadOnly = document.createElement('input');
-contentEditorReadOnly.type = 'checkbox';
-
 ClassicEditor
     .create(
         content, {
