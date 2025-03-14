@@ -182,9 +182,15 @@ class User extends Authenticatable
             ->withPivot(['is_present', 'is_pass']);
     }
 
+    public function futureAdmissionTest()
+    {
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
+            ->where('testing_at', '>', now());
+    }
+
     public function hasSamePassportAlreadyQualificationOfMembership()
     {
-        return User::where('passport_type_id', $this->passport_type_id)
+        return self::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
             ->whereHas(
                 'admissionTests', function ($query) {
@@ -211,14 +217,16 @@ class User extends Authenticatable
 
     public function hasTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)
     {
-        $return = $this->admissionTests()
-            ->whereBetween('testing_at', [$form, $to])
-            ->where('is_present', true);
-        if ($ignore) {
-            $return = $return->whereNot('test_id', $ignore->id);
+        foreach ($this->admissionTests as $test) {
+            if (
+                $test->testing_at >= $form && $test->testing_at <= $to &&
+                (! $ignore || $ignore->id != $test->id)
+            ) {
+                return true;
+            }
         }
 
-        return $return->exists();
+        return false;
     }
 
     public function hasOtherUserSamePassportJoinedFutureTest()

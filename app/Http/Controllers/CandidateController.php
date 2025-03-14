@@ -15,10 +15,10 @@ class CandidateController extends Controller
         $user = $request->user();
         DB::beginTransaction();
         $admissionTest->candidates()->attach($user->id);
-        if($request->futureTest) {
-            $oldTest = clone $request->futureTest;
+        if ($user->futureAdmissionTest) {
+            $oldTest = clone $user->futureAdmissionTest;
             $oldTest->delete();
-            $user->notify(new RescheduleAdmissionTest($request->futureTest, $admissionTest));
+            $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
             $success = 'Your reschedule request successfully, the new ticket will be to your default contact(s).';
         } else {
             $user->notify(new ScheduleAdmissionTest($admissionTest));

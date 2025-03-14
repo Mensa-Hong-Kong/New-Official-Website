@@ -47,21 +47,18 @@ class StoreRequest extends FormRequest
                     $this->merge([
                         'user' => $user,
                         'now' => $now,
-                        'futureTest' => $user->admissionTests()
-                            ->where('testing_at', '>', $now)
-                            ->first(),
                     ]);
-                    if($this->futureTest && $this->futureTest->id == $admissionTest->id) {
+                    if ($this->user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has already schedule this admission test.'
                         );
-                    } elseif ($this->function == 'schedule' && $this->futureTest) {
+                    } elseif ($this->function == 'schedule' && $user->futureAdmissionTest) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has already schedule other admission test.'
                         );
-                    } elseif ($this->function == 'reschedule' && ! $this->futureTest) {
+                    } elseif ($this->function == 'reschedule' && ! $user->futureAdmissionTest) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id have no scheduled other admission test after than now.'

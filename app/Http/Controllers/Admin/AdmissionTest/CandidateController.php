@@ -134,8 +134,8 @@ class CandidateController extends Controller implements HasMiddleware
                 $request->user->notify(new AssignAdmissionTest($admissionTest));
                 break;
             case 'reschedule':
-                $oldTest = clone $request->futureTest;
-                $request->futureTest->delete();
+                $oldTest = clone $request->user->futureAdmissionTest;
+                $request->user->futureAdmissionTest->delete();
                 $request->user->notify(new RescheduleAdmissionTest($oldTest, $admissionTest));
                 break;
         }
