@@ -50,7 +50,7 @@ class User extends Authenticatable
         $member = $this->member;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use($member) {
+            get: function (mixed $value, array $attributes) use ($member) {
                 $name = [
                     '1' => $attributes['given_name'],
                     '3' => $attributes['family_name'],
@@ -59,13 +59,13 @@ class User extends Authenticatable
                     $name['2'] = $attributes['middle_name'];
                 }
                 if ($member) {
-                    if($member->prefix_name) {
+                    if ($member->prefix_name) {
                         $name['0'] = $member->prefix_name;
                     }
-                    if($member->nickname) {
+                    if ($member->nickname) {
                         $name['4'] = $member->nickname;
                     }
-                    if($member->suffix_name) {
+                    if ($member->suffix_name) {
                         $name['5'] = $member->suffix_name;
                     }
                 }
@@ -221,13 +221,13 @@ class User extends Authenticatable
         return self::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
             ->where(
-                function($query) {
+                function ($query) {
                     $query->has('member')
                         ->orWhereHas(
-                        'admissionTests', function ($query) {
-                            $query->where('is_pass', true);
-                        }
-                    );
+                            'admissionTests', function ($query) {
+                                $query->where('is_pass', true);
+                            }
+                        );
                 }
             )->exists();
     }

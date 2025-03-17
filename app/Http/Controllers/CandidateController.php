@@ -22,13 +22,13 @@ class CandidateController extends Controller implements HasMiddleware
                     $now = now();
                     $admissionTest = $request->route('admission_test');
                     $errorReturn = redirect()->back(302, [], route('admission-tests.index'));
-                    if($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
+                    if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         return $errorReturn->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
-                    if($user->isMember()) {
+                    if ($user->isMember()) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
                     }
-                    if($user->hasQualificationOfMembership()) {
+                    if ($user->hasQualificationOfMembership()) {
                         return $errorReturn->withErrors(['message' => 'You has already been qualification for membership.']);
                     }
                     if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
@@ -49,9 +49,10 @@ class CandidateController extends Controller implements HasMiddleware
                     if ($admissionTest->candidates()->count() >= $admissionTest->maximum_candidates) {
                         return $errorReturn->withErrors(['message' => 'The admission test is fulled.']);
                     }
+
                     return $next($request);
                 }
-            )
+            ),
         ];
     }
 
@@ -60,7 +61,7 @@ class CandidateController extends Controller implements HasMiddleware
         $user = $request->user();
         DB::beginTransaction();
         $admissionTest->candidates()->attach($user->id);
-        if($user->futureAdmissionTest) {
+        if ($user->futureAdmissionTest) {
             $oldTest = clone $user->futureAdmissionTest;
             $oldTest->delete();
             $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
