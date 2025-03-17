@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\AdmissionTest\CandidateController;
+use App\Http\Controllers\Admin\AdmissionTest\CandidateController as AdminCandidateController;
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\SiteContentController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\AdmissionTestController;
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
@@ -63,6 +63,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy'])
         ->whereNumber('contact');
+    Route::resource('admission-tests/{admission_test}/candidates', CandidateController::class)
+        ->only('store')
+        ->whereNumber('admission_test')
+        ->names('admission-tests.candidates');
 
     Route::prefix('admin')->name('admin.')
         ->group(function () {
@@ -119,13 +123,13 @@ Route::middleware('auth')->group(function () {
                     Route::resource('proctors', ProctorController::class)
                         ->only(['store', 'update', 'destroy'])
                         ->whereNumber('proctor');
-                    Route::match(['put', 'patch'], '/candidates/{candidate}/present', [CandidateController::class, 'present'])
+                    Route::match(['put', 'patch'], '/candidates/{candidate}/present', [AdminCandidateController::class, 'present'])
                         ->name('candidates.present')
                         ->whereNumber('candidate');
-                    Route::match(['put', 'patch'], '/candidates/{candidate}/result', [CandidateController::class, 'result'])
+                    Route::match(['put', 'patch'], '/candidates/{candidate}/result', [AdminCandidateController::class, 'result'])
                         ->name('candidates.result')
                         ->whereNumber('candidate');
-                    Route::resource('candidates', CandidateController::class)
+                    Route::resource('candidates', AdminCandidateController::class)
                         ->except('index', 'create')
                         ->whereNumber('candidate');
                 }
