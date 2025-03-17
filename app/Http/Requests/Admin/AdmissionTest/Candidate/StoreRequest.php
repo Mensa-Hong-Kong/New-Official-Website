@@ -48,7 +48,17 @@ class StoreRequest extends FormRequest
                         'user' => $user,
                         'now' => $now,
                     ]);
-                    if ($this->user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
+                    if ($this->user->isActiveMember()) {
+                        $validator->errors()->add(
+                            'user_id',
+                            'The selected user id has already member.'
+                        );
+                    } elseif ($this->user->hasQualificationOfMembership()) {
+                        $validator->errors()->add(
+                            'user_id',
+                            'The selected user id has already qualification for membership.'
+                        );
+                    } elseif ($this->user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has already schedule this admission test.'
