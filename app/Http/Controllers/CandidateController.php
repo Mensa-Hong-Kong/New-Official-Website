@@ -25,7 +25,7 @@ class CandidateController extends Controller implements HasMiddleware
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         return $errorReturn->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
-                    if ($user->isMember()) {
+                    if ($user->isActiveMember()) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
                     }
                     if ($user->hasQualificationOfMembership()) {
