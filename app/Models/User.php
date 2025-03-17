@@ -47,14 +47,27 @@ class User extends Authenticatable
 
     protected function name(): Attribute
     {
+        $member = $this->member;
+
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes) use($member) {
                 $name = [
                     '1' => $attributes['given_name'],
                     '3' => $attributes['family_name'],
                 ];
                 if ($attributes['middle_name'] != '') {
                     $name['2'] = $attributes['middle_name'];
+                }
+                if ($member) {
+                    if($member->prefix_name) {
+                        $name['0'] = $member->prefix_name;
+                    }
+                    if($member->nickname) {
+                        $name['4'] = $member->nickname;
+                    }
+                    if($member->suffix_name) {
+                        $name['5'] = $member->suffix_name;
+                    }
                 }
                 ksort($name);
 
@@ -166,9 +179,9 @@ class User extends Authenticatable
         return $this->hasOne(Member::class);
     }
 
-    public function isMember()
+    public function isActiveMember()
     {
-        return (bool) $this->member;
+        return (bool) $this->member && $this->member->is_active;
     }
 
     public function proctorTests()
@@ -188,13 +201,33 @@ class User extends Authenticatable
             ->where('testing_at', '>', now());
     }
 
+    public function hasPassedAdmissionTest()
+    {
+        return in_array(
+            true,
+            $this->admissionTests
+                ->pluck('pivot.is_pass')
+                ->toArray(),
+        );
+    }
+
+    public function hasQualificationOfMembership()
+    {
+        return $this->member || $this->hasPassedAdmissionTest();
+    }
+
     public function hasSamePassportAlreadyQualificationOfMembership()
     {
         return self::where('passport_type_id', $this->passport_type_id)
             ->where('passport_number', $this->passport_number)
-            ->whereHas(
-                'admissionTests', function ($query) {
-                    $query->where('is_pass', true);
+            ->where(
+                function($query) {
+                    $query->has('member')
+                        ->orWhereHas(
+                        'admissionTests', function ($query) {
+                            $query->where('is_pass', true);
+                        }
+                    );
                 }
             )->exists();
     }
