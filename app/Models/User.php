@@ -53,25 +53,25 @@ class User extends Authenticatable
             get: function (mixed $value, array $attributes) use ($member) {
                 $name = [
                     '1' => $attributes['given_name'],
-                    '3' => $attributes['family_name'],
+                    '4' => $attributes['family_name'],
                 ];
                 if ($attributes['middle_name'] != '') {
                     $name['2'] = $attributes['middle_name'];
                 }
                 if ($member) {
                     if ($member->prefix_name) {
-                        $name['0'] = $member->prefix_name;
+                        $name['0'] = "$member->prefix_name.";
                     }
                     if ($member->nickname) {
-                        $name['4'] = $member->nickname;
+                        $name['3'] = "'$member->nickname'";
                     }
                     if ($member->suffix_name) {
-                        $name['5'] = $member->suffix_name;
+                        $name['5'] = "$member->suffix_name.";
                     }
                 }
                 ksort($name);
 
-                return implode(', ', $name);
+                return implode(' ', $name);
             }
         );
     }
