@@ -25,7 +25,6 @@ class StoreTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
         $contact = UserHasContact::factory()
             ->state([
