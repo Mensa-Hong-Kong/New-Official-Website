@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function () {
         ->only(['store', 'update', 'destroy'])
         ->whereNumber('contact');
     Route::resource('admission-tests/{admission_test}/candidates', CandidateController::class)
-        ->only('store')
+        ->only(['create', 'store'])
         ->whereNumber('admission_test')
         ->names('admission-tests.candidates');
 
