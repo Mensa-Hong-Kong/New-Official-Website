@@ -22,6 +22,9 @@ class CandidateController extends Controller implements HasMiddleware
                     $now = now();
                     $admissionTest = $request->route('admission_test');
                     $errorReturn = redirect()->back(302, [], route('admission-tests.index'));
+                    if (! $request->route('admission_test')->is_public) {
+                        return $errorReturn->withErrors(['message' => 'The admission test is private.']);
+                    }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         return $errorReturn->withErrors(['message' => 'You has already schedule this admission test.']);
                     }

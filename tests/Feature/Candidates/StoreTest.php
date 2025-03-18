@@ -26,7 +26,7 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
-        $this->test = AdmissionTest::factory()->create();
+        $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -62,6 +62,19 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertNotFound();
+    }
+
+    public function test_admission_test_is_private()
+    {
+        $this->test->update(['is_public' => false]);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
     }
 
     public function test_user_already_schedule_this_admission_test()
