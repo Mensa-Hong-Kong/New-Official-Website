@@ -16,6 +16,9 @@
                         <th scope="col">Time</th>
                         <th scope="col">Location</th>
                         <th scope="col">Candidates</th>
+                        @if(!auth()->user() || !auth()->user()->hasQualificationOfMembership())
+                            <th scope="col">Control</th>
+                        @endif
                     </tr>
                 </thead>
                 @foreach ($tests as $test)
@@ -24,6 +27,38 @@
                         <td>{{ $test->testing_at->format("H:i") }}</td>
                         <td title="{{ $test->address->address }}, {{ $test->address->district->name }}, {{ $test->address->district->area->name }}">{{ $test->location->name }}</td>
                         <td>{{ $test->candidates_count }}/{{ $test->maximum_candidates }}</td>
+                        @if(!auth()->user() || !auth()->user()->hasQualificationOfMembership())
+                            <td>
+                                @if(auth()->user() && auth()->user()->futureAdmissionTest)
+                                    @if(auth()->user()->futureAdmissionTest->id == $test->id)
+                                        <button class="btn btn-secondary">Cancel</button>
+                                    @else
+                                        @if(
+                                            (auth()->user()->defaultEmail || auth()->user()->defaultMobile) &&
+                                            $test->testing_at > now()->addDays(2)->endOfDay() &&
+                                            auth()->user()->hasTestedWithinDateRange($test->testing_at->subMonths(6), now())
+                                        )
+                                            <a class="btn btn-danger" href="{{ route('admission-tests.candidates.create', ['admission_test' => $test]) }}">Reschedule</a>
+                                        @else
+                                            <button class="btn btn-secondary">Reschedule</button>
+                                        @endif
+                                    @endif
+                                @else
+                                    @if(
+                                        !auth()->user() ||
+                                        (
+                                            (auth()->user()->defaultEmail || auth()->user()->defaultMobile) &&
+                                            $test->testing_at > now()->addDays(2)->endOfDay() &&
+                                            !auth()->user()->hasTestedWithinDateRange($test->testing_at->subMonths(6), now())
+                                        )
+                                    )
+                                        <a class="btn btn-primary" href="{{ route('admission-tests.candidates.create', ['admission_test' => $test]) }}">Schedule</a>
+                                    @else
+                                        <button class="btn btn-secondary">Schedule</button>
+                                    @endif
+                                @endif
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </table>
