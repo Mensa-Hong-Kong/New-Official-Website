@@ -59,6 +59,12 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
+    public function create(AdmissionTest $admissionTest)
+    {
+        return view('admission-tests.confirmation')
+            ->with('test', $admissionTest);
+    }
+
     public function store(Request $request, AdmissionTest $admissionTest)
     {
         $user = $request->user();
