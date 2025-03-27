@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('nickname')->nullable();
             $table->string('suffix_name')->nullable();
             $table->string('address_id')->nullable();
+            $table->string('forward_email', 300)->unique()->nullable();
             $table->timestamps();
         });
     }

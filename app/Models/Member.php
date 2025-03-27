@@ -22,6 +22,7 @@ class Member extends Model
         'nickname',
         'suffix_name',
         'address_id',
+        'forward_email',
     ];
 
     protected $casts = [
@@ -34,9 +35,11 @@ class Member extends Model
      */
     protected static function booted(): void
     {
-        static::creating(function (Member $member) {
-            $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM '.(new self)->getTable().' temp)');
-        });
+        static::creating(
+            function (Member $member) {
+                $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM '.(new self)->getTable().' temp)');
+            }
+        );
     }
 
     public function address()
