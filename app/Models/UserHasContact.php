@@ -22,6 +22,20 @@ class UserHasContact extends Model
         'is_default',
     ];
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::updated(
+            function (UserHasContact $contact) {
+                if($contact->wasChanged('is_default')) {
+                    $this->user()->update(['synced_to_stripe' => false]);
+                }
+            }
+        );
+    }
+
     public function getIsDefaultAttribute($value): bool
     {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
