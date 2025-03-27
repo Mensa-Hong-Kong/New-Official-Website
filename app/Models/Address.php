@@ -23,4 +23,9 @@ class Address extends Model
     {
         return $this->hasMany(AdmissionTest::class);
     }
+
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
 }
