@@ -6,6 +6,7 @@ use App\Http\Requests\Contact\StoreRequest;
 use App\Http\Requests\Contact\UpdateRequest;
 use App\Http\Requests\Contact\VerifyRequest;
 use App\Models\ContactHasVerification;
+use App\Models\User;
 use App\Models\UserHasContact;
 use Closure;
 use Illuminate\Http\Request;
@@ -136,11 +137,19 @@ class ContactController extends Controller implements HasMiddleware
             ]];
         } else {
             $contact->lastVerification->update(['verified_at' => now()]);
-            UserHasContact::where('is_default', true)
+            $contacts = UserHasContact::where('is_default', true)
                 ->where('contact', $contact->contact)
                 ->where('type', $contact->type)
                 ->whereNot('id', $contact->id)
-                ->update(['is_default' => false]);
+                ->get(['id', 'is_default']);
+            if(count($contacts)) {
+                User::whereHas(
+                    'contacts', function($query) use($contacts) {
+                        $query->whereIn('id', $contacts->pluck('id')->toArray());
+                    }
+                )->update(['synced_to_stripe' => false]);
+                $contacts->update(['is_default' => false]);
+            }
             ContactHasVerification::whereNull('expired_at')
                 ->whereNotNull('verified_at')
                 ->where('type', $contact->type)
@@ -156,9 +165,12 @@ class ContactController extends Controller implements HasMiddleware
     public function setDefault(UserHasContact $contact)
     {
         DB::beginTransaction();
-        UserHasContact::where('type', $contact->type)
-            ->where('user_id', $contact->user_id)
-            ->update(['is_default' => false]);
+        $contacts = UserHasContact::where('type', $contact->type)
+            ->whereNot('user_id', $contact->user_id)
+            ->get(['id', 'user_id']);
+        $contacts->update(['is_default' => false]);
+        User::whereIn('id', $contacts->pluck('user_id')->toArray())
+            ->update(['synced_to_stripe' => false]);
         $contact->update(['is_default' => true]);
         DB::commit();
 
