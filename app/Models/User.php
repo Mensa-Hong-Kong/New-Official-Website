@@ -28,6 +28,8 @@ class User extends Authenticatable
         'passport_type_id',
         'passport_number',
         'birthday',
+        'stripe_id',
+        'synced_to_stripe',
     ];
 
     public $sortable = [
