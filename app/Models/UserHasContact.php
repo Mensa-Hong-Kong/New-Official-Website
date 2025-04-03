@@ -27,6 +27,13 @@ class UserHasContact extends Model
      */
     protected static function booted(): void
     {
+        static::created(
+            function (UserHasContact $contact) {
+                if($contact->is_default && $contact->type == 'email') {
+                    $this->user()->update(['synced_to_stripe' => false]);
+                }
+            }
+        );
         static::updated(
             function (UserHasContact $contact) {
                 if($contact->type == 'email' && $contact->wasChanged('is_default')) {
