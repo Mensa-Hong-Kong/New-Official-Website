@@ -142,14 +142,14 @@ class ContactController extends Controller implements HasMiddleware
                 ->where('type', $contact->type)
                 ->whereNot('id', $contact->id)
                 ->get(['id', 'is_default']);
-            if(count($contacts)) {
+            if($contact->type == 'email' && count($contacts)) {
                 User::whereHas(
                     'contacts', function($query) use($contacts) {
                         $query->whereIn('id', $contacts->pluck('id')->toArray());
                     }
                 )->update(['synced_to_stripe' => false]);
-                $contacts->update(['is_default' => false]);
             }
+            $contacts->update(['is_default' => false]);
             ContactHasVerification::whereNull('expired_at')
                 ->whereNotNull('verified_at')
                 ->where('type', $contact->type)
@@ -169,9 +169,11 @@ class ContactController extends Controller implements HasMiddleware
             ->whereNot('user_id', $contact->user_id)
             ->get(['id', 'user_id']);
         $contacts->update(['is_default' => false]);
-        User::whereIn('id', $contacts->pluck('user_id')->toArray())
-            ->update(['synced_to_stripe' => false]);
-        $contact->update(['is_default' => true]);
+        if($contact->type == 'email') {
+            User::whereIn('id', $contacts->pluck('user_id')->toArray())
+                ->update(['synced_to_stripe' => false]);
+            $contact->update(['is_default' => true]);
+        }
         DB::commit();
 
         return ['success' => "The {$contact->type} changed to default!"];

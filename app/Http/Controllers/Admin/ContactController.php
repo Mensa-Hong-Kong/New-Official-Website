@@ -36,13 +36,17 @@ class ContactController extends Controller implements HasMiddleware
             ->where('contact', $contact->contact)
             ->whereNot('id', $verification->id)
             ->get(['id', 'contact_id']);
-        UserHasContact::whereIn('id', $verifications->pluck('contact_id')->toArray())
-            ->update(['is_default' => false]);
-        User::whereHas(
-            'contacts', function($query) use($verifications) {
-                $query->whereIn('id', $verifications->pluck('contact_id')->toArray());
+        if(count($verifications)) {
+            UserHasContact::whereIn('id', $verifications->pluck('contact_id')->toArray())
+                ->update(['is_default' => false]);
+            if($contact->type == 'email') {
+                User::whereHas(
+                    'contacts', function($query) use($verifications) {
+                        $query->whereIn('id', $verifications->pluck('contact_id')->toArray());
+                    }
+                )->update(['synced_to_stripe' => false]);
             }
-        )->update(['synced_to_stripe' => false]);
+        }
         $verifications->update(['expired_at' => now()]);
     }
 

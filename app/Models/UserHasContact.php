@@ -29,7 +29,7 @@ class UserHasContact extends Model
     {
         static::updated(
             function (UserHasContact $contact) {
-                if($contact->wasChanged('is_default')) {
+                if($contact->type == 'email' && $contact->wasChanged('is_default')) {
                     $this->user()->update(['synced_to_stripe' => false]);
                 }
             }
