@@ -2,6 +2,7 @@
 
 use App\Schedules\ClearUnusedAdminVerifiedRecode;
 use App\Schedules\ClearUnusedUserResetPasswordFailedRecord;
+use App\Schedules\SyncUserToStripe;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -23,3 +24,4 @@ Artisan::command('inspire', function () {
 
 Schedule::call(new ClearUnusedAdminVerifiedRecode)->daily();
 Schedule::call(new ClearUnusedUserResetPasswordFailedRecord)->daily();
+Schedule::call(new SyncUserToStripe)->name('sync_user_to_stripe')->everyMinute()->withoutOverlapping();
