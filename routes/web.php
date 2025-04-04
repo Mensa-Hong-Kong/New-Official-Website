@@ -49,8 +49,9 @@ Route::get('admission-tests', [PageController::class, 'admissionTests'])
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
-        ->except('edit', 'destroy')
-        ->destroyable();
+        ->except('edit');
+    Route::get('profile/synced-to-stripe', [UserController::class, 'syncedToStripe'])
+        ->name('profile.synced-to-stripe');
     Route::get('contacts/{contact}/send-verify-code', [ContactController::class, 'sendVerifyCode'])
         ->name('contacts.send-verify-code')
         ->whereNumber('contact');
