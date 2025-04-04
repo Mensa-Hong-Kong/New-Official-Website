@@ -228,4 +228,9 @@ class UserController extends Controller implements HasMiddleware
             'errors' => ['failed' => 'The provided passport, birthday or verified contact is incorrect.'],
         ], 422);
     }
+
+    public function syncedToStripe(Request $request)
+    {
+        return ['status' => $request->user()->synced_to_stripe];
+    }
 }
