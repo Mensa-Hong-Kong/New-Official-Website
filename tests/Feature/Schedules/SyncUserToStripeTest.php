@@ -32,10 +32,10 @@ class SyncUserToStripeTest extends TestCase
         $user = User::factory()->state(['synced_to_stripe' => false])->create();
         Http::fake([
             'https://api.stripe.com/v1/customers/search' => Http::response([
-                "object" => "search_result",
-                "url" => "/v1/customers/search",
-                "has_more" => false,
-                "data" => []
+                'object' => 'search_result',
+                'url' => '/v1/customers/search',
+                'has_more' => false,
+                'data' => [],
             ]),
             'https://api.stripe.com/v1/customers' => Http::response(status: 503),
         ]);
@@ -50,48 +50,48 @@ class SyncUserToStripeTest extends TestCase
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
-        if($user->middle_name) {
+        if ($user->middle_name) {
             $name['1'] = $user->middle_name;
         }
         ksort($name);
         $name = implode(' ', $name);
         Http::fake([
             'https://api.stripe.com/v1/customers/search' => Http::response([
-                "object" => "search_result",
-                "url" => "/v1/customers/search",
-                "has_more" => false,
-                "data" => [],
+                'object' => 'search_result',
+                'url' => '/v1/customers/search',
+                'has_more' => false,
+                'data' => [],
             ]),
             'https://api.stripe.com/v1/customers' => Http::response([
-                "id" => "cus_NffrFeUfNV2Hib",
-                "object" => "customer",
-                "address" => null,
-                "balance" => 0,
-                "created" => now()->timestamp,
-                "currency" => null,
-                "default_source" => null,
-                "delinquent" => false,
-                "description" => null,
-                "email" => "jennyrosen@example.com",
-                "invoice_prefix" => "0759376C",
-                "invoice_settings" => [
-                    "custom_fields" => null,
-                    "default_payment_method" => null,
-                    "footer" => null,
-                    "rendering_options" => null,
+                'id' => 'cus_NffrFeUfNV2Hib',
+                'object' => 'customer',
+                'address' => null,
+                'balance' => 0,
+                'created' => now()->timestamp,
+                'currency' => null,
+                'default_source' => null,
+                'delinquent' => false,
+                'description' => null,
+                'email' => 'jennyrosen@example.com',
+                'invoice_prefix' => '0759376C',
+                'invoice_settings' => [
+                    'custom_fields' => null,
+                    'default_payment_method' => null,
+                    'footer' => null,
+                    'rendering_options' => null,
                 ],
-                "livemode" => false,
-                "metadata" => [
+                'livemode' => false,
+                'metadata' => [
                     'type' => 'user',
                     'id' => $user->id,
                 ],
-                "name" => $name,
-                "next_invoice_sequence" => 1,
-                "phone" => null,
-                "preferred_locales" => [],
-                "shipping" => null,
-                "tax_exempt" => "none",
-                "test_clock" => null,
+                'name' => $name,
+                'next_invoice_sequence' => 1,
+                'phone' => null,
+                'preferred_locales' => [],
+                'shipping' => null,
+                'tax_exempt' => 'none',
+                'test_clock' => null,
             ]),
         ]);
         (new SyncUserToStripe)();
@@ -105,7 +105,7 @@ class SyncUserToStripeTest extends TestCase
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
-        if($user->middle_name) {
+        if ($user->middle_name) {
             $name['1'] = $user->middle_name;
         }
         ksort($name);
@@ -113,43 +113,43 @@ class SyncUserToStripeTest extends TestCase
         Http::fake([
             '*' => Http::sequence()
                 ->push([
-                    "object" => "search_result",
-                    "url" => "/v1/customers/search",
-                    "has_more" => false,
-                    "data" => [
+                    'object' => 'search_result',
+                    'url' => '/v1/customers/search',
+                    'has_more' => false,
+                    'data' => [
                         [
-                            "id" => "cus_NeGfPRiPKxeBi1",
-                            "object" => "customer",
-                            "address" => null,
-                            "balance" => 0,
-                            "created" => now()->timestamp,
-                            "currency" => null,
-                            "default_source" => null,
-                            "delinquent" => false,
-                            "description" => null,
-                            "email" => null,
-                            "invoice_prefix" => "47D37F8F",
-                            "invoice_settings" => [
-                                "custom_fields" => null,
-                                "default_payment_method" => "pm_1Msy7wLkdIwHu7ixsxmFvcz7",
-                                "footer" => null,
-                                "rendering_options" => null
+                            'id' => 'cus_NeGfPRiPKxeBi1',
+                            'object' => 'customer',
+                            'address' => null,
+                            'balance' => 0,
+                            'created' => now()->timestamp,
+                            'currency' => null,
+                            'default_source' => null,
+                            'delinquent' => false,
+                            'description' => null,
+                            'email' => null,
+                            'invoice_prefix' => '47D37F8F',
+                            'invoice_settings' => [
+                                'custom_fields' => null,
+                                'default_payment_method' => 'pm_1Msy7wLkdIwHu7ixsxmFvcz7',
+                                'footer' => null,
+                                'rendering_options' => null,
                             ],
-                            "livemode" => false,
-                            "metadata" => [
+                            'livemode' => false,
+                            'metadata' => [
                                 'type' => 'user',
                                 'id' => $user->id,
                             ],
-                            "name" => $name,
-                            "next_invoice_sequence" => 1,
-                            "phone" => null,
-                            "preferred_locales" => [],
-                            "shipping" => null,
-                            "tax_exempt" => "none",
-                            "test_clock" => null,
-                        ]
-                    ]
-                ])->pushStatus(503)
+                            'name' => $name,
+                            'next_invoice_sequence' => 1,
+                            'phone' => null,
+                            'preferred_locales' => [],
+                            'shipping' => null,
+                            'tax_exempt' => 'none',
+                            'test_clock' => null,
+                        ],
+                    ],
+                ])->pushStatus(503),
         ]);
         (new SyncUserToStripe)();
         $user = User::find($user->id);
@@ -165,7 +165,7 @@ class SyncUserToStripeTest extends TestCase
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
-        if($user->middle_name) {
+        if ($user->middle_name) {
             $name['1'] = $user->middle_name;
         }
         ksort($name);
@@ -173,73 +173,73 @@ class SyncUserToStripeTest extends TestCase
         Http::fake([
             '*' => Http::sequence()
                 ->push([
-                    "object" => "search_result",
-                    "url" => "/v1/customers/search",
-                    "has_more" => false,
-                    "data" => [
+                    'object' => 'search_result',
+                    'url' => '/v1/customers/search',
+                    'has_more' => false,
+                    'data' => [
                         [
-                            "id" => "cus_NeGfPRiPKxeBi1",
-                            "object" => "customer",
-                            "address" => null,
-                            "balance" => 0,
-                            "created" => now()->timestamp,
-                            "currency" => null,
-                            "default_source" => null,
-                            "delinquent" => false,
-                            "description" => null,
-                            "email" => null,
-                            "invoice_prefix" => "47D37F8F",
-                            "invoice_settings" => [
-                                "custom_fields" => null,
-                                "default_payment_method" => null,
-                                "footer" => null,
-                                "rendering_options" => null
+                            'id' => 'cus_NeGfPRiPKxeBi1',
+                            'object' => 'customer',
+                            'address' => null,
+                            'balance' => 0,
+                            'created' => now()->timestamp,
+                            'currency' => null,
+                            'default_source' => null,
+                            'delinquent' => false,
+                            'description' => null,
+                            'email' => null,
+                            'invoice_prefix' => '47D37F8F',
+                            'invoice_settings' => [
+                                'custom_fields' => null,
+                                'default_payment_method' => null,
+                                'footer' => null,
+                                'rendering_options' => null,
                             ],
-                            "livemode" => false,
-                            "metadata" => [
+                            'livemode' => false,
+                            'metadata' => [
                                 'type' => 'user',
                                 'id' => $user->id,
                             ],
-                            "name" => $name,
-                            "next_invoice_sequence" => 1,
-                            "phone" => null,
-                            "preferred_locales" => [],
-                            "shipping" => null,
-                            "tax_exempt" => "none",
-                            "test_clock" => null,
-                        ]
-                    ]
-                ])->push([
-                    "id" => "cus_NeGfPRiPKxeBi1",
-                    "object" => "customer",
-                    "address" => null,
-                    "balance" => 0,
-                    "created" => now()->timestamp,
-                    "currency" => null,
-                    "default_source" => null,
-                    "delinquent" => false,
-                    "description" => null,
-                    "email" => null,
-                    "invoice_prefix" => "0759376C",
-                    "invoice_settings" => [
-                        "custom_fields" => null,
-                        "default_payment_method" => null,
-                        "footer" => null,
-                        "rendering_options" => null
+                            'name' => $name,
+                            'next_invoice_sequence' => 1,
+                            'phone' => null,
+                            'preferred_locales' => [],
+                            'shipping' => null,
+                            'tax_exempt' => 'none',
+                            'test_clock' => null,
+                        ],
                     ],
-                    "livemode" => false,
-                    "metadata" => [
+                ])->push([
+                    'id' => 'cus_NeGfPRiPKxeBi1',
+                    'object' => 'customer',
+                    'address' => null,
+                    'balance' => 0,
+                    'created' => now()->timestamp,
+                    'currency' => null,
+                    'default_source' => null,
+                    'delinquent' => false,
+                    'description' => null,
+                    'email' => null,
+                    'invoice_prefix' => '0759376C',
+                    'invoice_settings' => [
+                        'custom_fields' => null,
+                        'default_payment_method' => null,
+                        'footer' => null,
+                        'rendering_options' => null,
+                    ],
+                    'livemode' => false,
+                    'metadata' => [
                         'type' => 'user',
                         'id' => $user->id,
                     ],
-                    "name" => $name,
-                    "next_invoice_sequence" => 1,
-                    "phone" => null,
-                    "preferred_locales" => [],
-                    "shipping" => null,
-                    "tax_exempt" => "none",
-                    "test_clock" => null
-                ])
+                    'name' => $name,
+                    'next_invoice_sequence' => 1,
+                    'phone' => null,
+                    'preferred_locales' => [],
+                    'shipping' => null,
+                    'tax_exempt' => 'none',
+                    'test_clock' => null,
+                ]),
         ]);
         (new SyncUserToStripe)();
         $user = User::find($user->id);
@@ -258,42 +258,42 @@ class SyncUserToStripeTest extends TestCase
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
-        if($user->middle_name) {
+        if ($user->middle_name) {
             $name['1'] = $user->middle_name;
         }
         ksort($name);
         $name = implode(' ', $name);
         Http::fake([
             '*' => Http::response([
-                "id" => "cus_NeGfPRiPKxeBi1",
-                "object" => "customer",
-                "address" => null,
-                "balance" => 0,
-                "created" => now()->timestamp,
-                "currency" => null,
-                "default_source" => null,
-                "delinquent" => false,
-                "description" => null,
-                "email" => null,
-                "invoice_prefix" => "0759376C",
-                "invoice_settings" => [
-                    "custom_fields" => null,
-                    "default_payment_method" => null,
-                    "footer" => null,
-                    "rendering_options" => null
+                'id' => 'cus_NeGfPRiPKxeBi1',
+                'object' => 'customer',
+                'address' => null,
+                'balance' => 0,
+                'created' => now()->timestamp,
+                'currency' => null,
+                'default_source' => null,
+                'delinquent' => false,
+                'description' => null,
+                'email' => null,
+                'invoice_prefix' => '0759376C',
+                'invoice_settings' => [
+                    'custom_fields' => null,
+                    'default_payment_method' => null,
+                    'footer' => null,
+                    'rendering_options' => null,
                 ],
-                "livemode" => false,
-                "metadata" => [
+                'livemode' => false,
+                'metadata' => [
                     'type' => 'user',
                     'id' => $user->id,
                 ],
-                "name" => $name,
-                "next_invoice_sequence" => 1,
-                "phone" => null,
-                "preferred_locales" => [],
-                "shipping" => null,
-                "tax_exempt" => "none",
-                "test_clock" => null
+                'name' => $name,
+                'next_invoice_sequence' => 1,
+                'phone' => null,
+                'preferred_locales' => [],
+                'shipping' => null,
+                'tax_exempt' => 'none',
+                'test_clock' => null,
             ]),
         ]);
         (new SyncUserToStripe)();

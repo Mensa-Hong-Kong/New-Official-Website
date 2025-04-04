@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdmissionTest;
 use App\Models\CustomPage;
 use App\Models\SiteContent;
+use Illuminate\Http\Client\Request;
 
 class PageController extends Controller
 {
@@ -21,7 +22,7 @@ class PageController extends Controller
             ->with('page', $page);
     }
 
-    public function admissionTests()
+    public function admissionTests(Request $request)
     {
         return view('admission-tests.index')
             ->with(
@@ -35,13 +36,13 @@ class PageController extends Controller
             )->with(
                 'tests', AdmissionTest::where('testing_at', '>=', now())
                     ->where(
-                        function ($query) {
+                        function ($query) use ($request) {
                             $query->where('is_public', true);
-                            $user = auth()->user();
+                            $user = $request->user();
                             if ($user) {
                                 $query->orWhereHas(
-                                    'candidates', function ($query) {
-                                        $query->where('user_id', auth()->user()->id);
+                                    'candidates', function ($query) use ($request) {
+                                        $query->where('user_id', $request->user()->id);
                                     }
                                 );
                             }

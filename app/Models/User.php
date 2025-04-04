@@ -54,7 +54,7 @@ class User extends Authenticatable
     {
         static::updating(
             function (User $user) {
-                if($user->isDirty(['family_name', 'middle_name', 'given_name'])) {
+                if ($user->isDirty(['family_name', 'middle_name', 'given_name'])) {
                     $user->synced_to_stripe = false;
                 }
             }

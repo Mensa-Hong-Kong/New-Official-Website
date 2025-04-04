@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Schedules;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
@@ -13,12 +14,12 @@ class SyncUserToStripe
             ->get();
         $http = Http::baseUrl('https://api.stripe.com/v1')
             ->withToken(config('services.stripe.keys.secret'));
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $name = [
                 '0' => $user->given_name,
                 '2' => $user->family_name,
             ];
-            if($user->middle_name) {
+            if ($user->middle_name) {
                 $name['1'] = $user->middle_name;
             }
             ksort($name);
@@ -30,7 +31,7 @@ class SyncUserToStripe
                 );
                 if (! $response->ok()) {
                     continue;
-                } elseif(count($response->json('data'))) {
+                } elseif (count($response->json('data'))) {
                     $user->update(['stripe_id' => $response->json('data')[0]['id']]);
                 } else {
                     $response = $http->post(
@@ -44,12 +45,13 @@ class SyncUserToStripe
                             ],
                         ]
                     );
-                    if($response->ok() && $response->json('id')) {
+                    if ($response->ok() && $response->json('id')) {
                         $user->update([
                             'stripe_id' => $response->json('id'),
                             'synced_to_stripe' => true,
                         ]);
                     }
+
                     continue;
                 }
             }
@@ -60,7 +62,7 @@ class SyncUserToStripe
                     'email' => $user->defaultEmail,
                 ]
             );
-            if(
+            if (
                 $response->ok() &&
                 $response->json('name') == $name &&
                 $response->json('email') == $user->defaultEmail

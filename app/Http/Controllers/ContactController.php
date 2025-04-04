@@ -142,9 +142,9 @@ class ContactController extends Controller implements HasMiddleware
                 ->where('type', $contact->type)
                 ->whereNot('id', $contact->id)
                 ->get(['id', 'is_default']);
-            if($contact->type == 'email' && count($contacts)) {
+            if ($contact->type == 'email' && count($contacts)) {
                 User::whereHas(
-                    'contacts', function($query) use($contacts) {
+                    'contacts', function ($query) use ($contacts) {
                         $query->whereIn('id', $contacts->pluck('id')->toArray());
                     }
                 )->update(['synced_to_stripe' => false]);
@@ -169,7 +169,7 @@ class ContactController extends Controller implements HasMiddleware
             ->whereNot('user_id', $contact->user_id)
             ->get(['id', 'user_id']);
         $contacts->update(['is_default' => false]);
-        if($contact->type == 'email') {
+        if ($contact->type == 'email') {
             User::whereIn('id', $contacts->pluck('user_id')->toArray())
                 ->update(['synced_to_stripe' => false]);
             $contact->update(['is_default' => true]);
