@@ -63,8 +63,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('/contacts', ContactController::class)
         ->only(['store', 'update', 'destroy'])
         ->whereNumber('contact');
-    Route::resource('admission-tests/{admission_test}/candidates', CandidateController::class)
-        ->only(['create', 'store'])
+    Route::singleton('admission-tests/{admission_test}/candidates', CandidateController::class)
+        ->creatable()
+        ->except(['edit', 'update'])
         ->whereNumber('admission_test')
         ->names('admission-tests.candidates');
 
