@@ -6,6 +6,10 @@ use App\Models\AdmissionTest;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Closure;
+use chillerlan\QRCode\Data\QRMatrix;
+use chillerlan\QRCode\Output\QRMarkupHTML;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -16,7 +20,7 @@ class CandidateController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware(
+            (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->user();
                     $now = now();
@@ -55,7 +59,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ),
+            ))->except('show'),
         ];
     }
 
@@ -83,5 +87,44 @@ class CandidateController extends Controller implements HasMiddleware
 
         return redirect()->route('admission-tests.index')
             ->with('success', $success);
+    }
+
+    private function qrCode($test, $user)
+    {
+        $options = new QROptions;
+
+        $options->version = 5;
+        $options->outputInterface = QRMarkupHTML::class;
+        $options->cssClass = 'qrcode';
+        $options->moduleValues = [
+            // finder
+            QRMatrix::M_FINDER_DARK => '#A71111', // dark (true)
+            QRMatrix::M_FINDER_DOT => '#A71111', // finder dot, dark (true)
+            QRMatrix::M_FINDER => '#FFBFBF', // light (false)
+            // alignment
+            QRMatrix::M_ALIGNMENT_DARK => '#A70364',
+            QRMatrix::M_ALIGNMENT => '#FFC9C9',
+        ];
+
+        $out = (new QRCode($options))->render(
+            route(
+                'admin.admission-tests.candidates.show', [
+                    'admission_test' => $test,
+                    'candidate' => $user,
+                ]
+            )
+        );
+
+        return $out;
+    }
+
+    public function show(Request $request, AdmissionTest $admissionTest)
+    {
+        $return =  view('admission-tests.ticket')
+            ->with('test', $admissionTest);
+        if($admissionTest->expect_end_at >= now()->subHour()) {
+            $return = $return->with('qrCode', $this->qrCode($admissionTest, $request->user()));
+        }
+        return $return;
     }
 }
