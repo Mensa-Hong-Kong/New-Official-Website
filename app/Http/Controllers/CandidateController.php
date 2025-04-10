@@ -60,6 +60,42 @@ class CandidateController extends Controller implements HasMiddleware
                     return $next($request);
                 }
             ))->except('show'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $user = $request->user();
+                    $admissionTest = $request->route('admission_test');
+                    if (! in_array($user->id, $admissionTest->candidates->pluck('id')->toArray())) {
+                        $redirect = redirect()->back(302, [], route('admission-tests.index'));
+                        if (! $admissionTest->is_public) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and this test is private, please register other admission test.']);
+                        }
+                        if ($user->isActiveMember()) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been member.']);
+                        }
+                        if ($user->hasQualificationOfMembership()) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been qualification for membership.']);
+                        }
+                        if ($user->hasSamePassportAlreadyQualificationOfMembership()) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has already been qualification for membership.']);
+                        }
+                        if ($user->hasOtherSamePassportUserTested()) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has other same passport user account tested.']);
+                        }
+                        if ($user->hasTestedWithinDateRange($admissionTest->testing_at->subMonths(6), now())) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and You has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
+                        }
+                        if ($admissionTest->testing_at <= now()->addDays(2)->endOfDay()) {
+                            return $redirect->withErrors(['message' => 'You have no register this admission test and cannot register after than before testing date two days, please register other admission test.']);
+                        }
+                        if ($admissionTest->candidates()->count() < $admissionTest->maximum_candidates) {
+                            return redirect()->back(302, [], route('admission-tests.candidates.create', ['admission_test' => $admissionTest]))
+                                ->withErrors(['message' => 'You have no register this admission test, please register first.']);
+                        }
+                        return $redirect->withErrors(['message' => 'You have no register this admission test and this test is fulled, please register other admission test.']);
+                    }
+                    return $next($request);
+                }
+            ))->only('show'),
         ];
     }
 
