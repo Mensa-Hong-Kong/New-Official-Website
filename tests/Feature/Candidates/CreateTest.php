@@ -209,18 +209,6 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
     }
 
-    public function test_user_id_of_user_have_no_any_default_contact()
-    {
-        UserHasContact::first()->delete();
-        $response = $this->actingAs($this->user)->get(
-            route(
-                'admission-tests.candidates.create',
-                ['admission_test' => $this->test]
-            ),
-        );
-        $response->assertSessionHasErrors(['message' => 'You must at least has default contact.']);
-    }
-
     public function test_after_than_deadline()
     {
         $newTestingAt = now()->addDay();

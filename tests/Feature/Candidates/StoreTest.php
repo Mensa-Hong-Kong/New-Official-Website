@@ -26,6 +26,10 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
+    }
+
+    private function addVerifyContact()
+    {
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -212,18 +216,6 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
     }
 
-    public function test_user_id_of_user_have_no_any_default_contact()
-    {
-        UserHasContact::first()->delete();
-        $response = $this->actingAs($this->user)->post(
-            route(
-                'admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-        );
-        $response->assertSessionHasErrors(['message' => 'You must at least has default contact.']);
-    }
-
     public function test_after_than_deadline()
     {
         $newTestingAt = now()->addDay();
@@ -254,7 +246,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is fulled.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_default_contact()
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -264,14 +256,12 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHas('success', 'Your schedule request successfully, the ticket will be to your default contact(s).');
-        Notification::assertSentTo(
-            [$this->user], ScheduleAdmissionTest::class
-        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        Notification::assertNothingSent();
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_have_no_default_contact()
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -287,14 +277,12 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHas('success', 'Your schedule request successfully, the ticket will be to your default contact(s).');
-        Notification::assertSentTo(
-            [$this->user], ScheduleAdmissionTest::class
-        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        Notification::assertNothingSent();
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_default_contact()
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -316,16 +304,122 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHas('success', 'Your reschedule request successfully, the new ticket will be to your default contact(s).');
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertNothingSent();
+    }
+
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_have_no_default_contact()
+    {
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDays(3);
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertNothingSent();
+    }
+
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_has_default_contact()
+    {
+        $this->addVerifyContact();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your schedule request successfully, the new ticket will be to your default contact(s), you also can cap screen to save your ticket.');
+        Notification::assertSentTo(
+            [$this->user], ScheduleAdmissionTest::class
+        );
+    }
+
+    public function test_schedule_happy_case_when_has_other_same_passport_and_default_contact()
+    {
+        $this->addVerifyContact();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your schedule request successfully, the new ticket will be to your default contact(s), you also can cap screen to save your ticket.');
+        Notification::assertSentTo(
+            [$this->user], ScheduleAdmissionTest::class
+        );
+    }
+
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_has_default_contact()
+    {
+        $this->addVerifyContact();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDays(3);
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your reschedule request successfully, the new ticket will be to your default contact(s), you also can cap screen to save your ticket.');
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
             [$this->user], RescheduleAdmissionTest::class
         );
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_default_contact()
     {
+        $this->addVerifyContact();
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDays(3);
@@ -352,8 +446,8 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHas('success', 'Your reschedule request successfully, the new ticket will be to your default contact(s).');
+        $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
+        $response->assertSessionHas('success', 'Your reschedule request successfully, the new ticket will be to your default contact(s), you also can cap screen to save your ticket.');
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
             [$this->user], RescheduleAdmissionTest::class
