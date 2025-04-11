@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\AdmissionTest;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
-use Closure;
 use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\Output\QRMarkupHTML;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -88,8 +88,10 @@ class CandidateController extends Controller implements HasMiddleware
                             return redirect()->back(302, [], route('admission-tests.candidates.create', ['admission_test' => $admissionTest]))
                                 ->withErrors(['message' => 'You have no register this admission test, please register first.']);
                         }
+
                         return $redirect->withErrors(['message' => 'You have no register this admission test and this test is fulled, please register other admission test.']);
                     }
+
                     return $next($request);
                 }
             ))->only('show'),
@@ -158,11 +160,12 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function show(Request $request, AdmissionTest $admissionTest)
     {
-        $return =  view('admission-tests.ticket')
+        $return = view('admission-tests.ticket')
             ->with('test', $admissionTest);
-        if($admissionTest->expect_end_at >= now()->subHour()) {
+        if ($admissionTest->expect_end_at >= now()->subHour()) {
             $return = $return->with('qrCode', $this->qrCode($admissionTest, $request->user()));
         }
+
         return $return;
     }
 }
