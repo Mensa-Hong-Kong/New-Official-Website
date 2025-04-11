@@ -47,9 +47,6 @@ class CandidateController extends Controller implements HasMiddleware
                     if ($user->hasTestedWithinDateRange($admissionTest->testing_at->subMonths(6), $now)) {
                         return $errorReturn->withErrors(['message' => 'You has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
                     }
-                    if (! $user->defaultEmail && ! $user->defaultMobile) {
-                        return $errorReturn->withErrors(['message' => 'You must at least has default contact.']);
-                    }
                     if ($admissionTest->testing_at <= now()->addDays(2)->endOfDay()) {
                         return $errorReturn->withErrors(['message' => 'Cannot register after than before testing date two days.']);
                     }
@@ -108,21 +105,26 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(Request $request, AdmissionTest $admissionTest)
     {
         $user = $request->user();
+        $redirect = redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest]);
         DB::beginTransaction();
         $admissionTest->candidates()->attach($user->id);
         if ($user->futureAdmissionTest) {
             $oldTest = clone $user->futureAdmissionTest;
             $oldTest->delete();
             $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
-            $success = 'Your reschedule request successfully, the new ticket will be to your default contact(s).';
+            $success = 'Your reschedule request successfully, ';
         } else {
             $user->notify(new ScheduleAdmissionTest($admissionTest));
-            $success = 'Your schedule request successfully, the ticket will be to your default contact(s).';
+            $success = 'Your schedule request successfully, ';
+        }
+        if ($user->defaultEmail || $user->defaultMobile) {
+            $success .= 'the new ticket will be to your default contact(s), you also can cap screen to save your ticket.';
+        } else {
+            $success .= 'because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.';
         }
         DB::commit();
 
-        return redirect()->route('admission-tests.index')
-            ->with('success', $success);
+        return $redirect->with('success', $success);
     }
 
     private function qrCode($test, $user)
