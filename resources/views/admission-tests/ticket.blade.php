@@ -62,10 +62,10 @@
                         @endif
                     </td>
                 </tr>
-                @if($admissionTest->is_present)
+                @if(!is_null($admissionTest->is_pass)))
                     <tr>
                         <th>Is Present</th>
-                        <td>{{ $$admissionTest->is_pass ? 'Yes' : 'Mo' }}</td>
+                        <td>{{ $admissionTest->is_pass ? 'Yes' : 'Mo' }}</td>
                     </tr>
                 @endif
             @endisset

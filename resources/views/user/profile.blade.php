@@ -146,7 +146,7 @@
                                 @endif
                             </td>
                             <td>
-                                @if($admissionTest->is_present)
+                                @if(!is_null($admissionTest->is_pass)))
                                     <i class="bi bi-{{ $admissionTest->is_pass ? 'check' : 'x' }}"></i>
                                 @endif
                             </td>
