@@ -125,6 +125,39 @@
             <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Mobile</h3>
             @include('user.contacts', ['contacts' => $user->mobiles, 'type' => 'mobile'])
         </article>
+        <article>
+            <h3 class="fw-bold mb-2"><i class="bi bi-phone"></i> Admission Test</h3>
+            <table class="table table-hover">
+                <thead>
+                    <th>Date</th>
+                    <th>Is Present</th>
+                    <th>Is Pass</th>
+                    <th>Show</th>
+                </thead>
+                <tbody>
+                    @foreach ($user->admissionTests as $admissionTest)
+                        <tbody>
+                            <th>{{ $admissionTest->testing_at->format('Y-m-d') }}</th>
+                            <td>
+                                @if($admissionTest->is_present)
+                                    <i class="bi bi-check"></i>
+                                @elseif($admissionTest->expect_end_at < now()->subHour())
+                                    <i class="bi bi-x"></i>
+                                @endif
+                            </td>
+                            <td>
+                                @if($admissionTest->is_present)
+                                    <i class="bi bi-{{ $admissionTest->is_pass ? 'check' : 'x' }}"></i>
+                                @endif
+                            </td>
+                            <td>
+                                <a class="btn btn-primary" href="{{ route('admission-tests.candidates.show', ['admission_test' => $test]) }}">Show</a>
+                            </td>
+                        </tbody>
+                    @endforeach
+                </tbody>
+            </table>
+        </article>
     </section>
 @endsection
 
