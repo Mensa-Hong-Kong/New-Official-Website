@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('admission_tests', function (Blueprint $table) {
             $table->id();
             $table->dateTime('testing_at');
-            $table->dateTime('expect_end_at');
-            $table->unsignedBigInteger('location_id');
-            $table->unsignedBigInteger('address_id');
-            $table->unsignedInteger('maximum_candidates');
+            $table->dateTime('expect_end_at')->nullable();
+            $table->unsignedBigInteger('location_id')->nullable();
+            $table->unsignedBigInteger('address_id')->nullable();
+            $table->unsignedInteger('maximum_candidates')->nullable();
             $table->boolean('is_public');
             $table->timestamps();
         });
