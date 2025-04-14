@@ -14,14 +14,22 @@
             </tr>
             <tr>
                 <th>Location</th>
-                <td>{{ $test->location->name }}</td>
+                <td>
+                    @if($test->location)
+                        {{ $test->location->name }}
+                    @endif
+                </td>
             </tr>
             <tr>
                 <th>Address</th>
                 <td>
-                    {{ $test->address->address }},
-                    {{ $test->address->district->name }},
-                    {{ $test->address->district->area->name }}
+                    @if($test->address)
+                        {{ $test->address->address }},
+                        {{ $test->address->district->name }},
+                        {{ $test->address->district->area->name }}
+                    @else
+                        Unknown
+                    @endif
                 </td>
             </tr>
             @isset($qrCode)
@@ -33,6 +41,33 @@
                         <img src="{{ $qrCode }}">
                     </td>
                 </tr>
+            @else
+                <tr>
+                    <th>Is Present</th>
+                    <td>
+                        @if($admissionTest->is_present)
+                            Yes
+                        @elseif($admissionTest->expect_end_at < now()->subHour())
+                            No
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <th>Is Present</th>
+                    <td>
+                        @if($admissionTest->is_present)
+                            Yes
+                        @elseif($admissionTest->expect_end_at < now()->subHour())
+                            No
+                        @endif
+                    </td>
+                </tr>
+                @if($admissionTest->is_present)
+                    <tr>
+                        <th>Is Present</th>
+                        <td>{{ $$admissionTest->is_pass ? 'Yes' : 'Mo' }}</td>
+                    </tr>
+                @endif
             @endisset
         </table>
         @isset($qrCode)
