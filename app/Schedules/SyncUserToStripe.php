@@ -3,18 +3,22 @@
 namespace App\Schedules;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class SyncUserToStripe
 {
     public function __invoke()
     {
-        $users = User::with(['defaultEmail'])
-            ->where('synced_to_stripe', false)
-            ->get();
+        $userIDs = User::where('synced_to_stripe', false)
+            ->get('id')
+            ->pluck('id')
+            ->toArray();
         $http = Http::baseUrl('https://api.stripe.com/v1')
             ->withToken(config('services.stripe.keys.secret'));
-        foreach ($users as $user) {
+        foreach ($userIDs as $userID) {
+            DB::beginTransaction();
+            $user = User::lockForUpdate()->find($userID);
             $name = [
                 '0' => $user->given_name,
                 '2' => $user->family_name,
@@ -30,6 +34,7 @@ class SyncUserToStripe
                     ['query' => "metadata['type']:'user' AND metadata['id']:'{$user->id}'"]
                 );
                 if (! $response->ok()) {
+                    DB::rollBack();
                     continue;
                 } elseif (count($response->json('data'))) {
                     $user->update(['stripe_id' => $response->json('data')[0]['id']]);
@@ -51,6 +56,7 @@ class SyncUserToStripe
                             'synced_to_stripe' => true,
                         ]);
                     }
+                    DB::commit();
 
                     continue;
                 }
@@ -68,6 +74,9 @@ class SyncUserToStripe
                 $response->json('email') == $user->defaultEmail
             ) {
                 $user->update(['synced_to_stripe' => true]);
+                DB::commit();
+            } else {
+                DB::rollBack();
             }
         }
     }
