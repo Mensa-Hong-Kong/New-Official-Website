@@ -42,7 +42,12 @@ class PageController extends Controller
                             if ($user) {
                                 $query->orWhereHas(
                                     'candidates', function ($query) use ($request) {
-                                        $query->where('user_id', $request->user()->id);
+                                        $query->where('user_id', $request->user()->id)
+                                            ->where(
+                                                function($query) {
+                                                    $query->where('expect_end_at', '<=', now()->subHour());
+                                                }
+                                            );
                                     }
                                 );
                             }
