@@ -31,7 +31,7 @@
                             <td>
                                 @if(auth()->user() && auth()->user()->futureAdmissionTest)
                                     @if(auth()->user()->futureAdmissionTest->id == $test->id)
-                                        <button class="btn btn-secondary">Cancel</button>
+                                        <a class="btn btn-primary" href="{{ route('admission-tests.candidates.show', ['admission_test' => $test]) }}">Ticket</a>
                                     @else
                                         @if(
                                             (auth()->user()->defaultEmail || auth()->user()->defaultMobile) &&
