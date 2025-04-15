@@ -144,7 +144,7 @@ class ContactController extends Controller implements HasMiddleware
                 ->get(['id'])
                 ->pluck('id')
                 ->toArray();
-            if(count($contactIDs)) {
+            if (count($contactIDs)) {
                 if ($contact->type == 'email') {
                     User::whereHas(
                         'contacts', function ($query) use ($contactIDs) {
