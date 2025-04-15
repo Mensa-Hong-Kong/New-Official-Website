@@ -46,8 +46,9 @@ class ContactController extends Controller implements HasMiddleware
                     }
                 )->update(['synced_to_stripe' => false]);
             }
+            ContactHasVerification::whereIn('id', $verifications->pluck('id')->toArray())
+                ->update(['expired_at' => now()]);
         }
-        $verifications->update(['expired_at' => now()]);
     }
 
     public function verify(StatusRequest $request, UserHasContact $contact)
