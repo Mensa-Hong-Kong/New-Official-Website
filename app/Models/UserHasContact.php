@@ -36,8 +36,27 @@ class UserHasContact extends Model
         );
         static::updated(
             function (UserHasContact $contact) {
-                if ($contact->type == 'email' && $contact->wasChanged('is_default')) {
-                    $contact->user()->update(['synced_to_stripe' => false]);
+                if($contact->wasChanged('is_default')) {
+                    if ($contact->type == 'email') {
+                        $contact->user()->update(['synced_to_stripe' => false]);
+                    }
+                    if($contact->is_default) {
+                        UserHasContact::where('type', $contact->type)
+                            ->where('user_id', $contact->user_id)
+                            ->whereNot('id', $contact->id)
+                            ->update(['is_default' => false]);
+                        $contacts = UserHasContact::where('type', $contact->type)
+                            ->where('contact', $contact->contact)
+                            ->get(['id', 'user_id']);
+                        if(count($contacts)) {
+                            if ($contact->type == 'email') {
+                                User::whereIn('id', $contacts->pluck('user_id')->toArray())
+                                    ->update(['synced_to_stripe' => false]);
+                            }
+                            UserHasContact::whereIn('id', $contacts->pluck('id')->toArray())
+                                ->update(['is_default' => false]);
+                        }
+                    }
                 }
             }
         );
