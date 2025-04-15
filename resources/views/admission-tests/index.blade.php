@@ -47,7 +47,6 @@
                                     @if(
                                         !auth()->user() ||
                                         (
-                                            (auth()->user()->defaultEmail || auth()->user()->defaultMobile) &&
                                             $test->testing_at > now()->addDays(2)->endOfDay() &&
                                             !auth()->user()->hasTestedWithinDateRange($test->testing_at->subMonths(6), now())
                                         )
