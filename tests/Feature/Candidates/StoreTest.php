@@ -24,7 +24,7 @@ class StoreTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->state(['stripe_id' => 123])->create();
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
     }
 
@@ -78,6 +78,19 @@ class StoreTest extends TestCase
         );
         $response->assertRedirectToRoute('admission-tests.index');
         $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
+    }
+
+    public function test_user_stripe_id_is_null()
+    {
+        $this->user->update(['stripe_id' => null]);
+        $response = $this->actingAs($this->user)->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertSessionHasErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
     }
 
     public function test_user_already_schedule_this_admission_test()
