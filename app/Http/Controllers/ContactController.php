@@ -171,14 +171,19 @@ class ContactController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $contacts = UserHasContact::where('type', $contact->type)
-            ->whereNot('user_id', $contact->user_id)
+            ->where('contact', $contact->contact)
             ->get(['id', 'user_id']);
-        $contacts->update(['is_default' => false]);
-        if ($contact->type == 'email') {
-            User::whereIn('id', $contacts->pluck('user_id')->toArray())
-                ->update(['synced_to_stripe' => false]);
-            $contact->update(['is_default' => true]);
+        if(count($contacts)) {
+            if ($contact->type == 'email') {
+                User::whereIn('id', $contacts->pluck('user_id')->toArray())
+                    ->update(['synced_to_stripe' => false]);
+            }
+            UserHasContact::whereIn('id', $contacts->pluck('id')->toArray())
+                ->update(['is_default' => false]);
         }
+        UserHasContact::where('type', $contact->type)
+            ->where('user_id', $contact->user_id)
+            ->update(['is_default' => DB::raw("(CASE WHEN id = {$contact->id} THEN TRUE ELSE FALSE END)")]);
         DB::commit();
 
         return ['success' => "The {$contact->type} changed to default!"];
