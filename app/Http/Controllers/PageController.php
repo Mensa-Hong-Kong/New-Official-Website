@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdmissionTest;
 use App\Models\CustomPage;
 use App\Models\SiteContent;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -42,12 +42,7 @@ class PageController extends Controller
                             if ($user) {
                                 $query->orWhereHas(
                                     'candidates', function ($query) use ($request) {
-                                        $query->where('user_id', $request->user()->id)
-                                            ->where(
-                                                function($query) {
-                                                    $query->where('expect_end_at', '<=', now()->subHour());
-                                                }
-                                            );
+                                        $query->where('user_id', $request->user()->id)->where('expect_end_at', '<=', now()->subHour());
                                     }
                                 );
                             }
