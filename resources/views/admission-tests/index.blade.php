@@ -2,6 +2,7 @@
 
 @section('main')
     <section class="container">
+        <x-stripe-alert />
         <h2 class="fw-bold mb-2 text-uppercase">Admission Tests</h2>
         @vite('resources/css/ckEditor.css')
         <article class="ck-content">
