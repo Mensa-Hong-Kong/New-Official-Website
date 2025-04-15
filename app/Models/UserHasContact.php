@@ -43,6 +43,7 @@ class UserHasContact extends Model
                     if($contact->is_default) {
                         UserHasContact::where('type', $contact->type)
                             ->where('user_id', $contact->user_id)
+                            ->whereNot('id', $contact->id)
                             ->update(['is_default' => false]);
                         $contacts = UserHasContact::where('type', $contact->type)
                             ->where('contact', $contact->contact)
