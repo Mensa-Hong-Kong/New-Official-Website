@@ -153,7 +153,7 @@ class SyncUserToStripeTest extends TestCase
         ]);
         (new SyncUserToStripe)();
         $user = User::find($user->id);
-        $this->assertEquals('cus_NeGfPRiPKxeBi1', $user->stripe_id);
+        $this->assertNull($user->stripe_id);
         $this->assertFalse((bool) $user->synced_to_stripe);
     }
 
