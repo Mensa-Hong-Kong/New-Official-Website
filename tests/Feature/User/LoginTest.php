@@ -24,7 +24,7 @@ class LoginTest extends TestCase
     public function test_has_been_login_submit_login(): void
     {
         $data = [
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => '12345678',
         ];
         $user = User::factory()->create();
@@ -42,7 +42,7 @@ class LoginTest extends TestCase
     public function test_username_is_not_string()
     {
         $data = [
-            'username' => ['12345678'],
+            'username' => ['1234567'],
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
@@ -52,26 +52,26 @@ class LoginTest extends TestCase
     public function test_username_too_short()
     {
         $data = [
-            'username' => '1234567',
+            'username' => '123456',
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
-        $response->assertInvalid(['username' => 'The username field must be at least 8 characters.']);
+        $response->assertInvalid(['username' => 'The username field must be at least 7 characters.']);
     }
 
     public function test_username_too_long()
     {
         $data = [
-            'username' => '12345678901234567',
+            'username' => str_repeat('a', 321),
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
-        $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
+        $response->assertInvalid(['username' => 'The username field must not be greater than 320 characters.']);
     }
 
     public function test_missing_password()
     {
-        $data['username'] = '12345678';
+        $data['username'] = '1234567';
         $response = $this->postJson(route('login'), $data);
         $response->assertInvalid(['password' => 'The password field is required.']);
     }
@@ -79,7 +79,7 @@ class LoginTest extends TestCase
     public function test_password_is_not_string()
     {
         $data = [
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => ['12345678'],
         ];
         $data['password_confirmation'] = ['12345678'];
@@ -90,7 +90,7 @@ class LoginTest extends TestCase
     public function test_password_too_short()
     {
         $data = [
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => '1234567',
         ];
         $data['password_confirmation'] = '1234567';
@@ -101,7 +101,7 @@ class LoginTest extends TestCase
     public function test_password_too_long()
     {
         $data = [
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => '12345678901234567',
         ];
         $response = $this->postJson(route('login'), $data);
@@ -111,7 +111,7 @@ class LoginTest extends TestCase
     public function test_user_is_not_exist()
     {
         $data = [
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
@@ -121,11 +121,11 @@ class LoginTest extends TestCase
     public function test_username_is_not_match()
     {
         $user = User::factory()->state([
-            'username' => '12345678',
+            'username' => '1234567',
             'password' => '12345678',
         ])->create();
         $data = [
-            'username' => '87654321',
+            'username' => '7654321',
             'password' => '12345678',
         ];
         $response = $this->postJson(route('login'), $data);
