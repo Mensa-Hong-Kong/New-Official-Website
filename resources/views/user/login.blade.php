@@ -7,7 +7,7 @@
             @csrf
             <div data-mdb-input-init class="form-outline mb-4">
                 <div class="form-floating">
-                    <input type="text" name="username" class="form-control" id="validationUsername" minlength="8" maxlength="16" placeholder="username" required />
+                    <input type="text" name="username" class="form-control" id="validationUsername" minlength="7" maxlength="320" placeholder="username" required />
                     <label for="validationUsername">Username</label>
                     <div id="usernameFeedback" class="valid-feedback">
                         Looks good!
