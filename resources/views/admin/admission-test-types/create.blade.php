@@ -54,3 +54,7 @@
         </button>
     </form>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/admissionTestTypes/create.js')
+@endpush
