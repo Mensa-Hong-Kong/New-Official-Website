@@ -273,6 +273,40 @@
                                     ])>Permission</a>
                                 </li>
                             @endif
+                            @can('Edit:Admission Test')
+                                <li class="nav-item accordion">
+                                    <button role="button"
+                                        data-bs-toggle="collapse" aria-expanded="true"
+                                        data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
+                                        style="height: 0em"
+                                        @class([
+                                            'nav-item',
+                                            'accordion-button',
+                                            'collapsed' => !str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.admission-test-types.'
+                                            ),
+                                        ])>
+                                        Admission Test Types
+                                    </button>
+                                    <ul id="asideNavAdminAdmissionTestType" @class([
+                                        'accordion-collapse',
+                                        'collapse',
+                                        'show' => str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.admission-test-types.'
+                                        ),
+                                    ])>
+                                        <li>
+                                            <a href="{{ route('admin.admission-test-types.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.admission-test-types.index',
+                                            ])>Index</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endcan
                             @if(
                                 auth()->user() && (
                                     count(auth()->user()->proctorTests) ||
