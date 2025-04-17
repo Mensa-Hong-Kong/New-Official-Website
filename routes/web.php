@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdmissionTest\CandidateController as AdminCandidateController;
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
+use App\Http\Controllers\Admin\AdmissionTest\TypeController as AdmissionTestTypeController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CustomPageController as AdmissionCustomPageController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsAdministrator;
+use App\Models\AdmissionTest;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -117,6 +119,8 @@ Route::middleware('auth')->group(function () {
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default')
                 ->whereNumber('contact');
+            Route::resource('admission-test-types', AdmissionTestTypeController::class)
+                ->only('store');
             Route::resource('admission-tests', AdminAdmissionTestController::class)
                 ->except(['edit'])
                 ->whereNumber('admission_test');
