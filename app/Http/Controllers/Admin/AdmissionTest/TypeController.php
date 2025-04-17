@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\AdmissionTest\TypeRequest;
 use App\Models\AdmissionTestType;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class TypeController extends Controller implements HasMiddleware
 {
@@ -41,12 +42,16 @@ class TypeController extends Controller implements HasMiddleware
 
     public function store(TypeRequest $request)
     {
+        DB::beginTransaction();
+        AdmissionTestType::where('display_order', '>=', $request->display_order)
+            ->increment('display_order');
         AdmissionTestType::create([
             'name' => $request->name,
             'interval_month' => $request->interval_month,
             'is_active' => $request->is_active,
             'display_order' => $request->display_order,
         ]);
+        DB::commit();
 
         return redirect()->route('admin.admission-test-types.index');
     }

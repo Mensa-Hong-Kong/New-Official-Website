@@ -62,6 +62,9 @@ class RoleController extends Controller implements HasMiddleware
     public function store(FormRequest $request, Team $team)
     {
         DB::beginTransaction();
+        TeamRole::where('team_id', $team->id)
+            ->where('display_order', '>=', $request->display_order)
+            ->increment('display_order');
         $role = Role::firstOrCreate(['name' => $request->name]);
         $teamRole = TeamRole::create([
             'name' => "{$team->type->name}:{$team->name}:{$role->name}",
