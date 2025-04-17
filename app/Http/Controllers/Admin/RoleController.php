@@ -33,7 +33,7 @@ class RoleController extends Controller implements HasMiddleware
         foreach ($team->roles as $role) {
             $displayOptions[$role->pivot->display_order] = "before \"$role->name\"";
         }
-        if(count($displayOptions)) {
+        if (count($displayOptions)) {
             $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
         }
         $displayOptions[0] = 'top';

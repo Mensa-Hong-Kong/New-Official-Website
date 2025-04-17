@@ -27,10 +27,10 @@ class TypeController extends Controller implements HasMiddleware
             ->get(['name', 'display_order'])
             ->pluck('name', 'display_order')
             ->toArray();
-        foreach($types as $displayOrder => $name) {
+        foreach ($types as $displayOrder => $name) {
             $types[$displayOrder] = "before \"$name\"";
         }
-        if(count($types)) {
+        if (count($types)) {
             $types[max(array_keys($types)) + 1] = 'latest';
         }
         $types[0] = 'top';

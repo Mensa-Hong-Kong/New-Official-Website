@@ -21,7 +21,8 @@ const inputs = [testingAt, expectEndAt, location, district, address, maximumCand
 
 const feedbacks = [
     testingAtFeedback, expectEndAtFeedback, locationFeedback, districtFeedback,
-    addressFeedback, maximumCandidatesFeedback];
+    addressFeedback, maximumCandidatesFeedback
+];
 
 function hasError() {
     for(let feedback of feedbacks) {
