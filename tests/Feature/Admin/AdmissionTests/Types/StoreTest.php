@@ -137,7 +137,7 @@ class StoreTest extends TestCase
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test-types.store'),
             $data
-        );;
+        );
         $response->assertInvalid(['interval_month' => 'The interval month field must not be greater than 60.']);
     }
 
