@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdmissionTest\TypeRequest;
 use App\Models\AdmissionTestType;
-use Illuminate\Http\Request;
 
 class TypeController extends Controller
 {
-    public function store(Request $request)
+    public function store(TypeRequest $request)
     {
         AdmissionTestType::create([
             'name' => $request->name,
