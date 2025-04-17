@@ -225,6 +225,6 @@ class StoreTest extends TestCase
             route('admin.admission-test-types.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute('admin.admission-test-types.index');
     }
 }

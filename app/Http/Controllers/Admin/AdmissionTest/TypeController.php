@@ -30,6 +30,6 @@ class TypeController extends Controller implements HasMiddleware
             'display_order' => $request->display_order,
         ]);
 
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.admission-test-types.index');
     }
 }
