@@ -235,7 +235,7 @@ class Controller extends BaseController implements HasMiddleware
         $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);
         $location = $this->updateLocation($admissionTest->location, $request->location);
         $admissionTest->update([
-            'type_id' => $require->type_id,
+            'type_id' => $request->type_id,
             'testing_at' => $request->testing_at,
             'expect_end_at' => $request->expect_end_at,
             'location_id' => $location->id,
