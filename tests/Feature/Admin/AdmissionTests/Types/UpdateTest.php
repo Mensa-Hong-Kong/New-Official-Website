@@ -267,7 +267,7 @@ class UpdateTest extends TestCase
             ),
             $data
         );
-        $response->assertInvalid(['display_order' => 'The display order field must not be greater than '. $data['display_order'] - 1 .'.']);
+        $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
     }
 
     public function test_happy_case()

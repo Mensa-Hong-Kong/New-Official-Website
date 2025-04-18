@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin\AdmissionTests\Types;
 
 use App\Models\AdmissionTestType;
 use App\Models\ModulePermission;
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

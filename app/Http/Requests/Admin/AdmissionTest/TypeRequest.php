@@ -18,7 +18,7 @@ class TypeRequest extends FormRequest
         $this->merge(['maxDisplayOrder' => $maxDisplayOrder ?? 0]);
         if ($maxDisplayOrder === null) {
             $maxDisplayOrder = 0;
-        } else if($this->method() == 'POST') {
+        } elseif ($this->method() == 'POST') {
             $maxDisplayOrder++;
         }
 
