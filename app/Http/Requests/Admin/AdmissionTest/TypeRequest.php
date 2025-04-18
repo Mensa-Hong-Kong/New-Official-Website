@@ -15,9 +15,10 @@ class TypeRequest extends FormRequest
     public function rules(): array
     {
         $maxDisplayOrder = AdmissionTestType::max('display_order');
+        $this->merge(['maxDisplayOrder' => $maxDisplayOrder ?? 0]);
         if ($maxDisplayOrder === null) {
             $maxDisplayOrder = 0;
-        } else {
+        } else if($this->method() == 'POST') {
             $maxDisplayOrder++;
         }
 
