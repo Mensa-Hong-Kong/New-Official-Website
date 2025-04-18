@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\AdmissionTests\Types;
+namespace Tests\Feature\Admin\AdmissionTestTypes;
 
 use App\Models\AdmissionTestType;
 use App\Models\ModulePermission;

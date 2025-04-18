@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\AdmissionTests\Types;
+namespace Tests\Feature\Admin\AdmissionTestTypes;
 
 use App\Models\AdmissionTestType;
 use App\Models\ModulePermission;
@@ -8,13 +8,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class UpdateTest extends TestCase
+class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
     private $user;
-
-    private $type;
 
     private $happyCase = [
         'name' => 'abc',
@@ -28,16 +26,12 @@ class UpdateTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
-        $this->type = AdmissionTestType::factory()->create();
     }
 
     public function test_have_no_login()
     {
-        $response = $this->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->postJson(
+            route('admin.admission-test-types.store'),
             $this->happyCase
         );
         $response->assertUnauthorized();
@@ -52,37 +46,19 @@ class UpdateTest extends TestCase
                 ->first()
                 ->name
         );
-        $response = $this->actingAs($user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($user)->postJson(
+            route('admin.admission-test-types.store'),
             $this->happyCase
         );
         $response->assertForbidden();
-    }
-
-    public function test_admission_test_type_is_not_exist()
-    {
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                ['admission_test_type' => 0]
-            ),
-            $this->happyCase
-        );
-        $response->assertNotFound();
     }
 
     public function test_missing_name()
     {
         $data = $this->happyCase;
         unset($data['name']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field is required.']);
@@ -92,11 +68,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['name'] = ['abc'];
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must be a string.']);
@@ -106,11 +79,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
@@ -120,11 +90,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         AdmissionTestType::factory()->state(['name' => $data['name']])->create();
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name has already been taken.']);
@@ -134,11 +101,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         unset($data['interval_month']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field is required.']);
@@ -148,11 +112,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['interval_month'] = 'abc';
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must be an integer.']);
@@ -162,11 +123,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['interval_month'] = -1;
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must be at least 0.']);
@@ -176,11 +134,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['interval_month'] = 61;
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must not be greater than 60.']);
@@ -190,11 +145,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         unset($data['is_active']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['is_active' => 'The is active field is required.']);
@@ -204,11 +156,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['is_active'] = 'abc';
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['is_active' => 'The is active field must be true or false.']);
@@ -218,11 +167,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         unset($data['display_order']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
@@ -232,11 +178,8 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['display_order'] = 'abc';
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must be an integer.']);
@@ -246,25 +189,31 @@ class UpdateTest extends TestCase
     {
         $data = $this->happyCase;
         $data['display_order'] = '-1';
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_max_plus_one()
+    public function test_display_order_more_than_zero_when_have_no_types_on_database()
     {
         $data = $this->happyCase;
-        $data['display_order'] = AdmissionTestType::max('display_order') + 1;
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $data['display_order'] = 1;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
+            $data
+        );
+        $response->assertInvalid(['display_order' => 'The display order field must not be greater than 0.']);
+    }
+
+    public function test_display_order_more_than_max_plus_one_when_has_type_on_database()
+    {
+        $data = $this->happyCase;
+        AdmissionTestType::factory()->create();
+        $data['display_order'] = AdmissionTestType::max('display_order') + 2;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
@@ -272,11 +221,8 @@ class UpdateTest extends TestCase
 
     public function test_happy_case()
     {
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-test-types.update',
-                $this->type
-            ),
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test-types.store'),
             $this->happyCase
         );
         $response->assertRedirectToRoute('admin.admission-test-types.index');

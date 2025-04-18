@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Feature\Admin\AdmissionTests\Types;
+namespace Tests\Feature\Admin\AdmissionTestTypes;
 
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CreateTest extends TestCase
+class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('admin.admission-test-types.create'));
+        $response = $this->get(route('admin.admission-test-types.index'));
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_admission_test_permission()
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -27,7 +27,7 @@ class CreateTest extends TestCase
                 ->name
         );
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.create'));
+            ->get(route('admin.admission-test-types.index'));
         $response->assertForbidden();
     }
 
@@ -36,7 +36,7 @@ class CreateTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.create'));
+            ->get(route('admin.admission-test-types.index'));
         $response->assertSuccessful();
     }
 }
