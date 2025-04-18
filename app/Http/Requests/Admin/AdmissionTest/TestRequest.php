@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\AdmissionTest;
 
+use App\Models\AdmissionTestType;
 use App\Models\District;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,6 +16,7 @@ class TestRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'type_id' => 'required|integer|exists:'.AdmissionTestType::class.',id',
             'district_id' => 'required|integer|exists:'.District::class.',id',
             'address' => 'required|string|max:255',
             'location' => 'required|string|max:255',
