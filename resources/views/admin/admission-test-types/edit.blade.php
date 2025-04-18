@@ -14,5 +14,5 @@
 @endsection
 
 @push('after footer')
-    @vite('resources/js/admin/admissionTestTypes/create.js')
+    @vite('resources/js/admin/admissionTestTypes/edit.js')
 @endpush
