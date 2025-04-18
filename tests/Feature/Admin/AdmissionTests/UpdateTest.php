@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin\AdmissionTests;
 
 use App\Models\Address;
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestType;
 use App\Models\ContactHasVerification;
 use App\Models\District;
 use App\Models\Location;
@@ -38,6 +39,7 @@ class UpdateTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
         $testingAt = now()->addMinute();
+        $this->happyCase['type_id'] = AdmissionTestType::factory()->create()->id;
         $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i:s');
         $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i:s');
         $this->test = AdmissionTest::factory()->create();
@@ -97,6 +99,48 @@ class UpdateTest extends TestCase
             $this->happyCase
         );
         $response->assertNotFound();
+    }
+
+    public function test_missing_type_id()
+    {
+        $data = $this->happyCase;
+        unset($data['type_id']);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The type field is required.']);
+    }
+
+    public function test_type_id_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['type_id'] = 'abc';
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The type field must be an integer.']);
+    }
+
+    public function test_type_id_is_not_exists_on_database()
+    {
+        $data = $this->happyCase;
+        $data['type_id'] = 0;
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The selected type is invalid.']);
     }
 
     public function test_missing_district_id()
@@ -359,6 +403,7 @@ class UpdateTest extends TestCase
     public function test_happy_case_when_have_no_candidate_and_with_no_change()
     {
         $data = [
+            'type_id' => $this->happyCase['type_id'],
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -388,6 +433,7 @@ class UpdateTest extends TestCase
         ]);
         $now = now();
         $data = [
+            'type_id' => $this->happyCase['type_id'],
             'testing_at' => $now->format('Y-m-d H:i'),
             'expect_end_at' => $now->addMinutes(30)->format('Y-m-d H:i'),
             'district_id' => 2,
@@ -412,6 +458,7 @@ class UpdateTest extends TestCase
     {
         $addressID = $this->test->address->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => District::inRandomOrder()
@@ -443,6 +490,7 @@ class UpdateTest extends TestCase
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $newAddress->district_id,
@@ -474,6 +522,7 @@ class UpdateTest extends TestCase
             ])->create();
         $addressID = $this->test->address->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => District::inRandomOrder()
@@ -510,6 +559,7 @@ class UpdateTest extends TestCase
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $newAddress->district_id,
@@ -537,6 +587,7 @@ class UpdateTest extends TestCase
     {
         $locationID = $this->test->location->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -565,6 +616,7 @@ class UpdateTest extends TestCase
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -596,6 +648,7 @@ class UpdateTest extends TestCase
             ])->create();
         $locationID = $this->test->location->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -629,6 +682,7 @@ class UpdateTest extends TestCase
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -657,6 +711,7 @@ class UpdateTest extends TestCase
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -688,6 +743,7 @@ class UpdateTest extends TestCase
         );
         shuffle($maximumCandidates);
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -720,6 +776,7 @@ class UpdateTest extends TestCase
         ]);
         $now = now();
         $data = [
+            'type_id' => $this->happyCase['type_id'],
             'testing_at' => $now->format('Y-m-d H:i'),
             'expect_end_at' => $now->addMinutes(30)->format('Y-m-d H:i'),
             'district_id' => 2,
@@ -751,6 +808,7 @@ class UpdateTest extends TestCase
         $this->test->candidates()->attach($this->user->id);
         $addressID = $this->test->address->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => District::inRandomOrder()
@@ -789,6 +847,7 @@ class UpdateTest extends TestCase
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $newAddress->district_id,
@@ -827,6 +886,7 @@ class UpdateTest extends TestCase
             ])->create();
         $addressID = $this->test->address->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => District::inRandomOrder()
@@ -870,6 +930,7 @@ class UpdateTest extends TestCase
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $newAddress->district_id,
@@ -904,6 +965,7 @@ class UpdateTest extends TestCase
         $this->test->candidates()->attach($this->user->id);
         $locationID = $this->test->location->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -939,6 +1001,7 @@ class UpdateTest extends TestCase
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -977,6 +1040,7 @@ class UpdateTest extends TestCase
             ])->create();
         $locationID = $this->test->location->id;
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,
@@ -1017,6 +1081,7 @@ class UpdateTest extends TestCase
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [
+            'type_id' => $this->test->type_id,
             'testing_at' => $this->test->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $this->test->expect_end_at->format('Y-m-d H:i'),
             'district_id' => $this->test->address->district_id,

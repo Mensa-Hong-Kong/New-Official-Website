@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests;
 
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestType;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,6 +29,7 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
         $testingAt = now()->addMinute();
+        $this->happyCase['type_id'] = AdmissionTestType::factory()->create()->id;
         $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i');
         $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i');
     }
@@ -55,6 +57,39 @@ class StoreTest extends TestCase
             $this->happyCase
         );
         $response->assertForbidden();
+    }
+
+    public function test_missing_type_id()
+    {
+        $data = $this->happyCase;
+        unset($data['type_id']);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The type field is required.']);
+    }
+
+    public function test_type_id_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['type_id'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The type field must be an integer.']);
+    }
+
+    public function test_type_id_is_not_exists_on_database()
+    {
+        $data = $this->happyCase;
+        $data['type_id'] = 0;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['type_id' => 'The selected type is invalid.']);
     }
 
     public function test_missing_district_id()
