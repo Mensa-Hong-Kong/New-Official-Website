@@ -118,7 +118,7 @@ function failCallback(error) {
             let feedback;
             let input;
             switch(key) {
-                case 'type':
+                case 'type_id':
                     input = type;
                     feedback = typeFeedback;
                     break;
@@ -173,7 +173,7 @@ form.addEventListener(
                 createButton.hidden = true;
                 creatingButton.hidden = false;
                 let data = {
-                    type: type.value,
+                    type_id: type.value,
                     testing_at: testingAt.value,
                     expect_end_at: expectEndAt.value,
                     location: location.value,
