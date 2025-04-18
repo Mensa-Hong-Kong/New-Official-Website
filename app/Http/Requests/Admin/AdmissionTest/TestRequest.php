@@ -30,6 +30,9 @@ class TestRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'type_id.required' => 'The type field is required.',
+            'type_id.integer' => 'The type field must be an integer.',
+            'type_id.exists' => 'The selected type is invalid.',
             'district_id.required' => 'The district field is required.',
             'district_id.integer' => 'The district field must be an integer.',
             'district_id.exists' => 'The selected district is invalid.',
