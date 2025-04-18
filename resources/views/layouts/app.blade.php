@@ -304,6 +304,13 @@
                                                 'active' => Route::current()->getName() == 'admin.admission-test-types.index',
                                             ])>Index</a>
                                         </li>
+                                        <li>
+                                            <a href="{{ route('admin.admission-test-types.create') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.admission-test-types.create',
+                                            ])>Create</a>
+                                        </li>
                                     </ul>
                                 </li>
                             @endcan
