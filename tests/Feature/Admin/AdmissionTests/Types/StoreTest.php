@@ -211,7 +211,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         AdmissionTestType::factory()->create();
-        $data['display_order'] = 2;
+        $data['display_order'] = AdmissionTestType::max('display_order') + 1;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test-types.store'),
             $data
