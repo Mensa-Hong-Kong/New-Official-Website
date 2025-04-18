@@ -119,7 +119,7 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.default')
                 ->whereNumber('contact');
             Route::resource('admission-test-types', AdmissionTestTypeController::class)
-                ->except(['show', 'edit', 'destroy']);
+                ->except(['show', 'destroy']);
             Route::resource('admission-tests', AdminAdmissionTestController::class)
                 ->except(['edit'])
                 ->whereNumber('admission_test');
