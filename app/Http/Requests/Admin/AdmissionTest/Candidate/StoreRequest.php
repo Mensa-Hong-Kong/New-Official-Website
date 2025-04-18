@@ -83,10 +83,17 @@ class StoreRequest extends FormRequest
                             'user_id',
                             'The selected user id has other same passport user account tested.'
                         );
-                    } elseif ($user->hasTestedWithinDateRange($admissionTest->testing_at->subMonths(6), $now)) {
+                    } elseif (
+                        $user->lastAdmissionTest &&
+                        $user->hasTestedWithinDateRange(
+                            $admissionTest->testing_at->subMonths(
+                                $user->lastAdmissionTest->type->interval_month
+                            ), $now
+                        )
+                    ) {
                         $validator->errors()->add(
                             'user_id',
-                            'The selected user id has admission test record within 6 months(count from testing at of this test sub 6 months to now).'
+                            "The selected user id has admission test record within {$user->lastAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAdmissionTest->type->interval_month} months to now)."
                         );
                     } elseif (! $user->defaultEmail && ! $user->defaultMobile) {
                         $validator->errors()->add(

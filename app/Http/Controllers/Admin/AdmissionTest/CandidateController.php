@@ -101,11 +101,14 @@ class CandidateController extends Controller implements HasMiddleware
                     } elseif ($user->hasOtherSamePassportUserTested($test)) {
                         abort(409, 'The candidate has other same passport user account tested.');
                     } elseif (
+                        $user->lastAdmissionTest &&
                         $user->hasTestedWithinDateRange(
-                            $test->testing_at->subMonths(6), now(), $test
+                            $test->testing_at->subMonths(
+                                $user->lastAdmissionTest->type->interval_month
+                            ), now(), $test
                         )
                     ) {
-                        abort(409, 'The candidate has admission test record within 6 months(count from testing at of this test sub 6 months to now).');
+                        abort(409, "The candidate has admission test record within {$user->lastAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAdmissionTest->type->interval_month} months to now).");
                     }
 
                     return $next($request);

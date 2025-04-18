@@ -196,8 +196,8 @@ class PresentTest extends TestCase
     {
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->subDay(),
+                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
             ])->create();
         $user = User::factory()
             ->state([
@@ -226,8 +226,8 @@ class PresentTest extends TestCase
     {
         $test = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
+                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $test->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->putJson(
@@ -241,7 +241,7 @@ class PresentTest extends TestCase
             ['status' => 1]
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The candidate has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
+        $response->assertJson(['message' => "The candidate has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
     public function test_missing_status()

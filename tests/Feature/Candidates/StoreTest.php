@@ -143,8 +143,8 @@ class StoreTest extends TestCase
     {
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
+                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
@@ -189,8 +189,8 @@ class StoreTest extends TestCase
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths(6)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->subDay(),
+                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
             ])->create();
         $user = User::factory()
             ->state([
@@ -216,8 +216,8 @@ class StoreTest extends TestCase
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths(6)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths(6)->addDay(),
+                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->post(
@@ -226,7 +226,7 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => 'You has admission test record within 6 months(count from testing at of this test sub 6 months to now).']);
+        $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
     public function test_after_than_deadline()

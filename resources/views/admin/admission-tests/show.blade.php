@@ -212,9 +212,13 @@
                             'col-md-2',
                             'text-warning' => $candidate->hasOtherUserSamePassportJoinedFutureTest(),
                             'text-danger' => $candidate->hasOtherSamePassportUserTested() ||
-                                $candidate->hasSamePassportAlreadyQualificationOfMembership() ||
-                                $candidate->hasTestedWithinDateRange(
-                                    $test->testing_at->subMonths(6), now(), $test
+                                $candidate->hasSamePassportAlreadyQualificationOfMembership() || (
+                                    $candidate->lastAdmissionTest &&
+                                    $candidate->hasTestedWithinDateRange(
+                                        $test->testing_at->subMonths(
+                                            $candidate->lastAdmissionTest->type->interval_month
+                                        ), now(), $test
+                                    )
                                 ),
                         ])>{{ $candidate->passport_number }}</div>
                         @can('View:User')

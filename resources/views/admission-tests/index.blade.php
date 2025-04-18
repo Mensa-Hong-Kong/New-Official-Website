@@ -39,7 +39,12 @@
                                         @if(
                                             (auth()->user()->defaultEmail || auth()->user()->defaultMobile) &&
                                             $test->testing_at > now()->addDays(2)->endOfDay() &&
-                                            auth()->user()->hasTestedWithinDateRange($test->testing_at->subMonths(6), now())
+                                            auth()->user()->lastAdmissionTest &&
+                                            auth()->user()->hasTestedWithinDateRange(
+                                                $test->testing_at->subMonths(
+                                                    auth()->user()->lastAdmissionTest->type->interval_month
+                                                ), now()
+                                            )
                                         )
                                             <a class="btn btn-danger" href="{{ route('admission-tests.candidates.create', ['admission_test' => $test]) }}">Reschedule</a>
                                         @else
@@ -51,7 +56,12 @@
                                         !auth()->user() ||
                                         (
                                             $test->testing_at > now()->addDays(2)->endOfDay() &&
-                                            !auth()->user()->hasTestedWithinDateRange($test->testing_at->subMonths(6), now())
+                                            auth()->user()->lastAdmissionTest &&
+                                            !auth()->user()->hasTestedWithinDateRange(
+                                                $test->testing_at->subMonths(
+                                                    auth()->user()->lastAdmissionTest->type->interval_mont
+                                                ), now()
+                                            )
                                         )
                                     )
                                         <a class="btn btn-primary" href="{{ route('admission-tests.candidates.create', ['admission_test' => $test]) }}">Schedule</a>
