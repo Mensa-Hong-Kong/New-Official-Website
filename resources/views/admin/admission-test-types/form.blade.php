@@ -29,7 +29,7 @@
         <div class="form-outline mb-4">
             <div class="form-floating">
                 <select class="form-select" id="validationDisplayOrder" name="display_order" required>
-                    <option value="" @selected(old('display_order', $type->display_order ?? null) === null) disabled>Please display order</option>
+                    <option value="" @selected(old('display_order', $type->display_order ?? null) === null) disabled>Please select display order</option>
                     @foreach ($types as $key => $value)
                         <option value="{{ $key }}" @selected($key === old('display_order', $type->display_order ?? ''))>
                             {{ $value }}
