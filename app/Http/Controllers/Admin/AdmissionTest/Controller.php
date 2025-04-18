@@ -271,6 +271,7 @@ class Controller extends BaseController implements HasMiddleware
 
         return [
             'success' => 'The admission test update success!',
+            'type_id' => $admissionTest->type_id,
             'testing_at' => $admissionTest->testing_at->format('Y-m-d H:i'),
             'expect_end_at' => $admissionTest->expect_end_at->format('Y-m-d H:i'),
             'location' => $admissionTest->location->name,
