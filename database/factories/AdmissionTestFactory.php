@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Address;
+use App\Models\AdmissionTestType;
 use App\Models\Location;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,8 +20,10 @@ class AdmissionTestFactory extends Factory
             now()->addYear()
         )->getTimestamp();
         $testingAt = Carbon::createFromTimeStamp($testingAtTimestamp);
+        $type = AdmissionTestType::first() ?? AdmissionTestType::factory()->create();
 
         return [
+            'type_id' => $type->id,
             'testing_at' => $testingAt->format('Y-m-d H:i:s'),
             'expect_end_at' => $testingAt->addMinutes(30)->format('Y-m-d H:i:s'),
             'location_id' => fake()->randomElement([true, false]) ?
