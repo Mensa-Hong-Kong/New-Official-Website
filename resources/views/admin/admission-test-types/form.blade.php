@@ -13,7 +13,7 @@
             <div class="form-floating">
                 <input type="number" name="interval_month" class="form-control" id="validationIntervalMonth" placeholder="interval month"
                     step="1" min="0" max="60" value="{{ old('interval_month', $type->interval_month ?? 0) }}" required />
-                <label for="validationIntervalMonth">Name</label>
+                <label for="validationIntervalMonth">Interval Month</label>
                 <div id="intervalMonthFeedback" class="valid-feedback">
                     Looks good!
                 </div>
