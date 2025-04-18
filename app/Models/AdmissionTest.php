@@ -11,6 +11,7 @@ class AdmissionTest extends Model
     use HasFactory, Sortable;
 
     protected $fillable = [
+        'type_id',
         'admission_tests',
         'testing_at',
         'expect_end_at',
