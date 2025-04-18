@@ -30,6 +30,11 @@ class AdmissionTest extends Model
         'expect_end_at' => 'datetime',
     ];
 
+    public function type()
+    {
+        return $this->belongsTo(AdmissionTestType::class, 'type_id');
+    }
+
     public function location()
     {
         return $this->belongsTo(Location::class);

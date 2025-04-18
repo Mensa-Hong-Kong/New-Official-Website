@@ -15,4 +15,9 @@ class AdmissionTestType extends Model
         'is_active',
         'display_order',
     ];
+
+    public function test()
+    {
+        return $this->hasMany(AdmissionTest::class, 'type_id');
+    }
 }
