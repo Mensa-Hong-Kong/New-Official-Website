@@ -1,6 +1,8 @@
 import { post } from "../../submitForm";
 
 const form = document.getElementById('form');
+const type = document.getElementById('validationType');
+const typeFeedback = document.getElementById('typeFeedback');
 const testingAt = document.getElementById('validationTestingAt');
 const testingAtFeedback = document.getElementById('testingAtFeedback');
 const expectEndAt = document.getElementById('validationExpectEndAt');
@@ -41,6 +43,11 @@ function validation() {
     for(let feedback of feedbacks) {
         feedback.className = 'valid-feedback';
         feedback.innerText = 'Looks good!'
+    }
+    if(type.validity.valueMissing) {
+        type.classList.add('is-invalid');
+        typeFeedback.className = 'invalid-feedback';
+        typeFeedback.innerText = 'The type field is required.';
     }
     if(testingAt.validity.valueMissing) {
         testingAt.classList.add('is-invalid');
@@ -111,6 +118,10 @@ function failCallback(error) {
             let feedback;
             let input;
             switch(key) {
+                case 'type':
+                    input = type;
+                    feedback = typeFeedback;
+                    break;
                 case 'testing_at':
                     input = testingAt;
                     feedback = testingAtFeedback;
@@ -162,6 +173,7 @@ form.addEventListener(
                 createButton.hidden = true;
                 creatingButton.hidden = false;
                 let data = {
+                    type: type.value,
                     testing_at: testingAt.value,
                     expect_end_at: expectEndAt.value,
                     location: location.value,

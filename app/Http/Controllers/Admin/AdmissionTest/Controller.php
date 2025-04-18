@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller as BaseController;
 use App\Http\Requests\Admin\AdmissionTest\TestRequest;
 use App\Models\Address;
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestType;
 use App\Models\Area;
 use App\Models\Location;
 use App\Notifications\AdmissionTest\Admin\CanceledAdmissionTest;
@@ -82,6 +83,11 @@ class Controller extends BaseController implements HasMiddleware
 
         return view('admin.admission-tests.create')
             ->with(
+                'types', AdmissionTestType::orderBy('display_order')
+                    ->get(['id', 'name'])
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
                 'locations', Location::distinct()
                     ->get('name')
                     ->pluck('name')

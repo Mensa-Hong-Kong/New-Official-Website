@@ -7,6 +7,22 @@
             @csrf
             <div class="form-outline mb-4">
                 <div class="form-floating">
+                    <select class="form-select" id="validationType" name="display_order" required>
+                        <option value="" @selected(old('type_id', null) === null) disabled>Please select test type</option>
+                        @foreach ($types as $key => $value)
+                            <option value="{{ $key }}" @selected($key === old('type_id', ''))>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <label for="validationType" class="form-label">Type</label>
+                    <div id="typeFeedback" class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+            <div class="form-outline mb-4">
+                <div class="form-floating">
                     <input type="datetime-local" name="testing_at" class="form-control" id="validationTestingAt" placeholder="testing at"
                         value="{{ old('testing_at', date('Y-m-d\TH:i')) }}" required />
                     <label for="validationTestingAt">Testing At</label>
