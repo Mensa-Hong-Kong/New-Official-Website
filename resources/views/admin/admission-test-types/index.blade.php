@@ -11,6 +11,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Interval Month</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,6 +21,7 @@
                             <td>{{ $type->name }}</td>
                             <td>{{ $type->interval_month }}</td>
                             <td>{{ $type->is_active ? 'Active' : 'Inactive' }}</td>
+                            <td><a class="btn btn-primary" href="{{ route('admin.admission-test-types.edit', ['admission_test_type' => $type]) }}">Edit</a></td>
                         </tr>
                     @endforeach
                 </tbody>
