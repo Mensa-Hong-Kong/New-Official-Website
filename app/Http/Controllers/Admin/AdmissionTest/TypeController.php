@@ -55,4 +55,33 @@ class TypeController extends Controller implements HasMiddleware
 
         return redirect()->route('admin.admission-test-types.index');
     }
+
+    public function update(TypeRequest $request, AdmissionTestType $admissionTestType)
+    {
+        DB::beginTransaction();
+        if ($request->display_order > $request->maxDisplayOrder) {
+            AdmissionTestType::where('display_order', '>', $admissionTestType->display_order)
+                ->decrement('display_order');
+            $request->display_order -= 1;
+        } elseif ($admissionTestType->display_order > $request->display_order) {
+            AdmissionTestType::where('display_order', '>=', $request->display_order)
+                ->increment('display_order');
+            AdmissionTestType::where('display_order', '>', $admissionTestType->display_order)
+                ->decrement('display_order');
+        } elseif ($admissionTestType->display_order < $request->display_order) {
+            AdmissionTestType::where('display_order', '>', $admissionTestType->display_order)
+                ->decrement('display_order');
+            AdmissionTestType::where('display_order', '>=', $request->display_order)
+                ->increment('display_order');
+        }
+        $admissionTestType->update([
+            'name' => $request->name,
+            'interval_month' => $request->interval_month,
+            'is_active' => $request->is_active,
+            'display_order' => $request->display_order,
+        ]);
+        DB::commit();
+
+        return redirect()->route('admin.admission-test-types.index');
+    }
 }
