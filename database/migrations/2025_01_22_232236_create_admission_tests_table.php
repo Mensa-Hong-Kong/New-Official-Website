@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('admission_tests', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('type_id');
             $table->dateTime('testing_at');
             $table->dateTime('expect_end_at')->nullable();
             $table->unsignedBigInteger('location_id')->nullable();
