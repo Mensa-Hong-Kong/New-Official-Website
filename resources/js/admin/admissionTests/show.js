@@ -44,6 +44,7 @@ const savingButton = document.getElementById('savingButton');
 const saveButton = document.getElementById('saveButton');
 const cancelButton = document.getElementById('cancelButton');
 const editButton = document.getElementById('editButton');
+const showType = document.getElementById('showType');
 const showTestingAt = document.getElementById('showTestingAt');
 const showExpectEndAt = document.getElementById('showExpectEndAt');
 const showLocation = document.getElementById('showLocation');
@@ -51,11 +52,13 @@ const showDistrict = document.getElementById('showDistrict');
 const showAddress = document.getElementById('showAddress');
 const showMaximumCandidates = document.getElementById('showMaximumCandidates');
 const showIsPublic = document.getElementById('showIsPublic');
+const typeInput = document.getElementById('validationType');
 const testingAtInput = document.getElementById('validationTestingAt');
 const testingAtFeedback = document.getElementById('testingAtFeedback');
 const expectEndAtInput = document.getElementById('validationExpectEndAt');
 const expectEndAtFeedback = document.getElementById('expectEndAtFeedback');
 const locationInput = document.getElementById('validationLocation');
+const typeFeedback = document.getElementById('typeFeedback');
 const locationFeedback = document.getElementById('locationFeedback');
 const districtInput = document.getElementById('validationDistrict');
 const districtFeedback = document.getElementById('districtFeedback');
@@ -67,11 +70,11 @@ const isPublicInput = document.getElementById('isPublic');
 
 if(editForm) {
 
-    const inputs = [testingAtInput, expectEndAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
+    const inputs = [typeInput, testingAtInput, expectEndAtInput, locationInput, districtInput, addressInput, maximumCandidatesInput, isPublicInput];
 
-    const feedbacks = [testingAtFeedback, expectEndAtFeedback, locationFeedback, districtFeedback, addressFeedback, maximumCandidatesFeedback];
+    const feedbacks = [typeFeedback, testingAtFeedback, expectEndAtFeedback, locationFeedback, districtFeedback, addressFeedback, maximumCandidatesFeedback];
 
-    const showInfos = [showTestingAt, showExpectEndAt, showLocation, showDistrict, showAddress, showMaximumCandidates, showIsPublic];
+    const showInfos = [showType, showTestingAt, showExpectEndAt, showLocation, showDistrict, showAddress, showMaximumCandidates, showIsPublic];
 
     let districts = {};
 
@@ -92,6 +95,7 @@ if(editForm) {
             feedback.className = 'valid-feedback';
             feedback.innerText = 'Looks good!'
         }
+        typeInput.value = typeInput.dataset.value;
         testingAtInput.value = testingAtInput.dataset.value;
         expectEndAtInput.value = expectEndAtInput.dataset.value;
         locationInput.value = locationInput.dataset.value;
@@ -121,6 +125,11 @@ if(editForm) {
         for(let feedback of feedbacks) {
             feedback.className = 'valid-feedback';
             feedback.innerText = 'Looks good!'
+        }
+        if(typeInput.validity.valueMissing) {
+            typeInput.classList.add('is-invalid');
+            typeFeedback.className = 'invalid-feedback';
+            typeFeedback.innerText = 'The type field is required.';
         }
         if(testingAtInput.validity.valueMissing) {
             testingAtInput.classList.add('is-invalid');
@@ -181,6 +190,7 @@ if(editForm) {
 
     function saveSuccessCallback(response) {
         bootstrapAlert(response.data.success);
+        typeInput.dataset.value = response.data.type_id;
         testingAtInput.dataset.value = response.data.testing_at;
         expectEndAtInput.dataset.value = response.data.expect_end_at;
         locationInput.dataset.value = response.data.location;
@@ -188,7 +198,8 @@ if(editForm) {
         addressInput.dataset.value = response.data.address;
         maximumCandidatesInput.dataset.value = response.data.maximum_candidates;
         isPublicInput.dataset.value = response.data.is_public;
-        fillInputValues()
+        fillInputValues();
+        showType.innerText = typeInput.options[typeInput.selectedIndex].text;
         showTestingAt.innerText = response.data.testing_at;
         showExpectEndAt.innerText = response.data.expect_end_at;
         showLocation.innerText = response.data.location;
@@ -218,6 +229,10 @@ if(editForm) {
                 let feedback;
                 let input;
                 switch(key) {
+                    case 'type_id':
+                        input = typeInput;
+                        feedback = typeFeedback;
+                        break;
                     case 'testing_at':
                         input = testingAtInput;
                         feedback = testingAtFeedback;
@@ -286,6 +301,7 @@ if(editForm) {
                             input.disabled = true;
                         }
                         let data = {
+                            type_id: typeInput.value,
                             testing_at: testingAtInput.value,
                             expect_end_at: expectEndAtInput.value,
                             location: locationInput.value,

@@ -147,6 +147,11 @@ class Controller extends BaseController implements HasMiddleware
         return view('admin.admission-tests.show')
             ->with('test', $admissionTest)
             ->with(
+                'types', AdmissionTestType::orderBy('display_order')
+                    ->get(['id', 'name'])
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
                 'locations', Location::distinct()
                     ->has('admissionTests')
                     ->get('name')

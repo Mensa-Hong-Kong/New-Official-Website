@@ -18,6 +18,22 @@
                 </h3>
                 <table class="table">
                     <tr>
+                        <th>Type</th>
+                        <td>
+                            <span id="showType">{{ $test->type->name }}</span>
+                            <select name="display_order" class="form-select" id="validationType" data-value="{{ $test->type_id }}" required hidden>
+                                @foreach ($types as $key => $value)
+                                    <option value="{{ $key }}" @selected($key === $test->type_id)>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div id="typeFeedback" class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Testing At</th>
                         <td>
                             <span id="showTestingAt">{{ $test->testing_at }}</span>
