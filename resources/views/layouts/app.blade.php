@@ -298,6 +298,13 @@
                                         ),
                                     ])>
                                         <li>
+                                            <a href="{{ route('admin.admission-test.products.index') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.admission-test.products.index',
+                                            ])>Index</a>
+                                        </li>
+                                        <li>
                                             <a href="{{ route('admin.admission-test.products.create') }}" @class([
                                                 'nav-link',
                                                 'align-items-center',
