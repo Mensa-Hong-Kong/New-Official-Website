@@ -15,7 +15,7 @@ class StoreTest extends TestCase
     private $happyCase = [
         'name' => 'Admission Test - Team',
         'minimum_age' => 14,
-        'maximum_age' => 22
+        'maximum_age' => 22,
     ];
 
     protected function setUp(): void

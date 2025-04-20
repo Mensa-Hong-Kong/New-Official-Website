@@ -120,7 +120,7 @@ Route::middleware('auth')->group(function () {
                 ->name('contacts.default')
                 ->whereNumber('contact');
             Route::prefix('admission-test')->name('admission-test.')->group(
-                function() {
+                function () {
                     Route::resource('products', AdminAdmissionTestProductController::class)
                         ->only(['create', 'store']);
                     Route::resource('types', AdmissionTestTypeController::class)
