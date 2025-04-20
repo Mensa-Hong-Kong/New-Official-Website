@@ -1,4 +1,4 @@
-import { post } from "../../submitForm";
+import { post } from "@/submitForm";
 
 let submitting = 'loading';
 

@@ -1,4 +1,4 @@
-import ClearInputHistory from "../clearInputHistory";
+import ClearInputHistory from "@/clearInputHistory";
 import { post } from "../submitForm";
 
 const form = document.getElementById('form');

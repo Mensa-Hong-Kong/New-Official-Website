@@ -1,5 +1,5 @@
-import ClearInputHistory from "../clearInputHistory";
-import { post } from "../submitForm";
+import ClearInputHistory from "@/clearInputHistory";
+import { post } from "@/submitForm";
 
 const form = document.getElementById('form');
 const passportType = document.getElementById('validationPassportType');

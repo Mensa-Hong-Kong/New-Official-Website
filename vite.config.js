@@ -3,6 +3,7 @@ import { glob } from "glob";
 
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import path from 'path';
 
 let input = [
     'resources/css/app.scss',
@@ -29,4 +30,11 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, 'resources/js'),
+            '~': path.resolve(__dirname, 'node_modules'),
+            '^': path.resolve(__dirname, 'public'),
+        },
+    },
 });

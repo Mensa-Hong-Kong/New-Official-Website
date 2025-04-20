@@ -1,5 +1,5 @@
-import { post } from "../../submitForm";
-import stringToBoolean from "../../stringToBoolean";
+import { post } from "@/submitForm";
+import stringToBoolean from "@/stringToBoolean";
 
 let submitting = 'loading';
 const submitButtons = document.getElementsByClassName('submitButton');

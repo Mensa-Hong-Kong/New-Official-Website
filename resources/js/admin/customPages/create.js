@@ -11,7 +11,7 @@ import {
 } from 'ckeditor5';
 import coreTranslations from 'ckeditor5/translations/zh.js';
 import 'ckeditor5/ckeditor5.css';
-import { post } from "../../submitForm";
+import { post } from "@/submitForm";
 
 const form = document.getElementById('form');
 const pathname = document.getElementById('validationPathname');

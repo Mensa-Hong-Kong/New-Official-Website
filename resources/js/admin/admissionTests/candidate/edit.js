@@ -1,4 +1,4 @@
-import { post } from "../../../submitForm";
+import { post } from "@/submitForm";
 
 const form = document.getElementById('form');
 const familyName = document.getElementById('validationFamilyName');
