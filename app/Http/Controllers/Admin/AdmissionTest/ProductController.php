@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Admin\AdmissionTest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\ProductRequest;
 use App\Models\AdmissionTestProduct;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('permission:Edit:Admission Test')];
+    }
+
     public function store(ProductRequest $request)
     {
         AdmissionTestProduct::create([
