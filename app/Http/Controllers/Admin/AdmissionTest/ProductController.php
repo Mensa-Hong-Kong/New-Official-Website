@@ -15,6 +15,11 @@ class ProductController extends Controller implements HasMiddleware
         return [new Middleware('permission:Edit:Admission Test')];
     }
 
+    public function create()
+    {
+        return view('admin.admission-test.products.create');
+    }
+
     public function store(ProductRequest $request)
     {
         AdmissionTestProduct::create([
