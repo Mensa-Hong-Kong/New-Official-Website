@@ -122,7 +122,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('admission-test')->name('admission-test.')->group(
                 function() {
                     Route::resource('products', AdminAdmissionTestProductController::class)
-                        ->only(['store']);
+                        ->only(['create', 'store']);
                     Route::resource('types', AdmissionTestTypeController::class)
                         ->except(['show', 'destroy']);
                 }
