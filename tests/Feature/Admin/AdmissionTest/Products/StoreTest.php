@@ -28,7 +28,7 @@ class StoreTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $this->happyCase
         );
         $response->assertUnauthorized();
@@ -39,7 +39,7 @@ class StoreTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('View:User');
         $response = $this->actingAs($user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $this->happyCase
         );
         $response->assertForbidden();
@@ -50,7 +50,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['name']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field is required.']);
@@ -61,7 +61,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['name'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must be a string.']);
@@ -72,7 +72,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
@@ -83,7 +83,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['minimum_age'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['minimum_age' => 'The minimum age field must be an integer.']);
@@ -94,7 +94,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['minimum_age'] = -1;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['minimum_age' => 'The minimum age field must be at least 1.']);
@@ -105,7 +105,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['minimum_age'] = 256;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['minimum_age' => 'The minimum age field must not be greater than 255.']);
@@ -116,7 +116,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['maximum_age'] = 13;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid([
@@ -130,7 +130,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['maximum_age'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['maximum_age' => 'The maximum age field must be an integer.']);
@@ -141,7 +141,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['maximum_age'] = -1;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['maximum_age' => 'The maximum age field must be at least 1.']);
@@ -152,7 +152,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['maximum_age'] = 256;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $data
         );
         $response->assertInvalid(['maximum_age' => 'The maximum age field must not be greater than 255.']);
@@ -161,7 +161,7 @@ class StoreTest extends TestCase
     public function test_happy_case()
     {
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-products.store'),
+            route('admin.admission-test.products.store'),
             $this->happyCase
         );
         $response->assertRedirectToRoute('admin.index');

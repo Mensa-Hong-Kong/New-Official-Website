@@ -21,7 +21,7 @@
                             <td>{{ $type->name }}</td>
                             <td>{{ $type->interval_month }}</td>
                             <td>{{ $type->is_active ? 'Active' : 'Inactive' }}</td>
-                            <td><a class="btn btn-primary" href="{{ route('admin.admission-test-types.edit', ['admission_test_type' => $type]) }}">Edit</a></td>
+                            <td><a class="btn btn-primary" href="{{ route('admin.admission-test.types.edit', ['admission_test_type' => $type]) }}">Edit</a></td>
                         </tr>
                     @endforeach
                 </tbody>

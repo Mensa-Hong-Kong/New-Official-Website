@@ -35,7 +35,7 @@ class UpdateTest extends TestCase
     {
         $response = $this->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $this->happyCase
@@ -54,7 +54,7 @@ class UpdateTest extends TestCase
         );
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $this->happyCase
@@ -66,7 +66,7 @@ class UpdateTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 ['admission_test_type' => 0]
             ),
             $this->happyCase
@@ -80,7 +80,7 @@ class UpdateTest extends TestCase
         unset($data['name']);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -94,7 +94,7 @@ class UpdateTest extends TestCase
         $data['name'] = ['abc'];
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -108,7 +108,7 @@ class UpdateTest extends TestCase
         $data['name'] = str_repeat('a', 256);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -122,7 +122,7 @@ class UpdateTest extends TestCase
         AdmissionTestType::factory()->state(['name' => $data['name']])->create();
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -136,7 +136,7 @@ class UpdateTest extends TestCase
         unset($data['interval_month']);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -150,7 +150,7 @@ class UpdateTest extends TestCase
         $data['interval_month'] = 'abc';
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -164,7 +164,7 @@ class UpdateTest extends TestCase
         $data['interval_month'] = -1;
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -178,7 +178,7 @@ class UpdateTest extends TestCase
         $data['interval_month'] = 61;
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -192,7 +192,7 @@ class UpdateTest extends TestCase
         unset($data['is_active']);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -206,7 +206,7 @@ class UpdateTest extends TestCase
         $data['is_active'] = 'abc';
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -220,7 +220,7 @@ class UpdateTest extends TestCase
         unset($data['display_order']);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -234,7 +234,7 @@ class UpdateTest extends TestCase
         $data['display_order'] = 'abc';
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -248,7 +248,7 @@ class UpdateTest extends TestCase
         $data['display_order'] = '-1';
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -262,7 +262,7 @@ class UpdateTest extends TestCase
         $data['display_order'] = AdmissionTestType::max('display_order') + 1;
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $data
@@ -274,11 +274,11 @@ class UpdateTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-test-types.update',
+                'admin.admission-test.types.update',
                 $this->type
             ),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.admission-test-types.index');
+        $response->assertRedirectToRoute('admin.admission-test.types.index');
     }
 }

@@ -31,7 +31,7 @@ class StoreTest extends TestCase
     public function test_have_no_login()
     {
         $response = $this->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $this->happyCase
         );
         $response->assertUnauthorized();
@@ -47,7 +47,7 @@ class StoreTest extends TestCase
                 ->name
         );
         $response = $this->actingAs($user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $this->happyCase
         );
         $response->assertForbidden();
@@ -58,7 +58,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['name']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field is required.']);
@@ -69,7 +69,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['name'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must be a string.']);
@@ -80,7 +80,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
@@ -91,7 +91,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         AdmissionTestType::factory()->state(['name' => $data['name']])->create();
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['name' => 'The name has already been taken.']);
@@ -102,7 +102,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['interval_month']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field is required.']);
@@ -113,7 +113,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['interval_month'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must be an integer.']);
@@ -124,7 +124,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['interval_month'] = -1;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must be at least 0.']);
@@ -135,7 +135,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['interval_month'] = 61;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['interval_month' => 'The interval month field must not be greater than 60.']);
@@ -146,7 +146,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['is_active']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['is_active' => 'The is active field is required.']);
@@ -157,7 +157,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['is_active'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['is_active' => 'The is active field must be true or false.']);
@@ -168,7 +168,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['display_order']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
@@ -179,7 +179,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must be an integer.']);
@@ -190,7 +190,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = '-1';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
@@ -201,7 +201,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['display_order'] = 1;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than 0.']);
@@ -213,7 +213,7 @@ class StoreTest extends TestCase
         AdmissionTestType::factory()->create();
         $data['display_order'] = AdmissionTestType::max('display_order') + 2;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $data
         );
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
@@ -222,9 +222,9 @@ class StoreTest extends TestCase
     public function test_happy_case()
     {
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-test-types.store'),
+            route('admin.admission-test.types.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.admission-test-types.index');
+        $response->assertRedirectToRoute('admin.admission-test.types.index');
     }
 }

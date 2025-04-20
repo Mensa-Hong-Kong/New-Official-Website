@@ -13,7 +13,7 @@ class CreateTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('admin.admission-test-types.create'));
+        $response = $this->get(route('admin.admission-test.types.create'));
         $response->assertRedirectToRoute('login');
     }
 
@@ -27,7 +27,7 @@ class CreateTest extends TestCase
                 ->name
         );
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.create'));
+            ->get(route('admin.admission-test.types.create'));
         $response->assertForbidden();
     }
 
@@ -36,7 +36,7 @@ class CreateTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.create'));
+            ->get(route('admin.admission-test.types.create'));
         $response->assertSuccessful();
     }
 }

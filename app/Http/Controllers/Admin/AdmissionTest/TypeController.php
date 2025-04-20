@@ -53,7 +53,7 @@ class TypeController extends Controller implements HasMiddleware
         ]);
         DB::commit();
 
-        return redirect()->route('admin.admission-test-types.index');
+        return redirect()->route('admin.admission-test.types.index');
     }
 
     public function edit(AdmissionTestType $admissionTestType)
@@ -103,6 +103,6 @@ class TypeController extends Controller implements HasMiddleware
         ]);
         DB::commit();
 
-        return redirect()->route('admin.admission-test-types.index');
+        return redirect()->route('admin.admission-test.types.index');
     }
 }

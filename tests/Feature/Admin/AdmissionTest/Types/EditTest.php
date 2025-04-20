@@ -16,7 +16,7 @@ class EditTest extends TestCase
     {
         $response = $this->get(
             route(
-                'admin.admission-test-types.edit',
+                'admin.admission-test.types.edit',
                 ['admission_test_type' => AdmissionTestType::factory()->create()]
             )
         );
@@ -35,7 +35,7 @@ class EditTest extends TestCase
         $response = $this->actingAs($user)
             ->get(
                 route(
-                    'admin.admission-test-types.edit',
+                    'admin.admission-test.types.edit',
                     ['admission_test_type' => AdmissionTestType::factory()->create()]
                 )
             );
@@ -48,7 +48,7 @@ class EditTest extends TestCase
         $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->get(
             route(
-                'admin.admission-test-types.edit',
+                'admin.admission-test.types.edit',
                 ['admission_test_type' => 0]
             )
         );
@@ -62,7 +62,7 @@ class EditTest extends TestCase
         $response = $this->actingAs($user)
             ->get(
                 route(
-                    'admin.admission-test-types.edit',
+                    'admin.admission-test.types.edit',
                     ['admission_test_type' => AdmissionTestType::factory()->create()]
                 )
             );

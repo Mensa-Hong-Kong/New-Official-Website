@@ -119,10 +119,14 @@ Route::middleware('auth')->group(function () {
             Route::match(['put', 'patch'], 'contacts/{contact}/default', [AdminContactController::class, 'default'])
                 ->name('contacts.default')
                 ->whereNumber('contact');
-            Route::resource('admission-test-products', AdminAdmissionTestProductController::class)
-                ->only(['store']);
-            Route::resource('admission-test-types', AdmissionTestTypeController::class)
-                ->except(['show', 'destroy']);
+            Route::prefix('admission-test')->name('admission-test.')->group(
+                function() {
+                    Route::resource('products', AdminAdmissionTestProductController::class)
+                        ->only(['store']);
+                    Route::resource('types', AdmissionTestTypeController::class)
+                        ->except(['show', 'destroy']);
+                }
+            );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
                 ->except(['edit'])
                 ->whereNumber('admission_test');

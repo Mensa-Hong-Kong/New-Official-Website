@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('main')
-    <form id="form" method="POST" action="{{ route('admin.admission-test-types.store') }}" novalidate>
+    <form id="form" method="POST" action="{{ route('admin.admission-test.types.store') }}" novalidate>
         <h2 class="fw-bold mb-2 text-uppercase">Create Admission Test Type</h2>
         @include('admin.admission-test.types.form')
         <input type="submit" id="createButton" class="form-control btn btn-success" value="Create">

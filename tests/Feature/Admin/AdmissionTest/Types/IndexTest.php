@@ -13,7 +13,7 @@ class IndexTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('admin.admission-test-types.index'));
+        $response = $this->get(route('admin.admission-test.types.index'));
         $response->assertRedirectToRoute('login');
     }
 
@@ -27,7 +27,7 @@ class IndexTest extends TestCase
                 ->name
         );
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.index'));
+            ->get(route('admin.admission-test.types.index'));
         $response->assertForbidden();
     }
 
@@ -36,7 +36,7 @@ class IndexTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)
-            ->get(route('admin.admission-test-types.index'));
+            ->get(route('admin.admission-test.types.index'));
         $response->assertSuccessful();
     }
 }
