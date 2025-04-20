@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdmissionTest\ProductRequest;
 use App\Models\AdmissionTestProduct;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         AdmissionTestProduct::create([
             'name' => $request->name,
