@@ -2,7 +2,7 @@
 
 @section('main')
     <section class="container">
-        <h2 class="fw-bold mb-2 text-uppercase">Admission Test Type</h2>
+        <h2 class="fw-bold mb-2 text-uppercase">Admission Test Types</h2>
         @if(count($types))
             <table class="table table-hover">
                 <thead>
