@@ -277,6 +277,38 @@
                                 <li class="nav-item accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
+                                        data-bs-target="#asideNavAdminAdmissionTestProduct" aria-controls="asideNavAdminAdmissionTestProduct"
+                                        style="height: 0em"
+                                        @class([
+                                            'nav-item',
+                                            'accordion-button',
+                                            'collapsed' => !str_starts_with(
+                                                Route::current()->getName(),
+                                                'admin.admission-test.products.'
+                                            ),
+                                        ])>
+                                        Admission Test Types
+                                    </button>
+                                    <ul id="asideNavAdminAdmissionTestProduct" @class([
+                                        'accordion-collapse',
+                                        'collapse',
+                                        'show' => str_starts_with(
+                                            Route::current()->getName(),
+                                            'admin.admission-test.products.'
+                                        ),
+                                    ])>
+                                        <li>
+                                            <a href="{{ route('admin.admission-test.products.create') }}" @class([
+                                                'nav-link',
+                                                'align-items-center',
+                                                'active' => Route::current()->getName() == 'admin.admission-test.products.create',
+                                            ])>Create</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item accordion">
+                                    <button role="button"
+                                        data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
                                         style="height: 0em"
                                         @class([
