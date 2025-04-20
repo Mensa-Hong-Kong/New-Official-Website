@@ -124,7 +124,8 @@ Route::middleware('auth')->group(function () {
                     Route::resource('products', AdminAdmissionTestProductController::class)
                         ->only(['create', 'store']);
                     Route::resource('types', AdmissionTestTypeController::class)
-                        ->except(['show', 'destroy']);
+                        ->except(['show', 'destroy'])
+                        ->parameters(['types' => 'admission_test_type']);
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
