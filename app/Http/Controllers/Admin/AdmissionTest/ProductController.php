@@ -36,4 +36,10 @@ class ProductController extends Controller implements HasMiddleware
 
         return redirect()->route('admin.index');
     }
+
+    public function show(AdmissionTestProduct $product)
+    {
+        return view('admin.admission-test.products.show')
+            ->with('product', $product);
+    }
 }
