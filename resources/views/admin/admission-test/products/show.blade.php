@@ -55,3 +55,7 @@
         </article>
     </section>
 @endsection
+
+@push('after footer')
+    @vite('resources/js/admin/admissionTest/products/show.js')
+@endpush
