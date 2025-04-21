@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products;
 
+use App\Models\AdmissionTestProduct;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -164,6 +165,9 @@ class StoreTest extends TestCase
             route('admin.admission-test.products.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.index');
+        $response->assertRedirectToRoute(
+            'admin.admission-test.products.show',
+            ['product' => AdmissionTestProduct::latest('id')->first()]
+        );
     }
 }

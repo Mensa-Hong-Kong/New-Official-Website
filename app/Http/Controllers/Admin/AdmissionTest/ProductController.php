@@ -28,13 +28,16 @@ class ProductController extends Controller implements HasMiddleware
 
     public function store(ProductRequest $request)
     {
-        AdmissionTestProduct::create([
+        $product = AdmissionTestProduct::create([
             'name' => $request->name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
         ]);
 
-        return redirect()->route('admin.index');
+        return redirect()->route(
+            'admin.admission-test.product.show',
+            ['product' => $product]
+        );
     }
 
     public function show(AdmissionTestProduct $product)
