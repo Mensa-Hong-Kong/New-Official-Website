@@ -51,7 +51,7 @@ function validation() {
             minimumAge.classList.add('is-invalid');
             minimumAgeFeedback.className = 'invalid-feedback';
             minimumAgeFeedback.innerText = `The minimum age field must not be greater than ${minimumAge.max}.`;
-        } else if(minimumAge.value >= maximumAge.value) {
+        } else if(maximumAge.value && minimumAge.value >= maximumAge.value) {
             minimumAge.classList.add('is-invalid');
             minimumAgeFeedback.className = 'invalid-feedback';
             minimumAgeFeedback.innerText = `The minimum age field must be less than maximum age.`;
