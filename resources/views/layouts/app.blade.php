@@ -287,7 +287,7 @@
                                                 'admin.admission-test.products.'
                                             ),
                                         ])>
-                                        Admission Test Types
+                                        Admission Test Products
                                     </button>
                                     <ul id="asideNavAdminAdmissionTestProduct" @class([
                                         'accordion-collapse',
