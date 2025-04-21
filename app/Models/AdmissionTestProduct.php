@@ -16,4 +16,18 @@ class AdmissionTestProduct extends Model
         'stripe_id',
         'synced_to_stripe',
     ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::updating(
+            function (AdmissionTestProduct $product) {
+                if ($product->isDirty('name')) {
+                    $product->synced_to_stripe = false;
+                }
+            }
+        );
+    }
 }
