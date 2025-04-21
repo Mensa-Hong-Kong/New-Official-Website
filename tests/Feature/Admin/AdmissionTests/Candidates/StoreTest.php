@@ -360,8 +360,8 @@ class StoreTest extends TestCase
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
+                'testing_at' => now()->subSecond(),
+                'expect_end_at' => now()->subSecond()->addHour(),
             ])->create();
         $user = User::factory()
             ->state([
