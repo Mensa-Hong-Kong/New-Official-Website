@@ -52,7 +52,7 @@ class ProductController extends Controller implements HasMiddleware
         ]);
 
         return [
-            'success' => 'The admission test product update success',
+            'success' => 'The admission test product update success.',
             'name' => $product->name,
             'minimum_age' => $product->minimum_age,
             'maximum_age' => $product->maximum_age,
