@@ -35,7 +35,7 @@ class ProductController extends Controller implements HasMiddleware
         ]);
 
         return redirect()->route(
-            'admin.admission-test.product.show',
+            'admin.admission-test.products.show',
             ['product' => $product]
         );
     }
