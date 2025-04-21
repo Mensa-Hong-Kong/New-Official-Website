@@ -28,7 +28,7 @@
             <div class="form-floating">
                 <input type="number" name="maximum_age" class="form-control" id="validationMaximumAge" placeholder="maximum age"
                     step="1" min="1" max="255" value="{{ old('maximum_age') }}" />
-                <label for="validationMaximumAge">Minimum Age</label>
+                <label for="validationMaximumAge">Maximum Age</label>
                 <div id="maximumAgeFeedback" class="valid-feedback">
                     Looks good!
                 </div>
