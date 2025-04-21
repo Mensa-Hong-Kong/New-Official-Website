@@ -11,6 +11,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Minimum Age</th>
                         <th scope="col">Maximum Age</th>
+                        <th>Show</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,6 +21,10 @@
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->minimum_age }}</td>
                             <td>{{ $product->maximum_age }}</td>
+                            <td>
+                                <a href="{{ route('admin.admission-test.products.show', ['product' => $product]) }}"
+                                    class="btn btn-primary">Show</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

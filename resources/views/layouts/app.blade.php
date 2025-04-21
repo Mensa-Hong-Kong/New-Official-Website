@@ -311,6 +311,12 @@
                                                 'active' => Route::current()->getName() == 'admin.admission-test.products.create',
                                             ])>Create</a>
                                         </li>
+                                        @if(Route::current()->getName() == 'admin.admission-test.products.show')
+                                            <li>
+                                                <a href="{{ route('admin.admission-test.products.show', ['product' => $product]) }}"
+                                                    class="nav-link align-items-center active">Show</a>
+                                            </li>
+                                        @endif
                                     </ul>
                                 </li>
                                 <li class="nav-item accordion">
