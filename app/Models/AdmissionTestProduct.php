@@ -13,6 +13,9 @@ class AdmissionTestProduct extends Model
         'name',
         'minimum_age',
         'maximum_age',
+        'start_at',
+        'end_at',
+        'quota',
         'stripe_id',
         'synced_to_stripe',
     ];
