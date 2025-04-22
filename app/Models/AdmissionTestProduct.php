@@ -33,4 +33,16 @@ class AdmissionTestProduct extends Model
             }
         );
     }
+
+    public function prices()
+    {
+        return $this->hasMany(AdmissionTestPrice::class, 'product_id');
+    }
+
+    public function price()
+    {
+        return $this->hasOne(AdmissionTestPrice::class, 'product_id')
+            ->where('start_at', '<=', now())
+            ->latest('start_at');
+    }
 }

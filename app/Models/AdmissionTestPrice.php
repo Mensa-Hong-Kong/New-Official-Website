@@ -17,4 +17,9 @@ class AdmissionTestPrice extends Model
         'stripe_id',
         'synced_to_stripe',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(AdmissionTestProduct::class, 'product_id');
+    }
 }
