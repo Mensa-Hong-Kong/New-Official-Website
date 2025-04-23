@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\ProductRequest;
+use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -28,6 +30,7 @@ class ProductController extends Controller implements HasMiddleware
 
     public function store(ProductRequest $request)
     {
+        DB::beginTransaction();
         $product = AdmissionTestProduct::create([
             'name' => $request->name,
             'minimum_age' => $request->minimum_age,
@@ -36,6 +39,12 @@ class ProductController extends Controller implements HasMiddleware
             'end_at' => $request->end_at,
             'quota' => $request->quota,
         ]);
+        AdmissionTestPrice::create([
+            'product_id' => $product->id,
+            'name' => $request->price_name,
+            'price' => $request->price,
+        ]);
+        DB::commit();
 
         return redirect()->route(
             'admin.admission-test.products.show',
