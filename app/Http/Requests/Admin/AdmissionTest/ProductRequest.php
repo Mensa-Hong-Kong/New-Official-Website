@@ -13,18 +13,32 @@ class ProductRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $return = [
             'name' => 'required|string|max:255',
-            'minimum_age' => 'nullable|integer|min:1|max:255|lt:maximum_age',
-            'maximum_age' => 'nullable|integer|min:1|max:255|gt:minimum_age',
+            'minimum_age' => 'nullable|integer|min:1|max:255',
+            'maximum_age' => 'nullable|integer|min:1|max:255',
+            'start_at' => 'nullable|date',
+            'end_at' => 'nullable|date',
+            'quota' => 'required|integer|min:1|max:255',
         ];
+        if($this->minimum_age && $this->maximum_age) {
+            $return['minimum_age'] .= '|lt:maximum_age';
+            $return['maximum_age'] .= '|gt:minimum_age';
+        }
+        if($this->start_at && $this->end_at) {
+            $return['start_at'] .= '|before:end_at';
+            $return['end_at'] .= '|after:start_at';
+        }
+        return $return;
     }
 
     public function messages(): array
     {
         return [
-            'minimum_age.lt' => 'The minimum age field must be less than maximum age.',
-            'maximum_age.gt' => 'The maximum age field must be greater than minimum age.',
+            'minimum_age.lt' => 'The minimum age field must be less than maximum age field.',
+            'maximum_age.gt' => 'The maximum age field must be greater than minimum age field.',
+            'start_at.before' => 'The start at field must be a date before end at field.',
+            'end_at.after' => 'The end at field must be a date after start at field.',
         ];
     }
 }
