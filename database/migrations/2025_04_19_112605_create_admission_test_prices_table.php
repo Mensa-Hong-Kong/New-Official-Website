@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('admission_test_prices', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('product_id');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->unsignedSmallInteger('price');
             $table->dateTime('start_at')->nullable();
             $table->string('stripe_id')->nullable();
