@@ -16,6 +16,7 @@ class StoreTest extends TestCase
     private $happyCase = [
         'name' => 'Admission Test',
         'quota' => 1,
+        'price' => 400,
     ];
 
     protected function setUp(): void
@@ -241,6 +242,72 @@ class StoreTest extends TestCase
         $response->assertInvalid(['quota' => 'The quota field must not be greater than 255.']);
     }
 
+    public function test_price_name_is_not_string()
+    {
+        $data = $this->happyCase;
+        $data['price_name'] = ['abe'];
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price_name' => 'The price name field must be a string.']);
+    }
+
+    public function test_price_name_too_long()
+    {
+        $data = $this->happyCase;
+        $data['price_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price_name' => 'The price name field must not be greater than 255 characters.']);
+    }
+
+    public function test_missing_price()
+    {
+        $data = $this->happyCase;
+        unset($data['price']);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price' => 'The price field is required.']);
+    }
+
+    public function test_price_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['price'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price' => 'The price field must be an integer.']);
+    }
+
+    public function test_price_less_that_1()
+    {
+        $data = $this->happyCase;
+        $data['price'] = 0;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price' => 'The price field must be at least 1.']);
+    }
+
+    public function test_price_greater_than_65535()
+    {
+        $data = $this->happyCase;
+        $data['price'] = 65536;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['price' => 'The price field must not be greater than 65535.']);
+    }
+
     public function test_happy_case_without_all_nullable_field()
     {
         $response = $this->actingAs($this->user)->postJson(
@@ -339,6 +406,20 @@ class StoreTest extends TestCase
         );
     }
 
+    public function test_happy_case_with_price_name()
+    {
+        $data = $this->happyCase;
+        $data['price_name'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertRedirectToRoute(
+            'admin.admission-test.products.show',
+            ['product' => AdmissionTestProduct::latest('id')->first()]
+        );
+    }
+
     public function test_happy_case_with_all_nullable_field()
     {
         $data = $this->happyCase;
@@ -346,6 +427,7 @@ class StoreTest extends TestCase
         $data['maximum_age'] = 22;
         $data['start_at'] = now();
         $data['end_at'] = now()->addDay();
+        $data['price_name'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
             $data
