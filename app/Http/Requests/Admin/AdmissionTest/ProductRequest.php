@@ -21,15 +21,15 @@ class ProductRequest extends FormRequest
             'end_at' => 'nullable|date',
             'quota' => 'required|integer|min:1|max:255',
         ];
-        if($this->minimum_age && $this->maximum_age) {
+        if ($this->minimum_age && $this->maximum_age) {
             $return['minimum_age'] .= '|lt:maximum_age';
             $return['maximum_age'] .= '|gt:minimum_age';
         }
-        if($this->start_at && $this->end_at) {
+        if ($this->start_at && $this->end_at) {
             $return['start_at'] .= '|before:end_at';
             $return['end_at'] .= '|after:start_at';
         }
-        if($this->method() == 'POST') {
+        if ($this->method() == 'POST') {
             $return['price_name'] = 'nullable|string|max:255';
             $return['price'] = 'required|integer|min:1|max:65535';
         }
