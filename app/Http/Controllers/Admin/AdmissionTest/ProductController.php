@@ -32,6 +32,9 @@ class ProductController extends Controller implements HasMiddleware
             'name' => $request->name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
+            'start_at' => $request->start_at,
+            'end_at' => $request->end_at,
+            'quota' => $request->quota,
         ]);
 
         return redirect()->route(
@@ -52,6 +55,9 @@ class ProductController extends Controller implements HasMiddleware
             'name' => $request->name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
+            'start_at' => $request->start_at,
+            'end_at' => $request->end_at,
+            'quota' => $request->quota,
         ]);
 
         return [
@@ -59,6 +65,9 @@ class ProductController extends Controller implements HasMiddleware
             'name' => $product->name,
             'minimum_age' => $product->minimum_age,
             'maximum_age' => $product->maximum_age,
+            'start_at' => $product->start_at,
+            'end_at' => $product->end_at,
+            'quota' => $product->quota,
         ];
     }
 }
