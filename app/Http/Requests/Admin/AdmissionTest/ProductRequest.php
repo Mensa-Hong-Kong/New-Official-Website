@@ -29,6 +29,11 @@ class ProductRequest extends FormRequest
             $return['start_at'] .= '|before:end_at';
             $return['end_at'] .= '|after:start_at';
         }
+        if($this->method() == 'POST') {
+            $return['price_name'] = 'nullable|string|max:255';
+            $return['price'] = 'required|integer|min:1|max:65535';
+        }
+
         return $return;
     }
 
