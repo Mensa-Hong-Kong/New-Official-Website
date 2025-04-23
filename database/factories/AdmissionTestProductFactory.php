@@ -15,8 +15,9 @@ class AdmissionTestProductFactory extends Factory
 
         return [
             'name' => fake()->word(),
-            'minimum_age' => fake()->numberBetween(0, 60),
+            'minimum_age' => fake()->numberBetween(1, 60),
             'maximum_age' => fake()->numberBetween($minimumAge, 255),
+            'quota' => fake()->numberBetween(1, 255),
         ];
     }
 }
