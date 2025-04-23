@@ -16,9 +16,8 @@ class UpdateTest extends TestCase
     private $product;
 
     private $happyCase = [
-        'name' => 'Admission Test - Team',
-        'minimum_age' => 14,
-        'maximum_age' => 22,
+        'name' => 'Admission Test',
+        'quota' => 1,
     ];
 
     protected function setUp(): void
@@ -157,6 +156,7 @@ class UpdateTest extends TestCase
     public function test_minimum_age_greater_than_maximum_age()
     {
         $data = $this->happyCase;
+        $data['minimum_age'] = 14;
         $data['maximum_age'] = 13;
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -166,8 +166,8 @@ class UpdateTest extends TestCase
             $data
         );
         $response->assertInvalid([
-            'minimum_age' => 'The minimum age field must be less than maximum age.',
-            'maximum_age' => 'The maximum age field must be greater than minimum age.',
+            'minimum_age' => 'The minimum age field must be less than maximum age field.',
+            'maximum_age' => 'The maximum age field must be greater than minimum age field.',
         ]);
     }
 
@@ -213,6 +213,88 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_age' => 'The maximum age field must not be greater than 255.']);
     }
 
+    public function test_start_at_is_not_date()
+    {
+        $data = $this->happyCase;
+        $data['start_at'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['start_at' => 'The start at field must be a valid date.']);
+    }
+
+    public function test_start_at_after_than_end_at()
+    {
+        $now = now();
+        $data = $this->happyCase;
+        $data['end_at'] = $now;
+        $data['start_at'] = $now->addHour();
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid([
+            'start_at' => 'The start at field must be a date before end at field.',
+            'end_at' => 'The end at field must be a date after start at field.',
+        ]);
+    }
+
+    public function test_end_at_is_not_date()
+    {
+        $data = $this->happyCase;
+        $data['end_at'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['end_at' => 'The end at field must be a valid date.']);
+    }
+
+    public function test_missing_quota()
+    {
+        $data = $this->happyCase;
+        unset($data['quota']);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['quota' => 'The quota field is required.']);
+    }
+
+    public function test_quota_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['quota'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['quota' => 'The quota field must be an integer.']);
+    }
+
+    public function test_quota_less_than_1()
+    {
+        $data = $this->happyCase;
+        $data['quota'] = -1;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['quota' => 'The quota field must be at least 1.']);
+    }
+
+    public function test_quota_greater_than_255()
+    {
+        $data = $this->happyCase;
+        $data['quota'] = 256;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.products.store'),
+            $data
+        );
+        $response->assertInvalid(['quota' => 'The quota field must not be greater than 255.']);
+    }
+
     public function test_happy_case_when_name_have_no_change()
     {
         $data = $this->happyCase;
@@ -225,6 +307,8 @@ class UpdateTest extends TestCase
             $data
         );
         $data['success'] = 'The admission test product update success.';
+        $data['start_at'] = null;
+        $data['end_at'] = null;
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertTrue((bool) AdmissionTestProduct::find($this->product->id)->synced_to_stripe);
@@ -241,6 +325,8 @@ class UpdateTest extends TestCase
             $data
         );
         $data['success'] = 'The admission test product update success.';
+        $data['start_at'] = null;
+        $data['end_at'] = null;
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertFalse((bool) AdmissionTestProduct::find($this->product->id)->synced_to_stripe);
