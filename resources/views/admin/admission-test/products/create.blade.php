@@ -34,6 +34,54 @@
                 </div>
             </div>
         </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
+                <input type="datetime-local" name="start_at" class="form-control" id="validationStartAt" placeholder="start at" value="{{ old('start_at') }}" />
+                <label for="validationStartAt">Start At</label>
+                <div id="startAtFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
+                <input type="datetime-local" name="end_at" class="form-control" id="validationEndAt" placeholder="end at" value="{{ old('end_at') }}" />
+                <label for="validationEndAt">End At</label>
+                <div id="endAtFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
+                <input type="number" name="quota" class="form-control" id="validationQuota" placeholder="quota"
+                    step="1" min="1" max="255" value="{{ old('quota') }}" required />
+                <label for="validationQuota">Quota</label>
+                <div id="quotaFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
+                <input name="name" class="form-control" id="validationPriceName" placeholder="price name"
+                    maxlength="255" value="{{ old('price_name') }}" />
+                <label for="validationPriceName">Price Name</label>
+                <div id="priceNameFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
+                <input type="number" name="maximum_age" class="form-control" id="validationPrice" placeholder="price"
+                    step="1" min="1" max="65535" value="{{ old('price') }}" />
+                <label for="validationPrice">Price</label>
+                <div id="priceFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
         <input type="submit" id="createButton" class="form-control btn btn-success" value="Create">
         <button class="form-control btn btn-success" id="creatingButton" type="button" disabled hidden>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
