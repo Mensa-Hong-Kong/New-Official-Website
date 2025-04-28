@@ -43,7 +43,7 @@ class AdmissionTestProduct extends Model
     {
         return $this->hasOne(AdmissionTestPrice::class, 'product_id')
             ->where(
-                function($query) {
+                function ($query) {
                     $query->whereNull('start_at')
                         ->orWhere('start_at', '<=', now());
                 }

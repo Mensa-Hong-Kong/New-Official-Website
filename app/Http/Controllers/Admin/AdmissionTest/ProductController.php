@@ -57,9 +57,9 @@ class ProductController extends Controller implements HasMiddleware
         return view('admin.admission-test.products.show')
             ->with(
                 'product', $product->load([
-                    'prices' => function($query) {
+                    'prices' => function ($query) {
                         $query->orderByDesc('start_at');
-                    }
+                    },
                 ])
             );
     }
