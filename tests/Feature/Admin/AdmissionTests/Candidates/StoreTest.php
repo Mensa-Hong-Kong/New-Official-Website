@@ -27,6 +27,7 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()->create();
+        $this->test->type->update(['interval_month' => 6]);
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -382,7 +383,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account tested.']);
     }
 
-    public function test_user_id_has_already_been_taken_within_6_months()
+    public function test_user_id_has_already_been_taken_within_latest_test_interval_months()
     {
         $newTestingAt = now()->addDay();
         $this->test->update([

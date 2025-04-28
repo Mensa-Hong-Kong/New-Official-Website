@@ -26,6 +26,7 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->state(['stripe_id' => 123])->create();
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
+        $this->test->type->update(['interval_month' => 6]);
     }
 
     private function addVerifyContact()
@@ -207,7 +208,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You other same passport user account tested.']);
     }
 
-    public function test_user_has_already_been_taken_within_6_months()
+    public function test_user_has_already_been_taken_within_latest_test_interval_months()
     {
         $newTestingAt = now()->addDay();
         $this->test->update([
