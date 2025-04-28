@@ -42,7 +42,12 @@ class AdmissionTestProduct extends Model
     public function price()
     {
         return $this->hasOne(AdmissionTestPrice::class, 'product_id')
-            ->where('start_at', '<=', now())
-            ->latest('start_at');
+            ->where(
+                function($query) {
+                    $query->whereNull('start_at')
+                        ->orWhere('start_at', '<=', now());
+                }
+            )
+            ->orderBy('start_at');
     }
 }
