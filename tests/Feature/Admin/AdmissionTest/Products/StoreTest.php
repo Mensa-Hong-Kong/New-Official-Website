@@ -366,7 +366,7 @@ class StoreTest extends TestCase
     public function test_happy_case_with_start_at()
     {
         $data = $this->happyCase;
-        $data['start_at'] = now();
+        $data['start_at'] = now()->format('Y-m-d H:i:s');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
             $data
@@ -380,7 +380,7 @@ class StoreTest extends TestCase
     public function test_happy_case_with_end_at()
     {
         $data = $this->happyCase;
-        $data['end_at'] = now();
+        $data['end_at'] = now()->format('Y-m-d H:i:s');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
             $data
@@ -391,11 +391,11 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_happy_case_with_start_ans_end_at()
+    public function test_happy_case_with_start_and_end_at()
     {
         $data = $this->happyCase;
-        $data['start_at'] = now();
-        $data['end_at'] = now()->addDay();
+        $data['start_at'] = now()->format('Y-m-d H:i:s');
+        $data['end_at'] = now()->addDay()->format('Y-m-d H:i:s');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
             $data
@@ -425,8 +425,8 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['maximum_age'] = 14;
         $data['maximum_age'] = 22;
-        $data['start_at'] = now();
-        $data['end_at'] = now()->addDay();
+        $data['start_at'] = now()->format('Y-m-d H:i:s');
+        $data['end_at'] = now()->addDay()->format('Y-m-d H:i:s');
         $data['price_name'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
