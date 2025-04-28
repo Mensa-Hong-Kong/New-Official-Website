@@ -25,18 +25,36 @@ const editButton = document.getElementById('editButton');
 const showName = document.getElementById('showName');
 const showMinimumAge = document.getElementById('showMinimumAge');
 const showMaximumAge = document.getElementById('showMaximumAge');
+const showStartAt = document.getElementById('showStartAt');
+const showEndAt = document.getElementById('showEndAt');
+const showQuota = document.getElementById('showQuota');
 const nameInput = document.getElementById('validationName');
 const nameFeedback = document.getElementById('nameFeedback');
 const minimumAgeInput = document.getElementById('validationMinimumAge');
 const minimumAgeFeedback = document.getElementById('minimumAgeFeedback');
 const maximumAgeInput = document.getElementById('validationMaximumAge');
 const maximumAgeFeedback = document.getElementById('maximumAgeFeedback');
+const startAtInput = document.getElementById('validationStartAt');
+const startAtFeedback = document.getElementById('startAtFeedback');
+const endAtInput = document.getElementById('validationEndAt');
+const endAAtFeedback = document.getElementById('endAtFeedback');
+const quotaInput = document.getElementById('validationQuota');
+const quotaFeedback = document.getElementById('quotaFeedback');
 
-const inputs = [nameInput, minimumAgeInput, maximumAgeInput];
+const inputs = [
+    nameInput, minimumAgeInput, maximumAgeInput,
+    startAtInput, endAtInput, quotaInput,
+];
 
-const feedbacks = [nameFeedback, minimumAgeFeedback, maximumAgeFeedback];
+const feedbacks = [
+    nameFeedback, minimumAgeFeedback, maximumAgeFeedback,
+    startAtFeedback, endAAtFeedback, quotaFeedback,
+];
 
-const showInfos = [showName, showMinimumAge, showMaximumAge];
+const showInfos = [
+    showName, showMinimumAge, showMaximumAge,
+    showStartAt, showEndAt, showQuota,
+];
 
 function fillInputValues() {
     for(let input of inputs) {
@@ -120,18 +138,45 @@ function validation() {
             maximumAgeFeedback.innerText = `The maximum age field must be greater than minimum age.`;
         }
     }
+    if(endAtInput.value && startAtInput.value >= endAtInput.value) {
+        startAtInput.classList.add('is-invalid');
+        startAtFeedback.className = 'invalid-feedback';
+        startAtFeedback.innerText = `The start at field must be a date before end at field.`;
+        endAtInput.classList.add('is-invalid');
+        endAtFeedback.className = 'invalid-feedback';
+        endAtFeedback.innerText = `The end at field must be a date after start at field.`;
+    }
+    if(quotaInput.validity.valueMissing) {
+        quotaInput.classList.add('is-invalid');
+        quotaFeedback.className = 'invalid-feedback';
+        quotaFeedback.innerText = 'The quota field is required.';
+    } else if(quotaInput.validity.rangeUnderflow) {
+        quotaInput.classList.add('is-invalid');
+        quotaFeedback.className = 'invalid-feedback';
+        quotaFeedback.innerText = `The quota field must be at least ${quotaInput.min}.`;
+    } else if(quotaInput.validity.rangeOverflow) {
+        quotaInput.classList.add('is-invalid');
+        quotaFeedback.className = 'invalid-feedback';
+        quotaFeedback.innerText = `The quota field must not be greater than ${quotaInput.max}.`;
+    }
     return !hasError();
 }
 
 function saveSuccessCallback(response) {
     bootstrapAlert(response.data.success);
-    nameInput.dataset.value = response.data.name;
-    minimumAgeFeedback.dataset.value = response.data.minimum_age;
-    maximumAgeFeedback.dataset.value = response.data.maximum_age;
+    nameInput.dataset.value = response.data.name ?? '';
+    minimumAgeInput.dataset.value = response.data.minimum_age ?? '';
+    maximumAgeInput.dataset.value = response.data.maximum_age ?? '';
+    startAtInput.dataset.value = response.data.start_at ?? '';
+    endAtInput.dataset.value = response.data.end_at ?? '';
+    quotaInput.dataset.value = response.data.quota ?? '';
     fillInputValues();
     showName.innerText = response.data.name;
     showMinimumAge.innerText = response.data.minimum_age;
     showMaximumAge.innerText = response.data.maximum_age;
+    startAtInput.innerText = response.data.start_at;
+    endAtInput.innerText = response.data.end_at;
+    quotaInput.innerText = response.data.quota;
     enableSubmitting();
     for(let showDiv of showInfos) {
         showDiv.hidden = false;
@@ -165,6 +210,18 @@ function saveFailCallback(error) {
                 case 'maximum_age':
                     input = maximumAgeInput;
                     feedback = maximumAgeFeedback;
+                    break;
+                case 'start_at':
+                    input = startAtInput;
+                    feedback = startAtInput;
+                    break;
+                case 'end_at':
+                    input = endAtInput;
+                    feedback = endAAtFeedback;
+                    break;
+                case 'quota':
+                    input = quotaInput;
+                    feedback = quotaFeedback;
                     break;
             }
             if(feedback) {
@@ -205,12 +262,21 @@ editForm.addEventListener(
                     for(let input of inputs) {
                         input.disabled = true;
                     }
-                    let data = {name: nameInput.value};
+                    let data = {
+                        name: nameInput.value,
+                        quota: quotaInput.value,
+                    };
                     if(minimumAgeInput.value) {
                         data['minimum_age'] = minimumAgeInput.value;
                     }
                     if(maximumAgeInput.value) {
                         data['maximum_age'] = maximumAgeInput.value;
+                    }
+                    if(startAtInput.value) {
+                        data['start_at'] = maximumAge.value;
+                    }
+                    if(endAtInput.value) {
+                        data['end_at'] = maximumAge.value;
                     }
                     post(editForm.action, saveSuccessCallback, saveFailCallback, 'put', data);
                 } else {
