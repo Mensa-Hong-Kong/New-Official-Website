@@ -58,7 +58,8 @@ class ProductController extends Controller implements HasMiddleware
             ->with(
                 'product', $product->load([
                     'prices' => function ($query) {
-                        $query->orderByDesc('start_at');
+                        $query->orderByDesc('start_at')
+                            ->orderByDesc('updated_at');
                     },
                 ])
             );
