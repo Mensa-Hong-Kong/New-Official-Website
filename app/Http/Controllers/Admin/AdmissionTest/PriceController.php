@@ -6,9 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\PriceRequest;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PriceController extends Controller
+class PriceController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:Edit:Admission Test'),
+            (new Middleware(
+                function(Request $request, Closure $next) {
+                    $product = $request->route('product');
+                    $price = $request->route('price');
+                    if($price->product_id == $product->id) {
+                        return $next($request);
+                    }
+                    abort(404);
+                }
+            ))->only('update')
+        ];
+    }
+
     public function update(PriceRequest $request, AdmissionTestProduct $product, AdmissionTestPrice $price)
     {
         $product->update([
