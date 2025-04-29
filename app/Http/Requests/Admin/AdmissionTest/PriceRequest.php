@@ -15,7 +15,7 @@ class PriceRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string|max:255',
-            'start_at' => 'required|date',
+            'start_at' => 'nullable|date',
         ];
     }
 }
