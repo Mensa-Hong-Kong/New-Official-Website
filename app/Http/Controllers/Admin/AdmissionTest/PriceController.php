@@ -32,14 +32,15 @@ class PriceController extends Controller implements HasMiddleware
 
     public function update(PriceRequest $request, AdmissionTestProduct $product, AdmissionTestPrice $price)
     {
-        $product->update([
+        $price->update([
             'name' => $request->name,
             'start_at' => $request->start_at,
         ]);
 
         return [
-            'name' => $product->name,
-            'start_at' => $product->start_at,
+            'success' => 'The admission test product price update success.',
+            'name' => $price->name,
+            'start_at' => $price->start_at,
         ];
     }
 }
