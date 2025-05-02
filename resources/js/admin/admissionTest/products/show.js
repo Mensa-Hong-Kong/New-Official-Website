@@ -354,12 +354,20 @@ function updatePriceSuccess(response) {
     let showPriceName = document.getElementById('showPriceName'+id);
     showPriceStartAt.innerText = response.data.start_at;
     showPriceName.innerText = response.data.name;
+    let found = false;
     for(let priceForm of priceForms) {
         let thisID = priceForm.id.replace('priceForm', '');
-        if(thisID != id && document.getElementById('priceStartAtInput'+id).value <= response.data.start_at) {
+        if(
+            thisID != id &&
+            document.getElementById('priceStartAtInput'+thisID).value <= response.data.start_at
+        ) {
             priceRoot.insertBefore(document.getElementById('priceForm'+id), priceForm);
+            found = true;
             break;
         }
+    }
+    if(!found) {
+        priceRoot.appendChild(document.getElementById('priceForm'+id));
     }
     showPriceStartAt.hidden = false;
     showPriceName.hidden = false;
