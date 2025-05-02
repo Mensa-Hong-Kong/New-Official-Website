@@ -424,7 +424,7 @@ if(proctor) {
     }
 
     function saveProctorFailCallback(error) {
-        let id = urlGetProctorID(response.request.responseURL);
+        let id = urlGetProctorID(error.request.responseURL);
         if(error.status == 422) {
             bootstrapAlert(error.response.data.errors.user_id);
         }
