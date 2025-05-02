@@ -103,7 +103,7 @@
                     <input type="datetime-local" name="start_at" class="col-md-2" placeholder="start at" id="priceStartAtInput{{ $price->id }}"
                         value="{{ $price->start_at }}" data-value="{{ $price->start_at }}" hidden />
                     <div class="col-md-2" id="showPriceName{{ $price->id }}">{{ $price->name }}</div>
-                    <input name="start_at" class="col-md-2" placeholder="name" max="255" id="priceNameInput{{ $price->id }}"
+                    <input name="name" class="col-md-2" placeholder="name" max="255" id="priceNameInput{{ $price->id }}"
                         value="{{ $price->name }}" data-value="{{ $price->name }}" hidden />
                     <div class="col-md-1">{{ $price->price }}</div>
                     <span class="spinner-border spinner-border-sm priceLoader" id="priceLoader{{ $price->id }}" role="status" aria-hidden="true"></span>
