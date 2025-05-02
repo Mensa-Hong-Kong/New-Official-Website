@@ -13,9 +13,14 @@ class PriceRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $return = [
             'name' => 'nullable|string|max:255',
             'start_at' => 'nullable|date',
         ];
+        if ($this->method() == 'POST') {
+            $return['price'] = 'required|integer|min:1|max:65535';
+        }
+
+        return $return;
     }
 }
