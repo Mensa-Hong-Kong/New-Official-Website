@@ -157,7 +157,7 @@
                             <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-1" name="user_id" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
                             <div class="col-md-2" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
                             <button class="btn btn-primary col-md-1 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
-                            <button class="btn btn-primary col-md-1" id="savingProctor{{ $proctor->id }}" disabled hidden>Save</button>
+                            <button class="btn btn-primary col-md-2" id="savingProctor{{ $proctor->id }}" disabled hidden>Saving</button>
                             <button class="btn btn-danger col-md-1" id="cancelEditProctor{{ $proctor->id }}" onclick="return false">Cancel</button>
                         </form>
                     @endforeach
