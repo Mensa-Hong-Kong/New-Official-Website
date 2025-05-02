@@ -322,4 +322,142 @@ editButton.addEventListener(
     }
 );
 
+const priceForms = document.getElementsByClassName('priceForm');
+const priceRoot = document.getElementById('prices');
+
+function urlGetPriceID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/admission-test\/products\/([0-9]+)\/prices\/([0-9]+).*/i)[2];
+}
+
+function priceValidation(priceNameInput) {
+    if(priceNameInput.validity.tooLong) {
+        bootstrapAlert('The price name field must not be greater than 255 characters.');
+        return false;
+    }
+    return true;
+}
+
+function updatePriceSuccess(response) {
+    bootstrapAlert(response.data.success);
+    let id = urlGetPriceID(response.request.responseURL);
+    let priceStartAtInput = document.getElementById('priceStartAtInput'+id);
+    let priceNameInput = document.getElementById('priceNameInput'+id);
+    priceStartAtInput.hidden = true;
+    priceNameInput.hidden = true;
+    priceStartAtInput.disabled = false;
+    priceNameInput.disabled = false;
+    priceStartAtInput.value = response.data.start_at;
+    priceStartAtInput.dataset.value = response.data.start_at;
+    priceNameInput.value = response.data.name;
+    priceNameInput.dataset.value = response.data.name;
+    let showPriceStartAt = document.getElementById('showPriceStartAt'+id);
+    let showPriceName = document.getElementById('showPriceName'+id);
+    showPriceStartAt.innerText = response.data.start_at;
+    showPriceName.innerText = response.data.name;
+    for(let priceForm of priceForms) {
+        let thisID = priceForm.id.replace('priceForm', '');
+        if(thisID != id && document.getElementById('priceStartAtInput'+id).value <= response.data.start_at) {
+            priceRoot.insertBefore(document.getElementById('priceForm'+id), priceForm);
+            break;
+        }
+    }
+    showPriceStartAt.hidden = false;
+    showPriceName.hidden = false;
+    document.getElementById('savingPrice'+id).hidden = true;
+    document.getElementById('editPrice'+id).hidden = false;
+    enableSubmitting();
+}
+
+function updatePriceFail(error) {
+    let id = urlGetPriceID(error.request.responseURL);
+    if(error.status == 422) {
+        bootstrapAlert(error.response.data.errors.join("\r\n"));
+    }
+    document.getElementById('savingPrice'+id).hidden = true;
+    priceStartAtInput.disabled = false;
+    priceNameInput.disabled = false;
+    document.getElementById('savePrice'+id).hidden = false;
+    document.getElementById('cancelEditPrice'+id).disabled = false;
+    enableSubmitting();
+}
+
+function savePrice(event) {
+    event.preventDefault();
+    if(submitting == '') {
+        let submitAt = Date.now();
+        submitting = 'updatePrice'+submitAt;
+        let id = event.target.id.replace('priceForm', '');
+        let priceStartAtInput = document.getElementById('priceStartAtInput'+id);
+        let priceNameInput = document.getElementById('priceNameInput'+id);
+        disableSubmitting();
+        if(submitting == 'updatePrice'+submitAt) {
+            if(priceValidation(priceNameInput)) {
+                priceStartAtInput.disabled = true;
+                priceNameInput.disabled = true;
+                document.getElementById('savePrice'+id).hidden = true;
+                document.getElementById('cancelEditPrice'+id).hidden = true;
+                document.getElementById('savingPrice'+id).hidden = false;
+                let data = {};
+                if(priceStartAtInput.value) {
+                    data['start_at'] = priceStartAtInput.value;
+                }
+                if(priceNameInput.value) {
+                    data['name'] = priceStartAtInput.value;
+                }
+                post(event.target.action, updatePriceSuccess, updatePriceFail, 'put', data);
+            } else {
+                enableSubmitting();
+            }
+        }
+    }
+}
+
+function cancelEditPrice(event) {
+    let id = event.target.id.replace('cancelEditPrice', '');
+    document.getElementById('savePrice'+id).hidden = true;
+    document.getElementById('cancelEditPrice'+id).hidden = true;
+    let startAtInput = document.getElementById('priceStartAtInput'+id);
+    startAtInput.hidden = true;
+    startAtInput.value = startAtInput.dataset.value;
+    let nameAtInput = document.getElementById('priceNameInput'+id);
+    nameAtInput.hidden = true;
+    nameAtInput.value = nameAtInput.dataset.value;
+    document.getElementById('showPriceStartAt'+id).hidden = false;
+    document.getElementById('showPriceName'+id).hidden = false;
+    document.getElementById('editPrice'+id).hidden = false;
+}
+
+function editPrice(event) {
+    let id = event.target.id.replace('editPrice', '');
+    document.getElementById('editPrice'+id).hidden = true;
+    document.getElementById('showPriceStartAt'+id).hidden = true;
+    document.getElementById('showPriceName'+id).hidden = true;
+    document.getElementById('priceStartAtInput'+id).hidden = false;
+    document.getElementById('priceNameInput'+id).hidden = false;
+    document.getElementById('savePrice'+id).hidden = false;
+    document.getElementById('cancelEditPrice'+id).hidden = false;
+}
+
+function setPriceEventListeners(loader) {
+    let id = loader.id.replace('priceLoader', '');
+    document.getElementById('priceForm'+id).addEventListener(
+        'submit', savePrice
+    );
+    document.getElementById('cancelEditPrice'+id).addEventListener(
+        'click', cancelEditPrice
+    );
+    let editButton = document.getElementById('editPrice'+id);
+    editButton.addEventListener(
+        'click', editPrice
+    );
+    loader.remove();
+    editButton.hidden = false;
+}
+
+document.querySelectorAll('.priceLoader').forEach(
+    (loader) => {
+        setPriceEventListeners(loader);
+    }
+);
+
 submitting = '';

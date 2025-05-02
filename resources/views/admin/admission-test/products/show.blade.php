@@ -86,19 +86,32 @@
                 </table>
             </form>
         </article>
-        <article>
+        <article id="prices">
             <h3 class="fw-bold mb-2">Prices</h3>
             <div class="row g-3">
                 <div class="col-md-2">Start At</div>
                 <div class="col-md-2">Name</div>
                 <div class="col-md-1">Price</div>
+                <div class="col-md-2">Edit</div>
             </div>
             @foreach ($product->prices as $price)
-                <div class="row g-3">
-                    <div class="col-md-2">{{ $price->start_at }}</div>
-                    <div class="col-md-2">{{ $price->name }}</div>
+                <form class="row g-3 priceForm" id="priceForm{{ $price->id }}" novalidate
+                    action="{{ route('admin.admission-test.products.prices.update', ['product' => $product, 'price' => $price]) }}">
+                    @csrf
+                    @method('put')
+                    <div class="col-md-2" id="showPriceStartAt{{ $price->id }}">{{ $price->start_at }}</div>
+                    <input type="datetime-local" name="start_at" class="col-md-2" placeholder="start at" id="priceStartAtInput{{ $price->id }}"
+                        value="{{ $price->start_at }}" data-value="{{ $price->start_at }}" hidden />
+                    <div class="col-md-2" id="showPriceName{{ $price->id }}">{{ $price->name }}</div>
+                    <input name="start_at" class="col-md-2" placeholder="name" max="255" id="priceNameInput{{ $price->id }}"
+                        value="{{ $price->name }}" data-value="{{ $price->name }}" hidden />
                     <div class="col-md-1">{{ $price->price }}</div>
-                </div>
+                    <span class="spinner-border spinner-border-sm priceLoader" id="priceLoader{{ $price->id }}" role="status" aria-hidden="true"></span>
+                    <button class="btn btn-primary col-md-2" id="editPrice{{ $price->id }}" onclick="return false;" hidden>Edit</button>
+                    <button class="btn btn-primary col-md-1 submitButton" id="savePrice{{ $price->id }}" hidden>Save</button>
+                    <button class="btn btn-danger col-md-1" id="cancelEditPrice{{ $price->id }}" onclick="return false;" hidden>Cancel</button>
+                    <button class="btn btn-danger col-md-2" id="savingPrice{{ $price->id }}" disabled hidden>Saving</button>
+                </form>
             @endforeach
         </article>
     </section>
