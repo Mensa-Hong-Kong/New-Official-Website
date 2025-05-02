@@ -329,8 +329,8 @@ function urlGetPriceID(url) {
     return (new URL(url).pathname).match(/^\/admin\/admission-test\/products\/([0-9]+)\/prices\/([0-9]+).*/i)[2];
 }
 
-function priceValidation(priceNameInput) {
-    if(priceNameInput.validity.tooLong) {
+function priceValidation(updatePriceNameInput) {
+    if(updatePriceNameInput.validity.tooLong) {
         bootstrapAlert('The price name field must not be greater than 255 characters.');
         return false;
     }
@@ -340,16 +340,16 @@ function priceValidation(priceNameInput) {
 function updatePriceSuccess(response) {
     bootstrapAlert(response.data.success);
     let id = urlGetPriceID(response.request.responseURL);
-    let priceStartAtInput = document.getElementById('priceStartAtInput'+id);
-    let priceNameInput = document.getElementById('priceNameInput'+id);
-    priceStartAtInput.hidden = true;
-    priceNameInput.hidden = true;
-    priceStartAtInput.disabled = false;
-    priceNameInput.disabled = false;
-    priceStartAtInput.value = response.data.start_at;
-    priceStartAtInput.dataset.value = response.data.start_at;
-    priceNameInput.value = response.data.name;
-    priceNameInput.dataset.value = response.data.name;
+    let updatePriceStartAtInput = document.getElementById('priceStartAtInput'+id);
+    let updatePriceNameInput = document.getElementById('priceNameInput'+id);
+    updatePriceStartAtInput.hidden = true;
+    updatePriceNameInput.hidden = true;
+    updatePriceStartAtInput.disabled = false;
+    updatePriceNameInput.disabled = false;
+    updatePriceStartAtInput.value = response.data.start_at;
+    updatePriceStartAtInput.dataset.value = response.data.start_at;
+    updatePriceNameInput.value = response.data.name;
+    updatePriceNameInput.dataset.value = response.data.name;
     let showPriceStartAt = document.getElementById('showPriceStartAt'+id);
     let showPriceName = document.getElementById('showPriceName'+id);
     showPriceStartAt.innerText = response.data.start_at;
@@ -382,8 +382,8 @@ function updatePriceFail(error) {
         bootstrapAlert(error.response.data.errors.join("\r\n"));
     }
     document.getElementById('savingPrice'+id).hidden = true;
-    priceStartAtInput.disabled = false;
-    priceNameInput.disabled = false;
+    document.getElementById('priceStartAtInput'+id).disabled = false;
+    document.getElementById('priceNameInput'+id).disabled = false;
     document.getElementById('savePrice'+id).hidden = false;
     document.getElementById('cancelEditPrice'+id).disabled = false;
     enableSubmitting();
@@ -395,22 +395,22 @@ function savePrice(event) {
         let submitAt = Date.now();
         submitting = 'updatePrice'+submitAt;
         let id = event.target.id.replace('priceForm', '');
-        let priceStartAtInput = document.getElementById('priceStartAtInput'+id);
-        let priceNameInput = document.getElementById('priceNameInput'+id);
+        let updatePriceStartAtInput = document.getElementById('priceStartAtInput'+id);
+        let updatePriceNameInput = document.getElementById('priceNameInput'+id);
         disableSubmitting();
         if(submitting == 'updatePrice'+submitAt) {
-            if(priceValidation(priceNameInput)) {
-                priceStartAtInput.disabled = true;
-                priceNameInput.disabled = true;
+            if(priceValidation(updatePriceNameInput)) {
+                updatePriceStartAtInput.disabled = true;
+                updatePriceNameInput.disabled = true;
                 document.getElementById('savePrice'+id).hidden = true;
                 document.getElementById('cancelEditPrice'+id).hidden = true;
                 document.getElementById('savingPrice'+id).hidden = false;
                 let data = {};
-                if(priceStartAtInput.value) {
-                    data['start_at'] = priceStartAtInput.value;
+                if(updatePriceStartAtInput.value) {
+                    data['start_at'] = updatePriceStartAtInput.value;
                 }
-                if(priceNameInput.value) {
-                    data['name'] = priceStartAtInput.value;
+                if(updatePriceNameInput.value) {
+                    data['name'] = updatePriceNameInput.value;
                 }
                 post(event.target.action, updatePriceSuccess, updatePriceFail, 'put', data);
             } else {
