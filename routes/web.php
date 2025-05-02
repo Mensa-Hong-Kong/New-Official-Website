@@ -124,7 +124,7 @@ Route::middleware('auth')->group(function () {
                 function () {
                     Route::resource('products', AdminAdmissionTestProductController::class)
                         ->except(['edit', 'destroy']);
-                    Route::resource('products/{product}/price', AdminAdmissionTestPriceController::class)
+                    Route::resource('products/{product}/prices', AdminAdmissionTestPriceController::class)
                         ->only('update')
                         ->whereNumber(['product', 'price'])
                         ->names('products.prices');
