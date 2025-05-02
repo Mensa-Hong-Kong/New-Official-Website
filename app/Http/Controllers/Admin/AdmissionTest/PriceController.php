@@ -18,15 +18,15 @@ class PriceController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:Edit:Admission Test'),
             (new Middleware(
-                function(Request $request, Closure $next) {
+                function (Request $request, Closure $next) {
                     $product = $request->route('product');
                     $price = $request->route('price');
-                    if($price->product_id == $product->id) {
+                    if ($price->product_id == $product->id) {
                         return $next($request);
                     }
                     abort(404);
                 }
-            ))->only('update')
+            ))->only('update'),
         ];
     }
 
