@@ -531,7 +531,9 @@ class ForgetPasswordTest extends TestCase
     public function test_happy_case_when_reset_password_have_a_lot_of_failed_but_under_limit_within_24_hours()
     {
         Notification::fake();
-        $user = User::factory()->create();
+        $user = User::factory()
+            ->state(['birthday' => now()->subYears(2)->format('Y-m-d')])
+            ->create();
         $contact = UserHasContact::factory()->create();
         $this->verified($contact);
         $insert = array_fill(

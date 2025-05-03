@@ -138,7 +138,7 @@ class ShowTest extends TestCase
 
     public function test_user_has_other_same_passport_user_account_tested()
     {
-        $newTestingAt = now()->addDay();
+        $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => $newTestingAt->addHour(),
@@ -166,7 +166,7 @@ class ShowTest extends TestCase
 
     public function test_user_has_already_been_taken_within_6_months()
     {
-        $newTestingAt = now()->addDay();
+        $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => $newTestingAt->addHour(),
