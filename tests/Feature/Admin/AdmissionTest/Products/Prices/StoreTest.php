@@ -188,7 +188,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.prices.update',
             [
                 'product' => $this->product,
-                'price' =>  $price,
+                'price' => $price,
             ]
         );
         $response->assertJson($data);
