@@ -6,8 +6,10 @@
             @foreach ($pages as $page)
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#page{{ $page->id }}" aria-expanded="true" aria-controls="page{{ $page->id }}">
-                        Accordion Item #1
+                        <button class="accordion-button" type="button" aria-expanded="true"
+                            data-bs-target="#page{{ $page->id }}" aria-controls="page{{ $page->id }}"
+                            data-bs-toggle="collapse">
+                            {{ $page->name }}
                         </button>
                     </h2>
                     <div id="page{{ $page->id }}" class="accordion-collapse collapse show">
