@@ -88,19 +88,28 @@
         </article>
         <article id="prices">
             <h3 class="fw-bold mb-2">Prices</h3>
+            <form class="row g-3" id="createPriceForm" method="POST" novalidate
+                action="{{ route('admin.admission-test.products.prices.store', ['product' => $product]) }}">
+                @csrf
+                <input type="datetime-local" name="start_at" class="col-md-3" placeholder="start at" id="priceStartAtInput" />
+                <input name="name" class="col-md-2" placeholder="name" max="255" id="priceNameInput" />
+                <input name="price" class="col-md-1" placeholder="price" step="1" min="1" max="65535" id="priceInput" />
+                <button class="btn btn-success col-md-2 submitButton" id="createPrice">Create</button>
+                <button class="btn btn-success col-md-2 submitButton" id="creatingPrice" disabled hidden>Creating</button>
+            </form>
             <div class="row g-3">
-                <div class="col-md-2">Start At</div>
+                <div class="col-md-3">Start At</div>
                 <div class="col-md-2">Name</div>
                 <div class="col-md-1">Price</div>
                 <div class="col-md-2">Edit</div>
             </div>
             @foreach ($product->prices as $price)
-                <form class="row g-3 priceForm" id="priceForm{{ $price->id }}" novalidate
+                <form class="row g-3 priceForm" id="priceForm{{ $price->id }}" method="POST" novalidate
                     action="{{ route('admin.admission-test.products.prices.update', ['product' => $product, 'price' => $price]) }}">
                     @csrf
                     @method('put')
-                    <div class="col-md-2" id="showPriceStartAt{{ $price->id }}">{{ $price->start_at }}</div>
-                    <input type="datetime-local" name="start_at" class="col-md-2" placeholder="start at" id="priceStartAtInput{{ $price->id }}"
+                    <div class="col-md-3" id="showPriceStartAt{{ $price->id }}">{{ $price->start_at }}</div>
+                    <input type="datetime-local" name="start_at" class="col-md-3" placeholder="start at" id="priceStartAtInput{{ $price->id }}"
                         value="{{ $price->start_at }}" data-value="{{ $price->start_at }}" hidden />
                     <div class="col-md-2" id="showPriceName{{ $price->id }}">{{ $price->name }}</div>
                     <input name="name" class="col-md-2" placeholder="name" max="255" id="priceNameInput{{ $price->id }}"

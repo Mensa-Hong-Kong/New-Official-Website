@@ -329,7 +329,7 @@ function urlGetPriceID(url) {
     return (new URL(url).pathname).match(/^\/admin\/admission-test\/products\/([0-9]+)\/prices\/([0-9]+).*/i)[2];
 }
 
-function priceValidation(updatePriceNameInput) {
+function updatePriceValidation(updatePriceNameInput) {
     if(updatePriceNameInput.validity.tooLong) {
         bootstrapAlert('The price name field must not be greater than 255 characters.');
         return false;
@@ -399,7 +399,7 @@ function savePrice(event) {
         let updatePriceNameInput = document.getElementById('priceNameInput'+id);
         disableSubmitting();
         if(submitting == 'updatePrice'+submitAt) {
-            if(priceValidation(updatePriceNameInput)) {
+            if(updatePriceValidation(updatePriceNameInput)) {
                 updatePriceStartAtInput.disabled = true;
                 updatePriceNameInput.disabled = true;
                 document.getElementById('savePrice'+id).hidden = true;
@@ -465,6 +465,149 @@ function setPriceEventListeners(loader) {
 document.querySelectorAll('.priceLoader').forEach(
     (loader) => {
         setPriceEventListeners(loader);
+    }
+);
+
+const priceStartAtInput = document.getElementById('priceStartAtInput');
+const priceNameInput = document.getElementById('priceNameInput');
+const priceInput = document.getElementById('priceInput');
+const createPriceButton = document.getElementById('createPrice');
+const creatingPriceButton = document.getElementById('creatingPrice');
+
+function createPriceValidation() {
+    let errors = [];
+    if(priceNameInput.validity.tooLong) {
+        errors.push('The price name field must not be greater than 255 characters.');
+    }
+    if(priceInput.validity.valueMissing) {
+        errors.push('The price field is required.');
+    } else if(priceInput.validity.rangeUnderflow) {
+        errors.push(`The price field must be at least ${priceInput.min}.`);
+    } else if(priceInput.validity.rangeOverflow) {
+        errors.push(`The price field must not be greater than ${priceInput.max}.`);
+    }
+    if(errors.length) {
+        bootstrapAlert(errors.join("\r\n"));
+        return false;
+    }
+    return true;
+}
+
+function createPriceSuccess(response) {
+    bootstrapAlert(response.data.success);
+    let formElement = document.createElement('form');
+    formElement.className = "row g-3 priceForm";
+    formElement.id = "priceForm" + response.data.id;
+    formElement.setAttribute("method", "POST");
+    formElement.setAttribute('novalidate', true);
+    formElement.action = response.data.update_url;
+    let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+    let html = `
+        <input type="hidden" name="_token" value="${token}">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="col-md-2" id="showPriceStartAt${response.data.id}">
+    `;
+    if(response.data.start_at) {
+        html += response.data.start_at;
+    }
+    html += `</div>
+        <input type="datetime-local" name="start_at" class="col-md-2" placeholder="start at" id="priceStartAtInput${response.data.id}"
+    `;
+    if(response.data.start_at) {
+        html += `value="${response.data.start_at}" data-value="${response.data.start_at}"`;
+    } else {
+        html += `value="" data-value=""`;
+    }
+    html +=`
+            hidden />
+        <div class="col-md-2" id="showPriceName${response.data.id}">`;
+    if(response.data.name) {
+        html += response.data.name;
+    }
+    html += `</div>
+        <input name="name" class="col-md-2" placeholder="name" max="255" id="priceNameInput${response.data.id}"
+    `;
+    if(response.data.name) {
+        html += `value="${response.data.name}" data-value="${response.data.name}"`;
+    } else {
+        html += `value="" data-value=""`;
+    }
+    html += `
+            hidden />
+        <div class="col-md-1">${response.data.price}</div>
+        <span class="spinner-border spinner-border-sm priceLoader" id="priceLoader${response.data.id}" role="status" aria-hidden="true"></span>
+        <button class="btn btn-primary col-md-2" id="editPrice${response.data.id}" onclick="return false;" hidden>Edit</button>
+        <button class="btn btn-primary col-md-1 submitButton" id="savePrice${response.data.id}" hidden>Save</button>
+        <button class="btn btn-danger col-md-1" id="cancelEditPrice${response.data.id}" onclick="return false;" hidden>Cancel</button>
+        <button class="btn btn-danger col-md-2" id="savingPrice${response.data.id}" disabled hidden>Saving</button>
+    `;
+    formElement.innerHTML = html;
+    let found = false;
+    for(let priceForm of priceForms) {
+        let thisID = priceForm.id.replace('priceForm', '');
+        if(
+            thisID != response.data.id &&
+            document.getElementById('priceStartAtInput'+thisID).value <= response.data.start_at
+        ) {
+            priceRoot.insertBefore(formElement, priceForm);
+            found = true;
+            break;
+        }
+    }
+    if(!found) {
+        priceRoot.appendChild(formElement);
+    }
+    setPriceEventListeners(document.getElementById('priceLoader'+response.data.id));
+    creatingPriceButton.hidden = true;
+    priceStartAtInput.value = '';
+    priceNameInput.value = '';
+    priceInput.value = '';
+    priceStartAtInput.disabled = false;
+    priceNameInput.disabled = false;
+    priceInput.disabled = false;
+    createPriceButton.hidden = false;
+    enableSubmitting();
+}
+
+function createPriceFail(error) {
+    if(error.status == 422) {
+        bootstrapAlert(error.response.data.errors.join("\r\n"));
+    }
+    creatingPriceButton.hidden = true;
+    priceStartAtInput.disabled = false;
+    priceNameInput.disabled = false;
+    priceInput.disabled = false;
+    createPriceButton.hidden = false;
+    enableSubmitting();
+}
+
+document.getElementById('createPriceForm').addEventListener(
+    'submit', function (event) {
+        event.preventDefault();
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'createPrice'+submitAt;
+            disableSubmitting();
+            if(submitting == 'createPrice'+submitAt) {
+                if(createPriceValidation()) {
+                    priceStartAtInput.disabled = true;
+                    priceNameInput.disabled = true;
+                    priceInput.disabled = true;
+                    createPriceButton.hidden = true;
+                    creatingPriceButton.hidden = false;
+                    let data = {price: priceInput.value};
+                    if(priceStartAtInput.value) {
+                        data['start_at'] = priceStartAtInput.value;
+                    }
+                    if(priceNameInput.value) {
+                        data['name'] = priceNameInput.value;
+                    }
+                    post(event.target.action, createPriceSuccess, createPriceFail, 'post', data);
+                } else {
+                    enableSubmitting();
+                }
+            }
+        }
     }
 );
 
