@@ -129,8 +129,7 @@ Route::middleware('auth')->group(function () {
                         ->whereNumber(['product', 'price'])
                         ->names('products.prices');
                     Route::resource('types', AdmissionTestTypeController::class)
-                        ->except(['show', 'destroy'])
-                        ->parameters(['types' => 'admission_test_type']);
+                        ->except(['show', 'destroy']);
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)

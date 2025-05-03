@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('main')
-    <form id="form" method="POST" action="{{ route('admin.admission-test.types.update', ['admission_test_type' => $type]) }}" novalidate>
+    <form id="form" method="POST" action="{{ route('admin.admission-test.types.update', ['type' => $type]) }}" novalidate>
         <h2 class="fw-bold mb-2 text-uppercase">Create Admission Test Type</h2>
         @method('PUT')
         @include('admin.admission-test.types.form')

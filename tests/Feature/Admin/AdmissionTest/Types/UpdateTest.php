@@ -67,7 +67,7 @@ class UpdateTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-test.types.update',
-                ['admission_test_type' => 0]
+                ['type' => 0]
             ),
             $this->happyCase
         );

@@ -17,7 +17,7 @@ class EditTest extends TestCase
         $response = $this->get(
             route(
                 'admin.admission-test.types.edit',
-                ['admission_test_type' => AdmissionTestType::factory()->create()]
+                ['type' => AdmissionTestType::factory()->create()]
             )
         );
         $response->assertRedirectToRoute('login');
@@ -36,7 +36,7 @@ class EditTest extends TestCase
             ->get(
                 route(
                     'admin.admission-test.types.edit',
-                    ['admission_test_type' => AdmissionTestType::factory()->create()]
+                    ['type' => AdmissionTestType::factory()->create()]
                 )
             );
         $response->assertForbidden();
@@ -49,7 +49,7 @@ class EditTest extends TestCase
         $response = $this->actingAs($user)->get(
             route(
                 'admin.admission-test.types.edit',
-                ['admission_test_type' => 0]
+                ['type' => 0]
             )
         );
         $response->assertNotFound();
@@ -63,7 +63,7 @@ class EditTest extends TestCase
             ->get(
                 route(
                     'admin.admission-test.types.edit',
-                    ['admission_test_type' => AdmissionTestType::factory()->create()]
+                    ['type' => AdmissionTestType::factory()->create()]
                 )
             );
         $response->assertSuccessful();
