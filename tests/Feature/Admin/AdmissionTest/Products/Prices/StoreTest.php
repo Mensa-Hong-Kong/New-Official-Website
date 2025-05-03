@@ -182,6 +182,15 @@ class StoreTest extends TestCase
         $data['success'] = 'The admission test product price create success.';
         $data['start_at'] = null;
         $response->assertSuccessful();
+        $price = AdmissionTestPrice::latest('id')->first();
+        $data['id'] = $price->id;
+        $data['update_url'] = route(
+            'admin.admission-test.products.prices.update',
+            [
+                'product' => $this->product,
+                'price' =>  $price,
+            ]
+        );
         $response->assertJson($data);
     }
 }

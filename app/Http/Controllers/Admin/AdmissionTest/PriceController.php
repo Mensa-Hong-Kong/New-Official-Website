@@ -41,9 +41,17 @@ class PriceController extends Controller implements HasMiddleware
 
         return [
             'success' => 'The admission test product price create success.',
+            'id' => $price->id,
             'name' => $price->name,
             'price' => $request->price,
             'start_at' => $price->start_at,
+            'update_url' => route(
+                'admin.admission-test.products.prices.update',
+                [
+                    'product' => $product,
+                    'price' => $price,
+                ]
+            ),
         ];
     }
 
