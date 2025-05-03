@@ -73,7 +73,7 @@ class DeleteTest extends TestCase
             ),
         );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The custom page of \"{$this->page->title}\" delete success!"]);
+        $response->assertJson(['success' => "The custom web page of \"{$this->page->title}\" delete success!"]);
         $this->assertNull(CustomWebPage::find($this->page->id));
     }
 }
