@@ -462,47 +462,47 @@
                                     </li>
                                 @endif
                             @endcan
-                            @can('Edit:Custom Page')
+                            @can('Edit:Custom Web Page')
                                 <li class="nav-item accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
-                                        data-bs-target="#asideNavCustomPage" aria-controls="asideNavCustomPage"
+                                        data-bs-target="#asideNavCustomWebPage" aria-controls="asideNavCustomWebPage"
                                         style="height: 0em"
                                         @class([
                                             'nav-item',
                                             'accordion-button',
                                             'collapsed' => !str_starts_with(
                                                 Route::current()->getName(),
-                                                'admin.custom-pages.'
+                                                'admin.custom-web-pages.'
                                             ),
                                         ])>
-                                        Custom Pages
+                                        Custom Web Pages
                                     </button>
-                                    <ul id="asideNavCustomPage" @class([
+                                    <ul id="asideNavCustomWebPage" @class([
                                         'accordion-collapse',
                                         'collapse',
                                         'show' => str_starts_with(
                                             Route::current()->getName(),
-                                            'admin.custom-pages.'
+                                            'admin.custom-web-pages.'
                                         ),
                                     ])>
                                         <li>
-                                            <a href="{{ route('admin.custom-pages.index') }}" @class([
+                                            <a href="{{ route('admin.custom-web-pages.index') }}" @class([
                                                 'nav-link',
                                                 'align-items-center',
-                                                'active' => Route::current()->getName() == 'admin.custom-pages.index',
+                                                'active' => Route::current()->getName() == 'admin.custom-web-pages.index',
                                             ])>Index</a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('admin.custom-pages.create') }}" @class([
+                                            <a href="{{ route('admin.custom-web-pages.create') }}" @class([
                                                 'nav-link',
                                                 'align-items-center',
-                                                'active' => Route::current()->getName() == 'admin.custom-pages.create',
+                                                'active' => Route::current()->getName() == 'admin.custom-web-pages.create',
                                             ])>Create</a>
                                         </li>
-                                        @if(Route::current()->getName() == 'admin.custom-pages.edit')
+                                        @if(Route::current()->getName() == 'admin.custom-web-pages.edit')
                                             <li>
-                                                <a href="{{ route('admin.custom-pages.edit', ['custom_page' => $page]) }}"
+                                                <a href="{{ route('admin.custom-web-pages.edit', ['custom_web_page' => $page]) }}"
                                                     class="nav-link align-items-center active">Edit</a>
                                             </li>
                                         @endif

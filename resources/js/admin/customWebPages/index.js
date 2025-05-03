@@ -17,19 +17,19 @@ function enableSubmitting(){
     }
 }
 
-function urlGetCustomPageID(url) {
-    return (new URL(url).pathname).match(/^\/admin\/custom-pages\/([0-9]+).*/i)[1];
+function urlGetCustomWebPageID(url) {
+    return (new URL(url).pathname).match(/^\/admin\/custom-web-pages\/([0-9]+).*/i)[1];
 }
 
-function deleteCustomPageSuccessCallback(response) {
+function deleteCustomWebPageSuccessCallback(response) {
     bootstrapAlert(response.data.success);
-    let id =  urlGetCustomPageID(response.request.responseURL);
+    let id =  urlGetCustomWebPageID(response.request.responseURL);
     document.getElementById('row'+id).remove();
     enableSubmitting();
 }
 
-function deleteCustomPageFailCallback(error) {
-    let id = urlGetCustomPageID(error.request.responseURL);
+function deleteCustomWebPageFailCallback(error) {
+    let id = urlGetCustomWebPageID(error.request.responseURL);
     document.getElementById('deleting'+id).hidden = true;
     document.getElementById('delete'+id).hidden = false;
     enableSubmitting();
@@ -46,8 +46,8 @@ function confirmedDeleteTeam(event) {
             document.getElementById('deleting'+id).hidden = false;
             post(
                 event.target.action,
-                deleteCustomPageSuccessCallback,
-                deleteCustomPageFailCallback,
+                deleteCustomWebPageSuccessCallback,
+                deleteCustomWebPageFailCallback,
                 'delete'
             );
         }
@@ -56,7 +56,7 @@ function confirmedDeleteTeam(event) {
 
 function deletePage(event) {
     event.preventDefault();
-    let message = `Are you sure to delete the custom page of ${event.submitter.dataset.title}?`;
+    let message = `Are you sure to delete the custom web page of ${event.submitter.dataset.title}?`;
     bootstrapConfirm(message, confirmedDeleteTeam, event);
 }
 

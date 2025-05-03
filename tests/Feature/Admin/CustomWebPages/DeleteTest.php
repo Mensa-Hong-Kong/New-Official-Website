@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Admin\CustomPages;
+namespace Tests\Feature\Admin\CustomWebPages;
 
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,15 +17,15 @@ class DeleteTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        $this->page = CustomPage::factory()->create();
+        $this->page = CustomWebPage::factory()->create();
     }
 
     public function test_have_no_login()
     {
         $response = $this->deleteJson(
             route(
-                'admin.custom-pages.destroy',
-                ['custom_page' => $this->page]
+                'admin.custom-web-pages.destroy',
+                ['custom_web_page' => $this->page]
             ),
         );
         $response->assertUnauthorized();
@@ -36,14 +36,14 @@ class DeleteTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
-                ->whereNot('name', 'Edit:Custom Page')
+                ->whereNot('name', 'Edit:Custom Web Page')
                 ->first()
                 ->name
         );
         $response = $this->actingAs($user)->deleteJson(
             route(
-                'admin.custom-pages.destroy',
-                ['custom_page' => $this->page]
+                'admin.custom-web-pages.destroy',
+                ['custom_web_page' => $this->page]
             ),
         );
         $response->assertForbidden();
@@ -52,11 +52,11 @@ class DeleteTest extends TestCase
     public function test_team_is_not_exist()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Custom Page');
+        $user->givePermissionTo('Edit:Custom Web Page');
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.custom-pages.destroy',
-                ['custom_page' => 0]
+                'admin.custom-web-pages.destroy',
+                ['custom_web_page' => 0]
             )
         );
         $response->assertNotFound();
@@ -65,15 +65,15 @@ class DeleteTest extends TestCase
     public function test_happy_case()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Custom Page');
+        $user->givePermissionTo('Edit:Custom Web Page');
         $response = $this->actingAs($user)->deleteJson(
             route(
-                'admin.custom-pages.destroy',
-                ['custom_page' => $this->page]
+                'admin.custom-web-pages.destroy',
+                ['custom_web_page' => $this->page]
             ),
         );
         $response->assertSuccessful();
         $response->assertJson(['success' => "The custom page of \"{$this->page->title}\" delete success!"]);
-        $this->assertNull(CustomPage::find($this->page->id));
+        $this->assertNull(CustomWebPage::find($this->page->id));
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\AdmissionTest\ProductController as AdminAdmissionTestProductController;
 use App\Http\Controllers\Admin\AdmissionTest\TypeController as AdmissionTestTypeController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
-use App\Http\Controllers\Admin\CustomPageController as AdmissionCustomPageController;
+use App\Http\Controllers\Admin\CustomWebPageController as AdmissionCustomWebPageController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\NavigationItemController as AdmissionNavigationItemController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -155,9 +155,9 @@ Route::middleware('auth')->group(function () {
             Route::resource('site-contents', SiteContentController::class)
                 ->only(['index', 'edit', 'update'])
                 ->whereNumber('site_content');
-            Route::resource('custom-pages', AdmissionCustomPageController::class)
+            Route::resource('custom-web-pages', AdmissionCustomWebPageController::class)
                 ->except('show')
-                ->whereNumber('custom_page');
+                ->whereNumber('custom_web_page');
             Route::resource('navigation-items', AdmissionNavigationItemController::class)
                 ->except('show')
                 ->whereNumber('navigation_item');
@@ -166,6 +166,6 @@ Route::middleware('auth')->group(function () {
         });
 });
 
-Route::get('/{pathname}', [PageController::class, 'customPage'])
+Route::get('/{pathname}', [PageController::class, 'customWebPage'])
     ->where('pathname', '(.*)?')
-    ->name('custom-page');
+    ->name('custom-web-page');

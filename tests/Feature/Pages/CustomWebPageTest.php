@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Pages;
 
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CustomPageTest extends TestCase
+class CustomWebPageTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -14,7 +14,7 @@ class CustomPageTest extends TestCase
     {
         $response = $this->get(
             route(
-                'custom-page',
+                'custom-web-page',
                 ['pathname' => 'abc/xyz']
             )
         );
@@ -23,10 +23,10 @@ class CustomPageTest extends TestCase
 
     public function test_happy_case()
     {
-        CustomPage::factory()->state(['pathname' => 'abc/xyz'])->create();
+        CustomWebPage::factory()->state(['pathname' => 'abc/xyz'])->create();
         $response = $this->get(
             route(
-                'custom-page',
+                'custom-web-page',
                 ['pathname' => 'abc/xyz']
             )
         );

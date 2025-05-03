@@ -3,38 +3,38 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CustomPageRequest;
-use App\Models\CustomPage;
+use App\Http\Requests\Admin\CustomWebPageRequest;
+use App\Models\CustomWebPage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class CustomPageController extends Controller implements HasMiddleware
+class CustomWebPageController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware('permission:Edit:Custom Page'))];
+        return [(new Middleware('permission:Edit:Custom Web Page'))];
     }
 
     public function index()
     {
-        $pages = CustomPage::sortable()->get();
+        $pages = CustomWebPage::sortable()->get();
 
-        return view('admin.custom-pages.index')
+        return view('admin.custom-web-pages.index')
             ->with('pages', $pages);
     }
 
     public function create()
     {
-        return view('admin.custom-pages.create');
+        return view('admin.custom-web-pages.create');
     }
 
-    public function store(CustomPageRequest $request)
+    public function store(CustomWebPageRequest $request)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
         if (str_starts_with($pathname, '/')) {
             $pathname = substr($request->pathname, 1);
         }
-        CustomPage::create([
+        CustomWebPage::create([
             'pathname' => strtolower($pathname),
             'title' => $request->title,
             'og_image_url' => $request->og_image_url,
@@ -42,22 +42,22 @@ class CustomPageController extends Controller implements HasMiddleware
             'content' => $request->content,
         ]);
 
-        return redirect()->route('admin.custom-pages.index');
+        return redirect()->route('admin.custom-web-pages.index');
     }
 
-    public function edit(CustomPage $customPage)
+    public function edit(CustomWebPage $customWebPage)
     {
-        return view('admin.custom-pages.edit')
-            ->with('page', $customPage);
+        return view('admin.custom-web-pages.edit')
+            ->with('page', $customWebPage);
     }
 
-    public function update(CustomPageRequest $request, CustomPage $customPage)
+    public function update(CustomWebPageRequest $request, CustomWebPage $customWebPage)
     {
         $pathname = preg_replace('/\/+/', '/', $request->pathname);
         if (str_starts_with($pathname, '/')) {
             $pathname = substr($request->pathname, 1);
         }
-        $customPage->update([
+        $customWebPage->update([
             'pathname' => strtolower($pathname),
             'title' => $request->title,
             'og_image_url' => $request->og_image_url,
@@ -65,13 +65,13 @@ class CustomPageController extends Controller implements HasMiddleware
             'content' => $request->content,
         ]);
 
-        return redirect()->route('admin.custom-pages.index');
+        return redirect()->route('admin.custom-web-pages.index');
     }
 
-    public function destroy(CustomPage $customPage)
+    public function destroy(CustomWebPage $customWebPage)
     {
-        $customPage->delete();
+        $customWebPage->delete();
 
-        return ['success' => "The custom page of \"{$customPage->title}\" delete success!"];
+        return ['success' => "The custom web page of \"{$customWebPage->title}\" delete success!"];
     }
 }

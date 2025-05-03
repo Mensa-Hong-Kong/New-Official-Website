@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CustomPageRequest extends FormRequest
+class CustomWebPageRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,9 +15,9 @@ class CustomPageRequest extends FormRequest
 
     public function rules(): array
     {
-        $unique = Rule::unique(CustomPage::class);
+        $unique = Rule::unique(CustomWebPage::class);
         if ($this->method() != 'POST') {
-            $unique = $unique->ignore($this->route('custom_page')->id);
+            $unique = $unique->ignore($this->route('custom_web_page')->id);
         }
 
         return [

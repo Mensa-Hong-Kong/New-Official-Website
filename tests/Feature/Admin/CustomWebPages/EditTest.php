@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Admin\CustomPages;
+namespace Tests\Feature\Admin\CustomWebPages;
 
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,47 +17,47 @@ class EditTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        $this->page = CustomPage::factory()->create();
+        $this->page = CustomWebPage::factory()->create();
     }
 
     public function test_have_no_login()
     {
         $response = $this->get(
             route(
-                'admin.custom-pages.edit',
-                ['custom_page' => $this->page]
+                'admin.custom-web-pages.edit',
+                ['custom_web_page' => $this->page]
             )
         );
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_custom_page()
+    public function test_have_no_edit_custom_web_page()
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
-                ->whereNot('name', 'Edit:Custom Page')
+                ->whereNot('name', 'Edit:Custom Web Page')
                 ->first()
                 ->name
         );
         $response = $this->actingAs($user)
             ->get(
                 route(
-                    'admin.custom-pages.edit',
-                    ['custom_page' => $this->page]
+                    'admin.custom-web-pages.edit',
+                    ['custom_web_page' => $this->page]
                 )
             );
         $response->assertForbidden();
     }
 
-    public function test_custom_page_is_not_exist()
+    public function test_custom_web_page_is_not_exist()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Custom Page');
+        $user->givePermissionTo('Edit:Custom Web Page');
         $response = $this->actingAs($user)->get(
             route(
-                'admin.custom-pages.edit',
-                ['custom_page' => 0]
+                'admin.custom-web-pages.edit',
+                ['custom_web_page' => 0]
             )
         );
         $response->assertNotFound();
@@ -66,12 +66,12 @@ class EditTest extends TestCase
     public function test_happy_case()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Custom Page');
+        $user->givePermissionTo('Edit:Custom Web Page');
         $response = $this->actingAs($user)
             ->get(
                 route(
-                    'admin.custom-pages.edit',
-                    ['custom_page' => $this->page]
+                    'admin.custom-web-pages.edit',
+                    ['custom_web_page' => $this->page]
                 )
             );
         $response->assertSuccessful();

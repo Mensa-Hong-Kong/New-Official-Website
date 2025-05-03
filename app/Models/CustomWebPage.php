@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
 
-class CustomPage extends Model
+class CustomWebPage extends Model
 {
     use HasFactory, Sortable;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Admin\CustomPages;
+namespace Tests\Feature\Admin\CustomWebPages;
 
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,29 +25,29 @@ class StoreTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo('Edit:Custom Page');
+        $this->user->givePermissionTo('Edit:Custom Web Page');
     }
 
     public function test_have_no_login()
     {
         $response = $this->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $this->happyCase
         );
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_custom_page_permission()
+    public function test_have_no_edit_custom_web_page_permission()
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
-                ->whereNot('name', 'Edit:Custom Page')
+                ->whereNot('name', 'Edit:Custom Web Page')
                 ->first()
                 ->name
         );
         $response = $this->actingAs($user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $this->happyCase
         );
         $response->assertForbidden();
@@ -58,7 +58,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['pathname']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname field is required.']);
@@ -69,7 +69,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['pathname'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname field must be a string.']);
@@ -80,7 +80,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['pathname'] = str_repeat('a', 769);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname field must not be greater than 768 characters.']);
@@ -91,7 +91,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['pathname'] = 'abc\\xyz';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname field must only contain letters, numbers, dashes and slash.']);
@@ -99,12 +99,12 @@ class StoreTest extends TestCase
 
     public function test_pathname_is_exist()
     {
-        CustomPage::factory()
+        CustomWebPage::factory()
             ->state(['pathname' => $this->happyCase['pathname']])
             ->create();
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['pathname' => 'The pathname has already been taken.']);
@@ -115,7 +115,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['title']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['title' => 'The title field is required.']);
@@ -126,7 +126,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['title'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['title' => 'The title field must be a string.']);
@@ -137,7 +137,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['title'] = str_repeat('a', 61);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['title' => 'The title field must not be greater than 60 characters.']);
@@ -148,7 +148,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['og_image_url'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['og_image_url' => 'The open graph image url field must be a string.']);
@@ -159,7 +159,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['og_image_url'] = str_repeat('a', 8001);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 8000 characters.']);
@@ -170,7 +170,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['og_image_url'] = 'abc';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['og_image_url' => 'The open graph image url field is not a valid URL.']);
@@ -181,7 +181,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         unset($data['description']);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['description' => 'The description field is required.']);
@@ -192,7 +192,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['description'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['description' => 'The description field must be a string.']);
@@ -203,7 +203,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['description'] = str_repeat('a', 66);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['description' => 'The description field must not be greater than 65 characters.']);
@@ -214,7 +214,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['content'] = ['abc'];
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['content' => 'The content field must be a string.']);
@@ -225,7 +225,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['content'] = str_repeat('a', 4194304);
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
         $response->assertInvalid(['content' => 'The content field must not be greater than 4194303 characters.']);
@@ -234,10 +234,10 @@ class StoreTest extends TestCase
     public function test_happy_case_when_have_no_og_image_url()
     {
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $this->happyCase
         );
-        $response->assertRedirectToRoute('admin.custom-pages.index');
+        $response->assertRedirectToRoute('admin.custom-web-pages.index');
     }
 
     public function test_happy_case_when_has_og_image_url()
@@ -245,9 +245,9 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $data['og_image_url'] = 'https://google.com';
         $response = $this->actingAs($this->user)->postJson(
-            route('admin.custom-pages.store'),
+            route('admin.custom-web-pages.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.custom-pages.index');
+        $response->assertRedirectToRoute('admin.custom-web-pages.index');
     }
 }

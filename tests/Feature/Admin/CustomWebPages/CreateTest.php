@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin\CustomPages;
+namespace Tests\Feature\Admin\CustomWebPages;
 
 use App\Models\ModulePermission;
 use App\Models\User;
@@ -13,7 +13,7 @@ class CreateTest extends TestCase
 
     public function test_have_no_login()
     {
-        $response = $this->get(route('admin.custom-pages.create'));
+        $response = $this->get(route('admin.custom-web-pages.create'));
         $response->assertRedirectToRoute('login');
     }
 
@@ -22,21 +22,21 @@ class CreateTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
-                ->whereNot('name', 'Edit:Custom Page')
+                ->whereNot('name', 'Edit:Custom Web Page')
                 ->first()
                 ->name
         );
         $response = $this->actingAs($user)
-            ->get(route('admin.custom-pages.create'));
+            ->get(route('admin.custom-web-pages.create'));
         $response->assertForbidden();
     }
 
     public function test_happy_case()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Custom Page');
+        $user->givePermissionTo('Edit:Custom Web Page');
         $response = $this->actingAs($user)
-            ->get(route('admin.custom-pages.create'));
+            ->get(route('admin.custom-web-pages.create'));
         $response->assertSuccessful();
     }
 }

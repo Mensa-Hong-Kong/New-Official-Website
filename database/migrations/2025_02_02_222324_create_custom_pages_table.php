@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('custom_pages', function (Blueprint $table) {
+        Schema::create('custom_web_pages', function (Blueprint $table) {
             $table->id();
             $table->string('pathname', 768)->unique(); // SEO max 1855 - max domain 256 = 1699 but unique varchar max 768
             $table->string('title', 60); // SEO max 60
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('custom_pages');
+        Schema::dropIfExists('custom_web_pages');
     }
 };

@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdmissionTest;
-use App\Models\CustomPage;
+use App\Models\CustomWebPage;
 use App\Models\SiteContent;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    public function customPage($pathname)
+    public function customWebPage($pathname)
     {
         $pathname = preg_replace('/\/+/', '/', $pathname);
         if (str_starts_with($pathname, '/')) {
             $pathname = substr($pathname, 1);
         }
-        $page = CustomPage::where('pathname', strtolower($pathname))
+        $page = CustomWebPage::where('pathname', strtolower($pathname))
             ->firstOrFail();
 
-        return view('pages.custom-page')
+        return view('pages.custom-web-page')
             ->with('page', $page);
     }
 

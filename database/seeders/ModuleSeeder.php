@@ -30,7 +30,7 @@ class ModuleSeeder extends Seeder
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
-        $module = Module::firstOrCreate(['name' => 'Custom Page']);
+        $module = Module::firstOrCreate(['name' => 'Custom Web Page']);
         $module->update(['display_order' => 5]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
