@@ -229,8 +229,8 @@ class UserController extends Controller implements HasMiddleware
         ], 422);
     }
 
-    public function syncedToStripe(Request $request)
+    public function createdStripeUser(Request $request)
     {
-        return ['status' => $request->user()->synced_to_stripe];
+        return ['status' => (bool) $request->user()->stripe_id];
     }
 }
