@@ -1,5 +1,5 @@
 function checkSyncedToStripe() {
-    axios.get('/profile/synced-to-stripe').then(function (response) {
+    axios.get('/profile/created-stripe-user').then(function (response) {
         if(response.data.status) {
             document.getElementById('stripeCustomerNotUpToDateAlert').remove();
             clearInterval(interval);
