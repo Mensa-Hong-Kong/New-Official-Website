@@ -6,11 +6,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
-class SyncUserToStripe
+class CreateStripeUser
 {
     public function __invoke()
     {
-        $userIDs = User::where('synced_to_stripe', false)
+        $userIDs = User::whereNull('stripe_id')
             ->get('id')
             ->pluck('id')
             ->toArray();
@@ -18,7 +18,9 @@ class SyncUserToStripe
             ->withToken(config('services.stripe.keys.secret'));
         foreach ($userIDs as $userID) {
             DB::beginTransaction();
-            $user = User::lockForUpdate()->find($userID);
+            $user = User::with('defaultEmail')
+                ->lockForUpdate()
+                ->find($userID);
             $name = [
                 '0' => $user->given_name,
                 '2' => $user->family_name,
@@ -35,10 +37,13 @@ class SyncUserToStripe
                 );
                 if (! $response->ok()) {
                     DB::rollBack();
-
-                    continue;
-                } elseif (count($response->json('data'))) {
-                    $user->update(['stripe_id' => $response->json('data')[0]['id']]);
+                } elseif (count($response->json('data'))) {;
+                    $user->update([
+                        'stripe_id' => $response->json('data')[0]['id'],
+                        'synced_to_stripe' => $name == $response->json('data')[0]['name'] &&
+                            $user->defaultEmail == $response->json('data')[0]['email'],
+                    ]);
+                    DB::commit();
                 } else {
                     $response = $http->post(
                         '/customers',
@@ -56,28 +61,11 @@ class SyncUserToStripe
                             'stripe_id' => $response->json('id'),
                             'synced_to_stripe' => true,
                         ]);
+                        DB::commit();
+                    } else {
+                        DB::rollBack();
                     }
-                    DB::commit();
-
-                    continue;
                 }
-            }
-            $response = $http->put(
-                "/customers/{$user->stripe_id}",
-                [
-                    'name' => $name,
-                    'email' => $user->defaultEmail,
-                ]
-            );
-            if (
-                $response->ok() &&
-                $response->json('name') == $name &&
-                $response->json('email') == $user->defaultEmail
-            ) {
-                $user->update(['synced_to_stripe' => true]);
-                DB::commit();
-            } else {
-                DB::rollBack();
             }
         }
     }
