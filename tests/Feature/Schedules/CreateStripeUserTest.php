@@ -32,7 +32,8 @@ class CreateStripeUserTest extends TestCase
 
     public function test_has_created_stripe_user_missing_stripe_id_but_name_not_update_to_date()
     {
-        $user = User::factory()->state(['synced_to_stripe' => false])->create();        $name = [
+        $user = User::factory()->state(['synced_to_stripe' => false])->create();
+        $name = [
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
@@ -88,14 +89,15 @@ class CreateStripeUserTest extends TestCase
 
     public function test_has_created_stripe_user_missing_stripe_id_but_email_not_update_to_date()
     {
-        $user = User::factory()->state(['synced_to_stripe' => false])->create();        $name = [
+        $user = User::factory()->state(['synced_to_stripe' => false])->create();
+        $name = [
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $user,
-                'is_default' => true
+                'is_default' => true,
             ])->email()
             ->create();
         ContactHasVerification::create([
@@ -158,7 +160,8 @@ class CreateStripeUserTest extends TestCase
 
     public function test_has_created_stripe_user_missing_stripe_id_all_update_to_date()
     {
-        $user = User::factory()->state(['synced_to_stripe' => false])->create();        $name = [
+        $user = User::factory()->state(['synced_to_stripe' => false])->create();
+        $name = [
             '0' => $user->given_name,
             '2' => $user->family_name,
         ];

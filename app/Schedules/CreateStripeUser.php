@@ -37,7 +37,7 @@ class CreateStripeUser
                 );
                 if (! $response->ok()) {
                     DB::rollBack();
-                } elseif (count($response->json('data'))) {;
+                } elseif (count($response->json('data'))) {
                     $user->update([
                         'stripe_id' => $response->json('data')[0]['id'],
                         'synced_to_stripe' => $name == $response->json('data')[0]['name'] &&
