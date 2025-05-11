@@ -41,7 +41,7 @@ class ProctorController extends Controller implements HasMiddleware
         return [
             'success' => 'The proctor create success',
             'user_id' => $request->user->id,
-            'name' => $request->user->name,
+            'name' => $request->user->adornedName,
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $request->user]
@@ -72,7 +72,7 @@ class ProctorController extends Controller implements HasMiddleware
         return [
             'success' => 'The proctor update success',
             'user_id' => $request->user->id,
-            'name' => $request->user->name,
+            'name' => $request->user->adornedName,
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $request->user]

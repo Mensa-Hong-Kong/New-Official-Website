@@ -116,10 +116,10 @@
                         <tr>
                             <th scope="row">{{ $user->id }}</th>
                             <td>
-                                @if(strlen($user->name) > 32)
-                                    {{ substr($user->name, 0, 29) }}...
+                                @if(strlen($user->adornedName) > 32)
+                                    {{ substr($user->adornedName, 0, 29) }}...
                                 @else
-                                    {{ $user->name }}
+                                    {{ $user->adornedName }}
                                 @endif
                             </td>
                             <td>

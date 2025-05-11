@@ -147,7 +147,7 @@ class CandidateController extends Controller implements HasMiddleware
         return [
             'success' => 'The candidate create success',
             'user_id' => $request->user->id,
-            'name' => $request->user->name,
+            'name' => $request->user->adornedName,
             'passport_type' => $request->user->passportType->name,
             'passport_number' => $request->user->passport_number,
             'has_same_passport' => $request->user->hasOtherUserSamePassportJoinedFutureTest(),

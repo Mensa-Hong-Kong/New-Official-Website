@@ -288,7 +288,7 @@ class PresentTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The candidate of {$this->user->name} changed to be present.",
+            'success' => "The candidate of {$this->user->adornedName} changed to be present.",
             'status' => true,
         ]);
     }

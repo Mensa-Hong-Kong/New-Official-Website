@@ -209,7 +209,7 @@ class ResultTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The candidate of {$this->user->name} changed to be pass.",
+            'success' => "The candidate of {$this->user->adornedName} changed to be pass.",
             'status' => true,
         ]);
         Notification::assertSentTo(
@@ -233,7 +233,7 @@ class ResultTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The candidate of {$this->user->name} changed to be fail.",
+            'success' => "The candidate of {$this->user->adornedName} changed to be fail.",
             'status' => false,
         ]);
         Notification::assertSentTo(

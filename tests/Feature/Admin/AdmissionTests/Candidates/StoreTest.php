@@ -461,7 +461,7 @@ class StoreTest extends TestCase
         $response->assertJson([
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
-            'name' => $this->user->name,
+            'name' => $this->user->adornedName,
             'has_same_passport' => false,
             'show_user_url' => route(
                 'admin.users.show',
@@ -519,7 +519,7 @@ class StoreTest extends TestCase
         $response->assertJson([
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
-            'name' => $this->user->name,
+            'name' => $this->user->adornedName,
             'has_same_passport' => true,
             'show_user_url' => route(
                 'admin.users.show',
@@ -583,7 +583,7 @@ class StoreTest extends TestCase
         $response->assertJson([
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
-            'name' => $this->user->name,
+            'name' => $this->user->adornedName,
             'has_same_passport' => false,
             'show_user_url' => route(
                 'admin.users.show',
@@ -654,7 +654,7 @@ class StoreTest extends TestCase
         $response->assertJson([
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
-            'name' => $this->user->name,
+            'name' => $this->user->adornedName,
             'has_same_passport' => true,
             'show_user_url' => route(
                 'admin.users.show',

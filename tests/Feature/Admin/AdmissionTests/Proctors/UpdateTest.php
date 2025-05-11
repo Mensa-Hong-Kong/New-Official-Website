@@ -182,7 +182,7 @@ class UpdateTest extends TestCase
         $response->assertJson([
             'success' => 'The proctor update success',
             'user_id' => $this->user->id,
-            'name' => $this->user->name,
+            'name' => $this->user->adornedName,
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $this->user]
@@ -221,7 +221,7 @@ class UpdateTest extends TestCase
         $response->assertJson([
             'success' => 'The proctor update success',
             'user_id' => $user->id,
-            'name' => $user->name,
+            'name' => $user->adornedName,
             'show_user_url' => route(
                 'admin.users.show',
                 ['user' => $user]
