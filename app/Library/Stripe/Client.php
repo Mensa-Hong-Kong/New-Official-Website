@@ -13,4 +13,9 @@ class Client
     {
         return new Product;
     }
+
+    public static function prices()
+    {
+        return new Price;
+    }
 }
