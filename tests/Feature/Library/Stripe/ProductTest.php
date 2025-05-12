@@ -161,6 +161,52 @@ class ProductTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
+    public function test_find_product_have_no_result()
+    {
+        Http::fake([
+            'https://api.stripe.com/v1/*' => Http::response(status: 404),
+        ]);
+        $result = Client::products()->find("prod_NWjs8kKbJWmuuc");
+        $this->assertNull($result);
+        Http::assertSent(
+            function (Request $request) {
+                return $request->method() == "GET" &&
+                    $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
+                    $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
+                    $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
+            }
+        );
+    }
+
+    public function test_find_product_has_result()
+    {
+        $response = [
+            "id" => "prod_NWjs8kKbJWmuuc",
+            "object" => "product",
+            "active" => true,
+            "created" => 1678833149,
+            "default_price" => null,
+            "description" => null,
+            "images" => [],
+            "marketing_features" => [],
+            "livemode" => false,
+            "metadata" => [],
+            "name" => "Gold Plan",
+            "package_dimensions" => null,
+            "shippable" => null,
+            "statement_descriptor" => null,
+            "tax_code" => null,
+            "unit_label" => null,
+            "updated" => 1678833149,
+            "url" => null,
+        ];
+        Http::fake([
+            'https://api.stripe.com/v1/*' => Http::response($response),
+        ]);
+        $result = Client::products()->find("prod_NWjs8kKbJWmuuc");
+        $this->assertEquals($response, $result);
+    }
+
     public function test_update_product_happy_case()
     {
         $response = [

@@ -19,18 +19,15 @@ class Base
             ->withHeader('Stripe-Version', static::STRIPE_VERSION.'.basil');
     }
 
-    public function find(string $id)
+    public function find(string $id): null|array
     {
         $response = $this->http->get(
-            "/{$this->prefix}/search/$id",
+            "/{$this->prefix}/$id",
         );
         if($response->notFound()) {
             return null;
         }
         $response->throw();
-        if(count($response->json('data'))) {
-            return $response->json('data');
-        }
 
         return $response->json();
     }
