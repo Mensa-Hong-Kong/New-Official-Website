@@ -18,4 +18,9 @@ class Client
     {
         return new Price;
     }
+
+    public static function checkouts()
+    {
+        return new Checkout;
+    }
 }
