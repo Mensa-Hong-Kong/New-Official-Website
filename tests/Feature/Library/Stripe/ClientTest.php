@@ -4,6 +4,7 @@ namespace Tests\Feature\Library\Stripe;
 
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Customer;
+use App\Library\Stripe\Price;
 use App\Library\Stripe\Product;
 use Tests\TestCase;
 
@@ -22,6 +23,14 @@ class ClientTest extends TestCase
         $this->assertEquals(
             new Product,
             Client::products()
+        );
+    }
+
+    public function test_prices_statice_function()
+    {
+        $this->assertEquals(
+            new Price,
+            Client::prices()
         );
     }
 }
