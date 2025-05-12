@@ -33,4 +33,12 @@ class ClientTest extends TestCase
             Client::prices()
         );
     }
+
+    public function test_checkouts_statice_function()
+    {
+        $this->assertEquals(
+            new Price,
+            Client::checkouts()
+        );
+    }
 }
