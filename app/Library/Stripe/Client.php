@@ -8,4 +8,9 @@ class Client
     {
         return new Customer;
     }
+
+    public static function products()
+    {
+        return new Product;
+    }
 }
