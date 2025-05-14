@@ -143,7 +143,7 @@
                                 @method('DELETE')
                             </form>
                             <div class="col-md-1" id="showProctorId{{ $proctor->id }}">{{ $proctor->id }}</div>
-                            <div class="col-md-2" id="showProctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
+                            <div class="col-md-2" id="showProctorName{{ $proctor->id }}">{{ $proctor->adornedName }}</div>
                             <a class="btn btn-primary col-md-1" id="showProctorLink{{ $proctor->id }}"
                                 href="{{ route('admin.users.show', ['user' => $proctor]) }}">Show</a>
                             <span class="spinner-border spinner-border-sm proctorLoader" id="proctorLoader{{ $proctor->id }}" role="status" aria-hidden="true"></span>
@@ -155,7 +155,7 @@
                             @csrf
                             @method('PUT')
                             <input type="text" id="proctorUserIdInput{{ $proctor->id }}" class="col-md-1" name="user_id" value="{{ $proctor->id }}" data-value="{{ $proctor->id }}" required />
-                            <div class="col-md-2" id="proctorName{{ $proctor->id }}">{{ $proctor->name }}</div>
+                            <div class="col-md-2" id="proctorName{{ $proctor->id }}">{{ $proctor->adornedName }}</div>
                             <button class="btn btn-primary col-md-1 submitButton" id="saveProctor{{ $proctor->id }}">Save</button>
                             <button class="btn btn-primary col-md-2" id="savingProctor{{ $proctor->id }}" disabled hidden>Saving</button>
                             <button class="btn btn-danger col-md-1" id="cancelEditProctor{{ $proctor->id }}" onclick="return false">Cancel</button>
@@ -206,7 +206,7 @@
                             @method('delete')
                         </form>
                         <div class="col-md-1">{{ $candidate->id }}</div>
-                        <div class="col-md-2">{{ $candidate->name }}</div>
+                        <div class="col-md-2">{{ $candidate->adornedName }}</div>
                         <div class="col-md-2">{{ $candidate->passportType->name }}</div>
                         <div @class([
                             'col-md-2',
@@ -242,13 +242,13 @@
                                 <button name="status" id="resultPassButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
                                     value="1" @disabled($candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
                                     class="btn btn-success col-md-1 submitButton" data-disabled="{{ $candidate->pivot->is_pass || $test->expect_end_at > now() }}"
-                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}">Pass</button>
+                                    data-name="{{ $candidate->adornedName }}" data-passport="{{ $candidate->passport_number }}">Pass</button>
                                 <button name="status" id="resultFailButton{{ $candidate->id }}" form="resultForm{{ $candidate->id }}"
                                     value="0" @disabled(! $candidate->pivot->is_pass || $test->expect_end_at > now()) hidden
                                     class="btn btn-danger col-md-1 submitButton" data-disabled="{{ ! $candidate->pivot->is_pass || $test->expect_end_at > now() }}"
-                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}">Fail</button>
+                                    data-name="{{ $candidate->adornedName }}" data-passport="{{ $candidate->passport_number }}">Fail</button>
                                 <button class="btn btn-danger col-md-1 submitButton" form="deleteCandidateForm{{ $candidate->id }}" id="deleteCandidate{{ $candidate->id }}"
-                                    data-name="{{ $candidate->name }}" data-passport="{{ $candidate->passport_number }}" hidden>Delete</button>
+                                    data-name="{{ $candidate->adornedName }}" data-passport="{{ $candidate->passport_number }}" hidden>Delete</button>
                                 <button class="btn btn-danger col-md-1" id="deletingCandidate{{ $candidate->id }}" hidden disabled>
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Deleting...
