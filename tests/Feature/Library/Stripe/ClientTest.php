@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Library\Stripe;
 
+use App\Library\Stripe\Checkout;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Customer;
 use App\Library\Stripe\Price;
@@ -37,7 +38,7 @@ class ClientTest extends TestCase
     public function test_checkouts_statice_function()
     {
         $this->assertEquals(
-            new Price,
+            new Checkout,
             Client::checkouts()
         );
     }
