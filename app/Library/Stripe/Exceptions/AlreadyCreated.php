@@ -15,7 +15,6 @@ class AlreadyCreated extends Exception
      */
     public function __construct(Model $owner, string $type)
     {
-        var_dump(class_basename($owner)." is already a Stripe $type with ID {$owner->stripe_id}.");
         parent::__construct(class_basename($owner)." is already a Stripe $type with ID {$owner->stripe_id}.");
     }
 }
