@@ -38,8 +38,9 @@ class UserFactory extends Factory
         return [
             'username' => Str::random(8),
             'password' => static::$password ??= Hash::make('password'),
-            'family_name' => fake('zh_TW')->lastName(),
-            'given_name' => fake('zh_TW')->firstName(),
+            'family_name' => fake()->lastName(),
+            'middle_name' => fake()->randomElement([true, false]) ? fake()->lastName() : null,
+            'given_name' => fake()->firstName(),
             'passport_type_id' => $passportType->id,
             'passport_number' => $passportNumber,
             'gender_id' => Gender::inRandomOrder()->first()->id,
