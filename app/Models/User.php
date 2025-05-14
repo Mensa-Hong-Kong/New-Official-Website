@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\Stripe\Customers\CreateUser;
+use App\Library\Stripe\Concerns\Models\HasStripeCustomer;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, Sortable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, Sortable, HasStripeCustomer;
 
     protected $fillable = [
         'username',
@@ -109,6 +110,16 @@ class User extends Authenticatable
                 return implode(' ', $name);
             }
         );
+    }
+
+    protected function stripeName(): string
+    {
+        return $this->preferredName;
+    }
+
+    protected function stripeEmail(): string|null
+    {
+        return $this->defaultEmail;
     }
 
     public function gender(): BelongsTo
