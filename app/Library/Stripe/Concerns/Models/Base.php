@@ -4,9 +4,9 @@ namespace App\Library\Stripe\Concerns\Models;
 
 trait Base
 {
-    public null|array $stripe = null;
+    public ?array $stripe = null;
 
-    public abstract function stripeCreate(): array;
+    abstract public function stripeCreate(): array;
 
-    public abstract function getStripe(): array|null;
+    abstract public function getStripe(): ?array;
 }

@@ -9,9 +9,9 @@ trait HasSearch
     public function search(array $query)
     {
         $data = [];
-        foreach($query as $key => $value) {
-            if(is_array($value)) {
-                foreach($value as $subKey => $subValue) {
+        foreach ($query as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subKey => $subValue) {
                     $data[] = "{$key}['$subKey']:'$subValue'";
                 }
             } else {
@@ -23,7 +23,7 @@ trait HasSearch
             "/{$this->prefix}/search",
             ['query' => $data]
         )->throw();
-        if(count($response->json('data'))) {
+        if (count($response->json('data'))) {
             return $response->json('data');
         }
 

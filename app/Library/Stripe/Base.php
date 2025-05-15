@@ -19,12 +19,12 @@ class Base
             ->withHeader('Stripe-Version', static::STRIPE_VERSION.'.basil');
     }
 
-    public function find(string $id): null|array
+    public function find(string $id): ?array
     {
         $response = $this->http->get(
             "/{$this->prefix}/$id",
         );
-        if($response->notFound()) {
+        if ($response->notFound()) {
             return null;
         }
         $response->throw();

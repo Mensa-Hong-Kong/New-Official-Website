@@ -61,7 +61,7 @@ class ProductTest extends TestCase
         $this->assertEquals($data, $result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == Uri::of('https://api.stripe.com/v1/products/search')
@@ -152,7 +152,7 @@ class ProductTest extends TestCase
         $result = Client::products()->create(['name' => 'Gold Plan']);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products';
@@ -166,11 +166,11 @@ class ProductTest extends TestCase
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
         ]);
-        $result = Client::products()->find("prod_NWjs8kKbJWmuuc");
+        $result = Client::products()->find('prod_NWjs8kKbJWmuuc');
         $this->assertNull($result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
@@ -181,29 +181,29 @@ class ProductTest extends TestCase
     public function test_find_product_has_result()
     {
         $response = [
-            "id" => "prod_NWjs8kKbJWmuuc",
-            "object" => "product",
-            "active" => true,
-            "created" => 1678833149,
-            "default_price" => null,
-            "description" => null,
-            "images" => [],
-            "marketing_features" => [],
-            "livemode" => false,
-            "metadata" => [],
-            "name" => "Gold Plan",
-            "package_dimensions" => null,
-            "shippable" => null,
-            "statement_descriptor" => null,
-            "tax_code" => null,
-            "unit_label" => null,
-            "updated" => 1678833149,
-            "url" => null,
+            'id' => 'prod_NWjs8kKbJWmuuc',
+            'object' => 'product',
+            'active' => true,
+            'created' => 1678833149,
+            'default_price' => null,
+            'description' => null,
+            'images' => [],
+            'marketing_features' => [],
+            'livemode' => false,
+            'metadata' => [],
+            'name' => 'Gold Plan',
+            'package_dimensions' => null,
+            'shippable' => null,
+            'statement_descriptor' => null,
+            'tax_code' => null,
+            'unit_label' => null,
+            'updated' => 1678833149,
+            'url' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
-        $result = Client::products()->find("prod_NWjs8kKbJWmuuc");
+        $result = Client::products()->find('prod_NWjs8kKbJWmuuc');
         $this->assertEquals($response, $result);
     }
 
@@ -238,7 +238,7 @@ class ProductTest extends TestCase
         );
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';

@@ -5,15 +5,14 @@ namespace App\Library\Stripe\Concerns\Models;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreated;
 use App\Library\Stripe\Exceptions\NotYetCreated;
-use Illuminate\Http\Client\RequestException;
 
 trait HasStripeProduct
 {
     use UpdatableBase;
 
-    public function getStripe(): array|null
+    public function getStripe(): ?array
     {
-        if( ! $this->stripe) {
+        if (! $this->stripe) {
             if ($this->stripe_id) {
                 $this->stripe = Client::products()->find($this->stripe_id);
             } else {
@@ -21,7 +20,7 @@ trait HasStripeProduct
                     'metadata' => [
                         'type' => __CLASS__,
                         'id' => $this->id,
-                    ]
+                    ],
                 ]);
                 if ($this->stripe) {
                     $this->update([
@@ -47,7 +46,7 @@ trait HasStripeProduct
                 'metadata' => [
                     'type' => __CLASS__,
                     'id' => $this->id,
-                ]
+                ],
             ]);
             $this->update([
                 'stripe_id' => $this->stripe['id'],

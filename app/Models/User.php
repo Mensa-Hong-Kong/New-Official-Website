@@ -18,7 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, Sortable, HasStripeCustomer;
+    use HasApiTokens, HasFactory, HasRoles, HasStripeCustomer, Notifiable, Sortable;
 
     protected $fillable = [
         'username',
@@ -117,7 +117,7 @@ class User extends Authenticatable
         return $this->preferredName;
     }
 
-    protected function stripeEmail(): string|null
+    protected function stripeEmail(): ?string
     {
         return $this->defaultEmail;
     }

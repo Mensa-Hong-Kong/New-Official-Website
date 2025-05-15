@@ -12,11 +12,11 @@ trait HasStripePrice
 {
     use UpdatableBase;
 
-    public abstract function product(): BelongsTo;
+    abstract public function product(): BelongsTo;
 
-    public function getStripe(): array|null
+    public function getStripe(): ?array
     {
-        if(! $this->stripe) {
+        if (! $this->stripe) {
             if ($this->stripe_id) {
                 $this->stripe = Client::prices()->find($this->stripe_id);
             } else {
@@ -24,7 +24,7 @@ trait HasStripePrice
                     'metadata' => [
                         'type' => __CLASS__,
                         'id' => $this->id,
-                    ]
+                    ],
                 ]);
                 if ($this->stripe) {
                     $this->update([
@@ -48,7 +48,7 @@ trait HasStripePrice
             if (! $this->product->stripe_id) {
                 throw new NotYetCreatedProduct($this);
             }
-            $this->stripe= Client::prices()->create([
+            $this->stripe = Client::prices()->create([
                 'product' => $this->product->stripe_id,
                 'nickname' => $this->name,
                 'currency' => 'HKD',
@@ -76,7 +76,7 @@ trait HasStripePrice
             $this->stripe_id,
             ['nickname' => $this->name],
         );
-        $this->update(['synced_to_stripe' => $this->name == $this->stripe['nickname'],]);
+        $this->update(['synced_to_stripe' => $this->name == $this->stripe['nickname']]);
 
         return $this->stripe;
     }

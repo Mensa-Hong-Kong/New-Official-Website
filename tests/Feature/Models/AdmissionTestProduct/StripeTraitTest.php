@@ -8,7 +8,6 @@ use App\Models\AdmissionTestProduct;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use Mockery;
 use Tests\TestCase;
 
 class StripeTraitTest extends TestCase

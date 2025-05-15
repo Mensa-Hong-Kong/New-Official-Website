@@ -2,15 +2,14 @@
 
 namespace App\Library\Stripe\Exceptions;
 
-use Illuminate\Database\Eloquent\Model;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 
 class NotYetCreated extends Exception
 {
     /**
      * Create a new CustomerAlreadyCreated instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $owner
      * @return static
      */
     public function __construct(Model $owner, $type)

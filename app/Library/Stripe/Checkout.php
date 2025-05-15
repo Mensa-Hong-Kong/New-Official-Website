@@ -2,8 +2,6 @@
 
 namespace App\Library\Stripe;
 
-use App\Library\Stripe\Concerns\HasSearch;
-
 class Checkout extends Base
 {
     protected $prefix = 'checkouts/sessions';

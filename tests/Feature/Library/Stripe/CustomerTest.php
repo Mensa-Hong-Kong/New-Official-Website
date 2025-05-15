@@ -52,7 +52,7 @@ class CustomerTest extends TestCase
                 'preferred_locales' => [],
                 'shipping' => null,
                 'tax_exempt' => 'none',
-                'test_clock' => null
+                'test_clock' => null,
             ],
         ];
         Http::fake([
@@ -70,7 +70,7 @@ class CustomerTest extends TestCase
         $this->assertEquals($data, $result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == Uri::of('https://api.stripe.com/v1/customers/search')
@@ -108,7 +108,7 @@ class CustomerTest extends TestCase
             'preferred_locales' => [],
             'shipping' => null,
             'tax_exempt' => 'none',
-            'test_clock' => null
+            'test_clock' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
@@ -181,7 +181,7 @@ class CustomerTest extends TestCase
         ]);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/customers';
@@ -195,11 +195,11 @@ class CustomerTest extends TestCase
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
         ]);
-        $result = Client::customers()->find("cus_NffrFeUfNV2Hib");
+        $result = Client::customers()->find('cus_NffrFeUfNV2Hib');
         $this->assertNull($result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/customers/cus_NffrFeUfNV2Hib';
@@ -210,37 +210,37 @@ class CustomerTest extends TestCase
     public function test_find_customer_has_result()
     {
         $response = [
-            "id" => "cus_NffrFeUfNV2Hib",
-            "object" => "customer",
-            "address" => null,
-            "balance" => 0,
-            "created" => 1680893993,
-            "currency" => null,
-            "default_source" => null,
-            "delinquent" => false,
-            "description" => null,
-            "email" => "jennyrosen@example.com",
-            "invoice_prefix" => "0759376C",
-            "invoice_settings" => [
-                "custom_fields" => null,
-                "default_payment_method" => null,
-                "footer" => null,
-                "rendering_options" => null,
+            'id' => 'cus_NffrFeUfNV2Hib',
+            'object' => 'customer',
+            'address' => null,
+            'balance' => 0,
+            'created' => 1680893993,
+            'currency' => null,
+            'default_source' => null,
+            'delinquent' => false,
+            'description' => null,
+            'email' => 'jennyrosen@example.com',
+            'invoice_prefix' => '0759376C',
+            'invoice_settings' => [
+                'custom_fields' => null,
+                'default_payment_method' => null,
+                'footer' => null,
+                'rendering_options' => null,
             ],
-            "livemode" => false,
-            "metadata" => [],
-            "name" => "Jenny Rosen",
-            "next_invoice_sequence" => 1,
-            "phone" => null,
-            "preferred_locales" => [],
-            "shipping" => null,
-            "tax_exempt" => "none",
-            "test_clock" => null,
+            'livemode' => false,
+            'metadata' => [],
+            'name' => 'Jenny Rosen',
+            'next_invoice_sequence' => 1,
+            'phone' => null,
+            'preferred_locales' => [],
+            'shipping' => null,
+            'tax_exempt' => 'none',
+            'test_clock' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
-        $result = Client::customers()->find("cus_NffrFeUfNV2Hib");
+        $result = Client::customers()->find('cus_NffrFeUfNV2Hib');
         $this->assertEquals($response, $result);
     }
 
@@ -283,7 +283,7 @@ class CustomerTest extends TestCase
         );
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/customers/cus_NffrFeUfNV2Hib';

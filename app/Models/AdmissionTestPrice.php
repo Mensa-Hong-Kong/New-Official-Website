@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
 use App\Library\Stripe\Concerns\Models\HasStripePrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

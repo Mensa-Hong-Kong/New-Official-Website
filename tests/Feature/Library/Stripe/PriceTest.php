@@ -68,7 +68,7 @@ class PriceTest extends TestCase
         $this->assertEquals($data, $result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == Uri::of('https://api.stripe.com/v1/prices/search')
@@ -177,7 +177,7 @@ class PriceTest extends TestCase
         ]);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/prices';
@@ -191,11 +191,11 @@ class PriceTest extends TestCase
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
         ]);
-        $result = Client::prices()->find("price_1MoBy5LkdIwHu7ixZhnattbh");
+        $result = Client::prices()->find('price_1MoBy5LkdIwHu7ixZhnattbh');
         $this->assertNull($result);
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "GET" &&
+                return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/prices/price_1MoBy5LkdIwHu7ixZhnattbh';
@@ -206,35 +206,35 @@ class PriceTest extends TestCase
     public function test_find_price_has_result()
     {
         $response = [
-            "id" => "price_1MoBy5LkdIwHu7ixZhnattbh",
-            "object" => "price",
-            "active" => true,
-            "billing_scheme" => "per_unit",
-            "created" => 1679431181,
-            "currency" => "usd",
-            "custom_unit_amount" => null,
-            "livemode" => false,
-            "lookup_key" => null,
-            "metadata" => [],
-            "nickname" => null,
-            "product" => "prod_NZKdYqrwEYx6iK",
-            "recurring" => [
-                "interval" => "month",
-                "interval_count" => 1,
-                "trial_period_days" => null,
-                "usage_type" => "licensed",
+            'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
+            'object' => 'price',
+            'active' => true,
+            'billing_scheme' => 'per_unit',
+            'created' => 1679431181,
+            'currency' => 'usd',
+            'custom_unit_amount' => null,
+            'livemode' => false,
+            'lookup_key' => null,
+            'metadata' => [],
+            'nickname' => null,
+            'product' => 'prod_NZKdYqrwEYx6iK',
+            'recurring' => [
+                'interval' => 'month',
+                'interval_count' => 1,
+                'trial_period_days' => null,
+                'usage_type' => 'licensed',
             ],
-            "tax_behavior" => "unspecified",
-            "tiers_mode" => null,
-            "transform_quantity" => null,
-            "type" => "recurring",
-            "unit_amount" => 1000,
-            "unit_amount_decimal" => "1000",
+            'tax_behavior' => 'unspecified',
+            'tiers_mode' => null,
+            'transform_quantity' => null,
+            'type' => 'recurring',
+            'unit_amount' => 1000,
+            'unit_amount_decimal' => '1000',
         ];
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
-        $result = Client::prices()->find("price_1MoBy5LkdIwHu7ixZhnattbh");
+        $result = Client::prices()->find('price_1MoBy5LkdIwHu7ixZhnattbh');
         $this->assertEquals($response, $result);
     }
 
@@ -275,7 +275,7 @@ class PriceTest extends TestCase
         );
         Http::assertSent(
             function (Request $request) {
-                return $request->method() == "POST" &&
+                return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/prices/prod_NWjs8kKbJWmuuc';

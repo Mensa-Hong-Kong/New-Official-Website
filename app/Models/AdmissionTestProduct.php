@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Library\Stripe\Concerns\Models\HasStripeProduct;
 use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
+use App\Library\Stripe\Concerns\Models\HasStripeProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

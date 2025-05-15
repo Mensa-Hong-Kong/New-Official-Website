@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Models\User;
 
-use App\Library\Stripe\Customer;
 use App\Library\Stripe\Exceptions\AlreadyCreated;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use Mockery;
-use Mockery\MockInterface;
 use Tests\TestCase;
 
 class StripeTraitTest extends TestCase
@@ -76,7 +73,7 @@ class StripeTraitTest extends TestCase
             'preferred_locales' => [],
             'shipping' => null,
             'tax_exempt' => 'none',
-            'test_clock' => null
+            'test_clock' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
@@ -96,32 +93,32 @@ class StripeTraitTest extends TestCase
     {
         $this->user->update(['stripe_id' => 'cus_NeGfPRiPKxeBi1']);
         $response = [
-            "id" => "cus_NffrFeUfNV2Hib",
-            "object" => "customer",
-            "address" => null,
-            "balance" => 0,
-            "created" => 1680893993,
-            "currency" => null,
-            "default_source" => null,
-            "delinquent" => false,
-            "description" => null,
-            "email" => "jennyrosen@example.com",
-            "invoice_prefix" => "0759376C",
-            "invoice_settings" => [
-                "custom_fields" => null,
-                "default_payment_method" => null,
-                "footer" => null,
-                "rendering_options" => null,
+            'id' => 'cus_NffrFeUfNV2Hib',
+            'object' => 'customer',
+            'address' => null,
+            'balance' => 0,
+            'created' => 1680893993,
+            'currency' => null,
+            'default_source' => null,
+            'delinquent' => false,
+            'description' => null,
+            'email' => 'jennyrosen@example.com',
+            'invoice_prefix' => '0759376C',
+            'invoice_settings' => [
+                'custom_fields' => null,
+                'default_payment_method' => null,
+                'footer' => null,
+                'rendering_options' => null,
             ],
-            "livemode" => false,
-            "metadata" => [],
-            "name" => "Jenny Rosen",
-            "next_invoice_sequence" => 1,
-            "phone" => null,
-            "preferred_locales" => [],
-            "shipping" => null,
-            "tax_exempt" => "none",
-            "test_clock" => null,
+            'livemode' => false,
+            'metadata' => [],
+            'name' => 'Jenny Rosen',
+            'next_invoice_sequence' => 1,
+            'phone' => null,
+            'preferred_locales' => [],
+            'shipping' => null,
+            'tax_exempt' => 'none',
+            'test_clock' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
@@ -167,7 +164,7 @@ class StripeTraitTest extends TestCase
             'preferred_locales' => [],
             'shipping' => null,
             'tax_exempt' => 'none',
-            'test_clock' => null
+            'test_clock' => null,
         ];
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([

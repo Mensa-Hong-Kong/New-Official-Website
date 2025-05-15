@@ -14,14 +14,14 @@ trait HasStripeCustomer
         return $this->name;
     }
 
-    public function stripeEmail(): string|null
+    public function stripeEmail(): ?string
     {
         return $this->email;
     }
 
-    public function getStripe(): array|null
+    public function getStripe(): ?array
     {
-        if(! $this->stripe) {
+        if (! $this->stripe) {
             if ($this->stripe_id) {
                 $this->stripe = Client::customers()->find($this->stripe_id);
             } else {
@@ -29,9 +29,9 @@ trait HasStripeCustomer
                     'metadata' => [
                         'type' => __CLASS__,
                         'id' => $this->id,
-                    ]
+                    ],
                 ]);
-                if($this->stripe) {
+                if ($this->stripe) {
                     $this->update([
                         'stripe_id' => $this->stripe['id'],
                         'synced_to_stripe' => $this->stripeName() == $this->stripe['name'] &&
@@ -58,7 +58,7 @@ trait HasStripeCustomer
                 'metadata' => [
                     'type' => __CLASS__,
                     'id' => $this->id,
-                ]
+                ],
             ]);
             $this->update([
                 'stripe_id' => $this->stripe['id'],
