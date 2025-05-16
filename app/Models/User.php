@@ -54,6 +54,11 @@ class User extends Authenticatable
      */
     protected static function booted(): void
     {
+        static::created(
+            function (User $user) {
+                CreateUser::dispatch($user->id);
+            }
+        );
         static::updating(
             function (User $user) {
                 if ($user->isDirty(['family_name', 'middle_name', 'given_name'])) {
