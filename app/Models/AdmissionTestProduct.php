@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Library\Stripe\Concerns\Models\HasStripeProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,10 +27,16 @@ class AdmissionTestProduct extends Model
      */
     protected static function booted(): void
     {
+        static::created(
+            function (AdmissionTestProduct $product) {
+                SyncProduct::dispatch($product->id);
+            }
+        );
         static::updating(
             function (AdmissionTestProduct $product) {
                 if ($product->isDirty('name')) {
                     $product->synced_to_stripe = false;
+                    SyncProduct::dispatch($product->id);
                 }
             }
         );
