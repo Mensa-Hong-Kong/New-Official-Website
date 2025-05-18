@@ -25,7 +25,10 @@ class SyncAdmissionTestProductTest extends TestCase
 
     public function test_synced_admission_test_product()
     {
-        $this->product->update(['synced_to_stripe' => true]);
+        $this->product->update([
+            'stripe_id' => 'prod_NWjs8kKbJWmuuc',
+            'synced_to_stripe' => true,
+        ]);
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
         Http::assertNothingSent();
     }
