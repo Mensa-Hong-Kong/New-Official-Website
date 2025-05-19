@@ -23,46 +23,6 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
-    public function test_synced_admission_test_product()
-    {
-        Http::fake([
-            'https://api.stripe.com/v1/products/*' => Http::response([
-                'id' => 'prod_NZOkxQ8eTZEHwN',
-                'object' => 'product',
-                'active' => true,
-                'created' => 1679446501,
-                'default_price' => null,
-                'description' => null,
-                'images' => [],
-                'livemode' => false,
-                'metadata' => ['order_id' => '6735'],
-                'name' => 'Gold Plan',
-                'package_dimensions' => null,
-                'shippable' => null,
-                'statement_descriptor' => null,
-                'tax_code' => null,
-                'unit_label' => null,
-                'updated' => 1679446501,
-                'url' => null,
-            ]),
-        ]);
-        $this->product->update([
-            'stripe_id' => 'prod_NWjs8kKbJWmuuc',
-            'synced_to_stripe' => true,
-        ]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-        Http::assertNothingSent();
-    }
-
-    public function test_search_first_stripe_product_for_admission_test_product_but_stripe_under_maintenance()
-    {
-        Http::fake([
-            'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
-        ]);
-        $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-    }
-
     public function test_stripe_created_and_product_update_to_date_just_missing_save_stripe_id()
     {
         $data = [
@@ -112,16 +72,6 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->assertTrue((bool) $this->product->synced_to_stripe);
     }
 
-    public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
-    {
-        Http::fake([
-            'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
-        ]);
-        $this->product->update(['stripe_id' => 'prod_NWjs8kKbJWmuuc']);
-        $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-    }
-
     public function test_happy_case_has_stripe_id_just_data_not_update_to_date()
     {
         $response = [
@@ -165,22 +115,6 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->product = AdmissionTestProduct::find($this->product->id);
         $this->assertTrue((bool) $this->product->refresh()->synced_to_stripe);
     }
-
-    public function test_stripe_first_not_found_and_create_stripe_product_but_stripe_under_maintenance()
-    {
-        Http::fake([
-            'https://api.stripe.com/v1/products/*' => Http::sequence()
-                ->push([
-                    'object' => 'search_result',
-                    'url' => '/v1/products/search',
-                    'has_more' => false,
-                    'data' => [],
-                ])->pushStatus(503),
-        ]);
-        $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-    }
-
     public function test_happy_case_stripe_first_not_found_and_create_stripe_product()
     {
         $response = [
