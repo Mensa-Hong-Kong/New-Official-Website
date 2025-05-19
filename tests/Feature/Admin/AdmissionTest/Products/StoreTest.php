@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products;
 
+use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Models\AdmissionTestProduct;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -24,6 +26,7 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test']);
+        Queue::fake();
     }
 
     public function test_have_no_login()
@@ -318,6 +321,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_minimum_age()
@@ -332,6 +336,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_maximum_age()
@@ -346,6 +351,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_minimum_and_maximum_age()
@@ -361,6 +367,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_start_at()
@@ -375,6 +382,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_end_at()
@@ -389,6 +397,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_start_and_end_at()
@@ -404,6 +413,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_price_name()
@@ -418,6 +428,7 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 
     public function test_happy_case_with_all_nullable_field()
@@ -436,5 +447,6 @@ class StoreTest extends TestCase
             'admin.admission-test.products.show',
             ['product' => AdmissionTestProduct::latest('id')->first()]
         );
+        Queue::assertPushed(SyncProduct::class);
     }
 }
