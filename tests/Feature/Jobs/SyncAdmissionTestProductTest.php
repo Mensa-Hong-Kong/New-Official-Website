@@ -57,19 +57,15 @@ class SyncAdmissionTestProductTest extends TestCase
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
-        Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() == $getCustomUrl;
-            }
-        );
-        Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() != $getCustomUrl;
-            }
-        );
         $this->product = AdmissionTestProduct::find($this->product->id);
         $this->assertEquals($data['id'], $this->product->stripe_id);
         $this->assertTrue((bool) $this->product->synced_to_stripe);
+        $urls = [];
+        foreach(Http::recorded() as $record) {
+            [$request, $response] = $record;
+            $urls[] = $request->url();
+        }
+        $this->assertEquals($urls, [$getCustomUrl]);
     }
 
     public function test_happy_case_has_stripe_id_just_data_not_update_to_date()
@@ -102,18 +98,14 @@ class SyncAdmissionTestProductTest extends TestCase
             'name' => $response['name'],
         ]);
         $this->product->stripeUpdateOrCreate();
-        Http::assertSent(
-            function (Request $request) {
-                return $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
-            }
-        );
-        Http::assertNotSent(
-            function (Request $request) {
-                return $request->url() != 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
-            }
-        );
         $this->product = AdmissionTestProduct::find($this->product->id);
         $this->assertTrue((bool) $this->product->refresh()->synced_to_stripe);
+        $urls = [];
+        foreach(Http::recorded() as $record) {
+            [$request, $response] = $record;
+            $urls[] = $request->url();
+        }
+        $this->assertEquals($urls, [$getCustomUrl]);
     }
     public function test_happy_case_stripe_first_not_found_and_create_stripe_product()
     {
@@ -151,30 +143,14 @@ class SyncAdmissionTestProductTest extends TestCase
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
-        Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
-                return in_array(
-                    $request->url(),
-                    [
-                        $getCustomUrl,
-                        'https://api.stripe.com/v1/products',
-                    ]
-                );
-            }
-        );
-        Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
-                return ! in_array(
-                    $request->url(),
-                    [
-                        $getCustomUrl,
-                        'https://api.stripe.com/v1/products',
-                    ]
-                );
-            }
-        );
         $this->product = AdmissionTestProduct::find($this->product->id);
         $this->assertTrue((bool) $this->product->synced_to_stripe);
+        $urls = [];
+        foreach(Http::recorded() as $record) {
+            [$request, $response] = $record;
+            $urls[] = $request->url();
+        }
+        $this->assertEquals($urls, [$getCustomUrl]);
     }
 
     public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
@@ -269,28 +245,12 @@ class SyncAdmissionTestProductTest extends TestCase
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
-        Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
-                return in_array(
-                    $request->url(),
-                    [
-                        $getCustomUrl,
-                        'https://api.stripe.com/v1/products/prod_NZOkxQ8eTZEHwN',
-                    ]
-                );
-            }
-        );
-        Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
-                return ! in_array(
-                    $request->url(),
-                    [
-                        $getCustomUrl,
-                        'https://api.stripe.com/v1/products/prod_NZOkxQ8eTZEHwN',
-                    ]
-                );
-            }
-        );
         $this->assertTrue((bool) $this->product->refresh()->synced_to_stripe);
+        $urls = [];
+        foreach(Http::recorded() as $record) {
+            [$request, $response] = $record;
+            $urls[] = $request->url();
+        }
+        $this->assertEquals($urls, [$getCustomUrl]);
     }
 }
