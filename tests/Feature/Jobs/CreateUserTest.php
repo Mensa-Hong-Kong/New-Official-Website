@@ -84,17 +84,17 @@ class CreateUserTest extends TestCase
             ]),
         ]);
         app()->call([new CreateUser($this->user->id), 'handle']);
-        $getCustomUrl = Uri::of('https://api.stripe.com/v1/customers/search')
+        $getCustomerUrl = Uri::of('https://api.stripe.com/v1/customers/search')
             ->withQuery(['query' => "metadata['type']:'".User::class."' AND metadata['id']:'{$this->user->id}'"])
             ->__toString();
         Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() == $getCustomUrl;
+            function (Request $request) use ($getCustomerUrl) {
+                return $request->url() == $getCustomerUrl;
             }
         );
         Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() != $getCustomUrl;
+            function (Request $request) use ($getCustomerUrl) {
+                return $request->url() != $getCustomerUrl;
             }
         );
         $this->user = User::find($this->user->id);
@@ -162,26 +162,26 @@ class CreateUserTest extends TestCase
             'family_name' => 'Rosen',
         ]);
         app()->call([new CreateUser($this->user->id), 'handle']);
-        $getCustomUrl = Uri::of('https://api.stripe.com/v1/customers/search')
+        $getCustomerUrl = Uri::of('https://api.stripe.com/v1/customers/search')
             ->withQuery(['query' => "metadata['type']:'".User::class."' AND metadata['id']:'{$this->user->id}'"])
             ->__toString();
         Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getCustomerUrl) {
                 return in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getCustomerUrl,
                         'https://api.stripe.com/v1/customers',
                     ]
                 );
             }
         );
         Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getCustomerUrl) {
                 return ! in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getCustomerUrl,
                         'https://api.stripe.com/v1/customers',
                     ]
                 );
