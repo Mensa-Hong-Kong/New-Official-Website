@@ -25,6 +25,27 @@ class SyncAdmissionTestProductTest extends TestCase
 
     public function test_synced_admission_test_product()
     {
+        Http::fake([
+            'https://api.stripe.com/v1/products/*' => Http::response([
+                'id' => 'prod_NZOkxQ8eTZEHwN',
+                'object' => 'product',
+                'active' => true,
+                'created' => 1679446501,
+                'default_price' => null,
+                'description' => null,
+                'images' => [],
+                'livemode' => false,
+                'metadata' => ['order_id' => '6735'],
+                'name' => 'Gold Plan',
+                'package_dimensions' => null,
+                'shippable' => null,
+                'statement_descriptor' => null,
+                'tax_code' => null,
+                'unit_label' => null,
+                'updated' => 1679446501,
+                'url' => null,
+            ]),
+        ]);
         $this->product->update([
             'stripe_id' => 'prod_NWjs8kKbJWmuuc',
             'synced_to_stripe' => true,
