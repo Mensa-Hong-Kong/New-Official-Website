@@ -105,7 +105,7 @@ class SyncAdmissionTestProductTest extends TestCase
             [$request, $response] = $record;
             $urls[] = $request->url();
         }
-        $this->assertEquals($urls, [$getCustomUrl]);
+        $this->assertEquals($urls, ['https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc']);
     }
     public function test_happy_case_stripe_first_not_found_and_create_stripe_product()
     {
@@ -150,7 +150,13 @@ class SyncAdmissionTestProductTest extends TestCase
             [$request, $response] = $record;
             $urls[] = $request->url();
         }
-        $this->assertEquals($urls, [$getCustomUrl]);
+        $this->assertEquals(
+            $urls,
+            [
+                $getCustomUrl,
+                'https://api.stripe.com/v1/products',
+            ]
+        );
     }
 
     public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
@@ -251,6 +257,12 @@ class SyncAdmissionTestProductTest extends TestCase
             [$request, $response] = $record;
             $urls[] = $request->url();
         }
-        $this->assertEquals($urls, [$getCustomUrl]);
+        $this->assertEquals(
+            $urls,
+            [
+                $getCustomUrl,
+                'https://api.stripe.com/v1/products',
+            ]
+        );
     }
 }
