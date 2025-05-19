@@ -53,7 +53,7 @@ class SyncAdmissionTestProductTest extends TestCase
             ]),
         ]);
         $this->product->update(['name' => $data['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        $this->product->stripeUpdateOrCreate();
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
@@ -101,7 +101,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'stripe_id' => 'prod_NWjs8kKbJWmuuc',
             'name' => $response['name'],
         ]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        $this->product->stripeUpdateOrCreate();
         Http::assertSent(
             function (Request $request) {
                 return $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
@@ -147,7 +147,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'https://api.stripe.com/v1/products' => Http::response($response),
         ]);
         $this->product->update(['name' => $response['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        $this->product->stripeUpdateOrCreate();
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
@@ -210,7 +210,7 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['name' => 'Gold Plan']);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        $this->product->stripeUpdateOrCreate();
     }
 
     public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date()
@@ -265,7 +265,7 @@ class SyncAdmissionTestProductTest extends TestCase
                 ])->push($response),
         ]);
         $this->product->update(['name' => $response['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        $this->product->stripeUpdateOrCreate();
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
