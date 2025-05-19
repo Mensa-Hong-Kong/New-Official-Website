@@ -94,7 +94,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'https://api.stripe.com/v1/products/*' => Http::response($response),
         ]);
         $this->product->update([
-            'stripe_id' => 'prod_NWjs8kKbJWmuuc',
+            'stripe_id' => $response['id'],
             'name' => $response['name'],
         ]);
         $this->product->stripeUpdateOrCreate();
@@ -136,7 +136,7 @@ class SyncAdmissionTestProductTest extends TestCase
                 'has_more' => false,
                 'data' => [],
             ]),
-            'https://api.stripe.com/v1/products' => Http::response($response),
+            'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
         $this->product->update(['name' => $response['name']]);
         $this->product->stripeUpdateOrCreate();
