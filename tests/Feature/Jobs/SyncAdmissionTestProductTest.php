@@ -53,9 +53,9 @@ class SyncAdmissionTestProductTest extends TestCase
             ]),
         ]);
         $this->product->update(['name' => $data['name']]);
-        $this->product->stripeCreate();
         $this->assertTrue(! $this->product->stripe_id);
         $this->assertEquals($data['name'], $this->product->name);
+        $this->product->stripeCreate();
         $this->assertFalse(! $this->product->synced_to_stripe);
         $this->assertFalse(! $this->product->stripe);
         $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
