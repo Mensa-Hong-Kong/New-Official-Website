@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Uri;
 use Tests\TestCase;
 
@@ -20,6 +21,7 @@ class SyncAdmissionTestProductTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
+        Queue::fake();
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
