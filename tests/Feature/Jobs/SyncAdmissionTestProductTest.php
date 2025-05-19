@@ -96,17 +96,17 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['name' => $data['name']]);
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-        $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
+        $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
         Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() == $getCustomUrl;
+            function (Request $request) use ($getProductUrl) {
+                return $request->url() == $getProductUrl;
             }
         );
         Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
-                return $request->url() != $getCustomUrl;
+            function (Request $request) use ($getProductUrl) {
+                return $request->url() != $getProductUrl;
             }
         );
         $this->product = AdmissionTestProduct::find($this->product->id);
@@ -216,26 +216,26 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['name' => $response['name']]);
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-        $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
+        $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
         Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getProductUrl) {
                 return in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getProductUrl,
                         'https://api.stripe.com/v1/products',
                     ]
                 );
             }
         );
         Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getProductUrl) {
                 return ! in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getProductUrl,
                         'https://api.stripe.com/v1/products',
                     ]
                 );
@@ -334,26 +334,26 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['name' => $response['name']]);
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
-        $getCustomUrl = Uri::of('https://api.stripe.com/v1/products/search')
+        $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
         Http::assertSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getProductUrl) {
                 return in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getProductUrl,
                         'https://api.stripe.com/v1/products/prod_NZOkxQ8eTZEHwN',
                     ]
                 );
             }
         );
         Http::assertNotSent(
-            function (Request $request) use ($getCustomUrl) {
+            function (Request $request) use ($getProductUrl) {
                 return ! in_array(
                     $request->url(),
                     [
-                        $getCustomUrl,
+                        $getProductUrl,
                         'https://api.stripe.com/v1/products/prod_NZOkxQ8eTZEHwN',
                     ]
                 );
