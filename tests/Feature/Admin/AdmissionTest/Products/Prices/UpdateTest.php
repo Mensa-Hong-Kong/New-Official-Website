@@ -2,11 +2,13 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products\Prices;
 
+use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -28,6 +30,7 @@ class UpdateTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test']);
+        Queue::fake();
         $this->product = AdmissionTestProduct::factory()->create();
         $this->price = AdmissionTestPrice::factory()
             ->state([
@@ -35,6 +38,7 @@ class UpdateTest extends TestCase
                 'synced_to_stripe' => true,
             ])
             ->create();
+        Queue::fake();
     }
 
     public function test_have_no_login()
@@ -170,6 +174,7 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertTrue((bool) AdmissionTestPrice::find($this->price->id)->synced_to_stripe);
+        Queue::assertNothingPushed();
     }
 
     public function test_happy_case_when_name_has_change()
@@ -190,5 +195,6 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertFalse((bool) AdmissionTestPrice::find($this->price->id)->synced_to_stripe);
+        Queue::assertPushed(SyncPrice::class);
     }
 }
