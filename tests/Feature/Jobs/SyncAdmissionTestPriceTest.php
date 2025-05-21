@@ -68,7 +68,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'https://api.stripe.com/v1/prices/*' => Http::response($data),
         ]);
         $this->price->update([
-            'stripe_id' => $data["id"],
+            'stripe_id' => $data['id'],
             'synced_to_stripe' => true,
         ]);
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
@@ -308,7 +308,7 @@ class SyncAdmissionTestPriceTest extends TestCase
                             'type' => 'recurring',
                             'unit_amount' => 1000,
                             'unit_amount_decimal' => '1000',
-                        ]
+                        ],
                     ],
                 ])->pushStatus(503),
         ]);
