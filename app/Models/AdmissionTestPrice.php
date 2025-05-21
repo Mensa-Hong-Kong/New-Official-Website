@@ -35,7 +35,6 @@ class AdmissionTestPrice extends Model
             function (AdmissionTestPrice $price) {
                 if ($price->isDirty('name')) {
                     $price->synced_to_stripe = false;
-                    SyncPrice::dispatch($price->id);
                 }
             }
         );
