@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
 use App\Library\Stripe\Concerns\Models\HasStripePrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,10 +26,16 @@ class AdmissionTestPrice extends Model
      */
     protected static function booted(): void
     {
+        static::created(
+            function (AdmissionTestPrice $product) {
+                SyncPrice::dispatch($product->id);
+            }
+        );
         static::updating(
             function (AdmissionTestPrice $price) {
                 if ($price->isDirty('name')) {
                     $price->synced_to_stripe = false;
+                    SyncPrice::dispatch($price->id);
                 }
             }
         );
