@@ -23,3 +23,4 @@ twilio:
 stripe:
   public_key: pk_test_51R7ZqbQPXAwCNBPepzo2cF3EDel8pFueaLlbQtPFyoQ7dYilLb1S0BQBQUeHp7AcaiC6By8REYMaRm6Ne0zafWmZ006Wm8Uxmw
   secret_key: sk_test_51R7ZqbQPXAwCNBPeRgy9Cuq6eXHyAv3ZyE40F1nkfIjHOpKSCXxmtwcqSVZtYlf0nN0mDqO5EoxVPwFO4c0pXSj900HgI3NN2V
+  webhook_key: whsec_wRNftLajMZNeslQOP6vEPm4iVx5NlZ6z
