@@ -3,11 +3,15 @@
 namespace App\Library\Stripe\Concerns\Models;
 
 use App\Library\Stripe\Client;
-use App\Library\Stripe\Exceptions\AlreadyCreated;
+use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
+use App\Models\StripeCustomer;
 
 trait HasStripeCustomer
 {
-    use Base; // because creating checkout can update customer, so, non-updatable
+    public function stripe()
+    {
+        return $this->morphOne(StripeCustomer::class, 'customerable');
+    }
 
     public function stripeName(): string
     {
@@ -21,52 +25,51 @@ trait HasStripeCustomer
 
     public function getStripe(): ?array
     {
-        if (! $this->stripe) {
-            if ($this->stripe_id) {
-                $this->stripe = Client::customers()->find($this->stripe_id);
-            } else {
-                $this->stripe = Client::customers()->first([
-                    'metadata' => [
-                        'type' => __CLASS__,
-                        'id' => $this->id,
-                    ],
+        if ($this->stripe) {
+            return $this->stripe->getStripe();
+        } else {
+            $result = Client::customers()->first([
+                'metadata' => [
+                    'type' => __CLASS__,
+                    'id' => $this->id,
+                ],
+            ]);
+            if ($result) {
+                $this->update([
+                    'synced_to_stripe' => $this->stripeName() == $result['name'] &&
+                        $this->stripeEmail() == $result['email'],
                 ]);
-                if ($this->stripe) {
-                    $this->update([
-                        'stripe_id' => $this->stripe['id'],
-                        'synced_to_stripe' => $this->stripeName() == $this->stripe['name'] &&
-                            $this->stripeEmail() == $this->stripe['email'],
-                    ]);
-                }
+                $this->stripe = $this->stripe()->create(['id' => $result['id']]);
+                $this->stripe->data = $result;
             }
-        }
 
-        return $this->stripe;
+            return $result;
+        }
     }
 
     public function stripeCreate(): array
     {
-        if ($this->stripe_id) {
-            throw new AlreadyCreated($this, 'customer');
+        if ($this->stripe) {
+            throw new AlreadyCreatedCustomer($this);
         }
-        $name = $this->stripeName();
-        $this->getStripe();
-        if (! $this->stripe_id) {
-            $this->stripe = Client::customers()->create([
-                'name' => $name,
-                'email' => $this->defaultEmail,
+        $result = $this->getStripe();
+        if (! $result) {
+            $result = Client::customers()->create([
+                'name' => $this->stripeName(),
+                'email' => $this->stripeEmail(),
                 'metadata' => [
                     'type' => __CLASS__,
                     'id' => $this->id,
                 ],
             ]);
             $this->update([
-                'stripe_id' => $this->stripe['id'],
-                'synced_to_stripe' => $this->stripeName() == $this->stripe['name'] &&
-                    $this->stripeEmail() == $this->stripe['email'],
+                'synced_to_stripe' => $this->stripeName() == $result['name'] &&
+                    $this->stripeEmail() == $result['email'],
             ]);
+            $this->stripe = $this->stripe()->create(['id' => $result['id']]);
         }
+        $this->stripe->data = $result;
 
-        return $this->stripe;
+        return $result;
     }
 }
