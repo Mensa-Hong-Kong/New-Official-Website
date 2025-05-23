@@ -11,7 +11,7 @@ abstract class CreateCustomer extends Base
         DB::beginTransaction();
         $model = $this->model::lockForUpdate()
             ->find($this->modelID);
-        if (! $model->stripe_id) {
+        if (! $model->stripe) {
             $model->stripeCreate();
             DB::commit();
         } else {
