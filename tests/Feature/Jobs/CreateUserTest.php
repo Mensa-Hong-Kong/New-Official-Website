@@ -23,10 +23,10 @@ class CreateUserTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_user_has_stripe_id()
+    public function test_user_exist_stripe_customer()
     {
         Http::fake();
-        $this->user->update(['stripe_id' => 'cus_NeGfPRiPKxeBi1']);
+        $this->user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
         app()->call([new CreateUser($this->user->id), 'handle']);
         Http::assertNothingSent();
     }
@@ -98,7 +98,7 @@ class CreateUserTest extends TestCase
             }
         );
         $this->user = User::find($this->user->id);
-        $this->assertEquals($data['id'], $this->user->stripe_id);
+        $this->assertEquals($data['id'], $this->user->stripe->id);
         $this->assertTrue((bool) $this->user->synced_to_stripe);
     }
 
@@ -188,7 +188,7 @@ class CreateUserTest extends TestCase
             }
         );
         $this->user = User::find($this->user->id);
-        $this->assertEquals($response['id'], $this->user->stripe_id);
+        $this->assertEquals($response['id'], $this->user->stripe->id);
         $this->assertFalse((bool) $this->user->synced_to_stripe);
     }
 }

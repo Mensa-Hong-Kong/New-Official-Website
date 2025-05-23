@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Models\User;
 
-use App\Library\Stripe\Exceptions\AlreadyCreated;
+use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\RequestException;
@@ -84,14 +84,14 @@ class StripeTraitTest extends TestCase
             ]),
         ]);
         $result = $this->user->getStripe();
-        $this->assertEquals($data, $this->user->stripe);
+        $this->assertEquals($data, $this->user->stripe->data);
         $this->assertEquals($data, $result);
-        $this->assertEquals($data['id'], $this->user->stripe_id);
+        $this->assertEquals($data['id'], $this->user->stripe->id);
     }
 
     public function test_get_stripe_data_happy_case_when_user_has_stripe_id()
     {
-        $this->user->update(['stripe_id' => 'cus_NeGfPRiPKxeBi1']);
+        $this->user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',
             'object' => 'customer',
@@ -124,14 +124,14 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
         $result = $this->user->getStripe();
-        $this->assertEquals($response, $this->user->stripe);
+        $this->assertEquals($response, $this->user->stripe->data);
         $this->assertEquals($response, $result);
     }
 
     public function test_create_stripe_but_stripe_id_already()
     {
-        $this->user->update(['stripe_id' => 'abc']);
-        $this->expectException(AlreadyCreated::class);
+        $this->user->stripe()->create(['id' => 'abc']);
+        $this->expectException(AlreadyCreatedCustomer::class);
         $this->expectExceptionMessage('User is already a Stripe customer with ID abc.');
         $this->user->stripeCreate();
     }
@@ -175,9 +175,9 @@ class StripeTraitTest extends TestCase
             ]),
         ]);
         $result = $this->user->stripeCreate();
-        $this->assertEquals($data, $this->user->stripe);
+        $this->assertEquals($data, $this->user->stripe->data);
         $this->assertEquals($data, $result);
-        $this->assertEquals($data['id'], $this->user->stripe_id);
+        $this->assertEquals($data['id'], $this->user->stripe->id);
     }
 
     public function test_get_stripe_user_not_found_and_create_user_that_stripe_under_maintenance()
@@ -235,8 +235,8 @@ class StripeTraitTest extends TestCase
                 ])->push($response),
         ]);
         $result = $this->user->stripeCreate();
-        $this->assertEquals($response, $this->user->stripe);
+        $this->assertEquals($response, $this->user->stripe->data);
         $this->assertEquals($response, $result);
-        $this->assertEquals($response['id'], $this->user->stripe_id);
+        $this->assertEquals($response['id'], $this->user->stripe->id);
     }
 }

@@ -21,7 +21,8 @@ class CreateTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        $this->user = User::factory()->state(['stripe_id' => 123])->create();
+        $this->user = User::factory()->create();
+        $this->user->stripe()->create(['id' => 123]);
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
         $contact = UserHasContact::factory()
             ->state([
@@ -73,10 +74,10 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
     }
 
-    public function test_user_stripe_id_is_null()
+    public function test_user_not_exist_stripe_customer()
     {
-        $this->user->update(['stripe_id' => null]);
-        $response = $this->actingAs($this->user)->get(
+        $this->user->stripe->delete();
+        $response = $this->actingAs($this->user->refresh())->get(
             route(
                 'admission-tests.candidates.create',
                 ['admission_test' => $this->test]
