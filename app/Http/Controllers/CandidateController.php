@@ -29,7 +29,7 @@ class CandidateController extends Controller implements HasMiddleware
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
-                    if (! $user->stripe_id) {
+                    if (! $user->stripe) {
                         return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
                     }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
