@@ -231,6 +231,6 @@ class UserController extends Controller implements HasMiddleware
 
     public function createdStripeUser(Request $request)
     {
-        return ['status' => (bool) $request->user()->stripe_id];
+        return ['status' => (bool) $request->user()->stripe];
     }
 }
