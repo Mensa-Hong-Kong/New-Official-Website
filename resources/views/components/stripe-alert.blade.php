@@ -1,4 +1,4 @@
-@if(!auth()->user()->stripe_id)
+@if(!auth()->user()->stripe)
     <div id="stripeCustomerNotUpToDateAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
         We are creating you customer account on stripe, please wait a few minutes, when created, this alert will be close.
     </div>
