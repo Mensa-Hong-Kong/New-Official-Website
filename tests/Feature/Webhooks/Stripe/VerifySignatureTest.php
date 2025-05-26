@@ -14,7 +14,7 @@ class VerifySignatureTest extends TestCase
 
     protected string|int $timestamp; // must be int, string just for testing fail case
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -57,7 +57,7 @@ class VerifySignatureTest extends TestCase
 
         var_dump($this->request->header('Stripe-Signature'));
 
-        $response = (new VerifySignature())
+        $response = (new VerifySignature)
             ->handle(
                 $this->request,
                 function ($request) {
@@ -73,7 +73,7 @@ class VerifySignatureTest extends TestCase
         $this->withTimestamp(time() - 300);
         $this->withSignedSignature('secret');
 
-        $response = (new VerifySignature())
+        $response = (new VerifySignature)
             ->handle(
                 $this->request,
                 function ($request) {
@@ -92,7 +92,7 @@ class VerifySignatureTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
         $this->expectExceptionMessage('Timestamp outside the tolerance zone');
 
-        (new VerifySignature())->handle(
+        (new VerifySignature)->handle(
             $this->request,
             function ($request) {}
         );
@@ -106,7 +106,7 @@ class VerifySignatureTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
         $this->expectExceptionMessage('Unable to extract timestamp and signatures from header');
 
-        (new VerifySignature())->handle(
+        (new VerifySignature)->handle(
             $this->request,
             function ($request) {}
         );
@@ -120,7 +120,7 @@ class VerifySignatureTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
         $this->expectExceptionMessage('No signatures found matching the expected signature for payload');
 
-        (new VerifySignature())->handle(
+        (new VerifySignature)->handle(
             $this->request,
             function ($request) {}
         );
@@ -134,7 +134,7 @@ class VerifySignatureTest extends TestCase
         $this->expectException(AccessDeniedHttpException::class);
         $this->expectExceptionMessage('No signatures found matching the expected signature for payload');
 
-        (new VerifySignature())->handle(
+        (new VerifySignature)->handle(
             $this->request,
             function ($request) {}
         );

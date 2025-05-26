@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Webhooks\Stripe;
 
-use App\Http\Controllers\WebHooks\StripeController;
-use App\Models\StripeCustomer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CustomerDeletedTest extends TestCase
 {
@@ -37,6 +33,7 @@ class CustomerDeletedTest extends TestCase
             time(),
             json_encode($payload)
         );
+
         return ['Stripe-Signature' => "t=$timestamp,v1=$signature"];
     }
 
@@ -54,7 +51,7 @@ class CustomerDeletedTest extends TestCase
     public function test_customer_is_not_exists()
     {
         $data = [
-            "type" => "customer.deleted",
+            'type' => 'customer.deleted',
             'data' => [
                 'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
             ],
@@ -77,7 +74,7 @@ class CustomerDeletedTest extends TestCase
             'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
         ]);
         $data = [
-            "type" => "customer.deleted",
+            'type' => 'customer.deleted',
             'data' => [
                 'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
             ],
@@ -105,7 +102,7 @@ class CustomerDeletedTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response(status: 503),
         ]);
         $data = [
-            "type" => "customer.deleted",
+            'type' => 'customer.deleted',
             'data' => [
                 'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
             ],
@@ -161,7 +158,7 @@ class CustomerDeletedTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response($stripeCreateRresponse),
         ]);
         $data = [
-            "type" => "customer.deleted",
+            'type' => 'customer.deleted',
             'data' => [
                 'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
             ],
