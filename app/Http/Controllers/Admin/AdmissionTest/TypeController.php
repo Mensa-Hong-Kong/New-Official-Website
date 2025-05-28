@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AdmissionTest\TypeRequest;
+use App\Http\Requests\Admin\AdmissionTest\Type\DisplayOrderRequest;
+use App\Http\Requests\Admin\AdmissionTest\Type\FormRequest;
 use App\Models\AdmissionTestType;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +41,7 @@ class TypeController extends Controller implements HasMiddleware
             ->with('types', $types);
     }
 
-    public function store(TypeRequest $request)
+    public function store(FormRequest $request)
     {
         DB::beginTransaction();
         AdmissionTestType::where('display_order', '>=', $request->display_order)
@@ -78,7 +78,7 @@ class TypeController extends Controller implements HasMiddleware
             ->with('types', $types);
     }
 
-    public function update(TypeRequest $request, AdmissionTestType $type)
+    public function update(FormRequest $request, AdmissionTestType $type)
     {
         DB::beginTransaction();
         if ($request->display_order > $request->maxDisplayOrder) {
@@ -107,7 +107,7 @@ class TypeController extends Controller implements HasMiddleware
         return redirect()->route('admin.admission-test.types.index');
     }
 
-    public function displayOrder(Request $request)
+    public function displayOrder(DisplayOrderRequest $request)
     {
         $case = [];
         foreach (array_values($request->display_order) as $order => $id) {

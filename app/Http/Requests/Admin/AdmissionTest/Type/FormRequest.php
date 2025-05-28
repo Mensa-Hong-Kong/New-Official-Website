@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin\AdmissionTest;
+namespace App\Http\Requests\Admin\AdmissionTest\Type;
 
 use App\Models\AdmissionTestType;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest as BaseFormRequest;
 
-class TypeRequest extends FormRequest
+class FormRequest extends BaseFormRequest
 {
     public function authorize(): bool
     {
