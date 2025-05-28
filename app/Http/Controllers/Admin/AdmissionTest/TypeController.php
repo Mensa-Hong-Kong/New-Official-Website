@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\AdmissionTest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\TypeRequest;
 use App\Models\AdmissionTestType;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -104,5 +105,24 @@ class TypeController extends Controller implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.admission-test.types.index');
+    }
+
+    public function displayOrder(Request $request)
+    {
+        $case = [];
+        foreach (array_values($request->display_order) as $order => $id) {
+            $case[] = "WHEN id = $id THEN $order";
+        }
+        $case = implode(' ', $case);
+        AdmissionTestType::whereIn('id', $request->display_order)
+            ->update(['display_order' => DB::raw("(CASE $case ELSE display_order END)")]);
+
+        return [
+            'success' => 'The display order update success!',
+            'display_order' => AdmissionTestType::orderBy('display_order')
+                ->get('id')
+                ->pluck('id')
+                ->toArray(),
+        ];
     }
 }
