@@ -129,7 +129,10 @@ Route::middleware('auth')->group(function () {
                         ->whereNumber(['product', 'price'])
                         ->names('products.prices');
                     Route::resource('types', AdmissionTestTypeController::class)
+                        ->whereNumber('type')
                         ->except(['show', 'destroy']);
+                    Route::match(['put', 'patch'], 'types/display-order', [AdmissionTestTypeController::class, 'displayOrder'])
+                        ->name('types.display-order.update');
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
