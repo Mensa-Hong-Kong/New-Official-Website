@@ -644,6 +644,7 @@
             });
         </script>
     @endsession
+    @routes()
     @stack('after footer')
 </body>
 
