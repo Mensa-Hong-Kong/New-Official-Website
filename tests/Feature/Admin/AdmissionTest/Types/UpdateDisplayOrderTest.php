@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Types;
 
-use App\Models\ModulePermission;
 use App\Models\AdmissionTestType;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -102,7 +102,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route('admin.admission-test.types.display-order.update'),
             [
-                'display_order' => ['abc', $this->item1->id]
+                'display_order' => ['abc', $this->item1->id],
             ]
         );
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field must be an integer.']);
@@ -118,7 +118,7 @@ class UpdateDisplayOrderTest extends TestCase
                     $this->item1->id,
                     $this->item2->id,
                     $this->item1->id,
-                ]
+                ],
             ]
         );
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
@@ -129,7 +129,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route('admin.admission-test.types.display-order.update'),
             [
-                'display_order' => [0, $this->item2->id]
+                'display_order' => [0, $this->item2->id],
             ]
         );
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
