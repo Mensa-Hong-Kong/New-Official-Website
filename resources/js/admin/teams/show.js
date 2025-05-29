@@ -30,7 +30,7 @@ let displayOrder;
 
 function dragOver(event) {
     event.preventDefault();
-    let children= Array.from(event.target.parentNode.parentNode.children);
+    let children = Array.from(event.target.parentNode.parentNode.children);
     if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
         event.target.parentNode.after(row);
     } else {
@@ -117,17 +117,6 @@ editDisplayOrder.addEventListener(
         cancelDisplayOrder.hidden = false;
     }
 );
-
-function closeEditDisplayName(id) {
-    document.getElementById('saving'+id).hidden = true;
-    document.getElementById('updateDisplayNameForm'+id).hidden = true;
-    document.getElementById('save'+id).hidden = true;
-    document.getElementById('cancel'+id).hidden = true;
-    let input = document.getElementById('displayNameInput'+id);
-    input.value = input.dataset.value;
-    document.getElementById('showDisplayName'+id).hidden = false;
-    document.getElementById('edit'+id).hidden = false;
-}
 
 const editTeam = document.getElementById('editTeam');
 const disabledEditTeam = document.getElementById('disabledEditTeam');
