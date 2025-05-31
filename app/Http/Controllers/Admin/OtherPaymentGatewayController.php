@@ -19,7 +19,7 @@ class OtherPaymentGatewayController extends Controller implements HasMiddleware
         return view('admin.other-payment-gateway')
             ->with(
                 'paymentGateways', OtherPaymentGateway::orderBy('display_order')
-                    ->get(['id', 'name'])
+                    ->get(['id', 'name', 'is_active'])
             );
     }
 }

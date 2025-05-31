@@ -15,6 +15,7 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
+                <th scope="col">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +23,7 @@
                 <tr>
                     <th>{paymentGateway.id}</th>
                     <td>{paymentGateway.name}</td>
+                    <td>{paymentGateway.is_active ? 'Active' : 'Inactive'}</td>
                 </tr>
             {/each}
         </tbody>
