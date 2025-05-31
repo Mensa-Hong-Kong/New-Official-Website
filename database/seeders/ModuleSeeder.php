@@ -45,7 +45,7 @@ class ModuleSeeder extends Seeder
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
-        $module = Module::firstOrCreate(['name' => 'Payment Gateway']);
+        $module = Module::firstOrCreate(['name' => 'Other Payment Gateway']);
         $module->update(['display_order' => 7]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
