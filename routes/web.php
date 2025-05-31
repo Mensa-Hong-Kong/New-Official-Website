@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CustomWebPageController as AdmissionCustomWebPageController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\NavigationItemController as AdmissionNavigationItemController;
+use App\Http\Controllers\Admin\OtherPaymentGatewayController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteContentController;
@@ -165,6 +166,9 @@ Route::middleware('auth')->group(function () {
                 ->whereNumber('navigation_item');
             Route::match(['put', 'patch'], 'navigation-items/display-order', [AdmissionNavigationItemController::class, 'displayOrder'])
                 ->name('navigation-items.display-order.update');
+            Route::resource('other-payment-gateways', OtherPaymentGatewayController::class)
+                ->only(['index'])
+                ->whereNumber('other_payment_gateway');
         });
 });
 
