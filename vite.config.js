@@ -4,6 +4,7 @@ import { glob } from "glob";
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import path from 'path';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 let input = [
     'resources/css/app.scss',
@@ -28,6 +29,9 @@ export default defineConfig({
         laravel({
             input: input,
             refresh: true,
+        }),
+        svelte({
+            /* plugin options */
         }),
     ],
     resolve: {
