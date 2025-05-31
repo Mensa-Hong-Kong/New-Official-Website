@@ -12,9 +12,9 @@ class ModuleSeeder extends Seeder
     {
         $module = Module::firstOrCreate(['name' => 'User']);
         $viewPermission = Permission::firstOrCreate(['name' => 'View']);
-        $viewPermission->update(['display_order' => '0']);
+        $viewPermission->update(['display_order' => 0]);
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
-        $editPermission->update(['display_order' => '1']);
+        $editPermission->update(['display_order' => 1]);
         $module->update(['display_order' => 1]);
         $module->permissions()->sync([
             $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
@@ -42,6 +42,11 @@ class ModuleSeeder extends Seeder
         ]);
         $module = Module::firstOrCreate(['name' => 'Site Content']);
         $module->update(['display_order' => 4]);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+        $module = Module::firstOrCreate(['name' => 'Payment Gateway']);
+        $module->update(['display_order' => 7]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
