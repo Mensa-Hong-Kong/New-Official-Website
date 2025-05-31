@@ -13,11 +13,12 @@ class AdmissionTestTypeFactory extends Factory
     public function definition(): array
     {
         $displayOrder = AdmissionTestType::max('display_order');
-        if($displayOrder === null) {
+        if ($displayOrder === null) {
             $displayOrder = 0;
         } else {
             $displayOrder += 1;
         }
+
         return [
             'name' => fake()->word(),
             'interval_month' => fake()->numberBetween(0, 60),
