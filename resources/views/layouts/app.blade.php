@@ -433,6 +433,15 @@
                                     </li>
                                 @endif
                             @endif
+                            @can('Edit:Other Payment Gateway')
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.other-payment-gateways.index') }}" @class([
+                                        'nav-link',
+                                        'align-items-center',
+                                        'active' => Route::current()->getName() == 'admin.other-payment-gateways.index',
+                                    ])>Other Payment Gateway</a>
+                                </li>
+                            @endcan
                             @can('Edit:Site Content')
                                 @if(Route::current()->getName() == 'admin.site-contents.edit')
                                     <li class="nav-item accordion">
