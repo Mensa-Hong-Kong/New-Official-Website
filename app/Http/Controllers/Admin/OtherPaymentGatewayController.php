@@ -4,9 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OtherPaymentGateway;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class OtherPaymentGatewayController extends Controller
+class OtherPaymentGatewayController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [(new Middleware('permission:Edit:Payment Gateway'))->except('index')];
+    }
+
     public function index()
     {
         return view('admin.other-payment-gateway')
