@@ -167,7 +167,7 @@ Route::middleware('auth')->group(function () {
             Route::match(['put', 'patch'], 'navigation-items/display-order', [AdmissionNavigationItemController::class, 'displayOrder'])
                 ->name('navigation-items.display-order.update');
             Route::resource('other-payment-gateways', OtherPaymentGatewayController::class)
-                ->only(['index'])
+                ->only(['index', 'update'])
                 ->whereNumber('other_payment_gateway');
         });
 });
