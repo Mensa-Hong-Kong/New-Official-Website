@@ -32,7 +32,7 @@ class DisplayOrderRequest extends FormRequest
                 } elseif (! count($this->display_order)) {
                     $validator->errors()->add(
                         'display_order',
-                        'The display order field must be an array.'
+                        'The display order field is required.'
                     );
                 } else {
                     $itemIDs = NavigationItem::get('id');
