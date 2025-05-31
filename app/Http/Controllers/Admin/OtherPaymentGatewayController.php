@@ -11,7 +11,7 @@ class OtherPaymentGatewayController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware('permission:Edit:Other Payment Gateway'))->except('index')];
+        return [(new Middleware('permission:Edit:Other Payment Gateway'))];
     }
 
     public function index()
