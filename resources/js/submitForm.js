@@ -27,9 +27,9 @@ function failHandle(error, callback) {
     callback(error);
 }
 
-export function post(action, successCallback, failCallback, method="post", data = {}) {
+export function post(action, successCallback, failCallback, method="POST", data = {}) {
     data['_token'] = token;
-    if(method != 'post') {
+    if(method.toUpperCase != 'POST') {
         data['_method'] = method;
     }
     axios.post(action, data).then(function (response) {
