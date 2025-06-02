@@ -53,26 +53,27 @@
         submitting = false;
     }
 
-    function updateName(event) {
+    function updateName(event, id) {
         event.preventDefault();
         if(! submitting) {
             let submitAt = Date.now();
             submitting = 'updateName'+submitAt;
-            let id = event.target.id.replace('updateName', '');
-            if(nameValidation(id)) {
-                paymentGateways[getIndex(id)]['updating'] = true;
-                post(
-                    route(
-                        'admin.other-payment-gateways.update',
-                        {other_payment_gateway: id}
-                    ),
-                    updateNameSuccessCallback,
-                    updateNameFailCallback,
-                    'put',
-                    {name: inputNames[id]}
-                );
-            } else {
-                submitting = false;
+            if(submitting == 'updateName'+submitAt) {
+                if(nameValidation(id)) {
+                    paymentGateways[getIndex(id)]['updating'] = true;
+                    post(
+                        route(
+                            'admin.other-payment-gateways.update',
+                            {other_payment_gateway: id}
+                        ),
+                        updateNameSuccessCallback,
+                        updateNameFailCallback,
+                        'put',
+                        {name: inputNames[id]}
+                    );
+                } else {
+                    submitting = false;
+                }
             }
         }
     }
@@ -102,7 +103,7 @@
                     <th>{paymentGateway.id}</th>
                     <td>
                         {#if paymentGateway.editing}
-                            <form id="updateName{paymentGateway.id}" onsubmit={updateName}>
+                            <form id="updateName{paymentGateway.id}" onsubmit={(event) => updateName(event, paymentGateway.id)}>
                                 <input type="text" maxlength="255" id="name{paymentGateway.id}"
                                     bind:value={inputNames[paymentGateway.id]} required disabled="{paymentGateway.updating}" />
                             </form>
