@@ -4,12 +4,12 @@
     let {paymentGateways: initPaymentGateways} = $props();
     const paymentGateways = $state([]);
     let submitting = $state(false);
-    const originNames = {};
+    const inputNames = {};
     for (const data of initPaymentGateways) {
         data['editing'] = false;
         data['updating'] = false;
         paymentGateways.push(data);
-        originNames[data.id] = data.name;
+        inputNames[data.id] = data.name;
     }
 
     function nameValidation(id) {
@@ -35,9 +35,9 @@
     function updateNameSuccessCallback(response) {
         bootstrapAlert(response.data.success);
         let location = new URL(response.request.responseURL);
-        console.log(route().match(location.host + location.pathname, 'PUT'));
         let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
         console.log(id);
+        inputNames[data.id] = response.data.name;
         paymentGateways[getIndex(id)]['name'] = response.data.name;
         paymentGateways[getIndex(id)]['editing'] = false;
         paymentGateways[getIndex(id)]['updating'] = false;
@@ -46,10 +46,10 @@
 
     function updateNameFailCallback(error) {
         if(error.status == 422) {
-            bootstrapAlert(error.data.errors.contact_type);
+            bootstrapAlert(error.data.errors.name);
         }
         let location = new URL(error.request.responseURL);
-        let id = route(location.host + location.pathname).params.other_payment_gateway;
+        let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
         paymentGateways[getIndex(id)]['updating'] = false;
         submitting = false;
     }
@@ -70,12 +70,27 @@
                     updateNameSuccessCallback,
                     updateNameFailCallback,
                     'put',
-                    {name: document.getElementById('name'+id).value}
+                    {name: inputNames[id]}
                 );
             } else {
                 submitting = false;
             }
         }
+    }
+
+    function cancelEditName(index) {
+        updateNameFailCallback({
+            status: 422,
+            data: {
+                errors: {name: 'testing'}
+            },
+            request:{responseURL:'http://127.0.0.1:8000/admin/other-payment-gateways/1'}
+        })
+        /*
+        console.log(paymentGateways[index]['editing']);
+        paymentGateways[index]['editing'] = false;
+        inputNames[paymentGateways[index]['id']] = paymentGateways[index]['name'];
+        */
     }
 </script>
 
@@ -100,7 +115,7 @@
                         {#if paymentGateway.editing}
                             <form id="updateName{paymentGateway.id}" onsubmit={updateName}>
                                 <input type="text" maxlength="255" id="name{paymentGateway.id}"
-                                    value="{paymentGateway.name}" required disabled="{paymentGateway.updating}" />
+                                    bind:value={inputNames[paymentGateway.id]} required disabled="{paymentGateway.updating}" />
                             </form>
                         {:else}
                             {paymentGateway.name}
@@ -112,9 +127,9 @@
                             <button class="btn btn-primary" disabled>Saving</button>
                         {:else if paymentGateway.editing}
                             <button class="btn btn-primary" disabled="{submitting}" form="updateName{paymentGateway.id}">Save</button>
-                            <button class="btn btn-danger"onclick={() => paymentGateways[index]['editing'] = false}>Cancel</button>
+                            <button class="btn btn-danger"onclick={() => cancelEditName(index)}>Cancel</button>
                         {:else}
-                            <button class="btn btn-primary" onclick={()=>paymentGateways[index]['editing'] = true}>Edit</button>
+                            <button class="btn btn-primary" onclick={() => paymentGateways[index]['editing'] = true}>Edit</button>
                         {/if}
                     </td>
                 </tr>
