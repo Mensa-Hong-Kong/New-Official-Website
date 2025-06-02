@@ -79,18 +79,8 @@
     }
 
     function cancelEditName(index) {
-        updateNameFailCallback({
-            status: 422,
-            data: {
-                errors: {name: 'testing'}
-            },
-            request:{responseURL:'http://127.0.0.1:8000/admin/other-payment-gateways/1'}
-        })
-        /*
-        console.log(paymentGateways[index]['editing']);
         paymentGateways[index]['editing'] = false;
         inputNames[paymentGateways[index]['id']] = paymentGateways[index]['name'];
-        */
     }
 </script>
 
