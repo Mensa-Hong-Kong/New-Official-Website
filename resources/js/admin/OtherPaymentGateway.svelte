@@ -82,6 +82,42 @@
         paymentGateways[index]['editing'] = false;
         inputNames[paymentGateways[index]['id']] = paymentGateways[index]['name'];
     }
+
+    function updateActionSuccessCallback(response) {
+        bootstrapAlert(response.data.success);
+        let location = new URL(response.request.responseURL);
+        let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
+        console.log(id);
+        paymentGateways[getIndex(id)]['is_active'] = response.data.status;
+        submitting = false;
+    }
+
+    function updateActionFailCallback(error) {
+        if(error.status == 422) {
+            bootstrapAlert(error.data.errors.status);
+        }
+        submitting = false;
+    }
+
+    function updateAction(id, status) {
+        if(! submitting) {
+            let submitAt = Date.now();
+            submitting = 'updateAction'+submitAt;
+            if(submitting == 'updateAction'+submitAt) {
+                paymentGateways[getIndex(id)]['updating'] = true;
+                post(
+                    route(
+                        'admin.other-payment-gateways.active.update',
+                        {other_payment_gateway: id}
+                    ),
+                    updateActionSuccessCallback,
+                    updateActionFailCallback,
+                    'put',
+                    {status: status}
+                );
+            }
+        }
+    }
 </script>
 
 <h2 class="fw-bold mb-2 text-uppercase">
@@ -111,7 +147,14 @@
                             {paymentGateway.name}
                         {/if}
                     </td>
-                    <td>{paymentGateway.is_active ? 'Active' : 'Inactive'}</td>
+                    <td>
+                        <button onclick="{() => updateAction(paymentGateway.id, ! paymentGateway.is_active)}" class={[
+                            'btn', {
+                                'btn-success': paymentGateway.is_active,
+                                'btn-danger': ! paymentGateway.is_active,
+                            }
+                        ]}>{paymentGateway.is_active ? 'Active' : 'Inactive'}</button>
+                    </td>
                     <td>
                         {#if paymentGateway.updating}
                             <button class="btn btn-primary" disabled>Saving</button>
