@@ -169,6 +169,9 @@ Route::middleware('auth')->group(function () {
             Route::resource('other-payment-gateways', OtherPaymentGatewayController::class)
                 ->only(['index', 'update'])
                 ->whereNumber('other_payment_gateway');
+            Route::match(['put', 'patch'], 'other-payment-gateways/{other_payment_gateway}/active', [OtherPaymentGatewayController::class, 'active'])
+                ->whereNumber('other_payment_gateway')
+                ->name('other-payment-gateways.active.update');
         });
 });
 
