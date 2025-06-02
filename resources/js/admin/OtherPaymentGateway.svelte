@@ -36,8 +36,7 @@
         bootstrapAlert(response.data.success);
         let location = new URL(response.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
-        console.log(id);
-        inputNames[data.id] = response.data.name;
+        inputNames[id] = response.data.name;
         paymentGateways[getIndex(id)]['name'] = response.data.name;
         paymentGateways[getIndex(id)]['editing'] = false;
         paymentGateways[getIndex(id)]['updating'] = false;
