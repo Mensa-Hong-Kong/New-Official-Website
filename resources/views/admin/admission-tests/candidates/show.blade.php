@@ -46,7 +46,7 @@
                 <th>Is Present</th>
                 <td>
                     <form id="presentForm" hidden method="POST"
-                        action="{{ route('admin.admission-tests.candidates.present', ['admission_test' => $test, 'candidate'=> $user]) }}">
+                        action="{{ route('admin.admission-tests.candidates.present.update', ['admission_test' => $test, 'candidate'=> $user]) }}">
                         @csrf
                         @method("put")
                     </form>

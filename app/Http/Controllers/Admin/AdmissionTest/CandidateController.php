@@ -157,14 +157,14 @@ class CandidateController extends Controller implements HasMiddleware
             ),
             'in_testing_time_range' => $admissionTest->inTestingTimeRange(),
             'present_url' => route(
-                'admin.admission-tests.candidates.present',
+                'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $admissionTest,
                     'candidate' => $request->user,
                 ]
             ),
             'result_url' => route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $admissionTest,
                     'candidate' => $request->user,

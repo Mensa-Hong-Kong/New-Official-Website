@@ -191,12 +191,12 @@
                 @foreach ($test->candidates as $candidate)
                     <div class="row g-3" id="candidateRow{{ $candidate->id }}">
                         <form id="presentForm{{ $candidate->id }}" hidden method="POST"
-                            action="{{ route('admin.admission-tests.candidates.present', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
+                            action="{{ route('admin.admission-tests.candidates.present.update', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
                             @csrf
                             @method("put")
                         </form>
                         <form id="resultForm{{ $candidate->id }}" hidden method="POST"
-                            action="{{ route('admin.admission-tests.candidates.result', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
+                            action="{{ route('admin.admission-tests.candidates.result.update', ['admission_test' => $test, 'candidate'=> $candidate]) }}">
                             @csrf
                             @method("put")
                         </form>

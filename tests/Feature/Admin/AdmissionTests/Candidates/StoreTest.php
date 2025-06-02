@@ -469,14 +469,14 @@ class StoreTest extends TestCase
             ),
             'in_testing_time_range' => $this->test->inTestingTimeRange(),
             'present_url' => route(
-                'admin.admission-tests.candidates.present',
+                'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
             ),
             'result_url' => route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -527,14 +527,14 @@ class StoreTest extends TestCase
             ),
             'in_testing_time_range' => $this->test->inTestingTimeRange(),
             'present_url' => route(
-                'admin.admission-tests.candidates.present',
+                'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
             ),
             'result_url' => route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -591,14 +591,14 @@ class StoreTest extends TestCase
             ),
             'in_testing_time_range' => $this->test->inTestingTimeRange(),
             'present_url' => route(
-                'admin.admission-tests.candidates.present',
+                'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
             ),
             'result_url' => route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -662,14 +662,14 @@ class StoreTest extends TestCase
             ),
             'in_testing_time_range' => $this->test->inTestingTimeRange(),
             'present_url' => route(
-                'admin.admission-tests.candidates.present',
+                'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
             ),
             'result_url' => route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
