@@ -51,7 +51,7 @@ class ResultTest extends TestCase
     {
         $response = $this->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -68,7 +68,7 @@ class ResultTest extends TestCase
         $user->givePermissionTo('View:User');
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -85,7 +85,7 @@ class ResultTest extends TestCase
         $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -100,7 +100,7 @@ class ResultTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => 0,
                     'candidate' => $this->user,
@@ -116,7 +116,7 @@ class ResultTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $user,
@@ -132,7 +132,7 @@ class ResultTest extends TestCase
         $this->test->update(['expect_end_at' => now()->addSecond()]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -151,7 +151,7 @@ class ResultTest extends TestCase
             ->update(['is_present' => false]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -168,7 +168,7 @@ class ResultTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -182,7 +182,7 @@ class ResultTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -199,7 +199,7 @@ class ResultTest extends TestCase
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -223,7 +223,7 @@ class ResultTest extends TestCase
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.result',
+                'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
