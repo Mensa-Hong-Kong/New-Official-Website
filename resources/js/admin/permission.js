@@ -155,7 +155,7 @@ function updateDisplayNameSuccessCallback(response) {
 
 function updateDisplayNameFailCallback(error) {
     if(error.status == 422) {
-        bootstrapAlert(error.data.errors.contact_type);
+        bootstrapAlert(error.data.errors.name);
     }
     let id = urlGetContactID(error.request.responseURL);
     document.getElementById('saving'+id).hidden = true;
