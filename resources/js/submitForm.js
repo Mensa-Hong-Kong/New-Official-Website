@@ -4,7 +4,7 @@ function failHandle(error, callback) {
     switch(error.status) {
         case 401:
             bootstrapAlert('Unauthorized, please login first');
-            window.location.pathname = '/login';
+            window.location = route('login');
             break;
         case 403:
             bootstrapAlert('Sorry, you have no permission');
@@ -29,7 +29,7 @@ function failHandle(error, callback) {
 
 export function post(action, successCallback, failCallback, method="POST", data = {}) {
     data['_token'] = token;
-    if(method.toUpperCase != 'POST') {
+    if(method.toUpperCase() != 'POST') {
         data['_method'] = method;
     }
     axios.post(action, data).then(function (response) {
