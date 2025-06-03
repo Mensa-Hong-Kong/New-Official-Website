@@ -118,10 +118,98 @@
             }
         }
     }
+
+    let row;
+    let updatingDisplayOrder = $state(false);
+
+    function dragEnd(event) {
+        paymentGateways.splice(
+            Array.from(event.target.parentNode.children).indexOf(row),
+            0,
+            paymentGateways.splice(getIndex(row.dataset.id), 1)[0]
+        );
+    }
+
+    function dragOver(event) {
+        event.preventDefault();
+        if(! updatingDisplayOrder) {
+            let children= Array.from(event.target.parentNode.parentNode.children);
+            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
+                event.target.parentNode.after(row);
+            } else {
+                event.target.parentNode.before(row);
+            }
+        }
+    }
+
+    function dragStart(event) {
+        row = event.target;
+    }
+
+    let editingDisplayOrder = $state(false);
+    let originDisplayOrder = [];
+
+    function cancelEditDisplay() {
+        paymentGateways.splice(0);
+        for(let paymentGateway of originDisplayOrder) {
+            paymentGateways.push(paymentGateway);
+        }
+        editingDisplayOrder = false;
+    }
+
+    function updateDisplayOrderSuccessCallback(response) {
+        bootstrapAlert(response.data.success);
+        editingDisplayOrder = false;
+        updatingDisplayOrder = false;
+        submitting = false;
+    }
+
+    function updateDisplayOrderFailCallback(error) {
+        if(error.status == 422) {
+            bootstrapAlert(error.data.errors.display_order);
+        }
+        updatingDisplayOrder = false;
+        submitting = false;
+    }
+
+    function updateDisplayOrder() {
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'updateDisplayOrder'+submitAt;
+            if(submitting == 'updateDisplayOrder'+submitAt) {
+                updatingDisplayOrder = true;
+                let data = {display_order: []};
+                for(let paymentGateway of paymentGateways) {
+                    data.display_order.push(paymentGateway.id);
+                }
+                post(
+                    route('admin.other-payment-gateways.display-order.update'),
+                    updateDisplayOrderSuccessCallback,
+                    updateDisplayOrderFailCallback,
+                    'put',data
+                );
+            }
+        }
+    }
+
+    function editDisplayOrder(even) {
+        originDisplayOrder = [];
+        for(let paymentGateway of paymentGateways) {
+            originDisplayOrder.push(paymentGateway);
+        }
+        editingDisplayOrder = true;
+    }
 </script>
 
 <h2 class="fw-bold mb-2 text-uppercase">
     Other Payment Gateway
+    <button onclick="{editDisplayOrder}" class="btn btn-primary" hidden="{editingDisplayOrder || updatingDisplayOrder}">Edit Display Order</button>
+    <button onclick="{updateDisplayOrder}" class="btn btn-primary" hidden="{! editingDisplayOrder || updatingDisplayOrder}">Save Display Order</button>
+    <button onclick="{cancelEditDisplay}" class="btn btn-danger" hidden="{! editingDisplayOrder || updatingDisplayOrder}">Cancel</button>
+    <button class="btn btn-success" hidden="{! updatingDisplayOrder}" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Saving Display Order...
+    </button>
 </h2>
 {#if paymentGateways.length}
     <table class="table table-hover">
@@ -135,7 +223,10 @@
         </thead>
         <tbody>
             {#each paymentGateways as paymentGateway, index}
-                <tr>
+                <tr data-id="{paymentGateway.id}"
+                    ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
+                    draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
+                    class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
                     <th>{paymentGateway.id}</th>
                     <td>
                         {#if paymentGateway.editing}
