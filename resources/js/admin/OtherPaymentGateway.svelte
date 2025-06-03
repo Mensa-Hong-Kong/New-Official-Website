@@ -192,7 +192,7 @@
         }
     }
 
-    function editDisplayOrder(even) {
+    function editDisplayOrder() {
         originDisplayOrder = [];
         for(let paymentGateway of paymentGateways) {
             originDisplayOrder.push(paymentGateway);
