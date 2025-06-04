@@ -53,7 +53,10 @@ return [
             'secret' => env('STRIPE_SECRET_KEY'),
             'webhook' => env('STRIPE_WEBHOOK_KEY'),
         ],
-        'lifetime' => env('STRIPE_LIFETIME', 120),
+        'lifetime' => [
+            'transaction' => env('STRIPE_TRANSACTION_LIFETIME', 120),
+            'webhook' =>  env('STRIPE_WEBHOOK_LIFETIME', 300),
+        ],
     ],
 
 ];
