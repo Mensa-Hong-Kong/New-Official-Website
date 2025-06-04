@@ -4,7 +4,7 @@ namespace App\Library\Stripe\Concerns\Models;
 
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
-use App\Models\StripeCustomer;
+use App\Library\Stripe\Models\StripeCustomer;
 
 trait HasStripeCustomer
 {

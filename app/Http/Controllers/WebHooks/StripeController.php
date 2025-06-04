@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebHooks;
 
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Webhocks\Stripe\VerifySignature;
-use App\Models\StripeCustomer;
+use App\Library\Stripe\Models\StripeCustomer;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
