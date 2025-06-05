@@ -19,23 +19,6 @@ class AdmissionTestOrder extends Model
         'status',
     ];
 
-    protected function status(): Attribute
-    {
-
-        return Attribute::make(
-            get: function(mixed $value, array $attributes) {
-                if(
-                    $attributes['type'] == 'stripe' &&
-                    $attributes['created_at']->addMinutes(config('services.stripe.lifetime')) >= now()
-                ) {
-                    return 'pending';
-                }
-
-                return $attributes['status'];
-            }
-        );
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
