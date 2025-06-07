@@ -108,7 +108,7 @@
                                 </li>
                                 @can('View:User')
                                     @if(Route::current()->getName() == 'admin.users.show')
-                                        <li class="nav-item accordion">
+                                        <li class="accordion">
                                             <button role="button"
                                                 data-bs-toggle="collapse" aria-expanded="true"
                                                 data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
@@ -171,7 +171,7 @@
                                     str_starts_with(Route::current()->getName(), 'admin.teams.roles.') ||
                                     (auth()->user() && auth()->user()->can('Edit:Permission'))
                                 )
-                                    <li class="nav-item accordion">
+                                    <li class="accordion">
                                         <button role="button"
                                             data-bs-toggle="collapse" aria-expanded="true"
                                             data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
@@ -274,7 +274,7 @@
                                 </li>
                             @endif
                             @can('Edit:Admission Test')
-                                <li class="nav-item accordion">
+                                <li class="accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavAdminAdmissionTestProduct" aria-controls="asideNavAdminAdmissionTestProduct"
@@ -319,7 +319,7 @@
                                         @endif
                                     </ul>
                                 </li>
-                                <li class="nav-item accordion">
+                                <li class="accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
@@ -384,7 +384,7 @@
                                         ])>Admission Tests</a>
                                     </li>
                                 @else
-                                    <li class="nav-item accordion">
+                                    <li class="accordion">
                                         <button role="button"
                                             data-bs-toggle="collapse" aria-expanded="true"
                                             data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
@@ -444,11 +444,11 @@
                             @endcan
                             @can('Edit:Site Content')
                                 @if(Route::current()->getName() == 'admin.site-contents.edit')
-                                    <li class="nav-item accordion">
+                                    <li class="accordion">
                                         <button role="button"
                                             data-bs-toggle="collapse" aria-expanded="true"
                                             data-bs-target="#asideNavSiteContent" aria-controls="asideNavSiteContent"
-                                            style="height: 0em" class="nav-item accordion-button">
+                                            style="height: 0em" class="accordion-button">
                                             Site Content
                                         </button>
                                         <ul id="asideNavSiteContent" class="accordion-collapse collapse show">
@@ -472,7 +472,7 @@
                                 @endif
                             @endcan
                             @can('Edit:Custom Web Page')
-                                <li class="nav-item accordion">
+                                <li class="accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavCustomWebPage" aria-controls="asideNavCustomWebPage"
@@ -519,7 +519,7 @@
                                 </li>
                             @endcan
                             @can('Edit:Navigation Item')
-                                <li class="nav-item accordion">
+                                <li class="accordion">
                                     <button role="button"
                                         data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavNavigationItem" aria-controls="asideNavNavigationItem"
