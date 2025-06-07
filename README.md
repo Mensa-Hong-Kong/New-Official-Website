@@ -33,8 +33,8 @@ php artisan db:seed --class=SuperAdministratorSeeder
 
 ### As Known Issues
 
-1. nav responsive dropdown not work
-2. aside nav responsive menu button not work
+1. aside nav responsive menu button not work
+2. nav nested node hyperlink not work
 
 ### Coding Suggestion
 

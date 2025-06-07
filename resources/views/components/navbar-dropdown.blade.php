@@ -1,12 +1,12 @@
-<ul class="dropdown-menu">
+<ul class="dropdown-menu" aria-labelledby="dropdown{{ $id }}">
     @foreach($items as $id => $item)
         @isset($item['children'])
-            <li class="nav-item dropend">
-                <a class="nav-link dropdown-toggle" href="{{ $item['url'] ?? '#' }}" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdown{{ $id }}">
+            <li class="dropdown dropend">
+                <a class="dropdown-item dropdown-toggle" href="{{ $item['url'] ?? '#' }}" role="button"
+                    id="dropdown{{ $id }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     {{ $item['name'] }}
                 </a>
-                @include('components.navbar-dropdown', ['items' => $item['children']])
+                @include('components.navbar-dropdown', ['items' => $item['children'], 'id' => $id])
             </li>
         @else
             <li>
