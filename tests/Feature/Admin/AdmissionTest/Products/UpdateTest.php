@@ -19,6 +19,7 @@ class UpdateTest extends TestCase
 
     private $happyCase = [
         'name' => 'Admission Test',
+        'option_name' => 'Adult',
         'quota' => 1,
     ];
 
@@ -111,6 +112,48 @@ class UpdateTest extends TestCase
             $data
         );
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
+    }
+
+    public function test_missing_option_name()
+    {
+        $data = $this->happyCase;
+        unset($data['option_name']);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-test.products.update',
+                ['product' => $this->product]
+            ),
+            $data
+        );
+        $response->assertInvalid(['option_name' => 'The option name field is required.']);
+    }
+
+    public function test_option_name_is_not_string()
+    {
+        $data = $this->happyCase;
+        $data['option_name'] = ['abc'];
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-test.products.update',
+                ['product' => $this->product]
+            ),
+            $data
+        );
+        $response->assertInvalid(['option_name' => 'The option name field must be a string.']);
+    }
+
+    public function test_option_name_too_long()
+    {
+        $data = $this->happyCase;
+        $data['option_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-test.products.update',
+                ['product' => $this->product]
+            ),
+            $data
+        );
+        $response->assertInvalid(['option_name' => 'The option name field must not be greater than 255 characters.']);
     }
 
     public function test_minimum_age_is_not_integer()
