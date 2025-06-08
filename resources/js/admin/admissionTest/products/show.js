@@ -344,10 +344,6 @@ editButton.addEventListener(
 const priceForms = document.getElementsByClassName('priceForm');
 const priceRoot = document.getElementById('prices');
 
-function urlGetPriceID(url) {
-    return (new URL(url).pathname).match(/^\/admin\/admission-test\/products\/([0-9]+)\/prices\/([0-9]+).*/i)[2];
-}
-
 function updatePriceValidation(updatePriceNameInput) {
     if(updatePriceNameInput.validity.tooLong) {
         bootstrapAlert('The price name field must not be greater than 255 characters.');
@@ -358,7 +354,7 @@ function updatePriceValidation(updatePriceNameInput) {
 
 function updatePriceSuccess(response) {
     bootstrapAlert(response.data.success);
-    let id = urlGetPriceID(response.request.responseURL);
+    let id = route().match(response.request.responseURL, 'put').params.price;
     let updatePriceStartAtInput = document.getElementById('priceStartAtInput'+id);
     let updatePriceNameInput = document.getElementById('priceNameInput'+id);
     updatePriceStartAtInput.hidden = true;
@@ -396,7 +392,7 @@ function updatePriceSuccess(response) {
 }
 
 function updatePriceFail(error) {
-    let id = urlGetPriceID(error.request.responseURL);
+    let id = route().match(error.request.responseURL, 'put').params.price;
     if(error.status == 422) {
         bootstrapAlert(error.response.data.errors.join("\r\n"));
     }
