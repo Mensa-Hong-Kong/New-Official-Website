@@ -33,6 +33,7 @@ class ProductController extends Controller implements HasMiddleware
         DB::beginTransaction();
         $product = AdmissionTestProduct::create([
             'name' => $request->name,
+            'option_name' => $request->option_name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
             'start_at' => $request->start_at,
@@ -69,6 +70,7 @@ class ProductController extends Controller implements HasMiddleware
     {
         $product->update([
             'name' => $request->name,
+            'option_name' => $request->option_name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
             'start_at' => $request->start_at,
@@ -79,6 +81,7 @@ class ProductController extends Controller implements HasMiddleware
         return [
             'success' => 'The admission test product update success.',
             'name' => $product->name,
+            'option_name' => $product->option_name,
             'minimum_age' => $product->minimum_age,
             'maximum_age' => $product->maximum_age,
             'start_at' => $product->start_at,
