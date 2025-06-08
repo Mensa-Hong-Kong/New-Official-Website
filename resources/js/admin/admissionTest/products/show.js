@@ -526,7 +526,7 @@ function createPriceSuccess(response) {
     let html = `
         <input type="hidden" name="_token" value="${token}">
         <input type="hidden" name="_method" value="PUT">
-        <div class="col-md-2" id="showPriceStartAt${response.data.id}">
+        <div class="col-md-3" id="showPriceStartAt${response.data.id}">
     `;
     if(response.data.start_at) {
         html += response.data.start_at;
