@@ -23,6 +23,7 @@ const saveButton = document.getElementById('saveButton');
 const cancelButton = document.getElementById('cancelButton');
 const editButton = document.getElementById('editButton');
 const showName = document.getElementById('showName');
+const showOptionName = document.getElementById('showOptionName');
 const showMinimumAge = document.getElementById('showMinimumAge');
 const showMaximumAge = document.getElementById('showMaximumAge');
 const showStartAt = document.getElementById('showStartAt');
@@ -30,6 +31,8 @@ const showEndAt = document.getElementById('showEndAt');
 const showQuota = document.getElementById('showQuota');
 const nameInput = document.getElementById('validationName');
 const nameFeedback = document.getElementById('nameFeedback');
+const optionNameInput = document.getElementById('validationOptionName');
+const optionNameFeedback = document.getElementById('optionNameFeedback');
 const minimumAgeInput = document.getElementById('validationMinimumAge');
 const minimumAgeFeedback = document.getElementById('minimumAgeFeedback');
 const maximumAgeInput = document.getElementById('validationMaximumAge');
@@ -42,17 +45,17 @@ const quotaInput = document.getElementById('validationQuota');
 const quotaFeedback = document.getElementById('quotaFeedback');
 
 const inputs = [
-    nameInput, minimumAgeInput, maximumAgeInput,
+    nameInput, optionNameInput, minimumAgeInput, maximumAgeInput,
     startAtInput, endAtInput, quotaInput,
 ];
 
 const feedbacks = [
-    nameFeedback, minimumAgeFeedback, maximumAgeFeedback,
+    nameFeedback, optionNameFeedback, minimumAgeFeedback, maximumAgeFeedback,
     startAtFeedback, endAAtFeedback, quotaFeedback,
 ];
 
 const showInfos = [
-    showName, showMinimumAge, showMaximumAge,
+    showName, showOptionName, showMinimumAge, showMaximumAge,
     showStartAt, showEndAt, showQuota,
 ];
 
@@ -107,6 +110,15 @@ function validation() {
         nameInput.classList.add('is-invalid');
         nameFeedback.className = 'invalid-feedback';
         nameFeedback.innerText = 'The name field must not be greater than 255 characters.';
+    }
+    if(optionNameInput.validity.valueMissing) {
+        optionNameInput.classList.add('is-invalid');
+        optionNameFeedback.classname = 'invalid-feedback';
+        optionNameFeedback.innerText = 'The option name field is required.';
+    } else if(optionNameInput.validity.tooLong) {
+        optionNameInput.classList.add('is-invalid');
+        optionNameFeedback.classname = 'invalid-feedback';
+        optionNameFeedback.innerText = 'The option name field must not be greater than 255 characters.';
     }
     if(minimumAgeInput.value) {
         if(minimumAgeInput.validity.rangeUnderflow) {
@@ -165,6 +177,7 @@ function validation() {
 function saveSuccessCallback(response) {
     bootstrapAlert(response.data.success);
     nameInput.dataset.value = response.data.name ?? '';
+    optionNameInput.value = response.data.option_name ?? '';
     minimumAgeInput.dataset.value = response.data.minimum_age ?? '';
     maximumAgeInput.dataset.value = response.data.maximum_age ?? '';
     startAtInput.dataset.value = response.data.start_at ?? '';
@@ -172,6 +185,7 @@ function saveSuccessCallback(response) {
     quotaInput.dataset.value = response.data.quota ?? '';
     fillInputValues();
     showName.innerText = response.data.name;
+    showOptionName.innerText = response.data.option_name;
     showMinimumAge.innerText = response.data.minimum_age;
     showMaximumAge.innerText = response.data.maximum_age;
     startAtInput.innerText = response.data.start_at;
@@ -202,6 +216,10 @@ function saveFailCallback(error) {
                 case 'name':
                     input = nameInput;
                     feedback = nameFeedback;
+                    break;
+                case 'option_name':
+                    input = optionNameInput;
+                    feedback = optionNameFeedback;
                     break;
                 case 'minimum_age':
                     input = minimumAgeInput;
@@ -264,6 +282,7 @@ editForm.addEventListener(
                     }
                     let data = {
                         name: nameInput.value,
+                        option_name: optionNameInput.value,
                         quota: quotaInput.value,
                     };
                     if(minimumAgeInput.value) {

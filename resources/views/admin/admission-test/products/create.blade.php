@@ -16,6 +16,16 @@
         </div>
         <div class="form-outline mb-4">
             <div class="form-floating">
+                <input name="option_name" class="form-control" id="validationOptionName" placeholder="name"
+                    maxlength="255" value="{{ old('option_name') }}" required />
+                <label for="validationOptionName">Option Name</label>
+                <div id="optionNameFeedback" class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+        <div class="form-outline mb-4">
+            <div class="form-floating">
                 <input type="number" name="minimum_age" class="form-control" id="validationMinimumAge" placeholder="minimum age"
                     step="1" min="1" max="255" value="{{ old('minimum_age') }}" />
                 <label for="validationMinimumAge">Minimum Age</label>

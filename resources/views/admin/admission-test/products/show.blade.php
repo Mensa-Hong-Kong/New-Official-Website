@@ -29,6 +29,17 @@
                         </td>
                     </tr>
                     <tr>
+                        <th>Option Name</th>
+                        <td>
+                            <span id="showOptionName">{{ $product->option_name }}</span>
+                            <input name="option_name" class="form-control" id="validationOptionName" placeholder="name"
+                                maxlength="255" value="{{ $product->option_name }}" data-value="{{ $product->option_name }}" hidden required />
+                            <div id="optionNameFeedback" class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Minimum Age</th>
                         <td>
                             <span id="showMinimumAge">{{ $product->minimum_age }}</span>

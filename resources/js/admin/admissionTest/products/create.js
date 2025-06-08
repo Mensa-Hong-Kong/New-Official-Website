@@ -4,6 +4,8 @@ const form = document.getElementById('form');
 
 const name = document.getElementById('validationName');
 const nameFeedback = document.getElementById('nameFeedback');
+const optionName = document.getElementById('validationOptionName');
+const optionNameFeedback = document.getElementById('optionNameFeedback');
 const minimumAge = document.getElementById('validationMinimumAge');
 const minimumAgeFeedback = document.getElementById('minimumAgeFeedback');
 const maximumAge = document.getElementById('validationMaximumAge');
@@ -21,9 +23,9 @@ const priceFeedback = document.getElementById('priceFeedback');
 const createButton = document.getElementById('createButton');
 const creatingButton = document.getElementById('creatingButton');
 
-const inputs = [name, minimumAge, maximumAge];
+const inputs = [name, optionName, minimumAge, maximumAge];
 
-const feedbacks = [nameFeedback, minimumAgeFeedback, maximumAgeFeedback];
+const feedbacks = [nameFeedback, optionNameFeedback, minimumAgeFeedback, maximumAgeFeedback];
 
 function hasError() {
     for(let feedback of feedbacks) {
@@ -51,6 +53,15 @@ function validation() {
         name.classList.add('is-invalid');
         nameFeedback.className = 'invalid-feedback';
         nameFeedback.innerText = 'The name field must not be greater than 255 characters.';
+    }
+    if(optionName.validity.valueMissing) {
+        optionName.classList.add('is-invalid');
+        optionNameFeedback.classoptionName = 'invalid-feedback';
+        optionNameFeedback.innerText = 'The option name field is required.';
+    } else if(optionName.validity.tooLong) {
+        optionName.classList.add('is-invalid');
+        optionNameFeedback.classoptionName = 'invalid-feedback';
+        optionNameFeedback.innerText = 'The option name field must not be greater than 255 characters.';
     }
     if(minimumAge.value) {
         if(minimumAge.validity.rangeUnderflow) {
@@ -151,6 +162,10 @@ function failCallback(error) {
                     input = name;
                     feedback = nameFeedback;
                     break;
+                case 'option_name':
+                    input = optionName;
+                    feedback = optionNameFeedback;
+                    break;
                 case 'minimum_age':
                     input = minimumAge;
                     feedback = minimumAgeFeedback;
@@ -207,6 +222,7 @@ form.addEventListener(
                 creatingButton.hidden = false;
                 let data = {
                     name: name.value,
+                    option_name: optionName.value,
                     quota: quota.value,
                     price: price.value
                 };
