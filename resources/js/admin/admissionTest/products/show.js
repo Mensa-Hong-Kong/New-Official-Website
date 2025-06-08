@@ -515,7 +515,13 @@ function createPriceSuccess(response) {
     formElement.id = "priceForm" + response.data.id;
     formElement.setAttribute("method", "POST");
     formElement.setAttribute('novalidate', true);
-    formElement.action = response.data.update_url;
+    formElement.action = route(
+        'admin.admission-test.products.prices.update',
+        {
+            product: route().params.product,
+            price: response.data.id,
+        }
+    );
     let token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     let html = `
         <input type="hidden" name="_token" value="${token}">

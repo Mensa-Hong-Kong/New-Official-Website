@@ -45,13 +45,6 @@ class PriceController extends Controller implements HasMiddleware
             'name' => $price->name,
             'price' => $price->price,
             'start_at' => $price->start_at,
-            'update_url' => route(
-                'admin.admission-test.products.prices.update',
-                [
-                    'product' => $product,
-                    'price' => $price,
-                ]
-            ),
         ];
     }
 
