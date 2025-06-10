@@ -56,11 +56,11 @@ function validation() {
     }
     if(optionName.validity.valueMissing) {
         optionName.classList.add('is-invalid');
-        optionNameFeedback.classoptionName = 'invalid-feedback';
+        optionNameFeedback.classname = 'invalid-feedback';
         optionNameFeedback.innerText = 'The option name field is required.';
     } else if(optionName.validity.tooLong) {
         optionName.classList.add('is-invalid');
-        optionNameFeedback.classoptionName = 'invalid-feedback';
+        optionNameFeedback.classname = 'invalid-feedback';
         optionNameFeedback.innerText = 'The option name field must not be greater than 255 characters.';
     }
     if(minimumAge.value) {
