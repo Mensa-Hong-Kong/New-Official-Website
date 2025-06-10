@@ -187,13 +187,7 @@ class StoreTest extends TestCase
         $response->assertSuccessful();
         $price = AdmissionTestPrice::latest('id')->first();
         $data['id'] = $price->id;
-        $data['update_url'] = route(
-            'admin.admission-test.products.prices.update',
-            [
-                'product' => $this->product,
-                'price' => $price,
-            ]
-        );
+        $data['updated_at'] = $price->updated_at->toISOString();
         $response->assertJson($data);
         Queue::assertPushed(SyncPrice::class);
     }

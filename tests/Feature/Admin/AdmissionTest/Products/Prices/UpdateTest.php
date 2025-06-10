@@ -171,9 +171,11 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test product price update success.';
         $data['start_at'] = null;
+        $test = AdmissionTestPrice::find($this->price->id);
+        $data['updated_at'] = $test->updated_at->toISOString();
         $response->assertSuccessful();
         $response->assertJson($data);
-        $this->assertTrue((bool) AdmissionTestPrice::find($this->price->id)->synced_to_stripe);
+        $this->assertTrue((bool) $test->synced_to_stripe);
         Queue::assertNothingPushed();
     }
 
@@ -192,9 +194,11 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test product price update success.';
         $data['start_at'] = null;
+        $test = AdmissionTestPrice::find($this->price->id);
+        $data['updated_at'] = $test->updated_at->toISOString();
         $response->assertSuccessful();
         $response->assertJson($data);
-        $this->assertFalse((bool) AdmissionTestPrice::find($this->price->id)->synced_to_stripe);
+        $this->assertFalse((bool) $test->synced_to_stripe);
         Queue::assertPushed(SyncPrice::class);
     }
 }
