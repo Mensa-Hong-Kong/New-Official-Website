@@ -87,7 +87,6 @@
         bootstrapAlert(response.data.success);
         let location = new URL(response.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
-        console.log(id);
         paymentGateways[getIndex(id)]['is_active'] = response.data.status;
         submitting = false;
     }

@@ -55,15 +55,25 @@ class ProductController extends Controller implements HasMiddleware
 
     public function show(AdmissionTestProduct $product)
     {
+        $product->load([
+            'prices' => function ($query) {
+                $query->select([
+                    'id',
+                    'product_id',
+                    'name',
+                    'price',
+                    'start_at',
+                ])->orderByDesc('start_at')
+                    ->orderByDesc('updated_at');
+            },
+        ])->makeHidden([
+            'created_at',
+            'stripe_id',
+            'synced_to_stripe',
+        ]);
+        $product->prices->makeHidden('product_id');
         return view('admin.admission-test.products.show')
-            ->with(
-                'product', $product->load([
-                    'prices' => function ($query) {
-                        $query->orderByDesc('start_at')
-                            ->orderByDesc('updated_at');
-                    },
-                ])
-            );
+            ->with('product', $product);
     }
 
     public function update(ProductRequest $request, AdmissionTestProduct $product)
