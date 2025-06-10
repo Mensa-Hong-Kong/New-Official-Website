@@ -15,29 +15,12 @@ $bootstrap-icons-font-src: url("../../node_modules/bootstrap-icons/font/fonts/bo
     cursor: move;
 }
 
-.dropdown-item {
-    color: #fff;
+.dropdown-hover-all .dropdown-menu,
+.dropdown-hover > .dropdown-menu.dropend {
+    margin-left: -1px !important;
 }
 
-.dropdown .dropdown-menu {
-    display: none;
-    background: #212529;
-}
-.dropdown:hover > .dropdown-menu,
-.dropend:hover > .dropdown-menu {
-    display: block;
-}
-@media screen and (min-width:769px) {
-    .dropend:hover > .dropdown-menu {
-        position: absolute;
-        top: 0;
-        left: 100%;
-    }
-    .dropend .dropdown-toggle {
-        margin-left: 0.5em;
-    }
-}
-
-aside.flex-column nav ul.nav.flex-column li.nav-item {
+aside nav > ul > li {
     width: max-content;
+    min-width: 100%;
 }

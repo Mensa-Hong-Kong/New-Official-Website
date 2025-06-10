@@ -2,11 +2,11 @@
     @foreach ($items as $id => $item)
         @isset($item['children'])
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="{{ $item['url'] ?? '#' }}" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="nav-link dropdown-toggle" id="dropdown{{ $id }}"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ $item['name'] }}
-                </a>
-                @include('components.navbar-dropdown', ['items' => $item['children']])
+                </button>
+                @include('components.navbar-dropdown', ['items' => $item['children'], 'id' => $id])
             </li>
         @else
             <li class="nav-item">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Jobs\Stripe\Customers\CreateUser;
 use App\Library\Stripe\Concerns\Models\HasStripeCustomer;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,6 +47,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'birthday' => 'date',
     ];
 
     /**
@@ -112,6 +114,16 @@ class User extends Authenticatable
                 ksort($name);
 
                 return implode(' ', $name);
+            }
+        );
+    }
+
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return Carbon::create($attributes['birthday'])
+                    ->diffInMonths(now()->startOfDay()) / 12;
             }
         );
     }

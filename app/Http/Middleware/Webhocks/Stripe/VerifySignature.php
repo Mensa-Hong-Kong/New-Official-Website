@@ -17,7 +17,7 @@ class VerifySignature
                 $request->getContent(),
                 $request->header('Stripe-Signature'),
                 config('services.stripe.keys.webhook'),
-                300
+                config('services.stripe.lifetime.webhook')
             );
         } catch (SignatureVerificationException $exception) {
             throw new AccessDeniedHttpException($exception->getMessage(), $exception);
