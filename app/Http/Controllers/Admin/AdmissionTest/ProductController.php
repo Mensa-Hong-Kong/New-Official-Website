@@ -72,6 +72,7 @@ class ProductController extends Controller implements HasMiddleware
             'synced_to_stripe',
         ]);
         $product->prices->makeHidden('product_id');
+
         return view('admin.admission-test.products.show')
             ->with('product', $product);
     }

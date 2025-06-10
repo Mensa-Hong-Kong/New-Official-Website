@@ -83,7 +83,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
     }
 
-
     public function test_missing_option_name()
     {
         $data = $this->happyCase;

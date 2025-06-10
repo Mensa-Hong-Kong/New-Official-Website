@@ -8,4 +8,3 @@ mount(
         props: {product: product},
     }
 );
-
