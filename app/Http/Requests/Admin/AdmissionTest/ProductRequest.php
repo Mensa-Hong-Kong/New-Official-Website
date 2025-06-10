@@ -15,6 +15,7 @@ class ProductRequest extends FormRequest
     {
         $return = [
             'name' => 'required|string|max:255',
+            'option_name' => 'required|string|max:255',
             'minimum_age' => 'nullable|integer|min:1|max:255',
             'maximum_age' => 'nullable|integer|min:1|max:255',
             'start_at' => 'nullable|date',

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('admission_test_products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('option_name');
             $table->unsignedTinyInteger('minimum_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->dateTime('start_at')->nullable();

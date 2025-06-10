@@ -13,6 +13,7 @@ class AdmissionTestProduct extends Model
 
     protected $fillable = [
         'name',
+        'option_name',
         'minimum_age',
         'maximum_age',
         'start_at',

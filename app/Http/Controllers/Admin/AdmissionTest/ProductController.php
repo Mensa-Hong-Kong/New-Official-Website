@@ -33,6 +33,7 @@ class ProductController extends Controller implements HasMiddleware
         DB::beginTransaction();
         $product = AdmissionTestProduct::create([
             'name' => $request->name,
+            'option_name' => $request->option_name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
             'start_at' => $request->start_at,
@@ -54,21 +55,33 @@ class ProductController extends Controller implements HasMiddleware
 
     public function show(AdmissionTestProduct $product)
     {
+        $product->load([
+            'prices' => function ($query) {
+                $query->select([
+                    'id',
+                    'product_id',
+                    'name',
+                    'price',
+                    'start_at',
+                ])->orderByDesc('start_at')
+                    ->orderByDesc('updated_at');
+            },
+        ])->makeHidden([
+            'created_at',
+            'stripe_id',
+            'synced_to_stripe',
+        ]);
+        $product->prices->makeHidden('product_id');
+
         return view('admin.admission-test.products.show')
-            ->with(
-                'product', $product->load([
-                    'prices' => function ($query) {
-                        $query->orderByDesc('start_at')
-                            ->orderByDesc('updated_at');
-                    },
-                ])
-            );
+            ->with('product', $product);
     }
 
     public function update(ProductRequest $request, AdmissionTestProduct $product)
     {
         $product->update([
             'name' => $request->name,
+            'option_name' => $request->option_name,
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
             'start_at' => $request->start_at,
@@ -79,6 +92,7 @@ class ProductController extends Controller implements HasMiddleware
         return [
             'success' => 'The admission test product update success.',
             'name' => $product->name,
+            'option_name' => $product->option_name,
             'minimum_age' => $product->minimum_age,
             'maximum_age' => $product->maximum_age,
             'start_at' => $product->start_at,
