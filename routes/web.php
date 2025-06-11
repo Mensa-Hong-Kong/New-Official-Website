@@ -54,8 +54,8 @@ Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::singleton('profile', UserController::class)
         ->except('edit');
-    Route::get('profile/created-stripe-user', [UserController::class, 'createdStripeUser'])
-        ->name('profile.created-stripe-user');
+    Route::get('profile/created-stripe-customer', [UserController::class, 'createdStripeCustomer'])
+        ->name('profile.created-stripe-customer');
     Route::get('contacts/{contact}/send-verify-code', [ContactController::class, 'sendVerifyCode'])
         ->name('contacts.send-verify-code')
         ->whereNumber('contact');
