@@ -2,7 +2,7 @@
 
 @section('main')
     <section class="container">
-        <x-stripe-alert />
+        <x-stripe-user-alert />
         <h3 class="fw-bold mb-2">{{auth()->user()->futureAdmissionTest ? 'Reschedule' : 'Schedule'}} Admission Tests</h3>
         <table>
             <tr>

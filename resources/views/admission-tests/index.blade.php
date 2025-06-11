@@ -3,7 +3,7 @@
 @section('main')
     <section class="container">
         @auth
-            <x-stripe-alert />
+            <x-stripe-user-alert />
         @endauth
         <h2 class="fw-bold mb-2 text-uppercase">Admission Tests</h2>
         @vite('resources/css/ckEditor.css')

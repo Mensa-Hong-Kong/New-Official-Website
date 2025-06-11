@@ -1,9 +1,9 @@
 @if(!auth()->user()->stripe)
-    <div id="stripeCustomerNotUpToDateAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
-        We are creating you customer account on stripe, please wait a few minutes, when created, this alert will be close.
+    <div id="stripeCustomerUncreatedAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        We are creating your customer account on stripe, please wait a few minutes, when created, this alert will be close.
     </div>
     @push('after footer')
-        @vite('resources/js/components/stripeAlert.js')
+        @vite('resources/js/components/stripeUserAlert.js')
     @endpush
 @elseif(!auth()->user()->defaultEmail)
     <div class="alert alert-danger" role="alert">
