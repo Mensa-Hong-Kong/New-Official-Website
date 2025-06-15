@@ -1,4 +1,10 @@
-const token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+import { page } from '@inertiajs/svelte';
+
+let csrf_token = $state('');
+
+export function setCsrfToken(csrfToken) {
+    csrf_token = csrfToken;
+}
 
 function failHandle(error, callback) {
     switch(error.status) {
@@ -28,7 +34,7 @@ function failHandle(error, callback) {
 }
 
 export function post(action, successCallback, failCallback, method="POST", data = {}) {
-    data['_token'] = token;
+    data['_token'] = csrf_token;
     if(method.toUpperCase() != 'POST') {
         data['_method'] = method;
     }
