@@ -3,10 +3,7 @@
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
-	let props = $props();
-    let genders = props.genders;
-    let passportTypes = props.passportTypes;
-    let maxBirthday = props.maxBirthday;
+	let { genders, passportTypes, maxBirthday } = $props();
 
     let inputs = $state({});
     let submitting = $state(false);
