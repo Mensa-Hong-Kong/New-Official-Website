@@ -60,7 +60,6 @@
         for(let key in feedbacks) {
             feedbacks[key] = 'Looks good!';
         }
-        console.log(feedbacks);
         if(inputs.username.validity.valueMissing) {
             feedbacks.username = 'The username field is required.';
         } else if(inputs.username.validity.tooShort) {
@@ -231,9 +230,9 @@
         </ol>
     </div>
     <form class="row g-3" onsubmit="{register}" novalidate>
-        <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
+        <h2 class="mb-2 fw-bold text-uppercase">Register</h2>
         <div class="col-md-4">
-            <label for="validationUsername" class="form-label">Username</label>
+            <label for="username" class="form-label">Username</label>
             <input name="username" type="text" placeholder="username" disabled="{creating}"
                 minlength="8" maxlength="16" required bind:this="{inputs.username}"
                 class={[
@@ -248,7 +247,7 @@
             }]}>{feedbacks.username}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationPassword" class="form-label">Password</label>
+            <label for="password" class="form-label">Password</label>
             <input name="password" type="password" placeholder="password" disabled="{creating}"
                 minlength="8" maxlength="16" required bind:this="{inputs.password}"
                 class={[
@@ -263,7 +262,7 @@
             }]}>{feedbacks.password}</div>
         </div>
         <div class="col-md-4">
-            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <label for="password_confirmation" class="form-label">Confirm Password</label>
             <input name="password_confirmation" type="password" disabled="{creating}"
                 minlength="8" maxlength="16" required placeholder="confirm password"
                 bind:this="{inputs.confirmPassword}"
@@ -275,7 +274,7 @@
                 ]} />
         </div>
         <div class="col-md-4">
-            <label for="validationFamilyName" class="form-label">Family Name</label>
+            <label for="family_name" class="form-label">Family Name</label>
             <input name="family_name" type="text" disabled="{creating}"
                 maxlength="255" required placeholder="family name"
                 bind:this="{inputs.familyName}" class={[
@@ -290,7 +289,7 @@
             }]}>{feedbacks.familyName}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationMiddleName" class="form-label">Middle Name</label>
+            <label for="middle_name" class="form-label">Middle Name</label>
             <input name="middle_name" type="text" disabled="{creating}"
                 maxlength="255" placeholder="middle name"
                 bind:this="{inputs.middleName}" class={[
@@ -305,7 +304,7 @@
             }]}>{feedbacks.middleName}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationGivenName" class="form-label">Given Name</label>
+            <label for="given_name" class="form-label">Given Name</label>
             <input name="given_name" type="text" disabled="{creating}"
                 maxlength="255" required placeholder="given name"
                 bind:this="{inputs.givenName}" class={[
@@ -320,7 +319,7 @@
             }]}>{feedbacks.givenName}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationPassportType" class="form-label">Passport Type</label>
+            <label for="passport_type_id" class="form-label">Passport Type</label>
             <select name="passport_type_id" required disabled="{creating}"
                 bind:this="{inputs.passportType}" class={[
                     'form-control', {
@@ -339,7 +338,7 @@
             }]}>{feedbacks.passportType}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationPassportNumber">Passport Number</label>
+            <label for="passport_number">Passport Number</label>
             <input name="passport_number" type="text" disabled="{creating}"
                 minlength="8" maxlength="18" required placeholder="passport_number"
                 bind:this="{inputs.passportNumber}" class={[
@@ -355,7 +354,7 @@
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <label for="validationGender" class="form-label">Gender</label>
+            <label for="gender" class="form-label">Gender</label>
             <input name="gender" type="text" disabled="{creating}"
                 maxlength="255" list="genders" required placeholder="gender"
                 bind:this="{inputs.gender}" class={[
@@ -387,7 +386,7 @@
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <label for="validationEmail">Email</label>
+            <label for="email">Email</label>
             <input name="email" type="email" disabled="{creating}"
                 maxlength="320" required placeholder="dammy@example.com"
                 bind:this="{inputs.email}" class={[
@@ -402,7 +401,7 @@
             }]}>{feedbacks.email}</div>
         </div>
         <div class="col-md-4">
-            <label for="validationMobile">Mobile</label>
+            <label for="mobile">Mobile</label>
             <input name="mobile" type="tel" disabled="{creating}"
                 minlength="5" maxlength="15" required placeholder="85298765432"
                 bind:this="{inputs.mobile}" class={[
