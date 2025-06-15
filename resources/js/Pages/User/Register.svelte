@@ -1,9 +1,10 @@
 <script>
-    import { onMount } from "svelte";
-	import Datalist from '@/Pages/Components/Datalist.svelte';
-    import ClearInputHistory from '@/clearInputHistory.js';
-    import { post } from "@/submitForm.svelte";
 	let { genders, passportTypes, maxBirthday } = $props();
+    import { onMount } from "svelte";
+    import ClearInputHistory from '@/clearInputHistory.js';
+	import Datalist from '@/Pages/Components/Datalist.svelte';
+    import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modal.svelte';
 
     let inputs = $state({});
     let submitting = $state(false);
