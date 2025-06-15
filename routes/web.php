@@ -39,7 +39,7 @@ Route::view('/', 'layouts.app')->name('index');
 Route::middleware('guest')->group(function () {
     Route::get('register', [UserController::class, 'create'])->name('register');
     Route::post('register', [UserController::class, 'store']);
-    Route::view('login', 'user.login')->name('login');
+    Route::inertia('login', 'User/Login')->name('login');
     Route::post('login', [UserController::class, 'login']);
     Route::get('forget-password', [UserController::class, 'forgetPassword'])
         ->name('forget-password');
