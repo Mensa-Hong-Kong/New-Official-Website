@@ -14,6 +14,7 @@ use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Closure;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -45,15 +46,14 @@ class UserController extends Controller implements HasMiddleware
 
     public function create()
     {
-        return view('user.register')
+        return Inertia::render('User/Register')
+            ->with('title', 'Register')
             ->with(
                 'genders', Gender::all()
-                    ->pluck('name', 'id')
-                    ->toArray()
+                    ->pluck('name')
             )->with(
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
-                    ->toArray()
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
     }
 
@@ -229,7 +229,7 @@ class UserController extends Controller implements HasMiddleware
         ], 422);
     }
 
-    public function createdStripeUser(Request $request)
+    public function createdStripeCustomer(Request $request)
     {
         return ['status' => (bool) $request->user()->stripe];
     }
