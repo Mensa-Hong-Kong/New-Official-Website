@@ -320,7 +320,7 @@
             <label for="passport_type_id" class="form-label">Passport Type</label>
             <select name="passport_type_id" required disabled="{creating}"
                 bind:this="{inputs.passportType}" class={[
-                    'form-control', {
+                    'form-select', {
                         'is-valid': feedbacks.passportType == 'Looks good!',
                         'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.passportType),
                     }
