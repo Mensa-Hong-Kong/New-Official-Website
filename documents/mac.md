@@ -105,15 +105,31 @@ brew install composer
 ## VSCode Extensions
 
 -   PHP by DEVSENSE (DEVSENSE.phptools-vscode)
--   HTML Format (mohd-akram.vscode-html-format)
--   HTML CSS Support (ecmel.vscode-html-css)
 -   Auto Complete Tag (formulahendry.auto-complete-tag)
--   AutoFileName (JerryHong.autofilename)
--   Bootstrap InteSense (hossaini.bootstrap-intellisense)
+-   Auto File Name (JerryHong.autofilename)
 -   Bootstrap 5 & Font Awesome Snippets (HansUXdev.bootstrap5-snippets)
+-   Bootstrap IntelliSense (hossaini.bootstrap-intellisense)
+-   Code Spell Checker (streetsidesoftware.code-spell-checker)
+-   HTML CSS Support (ecmel.vscode-html-css)
+-   HTML Format (mohd-akram.vscode-html-format)
 -   JavaScript Snippet Pack (akamud.vscode-javascript-snippet-pack)
--   Laravel Extension Pack (onecentlin.laravel-extension-pack)
--   Laravel Goto View (ctf0.laravel-goto-view)
+-   Laravel & PHP Essentials (TechieCouch.laravel-php-essentials)
+-   PHP by DEVSENSE (DEVSENSE.phptools-vscode)
+-   Svelte Auto Import (pivaszbs.svelte-autoimport)
+-   Svelte for VS Code (svelte.svelte-vscode)
+-   Svelte Intellisense (ardenivanov.svelte-intellisense)
+-   Svelte Snippets (JakobKruse.svelte-kit-snippets)
+-   svelte-format (melihaltintas.svelte-format)
 -   Thunder Client (rangav.vscode-thunder-client)
--   Database Client (cweijan.vscode-database-client2)
 -   Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss)
+
+### Setup Inertia.js from Laravel & PHP Essentials
+
+add config to {project root}/vscode/settings.js
+
+```
+"inertia": {
+    "pages": "resources/js/Pages/**/*.svelte",
+    "defaultExtension": ".svelte",
+}
+```
