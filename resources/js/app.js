@@ -1,5 +1,6 @@
 import './bootstrap';
 import bootstrap from 'bootstrap/js/index.umd';
+import { Styles } from '@sveltestrap/sveltestrap';
 
 // fix multiple levels of nested dropdowns do not collapse when the parent of the current expanded level is clicked
 // source form: https://jsfiddle.net/dallaslu/mvk4uhzL/

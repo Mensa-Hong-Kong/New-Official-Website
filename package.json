@@ -19,6 +19,7 @@
         "@fortawesome/fontawesome-free": "^6.7.2",
         "@inertiajs/svelte": "^2.0.12",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
+        "@sveltestrap/sveltestrap": "^7.1.0",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
         "ckeditor5": "^44.1.0",
