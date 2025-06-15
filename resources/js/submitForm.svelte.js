@@ -1,5 +1,3 @@
-import { page } from '@inertiajs/svelte';
-
 let csrf_token = $state('');
 
 export function setCsrfToken(csrfToken) {
