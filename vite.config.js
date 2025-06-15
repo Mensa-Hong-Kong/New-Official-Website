@@ -6,33 +6,14 @@ import laravel from 'laravel-vite-plugin';
 import path from 'path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-let input = [
-    'resources/css/app.scss',
-    'resources/css/ckEditor.css',
-];
-
-const exclude = [
-    'resources/js/bootstrap.js',
-    'resources/js/clearInputHistory.js',
-    'resources/js/stringToBoolean.js',
-    'resources/js/submitForm.js',
-];
-
-for(let path of glob.sync("resources/js/**/*.js")) {
-    if(!path.match(/.test.js$/) && !exclude.includes(path)) {
-        input.push(path);
-    }
-}
-
 export default defineConfig({
     plugins: [
         laravel({
-            input: input,
+			input: ['resources/css/app.scss', 'resources/js/app.js'],
+            ssr: 'resources/js/ssr.js',
             refresh: true,
         }),
-        svelte({
-            /* plugin options */
-        }),
+        svelte(),
     ],
     resolve: {
         alias: {

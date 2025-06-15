@@ -1,6 +1,5 @@
 import './bootstrap';
-import bootstrap from '~/bootstrap/js/index.umd';
-window.bootstrap = bootstrap;
+import bootstrap from 'bootstrap/js/index.umd';
 
 // fix multiple levels of nested dropdowns do not collapse when the parent of the current expanded level is clicked
 // source form: https://jsfiddle.net/dallaslu/mvk4uhzL/
@@ -57,3 +56,22 @@ window.bootstrap = bootstrap;
         });
     }
 )(bootstrap);
+
+import { createInertiaApp } from '@inertiajs/svelte';
+import { hydrate, mount } from 'svelte';
+import Layout from "@/Pages/Layouts/App.svelte";
+
+createInertiaApp({
+	resolve: (name) => {
+		const pages = import.meta.glob("./Pages/**/*.svelte", { eager: true });
+		let page = pages[`./Pages/${name}.svelte`];
+		return { default: page.default, layout: page.layout || Layout };
+	},
+	setup({ el, App, props }) {
+        if (el.dataset.serverRendered === 'true') {
+            hydrate(App, { target: el, props })
+        } else {
+            mount(App, { target: el, props })
+        }
+	},
+});

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('webhooks')
                 ->name('webhooks.')
-                ->group(base_path('routes/webhooks.php'));
+                ->group(__DIR__.'/../routes/webhooks.php',);
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+        $middleware->web(append: HandleInertiaRequests::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
