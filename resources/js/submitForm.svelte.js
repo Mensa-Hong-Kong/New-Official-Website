@@ -1,3 +1,5 @@
+import { alert } from '@/Pages/Components/Modal.svelte';
+
 let csrf_token = $state('');
 
 export function setCsrfToken(csrfToken) {
@@ -7,24 +9,24 @@ export function setCsrfToken(csrfToken) {
 function failHandle(error, callback) {
     switch(error.status) {
         case 401:
-            bootstrapAlert('Unauthorized, please login first');
+            alert('Unauthorized, please login first');
             window.location = route('login');
             break;
         case 403:
-            bootstrapAlert('Sorry, you have no permission');
+            alert('Sorry, you have no permission');
             break;
         case 419:
-            bootstrapAlert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
+            alert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
             break;
         case 500:
-            bootstrapAlert('Unexpected error, please contact I.T.');
+            alert('Unexpected error, please contact I.T.');
             break;
         case 503:
-            bootstrapAlert('Database connect fail, please try again later, or contact I.T.');
+            alert('Database connect fail, please try again later, or contact I.T.');
             break;
         default:
             if(error.response.data.message) {
-                bootstrapAlert(error.response.data.message);
+                alert(error.response.data.message);
             }
             break;
     }
