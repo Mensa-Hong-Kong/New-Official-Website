@@ -91,8 +91,8 @@
     }
 
     function successCallback(response) {
-        bootstrapAlert(response.data.succeeded);
-        feedbacks.succeeded = response.data.succeeded;
+        bootstrapAlert(response.data.success);
+        feedbacks.succeeded = response.data.success;
         submitting = false;
         forgetting = false;
     }
