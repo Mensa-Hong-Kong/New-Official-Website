@@ -130,9 +130,10 @@ class UserController extends Controller implements HasMiddleware
             $update['password'] = $request->new_password;
         }
         $user->update($update);
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
         $return = array_diff_key($update, array_flip($unsetKeys));
         $return['gender'] = $request->gender;
+        $return['success'] = 'The profile update success!';
         DB::commit();
 
         return $return;

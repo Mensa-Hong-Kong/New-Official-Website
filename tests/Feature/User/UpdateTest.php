@@ -189,8 +189,9 @@ class UpdateTest extends TestCase
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertSuccessful();
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
     }
 
@@ -201,8 +202,9 @@ class UpdateTest extends TestCase
         $data['password'] = '12345678';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertSuccessful();
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
     }
 
@@ -214,8 +216,9 @@ class UpdateTest extends TestCase
         $data['new_password_confirmation'] = '98765432';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertSuccessful();
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
     }
 
@@ -228,8 +231,9 @@ class UpdateTest extends TestCase
         $data['new_password_confirmation'] = '98765432';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertSuccessful();
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'gender_id'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
         $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
     }
 }
