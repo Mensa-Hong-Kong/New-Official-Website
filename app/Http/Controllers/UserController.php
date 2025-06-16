@@ -180,7 +180,7 @@ class UserController extends Controller implements HasMiddleware
 
     public function forgetPassword()
     {
-        return view('user.forget-password')
+        return Inertia::render('User/ForgetPassword')
             ->with(
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
