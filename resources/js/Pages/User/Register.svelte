@@ -12,20 +12,7 @@
 
     onMount(
         () => {
-            let clearInputHistory = new ClearInputHistory([
-                inputs.username,
-                inputs.password,
-                inputs.confirmPassword,
-                inputs.familyName,
-                inputs.middleName,
-                inputs.givenName,
-                inputs.passportType,
-                inputs.passportNumber,
-                inputs.gender,
-                inputs.birthday,
-                inputs.email,
-                inputs.mobile,
-            ]);
+            let clearInputHistory = new ClearInputHistory(inputs);
 
             return () => {clearInputHistory.destroy()}
         }
@@ -124,7 +111,7 @@
             }
         }
 
-        return !hasError();
+        return ! hasError();
     }
 
     function successCallback(response) {
@@ -338,7 +325,7 @@
         <div class="col-md-4">
             <label for="passport_number">Passport Number</label>
             <input name="passport_number" type="text" disabled="{creating}"
-                minlength="8" maxlength="18" required placeholder="passport_number"
+                minlength="8" maxlength="18" required placeholder="passport number"
                 bind:this="{inputs.passportNumber}" class={[
                     'form-control', {
                         'is-valid': feedbacks.passportNumber == 'Looks good!',

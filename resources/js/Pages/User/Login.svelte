@@ -9,10 +9,7 @@
 
     onMount(
         () => {
-            let clearInputHistory = new ClearInputHistory([
-                inputs.username,
-                inputs.password,
-            ]);
+            let clearInputHistory = new ClearInputHistory(inputs);
 
             return () => {clearInputHistory.destroy()}
         }
@@ -21,7 +18,7 @@
     let feedbacks = $state({
         username: '',
         password: '',
-        login: '',
+        failed: '',
     });
 
     const inputFeedbackKeys = ['username', 'password'];
@@ -60,7 +57,6 @@
     function successCallback(response) {
         submitting = false;
         loggingIn = false;
-        console.log(response)
         window.location.href = response.request.responseURL;
     }
 
@@ -76,16 +72,15 @@
                         feedbacks.password = value;
                         break;
                     case 'failed':
-                        feedbacks.login = value;
+                        for(let key of inputFeedbackKeys) {
+                            feedbacks[key] = '';
+                        }
+                        feedbacks.failed = value;
                         break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
                         break;
                 }
-            }
-            if(!hasError() && feedbacks.login != '') {
-                feedbacks.username = '';
-                feedbacks.password = '';
             }
         }
         submitting = false;
@@ -96,7 +91,7 @@
         event.preventDefault();
         let submitAt = Date.now();
         submitting = 'login'+submitAt;
-        feedbacks.login = '';
+        feedbacks.failed = '';
         if (submitting == 'login'+submitAt) {
             if(validation()) {
                 loggingIn = true;
@@ -129,14 +124,14 @@
                     minlength="7" maxlength="320" required disabled="{loggingIn}"
                     bind:this={inputs.username} class={[
                         'form-control', {
-                            'is-valid': feedbacks.username == 'Looks good!' && feedbacks.login == '',
-                            'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.username) ||  feedbacks.login != '',
+                            'is-valid': feedbacks.username == 'Looks good!' && feedbacks.failed == '',
+                            'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.username) ||  feedbacks.failed != '',
                         }
                     ]} />
                 <label for="username">Username</label>
                 <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.username) && feedbacks.login == '',
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.username) || feedbacks.login != '',
+                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.username) && feedbacks.failed == '',
+                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.username) || feedbacks.failed != '',
                 }]}>{feedbacks.username}</div>
             </div>
         </div>
@@ -171,8 +166,8 @@
         </div>
         <input type="submit" class="form-control btn btn-primary"
             value="Login" hidden="{submitting}" />
-        <div class="alert alert-danger" role="alert" hidden="{feedbacks.login == ''}">
-            {feedbacks.login}
+        <div class="alert alert-danger" role="alert" hidden="{feedbacks.failed == ''}">
+            {feedbacks.failed}
         </div>
         <button class="form-control btn btn-primary" type="button" disabled hidden="{! submitting}">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
