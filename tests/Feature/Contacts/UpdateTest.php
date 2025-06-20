@@ -156,7 +156,7 @@ class UpdateTest extends TestCase
             $contact->id,
             $this->user->{"default$type"}->id
         );
-        $this->assertTrue($contact->isVerified());
+        $this->assertTrue($contact->isVerified);
         $response->assertSuccessful();
         $response->assertJson([
             'success' => "The {$contact->type} update success!",

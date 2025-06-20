@@ -199,7 +199,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertFalse($email->isVerified());
+        $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -226,7 +226,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertFalse($mobile->isVerified());
+        $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 
@@ -252,7 +252,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
     }
 
@@ -278,7 +278,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertTrue($contactModel->is_default);
     }
 
@@ -308,7 +308,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -338,7 +338,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
     }
 
@@ -368,7 +368,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 
@@ -398,7 +398,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
     }
 
@@ -430,7 +430,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -462,7 +462,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 
@@ -487,7 +487,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertFalse($contactModel->isVerified());
+        $this->assertFalse($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
     }
 
@@ -515,7 +515,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertTrue($contactModel->is_default);
     }
 
@@ -544,7 +544,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertFalse($email->isVerified());
+        $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -576,7 +576,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
     }
 
@@ -605,7 +605,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertFalse($mobile->isVerified());
+        $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 
@@ -637,7 +637,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
     }
 
@@ -670,7 +670,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
     }
 
@@ -703,7 +703,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
     }
 
@@ -728,7 +728,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertFalse($contactModel->isVerified());
+        $this->assertFalse($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
     }
 
@@ -758,7 +758,7 @@ class UpdateTest extends TestCase
         ]);
         $contactModel = UserHasContact::firstWhere('id', $contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
     }
 
@@ -788,7 +788,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertFalse($email->isVerified());
+        $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -821,7 +821,7 @@ class UpdateTest extends TestCase
         ]);
         $email = UserHasContact::firstWhere('id', $email->id);
         $this->assertEquals('example@live.com', $email->contact);
-        $this->assertTrue($email->isVerified());
+        $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
     }
 
@@ -851,7 +851,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertFalse($mobile->isVerified());
+        $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 
@@ -884,7 +884,7 @@ class UpdateTest extends TestCase
         ]);
         $mobile = UserHasContact::firstWhere('id', $mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
-        $this->assertTrue($mobile->isVerified());
+        $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
     }
 }

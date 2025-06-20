@@ -8,15 +8,15 @@
                 @csrf
                 @method('put')
                 <button id="verifyContactStatus{{ $contact->id }}" hidden
-                    name="status" value="{{ (int) ! $contact->isVerified() }}"
+                    name="status" value="{{ (int) ! $contact->isVerified }}"
                     @class([
                         'btn',
                         'form-control',
-                        'btn-success' => $contact->isVerified(),
-                        'btn-danger' => ! $contact->isVerified(),
+                        'btn-success' => $contact->isVerified,
+                        'btn-danger' => ! $contact->isVerified,
                         'submitButton',
                     ])>
-                    {{ $contact->isVerified() ? 'Verified' : 'Not Verified'}}
+                    {{ $contact->isVerified ? 'Verified' : 'Not Verified'}}
                 </button>
                 <button class="btn btn-primary form-control" id="changingVerifyContactStatus{{ $contact->id }}" hidden disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -73,7 +73,7 @@
                 value="{{ $contact->contact }}"
                 data-value="{{ $contact->contact }}" required />
             <div class="col-md-2">
-                <input type="checkbox" class="btn-check" id="isVerifiedContactCheckbox{{ $contact->id }}" @checked($contact->isVerified())>
+                <input type="checkbox" class="btn-check" id="isVerifiedContactCheckbox{{ $contact->id }}" @checked($contact->isVerified)>
                 <label class="form-control btn btn-outline-success" for="isVerifiedContactCheckbox{{ $contact->id }}">Verified</label>
             </div>
             <div class="col-md-2">

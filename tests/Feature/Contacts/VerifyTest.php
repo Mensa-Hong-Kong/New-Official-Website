@@ -293,7 +293,7 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
-        $this->assertTrue($this->contact->refresh()->isVerified());
+        $this->assertTrue($this->contact->refresh()->isVerified);
     }
 
     public function test_happy_case_has_other_user_default_same_contact_type()
@@ -315,8 +315,8 @@ class VerifyTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
-        $this->assertTrue($this->contact->refresh()->isVerified());
+        $this->assertTrue($this->contact->refresh()->isVerified);
         $this->assertFalse($contact->refresh()->is_default);
-        $this->assertFalse($contact->refresh()->isVerified());
+        $this->assertFalse($contact->refresh()->isVerified);
     }
 }

@@ -54,10 +54,10 @@
         <button id="verifyContactButton{{ $contact->id }}" hidden @class([
             'btn',
             'col-md-1',
-            'btn-secondary' => $contact->isVerified(),
-            'btn-primary' => !$contact->isVerified(),
-            'submitButton' => !$contact->isVerified(),
-        ])>{{ $contact->isVerified() ? 'Verified' : 'Verify' }}</button>
+            'btn-secondary' => $contact->isVerified,
+            'btn-primary' => !$contact->isVerified,
+            'submitButton' => !$contact->isVerified,
+        ])>{{ $contact->isVerified ? 'Verified' : 'Verify' }}</button>
         <button class="btn btn-primary col-md-2 submitButton requestNewVerifyCodeButton" id="requestNewVerifyCode{{ $contact->id }}" hidden>
             Send New Verify Code
         </button>

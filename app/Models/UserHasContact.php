@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\VerifyContact;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -84,6 +85,19 @@ class UserHasContact extends Model
             ->latest('id');
     }
 
+    protected function isVerified(): Attribute
+    {
+        $lastVerification = $this->lastVerification;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($lastVerification) {
+                return $lastVerification &&
+                    $lastVerification->verified_at &&
+                    ! $lastVerification->expired_at;
+            }
+        );
+    }
+
     public function routeNotificationForMail(): array
     {
         return [$this->contact => $this->user->given_name];
@@ -113,11 +127,6 @@ class UserHasContact extends Model
     public function sendVerifyCode()
     {
         $this->notify(new VerifyContact($this->type, $this->newVerifyCode()));
-    }
-
-    public function isVerified(): bool
-    {
-        return $this->lastVerification && $this->lastVerification->verified_at && ! $this->lastVerification->expired_at;
     }
 
     public function isRequestTooFast()

@@ -96,7 +96,7 @@ class VerifyTest extends TestCase
             'status' => false,
         ]);
         $contact->refresh();
-        $this->assertFalse($contact->isVerified());
+        $this->assertFalse($contact->isVerified);
         $this->assertFalse($contact->is_default);
     }
 
@@ -117,7 +117,7 @@ class VerifyTest extends TestCase
             'status' => true,
         ]);
         $contact->refresh();
-        $this->assertTrue($contact->isVerified());
+        $this->assertTrue($contact->isVerified);
         $this->assertFalse($contact->is_default);
     }
 
@@ -140,7 +140,7 @@ class VerifyTest extends TestCase
             'status' => true,
         ]);
         $contact->refresh();
-        $this->assertTrue($contact->isVerified());
+        $this->assertTrue($contact->isVerified);
         $this->assertFalse($contact->is_default);
     }
 
@@ -164,7 +164,7 @@ class VerifyTest extends TestCase
             'status' => true,
         ]);
         $contact->refresh();
-        $this->assertTrue($contact->isVerified());
+        $this->assertTrue($contact->isVerified);
         $this->assertTrue($contact->is_default);
     }
 
@@ -187,7 +187,7 @@ class VerifyTest extends TestCase
             'status' => false,
         ]);
         $contact->refresh();
-        $this->assertFalse($contact->isVerified());
+        $this->assertFalse($contact->isVerified);
         $this->assertFalse($contact->is_default);
     }
 
@@ -211,7 +211,7 @@ class VerifyTest extends TestCase
             'status' => false,
         ]);
         $contact->refresh();
-        $this->assertFalse($contact->isVerified());
+        $this->assertFalse($contact->isVerified);
         $this->assertFalse($contact->is_default);
     }
 }

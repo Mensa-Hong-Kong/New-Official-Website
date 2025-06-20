@@ -381,7 +381,7 @@ class StoreTest extends TestCase
         $this->assertEquals($type, $contactModel->type);
         $this->assertEquals($contact, $contactModel->contact);
         $this->assertEquals($this->user->id, $contactModel->user_id);
-        $this->assertFalse($contactModel->isVerified());
+        $this->assertFalse($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
         $response->assertJson([
             'success' => "The $type create success!",
@@ -424,7 +424,7 @@ class StoreTest extends TestCase
         $this->assertEquals($type, $contactModel->type);
         $this->assertEquals($contact, $contactModel->contact);
         $this->assertEquals($this->user->id, $contactModel->user_id);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
         $response->assertJson([
             'success' => "The $type create success!",
@@ -467,7 +467,7 @@ class StoreTest extends TestCase
         $this->assertEquals($type, $contactModel->type);
         $this->assertEquals($contact, $contactModel->contact);
         $this->assertEquals($this->user->id, $contactModel->user_id);
-        $this->assertTrue($contactModel->isVerified());
+        $this->assertTrue($contactModel->isVerified);
         $this->assertTrue($contactModel->is_default);
         $response->assertJson([
             'success' => "The $type create success!",

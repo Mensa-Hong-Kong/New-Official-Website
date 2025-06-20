@@ -53,7 +53,7 @@ class ContactController extends Controller implements HasMiddleware
 
     public function verify(StatusRequest $request, UserHasContact $contact)
     {
-        if ($request->status != $contact->isVerified()) {
+        if ($request->status != $contact->isVerified) {
             DB::beginTransaction();
             if ($request->status) {
                 $this->verified($contact);
@@ -68,7 +68,7 @@ class ContactController extends Controller implements HasMiddleware
 
         return [
             'success' => "The {$contact->type} verify status update success!",
-            'status' => $contact->refresh()->isVerified(),
+            'status' => $contact->refresh()->isVerified,
         ];
     }
 
@@ -77,7 +77,7 @@ class ContactController extends Controller implements HasMiddleware
         if ($request->status != $contact->is_default) {
             DB::beginTransaction();
             $contact->update(['is_default' => $request->status]);
-            if ($request->status && ! $contact->isVerified()) {
+            if ($request->status && ! $contact->isVerified) {
                 $this->verified($contact);
             }
             DB::commit();
@@ -107,7 +107,7 @@ class ContactController extends Controller implements HasMiddleware
             'type' => $contact->type,
             'contact' => $contact->contact,
             'is_default' => $contact->is_default,
-            'is_verified' => $contact->isVerified(),
+            'is_verified' => $contact->isVerified,
             'verify_url' => route('admin.contacts.verify', ['contact' => $contact]),
             'default_url' => route('admin.contacts.default', ['contact' => $contact]),
             'update_url' => route('admin.contacts.update', ['contact' => $contact]),
@@ -129,7 +129,7 @@ class ContactController extends Controller implements HasMiddleware
             'is_default' => $contact->is_default,
         ];
 
-        if ($return['is_verified'] != $contact->isVerified()) {
+        if ($return['is_verified'] != $contact->isVerified) {
             if ($return['is_verified']) {
                 $this->verified($contact);
             } else {
