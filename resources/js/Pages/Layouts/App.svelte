@@ -1,7 +1,8 @@
 <script>
     import { page } from "@inertiajs/svelte";
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
-	import Modal, { alert } from '@/Pages/Components/Modal.svelte';
+	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
+	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
 	import { setCsrfToken } from '@/submitForm.svelte';
 	let { children } = $props();
 
@@ -24,7 +25,7 @@
 </svelte:head>
 
 <header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
-    <nav class="container-xxl flex-wrap" aria-label="Main navigation">
+    <nav class="flex-wrap container-xxl" aria-label="Main navigation">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-label="Toggle admin navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -52,16 +53,16 @@
             </ul>
             <hr class="d-lg-none text-white-50">
             <ul class="navbar-nav">
-                {#if $page.props.user}
+                {#if $page.props.auth.user}
                     {#if
-                        $page.props.user.hasProctorTests ||
-                        $page.props.user.permissions.length ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.hasProctorTests ||
+                        $page.props.auth.user.permissions.length ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="nav-item">
                             <a href="{
-                                $page.props.user.hasProctorTests ||
-                                $page.props.user.permissions.length ?
+                                $page.props.auth.user.hasProctorTests ||
+                                $page.props.auth.user.permissions.length ?
                                 route('admin.index') :
                                 route('admin.admission-tests.index')
                             }" class={[
@@ -74,7 +75,7 @@
                     <li class="nav-item">
                         <a href="{route('profile.show')}" class={[
                             'nav-link', 'align-items-center',
-                            {active: route().current(profile.show)}
+                            {active: route().current('profile.show')}
                         ]}>Profile</a>
                     </li>
                     <li class="nav-item">
@@ -108,8 +109,8 @@
             <nav class="offcanvas-body">
                 <ul class="nav flex-column nav-pills">
                     {#if
-                        $page.props.user.permissions.length ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.length ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="nav-item">
                             <a href="{route('admin.index')}" class={[
@@ -118,8 +119,8 @@
                             ]}>Dashboard</a>
                         </li>
                         {#if
-                            $page.props.user.permissions.includes('View:User') ||
-                            $page.props.user.roles.includes('Super Administrator')
+                            $page.props.auth.user.permissions.includes('View:User') ||
+                            $page.props.auth.user.roles.includes('Super Administrator')
                         }
                             {#if route().current('admin.users.show')}
                                 <li class="accordion">
@@ -162,8 +163,8 @@
                             ]}>Team Types</a>
                         </li>
                         {#if
-                            $page.props.user.permissions.includes('View:User') ||
-                            $page.props.user.roles.includes('Edit:Permission') ||
+                            $page.props.auth.user.permissions.includes('View:User') ||
+                            $page.props.auth.user.roles.includes('Edit:Permission') ||
                             route().current().startsWith('admin.teams.roles.') ||
                             ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
                         }
@@ -187,8 +188,8 @@
                                         ]}>Index</a>
                                     </li>
                                     {#if
-                                        $page.props.user.permissions.includes('Edit:Permission') ||
-                                        $page.props.user.roles.includes('Super Administrator')
+                                        $page.props.auth.user.permissions.includes('Edit:Permission') ||
+                                        $page.props.auth.user.roles.includes('Super Administrator')
                                     }
                                         <li>
                                             <a href="{route('admin.teams.create')}" class={[
@@ -251,8 +252,8 @@
                         </li>
                     {/if}
                     {#if
-                        $page.props.user.permissions.includes('Edit:Admission Test') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
@@ -320,14 +321,14 @@
                         </li>
                     {/if}
                     {#if
-                        $page.props.user.hasProctorTests ||
-                        $page.props.user.permissions.includes('Edit:Admission Test') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.hasProctorTests ||
+                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         {#if
                             ! (
-                                $page.props.user.permissions.includes('Edit:Admission Test') ||
-                                $page.props.user.roles.includes('Super Administrator')
+                                $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
+                                $page.props.auth.user.roles.includes('Super Administrator')
                             ) && ! route().current('admin.admission-tests.show')
                         }
                             <li class="nav-item">
@@ -357,8 +358,8 @@
                                         ]}>Index</a>
                                     </li>
                                     {#if
-                                        $page.props.user.permissions.includes('Edit:Admission Test') ||
-                                        $page.props.user.roles.includes('Super Administrator')
+                                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
+                                        $page.props.auth.user.roles.includes('Super Administrator')
                                     }
                                         <li>
                                             <a href="{route('admin.admission-tests.create')}" class={[
@@ -378,8 +379,8 @@
                         {/if}
                     {/if}
                     {#if
-                        $page.props.user.permissions.includes('Edit:Other Payment Gateway') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.includes('Edit:Other Payment Gateway') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="nav-item">
                             <a href="{route('admin.other-payment-gateways.index')}" class={[
@@ -389,8 +390,8 @@
                         </li>
                     {/if}
                     {#if
-                        $page.props.user.permissions.includes('Edit:Site Content') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.includes('Edit:Site Content') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         {#if route().current('admin.site-contents.edit')}
                             <li class="accordion">
@@ -420,8 +421,8 @@
                         {/if}
                     {/if}
                     {#if
-                        $page.props.user.permissions.includes('Edit:Custom Web Page') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.includes('Edit:Custom Web Page') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
@@ -458,8 +459,8 @@
                         </li>
                     {/if}
                     {#if
-                        $page.props.user.permissions.includes('Edit:Navigation Item') ||
-                        $page.props.user.roles.includes('Super Administrator')
+                        $page.props.auth.user.permissions.includes('Edit:Navigation Item') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
@@ -502,4 +503,5 @@
     </main>
 </div>
 
-<Modal />
+<Alert />
+<Confirm />

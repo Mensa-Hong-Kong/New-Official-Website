@@ -4,7 +4,7 @@
     import ClearInputHistory from '@/clearInputHistory.js';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import { post } from "@/submitForm.svelte";
-	import { alert } from '@/Pages/Components/Modal.svelte';
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let inputs = $state({});
     let submitting = $state(false);

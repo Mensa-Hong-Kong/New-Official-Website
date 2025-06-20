@@ -1,4 +1,4 @@
-import { alert } from '@/Pages/Components/Modal.svelte';
+import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
 let csrf_token = $state('');
 

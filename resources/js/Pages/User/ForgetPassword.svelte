@@ -3,7 +3,7 @@
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
-	import { alert } from '@/Pages/Components/Modal.svelte';
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let inputs = $state({});
     let submitting = $state(false);
