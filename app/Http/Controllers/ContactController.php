@@ -187,13 +187,7 @@ class ContactController extends Controller implements HasMiddleware
         return [
             'success' => "The {$contact->type} create success!",
             'id' => $contact->id,
-            'type' => $contact->type,
             'contact' => $contact->contact,
-            'send_verify_code_url' => route('contacts.send-verify-code', ['contact' => $contact]),
-            'verify_url' => route('contacts.verify', ['contact' => $contact]),
-            'set_default_url' => route('contacts.set-default', ['contact' => $contact]),
-            'update_url' => route('contacts.update', ['contact' => $contact]),
-            'delete_url' => route('contacts.destroy', ['contact' => $contact]),
         ];
     }
 

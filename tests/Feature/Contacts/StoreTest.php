@@ -215,13 +215,7 @@ class StoreTest extends TestCase
         $response->assertJson([
             'success' => "The $type create success!",
             'id' => $contactModel->id,
-            'type' => $type,
             'contact' => $contact,
-            'send_verify_code_url' => route('contacts.send-verify-code', ['contact' => $contactModel]),
-            'verify_url' => route('contacts.verify', ['contact' => $contactModel]),
-            'set_default_url' => route('contacts.set-default', ['contact' => $contactModel]),
-            'update_url' => route('contacts.update', ['contact' => $contactModel]),
-            'delete_url' => route('contacts.destroy', ['contact' => $contactModel]),
         ]);
     }
 }
