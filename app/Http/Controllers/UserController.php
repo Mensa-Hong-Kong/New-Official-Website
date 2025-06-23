@@ -94,8 +94,31 @@ class UserController extends Controller implements HasMiddleware
 
     public function show(Request $request)
     {
-        return view('user.profile')
-            ->with('user', $request->user())
+        $user = $request->user();
+        $user->load([
+            'admissionTests', 'emails.lastVerification' => function($query) {
+                $query->select(['contact_id', 'verified_at', 'expired_at']);
+            }, 'mobiles.lastVerification' => function($query) {
+                $query->select(['contact_id', 'verified_at', 'expired_at']);
+            }, 
+        ]);
+        $user->emails->append('is_verified');
+        $user->mobiles->append('is_verified');
+        $user->makeHidden([
+            'roles', 'permissions', 'synced_to_stripe',
+            'created_at', 'updated_at',
+        ]);
+        $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        $user->admissionTests->makeHidden([
+            'type_id', 'expect_end_at', 'location_id', 'address_id',
+            'is_public', 'maximum_candidates', 'pivot.test_id', 'pivot.user_id'
+        ]);
+        foreach ($user->admissionTests as $test) {
+            $test->pivot->makeHidden('user_id', 'test_id');
+        }
+        $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        return Inertia::render('User/Profile')
+            ->with('user', $user)
             ->with(
                 'genders', Gender::all()
                     ->pluck('name', 'id')
