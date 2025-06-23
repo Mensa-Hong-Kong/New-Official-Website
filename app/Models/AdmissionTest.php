@@ -12,7 +12,6 @@ class AdmissionTest extends Model
 
     protected $fillable = [
         'type_id',
-        'admission_tests',
         'testing_at',
         'expect_end_at',
         'location_id',
