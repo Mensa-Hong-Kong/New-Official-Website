@@ -33,7 +33,7 @@ class ContactController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
-                    if ($contact->isVerified()) {
+                    if ($contact->isVerified) {
                         abort($request->isMethod('post') ? 201 : 410, "The {$contact->type} verified.");
                     }
 
@@ -91,7 +91,7 @@ class ContactController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
-                    if (! $contact->isVerified()) {
+                    if (! $contact->isVerified) {
                         abort(428, "The {$contact->type} is not verified, cannot set this contact to default, please verify first.");
                     }
                     if ($contact->is_default) {
@@ -205,7 +205,7 @@ class ContactController extends Controller implements HasMiddleware
                 'contact' => $request->{$contact->type},
                 'is_default' => false,
             ]);
-            if ($contact->isVerified()) {
+            if ($contact->isVerified) {
                 $contact->lastVerification()->update(['expired_at' => now()]);
             }
             DB::commit();
@@ -216,7 +216,7 @@ class ContactController extends Controller implements HasMiddleware
             'success' => "The {$contact->type} update success!",
             $contact->type => $contact->contact,
             "default_{$contact->type}_id" => $request->user()->{"default$type"}->id ?? null,
-            'is_verified' => $contact->refresh()->isVerified(),
+            'is_verified' => $contact->refresh()->isVerified,
         ];
     }
 
