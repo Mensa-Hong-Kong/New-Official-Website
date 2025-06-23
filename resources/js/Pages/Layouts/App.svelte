@@ -61,8 +61,8 @@
                     }
                         <li class="nav-item">
                             <a href="{
-                                $page.props.auth.user.hasProctorTests ||
-                                $page.props.auth.user.permissions.length ?
+                                $page.props.auth.user.permissions.length ||
+                                $page.props.auth.user.roles.includes('Super Administrator') ?
                                 route('admin.index') :
                                 route('admin.admission-tests.index')
                             }" class={[
