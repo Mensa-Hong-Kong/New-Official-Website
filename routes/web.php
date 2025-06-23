@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::middleware(IsAdministrator::class)
                 ->group(function () {
-                    Route::view('/', 'admin.index')->name('index');
+                    Route::inertia('/', 'Admin/Index')->name('index');
                     Route::match(['put', 'patch'], 'team-types/display-order', [TeamTypeController::class, 'displayOrder'])
                         ->name('team-types.display-order.update');
                     Route::resource('team-types', TeamTypeController::class)
