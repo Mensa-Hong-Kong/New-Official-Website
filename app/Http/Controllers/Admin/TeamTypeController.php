@@ -9,6 +9,7 @@ use App\Models\TeamType;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TeamTypeController extends Controller implements HasMiddleware
 {
@@ -19,11 +20,12 @@ class TeamTypeController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.team-types')
+        return Inertia::render('Admin/TeamTypes')
             ->with(
                 'types', TeamType::orderBy('display_order')
                     ->orderBy('id')
                     ->get()
+                    ->makeHidden(['display_order', 'created_at' ])
             );
     }
 
