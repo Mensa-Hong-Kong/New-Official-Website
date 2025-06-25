@@ -9,6 +9,7 @@ use App\Models\Permission;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class PermissionController extends Controller implements HasMiddleware
 {
@@ -19,8 +20,12 @@ class PermissionController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.permissions')
-            ->with('permissions', Permission::orderBy('display_order')->get());
+        return Inertia::render('Admin/Permissions')
+            ->with(
+                'permissions', Permission::orderBy('display_order')
+                    ->get()
+                    ->makeHidden(['display_order', 'created_at'])
+            );
     }
 
     public function update(NameRequest $request, Permission $permission)
