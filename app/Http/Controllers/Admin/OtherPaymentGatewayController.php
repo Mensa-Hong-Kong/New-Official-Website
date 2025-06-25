@@ -10,6 +10,7 @@ use App\Models\OtherPaymentGateway;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class OtherPaymentGatewayController extends Controller implements HasMiddleware
 {
@@ -20,7 +21,7 @@ class OtherPaymentGatewayController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.other-payment-gateway')
+        return Inertia::render('Admin/OtherPaymentGateways')
             ->with(
                 'paymentGateways', OtherPaymentGateway::orderBy('display_order')
                     ->get(['id', 'name', 'is_active'])
