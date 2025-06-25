@@ -9,6 +9,7 @@ use App\Models\Module;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ModuleController extends Controller implements HasMiddleware
 {
@@ -19,7 +20,7 @@ class ModuleController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.modules')
+        return Inertia::render('Admin/Modules')
             ->with('modules', Module::orderBy('display_order')->get());
     }
 
