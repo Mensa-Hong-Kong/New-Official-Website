@@ -58,6 +58,14 @@ import { Styles } from '@sveltestrap/sveltestrap';
     }
 )(bootstrap);
 
+// add ucfirst php function to js
+Object.defineProperty(String.prototype, 'ucfirst', {
+    value: function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    },
+    enumerable: false
+});
+
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import Layout from "@/Pages/Layouts/App.svelte";
