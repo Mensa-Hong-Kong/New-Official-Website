@@ -66,6 +66,11 @@ Object.defineProperty(String.prototype, 'ucfirst', {
     enumerable: false
 });
 
+// add range php function to js
+window.range = function(start, stop, step = 1) {
+    return Array.from({ length: (stop - start) / step + 1 }, (_, index) => start + index * step);
+}
+
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import Layout from "@/Pages/Layouts/App.svelte";
