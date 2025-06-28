@@ -17,6 +17,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -32,7 +33,11 @@ class UserController extends Controller implements HasMiddleware
     {
         $isSearch = false;
         $append = [];
-        $users = new User;
+        $users = User::with([
+            'lastLoginLogs' => function($query) {
+                $query->select(['id', 'user_id', 'created_at']);
+            }
+        ]);
         if ($request->family_name) {
             $append['family_name'] = $request->family_name;
             $isSearch = true;
@@ -84,6 +89,18 @@ class UserController extends Controller implements HasMiddleware
             );
         }
         $users = $users->sortable('id')->paginate();
+        $users->append('adorned_name');
+        $users->makeHidden([
+            'username', 'synced_to_stripe',
+            'family_name', 'middle_name', 'given_name',
+            'passport_type_id', 'passport_number',
+            'birthday',
+        ]);
+        foreach($users as $user) {
+            if($user->lastLoginLogs) {
+                $user->lastLoginLogs->makeHidden(['id', 'user_id']);
+            }
+        }
         $passportTypes = PassportType::get(['id', 'name'])
             ->pluck('name', 'id')
             ->toArray();
@@ -91,7 +108,7 @@ class UserController extends Controller implements HasMiddleware
             ->pluck('name', 'id')
             ->toArray();
 
-        return view('admin.users.index')
+        return Inertia::render('Admin/Users/Index')
             ->with('isSearch', $isSearch)
             ->with('append', $append)
             ->with('passportTypes', $passportTypes)
