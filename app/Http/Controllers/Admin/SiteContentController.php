@@ -8,6 +8,7 @@ use App\Models\SiteContent;
 use App\Models\SitePage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
 
 class SiteContentController extends Controller implements HasMiddleware
 {
@@ -18,8 +19,18 @@ class SiteContentController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.site-contents.index')
-            ->with('pages', SitePage::all());
+        $pages = SitePage::with([
+                'contents' => function($query) {
+                    $query->select(['id', 'name', 'page_id']);
+                }
+            ])->select(['id', 'name'])
+            ->get();
+        foreach($pages as $page) {
+            $page->contents->makeHidden('page_id');
+        }
+
+        return Inertia::render('Admin/SiteContents/Index')
+            ->with('pages', $pages);
     }
 
     public function edit(SiteContent $siteContent)
