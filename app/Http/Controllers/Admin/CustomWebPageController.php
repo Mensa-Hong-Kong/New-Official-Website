@@ -32,7 +32,7 @@ class CustomWebPageController extends Controller implements HasMiddleware
 
     public function create()
     {
-        return view('admin.custom-web-pages.create');
+        return Inertia::render('Admin/CustomWebPages/Create');
     }
 
     public function store(CustomWebPageRequest $request)
