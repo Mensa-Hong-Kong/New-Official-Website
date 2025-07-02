@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\CustomWebPageRequest;
 use App\Models\CustomWebPage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
 
 class CustomWebPageController extends Controller implements HasMiddleware
 {
@@ -17,9 +18,15 @@ class CustomWebPageController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $pages = CustomWebPage::sortable()->get();
+        $pages = CustomWebPage::select([
+            'id',
+            'pathname',
+            'title',
+            'created_at',
+            'updated_at',
+        ])->sortable()->get();
 
-        return view('admin.custom-web-pages.index')
+        return Inertia::render('Admin/CustomWebPages/Index')
             ->with('pages', $pages);
     }
 
