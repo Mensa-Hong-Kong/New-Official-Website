@@ -119,7 +119,19 @@ class UserController extends Controller implements HasMiddleware
 
     public function show(User $user)
     {
-        return view('admin.users.show')
+        $user->load([
+            'emails.lastVerification' => function($query) {
+                $query->select(['contact_id', 'verified_at', 'expired_at']);
+            }, 'mobiles.lastVerification' => function($query) {
+                $query->select(['contact_id', 'verified_at', 'expired_at']);
+            },
+        ]);
+        $user->emails->append('is_verified');
+        $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        $user->mobiles->append('is_verified');
+        $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        
+        return Inertia::render('Admin/Users/Show')
             ->with('user', $user)
             ->with(
                 'genders', Gender::all()
