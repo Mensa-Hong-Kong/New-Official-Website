@@ -390,10 +390,6 @@ class StoreTest extends TestCase
             'contact' => $contact,
             'is_verified' => false,
             'is_default' => false,
-            'verify_url' => route('admin.contacts.verify', ['contact' => $contactModel]),
-            'default_url' => route('admin.contacts.default', ['contact' => $contactModel]),
-            'update_url' => route('admin.contacts.update', ['contact' => $contactModel]),
-            'delete_url' => route('admin.contacts.destroy', ['contact' => $contactModel]),
         ]);
     }
 
@@ -433,10 +429,6 @@ class StoreTest extends TestCase
             'contact' => $contact,
             'is_verified' => true,
             'is_default' => false,
-            'verify_url' => route('admin.contacts.verify', ['contact' => $contactModel]),
-            'default_url' => route('admin.contacts.default', ['contact' => $contactModel]),
-            'update_url' => route('admin.contacts.update', ['contact' => $contactModel]),
-            'delete_url' => route('admin.contacts.destroy', ['contact' => $contactModel]),
         ]);
     }
 
@@ -476,10 +468,6 @@ class StoreTest extends TestCase
             'contact' => $contact,
             'is_verified' => true,
             'is_default' => true,
-            'verify_url' => route('admin.contacts.verify', ['contact' => $contactModel]),
-            'default_url' => route('admin.contacts.default', ['contact' => $contactModel]),
-            'update_url' => route('admin.contacts.update', ['contact' => $contactModel]),
-            'delete_url' => route('admin.contacts.destroy', ['contact' => $contactModel]),
         ]);
     }
 }

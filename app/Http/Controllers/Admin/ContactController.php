@@ -108,10 +108,6 @@ class ContactController extends Controller implements HasMiddleware
             'contact' => $contact->contact,
             'is_default' => $contact->is_default,
             'is_verified' => $contact->isVerified,
-            'verify_url' => route('admin.contacts.verify', ['contact' => $contact]),
-            'default_url' => route('admin.contacts.default', ['contact' => $contact]),
-            'update_url' => route('admin.contacts.update', ['contact' => $contact]),
-            'delete_url' => route('admin.contacts.destroy', ['contact' => $contact]),
         ];
     }
 
