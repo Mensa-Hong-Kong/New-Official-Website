@@ -106,9 +106,10 @@ class UserController extends Controller implements HasMiddleware
         $user->mobiles->append('is_verified');
         $user->makeHidden([
             'roles', 'permissions', 'synced_to_stripe',
-            'created_at', 'updated_at',
+            'created_at', 'updated_at', 'member',
         ]);
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->admissionTests->makeHidden([
             'type_id', 'expect_end_at', 'location_id', 'address_id',
             'is_public', 'maximum_candidates', 'pivot.test_id', 'pivot.user_id'
@@ -116,7 +117,6 @@ class UserController extends Controller implements HasMiddleware
         foreach ($user->admissionTests as $test) {
             $test->pivot->makeHidden('user_id', 'test_id');
         }
-        $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         return Inertia::render('User/Profile')
             ->with('user', $user)
             ->with(

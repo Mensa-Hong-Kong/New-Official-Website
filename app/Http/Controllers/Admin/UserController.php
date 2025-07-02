@@ -36,7 +36,7 @@ class UserController extends Controller implements HasMiddleware
         $users = User::with([
             'lastLoginLogs' => function($query) {
                 $query->select(['id', 'user_id', 'created_at']);
-            }
+            },
         ]);
         if ($request->family_name) {
             $append['family_name'] = $request->family_name;
@@ -94,7 +94,7 @@ class UserController extends Controller implements HasMiddleware
             'username', 'synced_to_stripe',
             'family_name', 'middle_name', 'given_name',
             'passport_type_id', 'passport_number',
-            'birthday',
+            'birthday', 'member',
         ]);
         foreach($users as $user) {
             if($user->lastLoginLogs) {
