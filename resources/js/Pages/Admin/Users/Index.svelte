@@ -18,7 +18,7 @@
     });
 
     function hasError() {
-        for(let feedback of Object.entries(feedbacks)) {
+        for(let [key, feedback] of Object.entries(feedbacks)) {
             if(feedback != 'Looks good!') {
                 return true;
             }
