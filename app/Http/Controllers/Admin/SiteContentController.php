@@ -35,7 +35,15 @@ class SiteContentController extends Controller implements HasMiddleware
 
     public function edit(SiteContent $siteContent)
     {
-        return view('admin.site-contents.edit')
+        $siteContent->load([
+            'page' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ]);
+        $siteContent->makeHidden(['page_id', 'created_at', 'updated_at']);
+        $siteContent->page->makeHidden('id');
+
+        return Inertia::render('Admin/SiteContents/Edit')
             ->with('content', $siteContent);
     }
 
