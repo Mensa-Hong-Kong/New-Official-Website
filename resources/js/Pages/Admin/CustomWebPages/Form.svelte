@@ -162,7 +162,7 @@
 <Row class='mb-3 g-3 form-outline'>
     <Label>Open Graph Image URL</Label>
     <Input name="og_image_url" placeholder="https://google.com"
-        maxlength="8000" value={page.openGraphImageUrl ?? null} disabled={submitting}
+        maxlength="8000" value={page.open_graph_image_url ?? null} disabled={submitting}
         feedback={feedbacks.openGraphImageUrl} valid={feedbacks.openGraphImageUrl == 'Looks good!'}
         invalid={feedbacks.openGraphImageUrl != '' && feedbacks.openGraphImageUrl != 'Looks good!'}
         bind:inner={inputs.openGraphImageUrl} />

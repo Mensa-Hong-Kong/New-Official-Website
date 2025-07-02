@@ -54,7 +54,9 @@ class CustomWebPageController extends Controller implements HasMiddleware
 
     public function edit(CustomWebPage $customWebPage)
     {
-        return view('admin.custom-web-pages.edit')
+        $customWebPage->makeHidden(['created_at', 'updated_at']);
+
+        return Inertia::render('Admin/CustomWebPages/Edit')
             ->with('page', $customWebPage);
     }
 
