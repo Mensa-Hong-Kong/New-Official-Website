@@ -330,7 +330,7 @@
     let createContact;
 
     function createSuccessCallback(response) {
-        bootstrapAlert(response.data.success);
+        alert(response.data.success);
         inputs.push({});
         contacts.push({
             id: response.data.id,
@@ -352,11 +352,11 @@
 
     function createFailCallback(error) {
         if(error.response.data.errors.message) {
-            bootstrapAlert(error.response.data.errors.message);
+            alert(error.response.data.errors.message);
         } else if(error.response.data.errors[type]){
-            bootstrapAlert(error.response.data.errors[type]);
+            alert(error.response.data.errors[type]);
         } else {
-            bootstrapAlert('The Contacts.svelte missing create fail type handle, please contact us.')
+            alert('The Contacts.svelte missing create fail type handle, please contact us.')
         }
         creating = false;
         submitting = false;
