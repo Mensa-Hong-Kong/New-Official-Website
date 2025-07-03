@@ -87,6 +87,7 @@ class DeleteTest extends TestCase
                 ->toArray())
                 ->count()
         );
+        $this->assertNull(Team::find(($team->id)));
     }
 
     public function test_happy_case_when_has_unnecessary_roles()
@@ -123,5 +124,6 @@ class DeleteTest extends TestCase
                 ->toArray())
                 ->count()
         );
+        $this->assertNull(Team::find(($team->id)));
     }
 }

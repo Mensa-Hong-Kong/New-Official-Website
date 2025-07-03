@@ -187,6 +187,7 @@ class TeamController extends Controller implements HasMiddleware
                 ->delete();
         }
         $team->roles()->detach();
+        $team->delete();
         DB::commit();
 
         return ['success' => "The team of $team->name delete success!"];
