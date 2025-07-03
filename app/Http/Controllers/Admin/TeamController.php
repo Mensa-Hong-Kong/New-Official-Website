@@ -11,6 +11,7 @@ use App\Models\TeamType;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TeamController extends Controller implements HasMiddleware
 {
@@ -21,17 +22,22 @@ class TeamController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.teams.index')
-            ->with(
-                'types', TeamType::with([
-                    'teams' => function ($query) {
-                        $query->orderBy('display_order')
-                            ->orderBy('id');
-                    },
-                ])->orderBy('display_order')
-                    ->orderBy('id')
-                    ->get()
-            );
+        $types = TeamType::with([
+            'teams' => function ($query) {
+                $query->select(['id', 'name', 'type_id'])
+                    ->orderBy('display_order')
+                    ->orderBy('id');
+            },
+        ])->select(['id', 'name', 'title'])
+            ->orderBy('display_order')
+            ->orderBy('id')
+            ->get();
+        foreach($types as $type) {
+            $type->teams->makeHidden('type_id');
+        }
+
+        return Inertia::render('Admin/Teams/Index')
+            ->with('types', $types);
     }
 
     public function create()
