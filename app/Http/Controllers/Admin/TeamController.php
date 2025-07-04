@@ -62,7 +62,7 @@ class TeamController extends Controller implements HasMiddleware
         $types = $types->pluck('name', 'id')
             ->toArray();
 
-        return view('admin.teams.create')
+        return Inertia::render('Admin/Teams/Create')
             ->with('types', $types)
             ->with('displayOptions', $displayOptions);
     }
