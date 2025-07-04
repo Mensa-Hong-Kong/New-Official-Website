@@ -163,8 +163,8 @@
                             ]}>Team Types</a>
                         </li>
                         {#if
-                            $page.props.auth.user.permissions.includes('View:User') ||
-                            $page.props.auth.user.roles.includes('Edit:Permission') ||
+                            $page.props.auth.user.permissions.includes('Edit:Permission') ||
+                            $page.props.auth.user.roles.includes('Super Administrator') ||
                             route().current().startsWith('admin.teams.roles.') ||
                             ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
                         }
