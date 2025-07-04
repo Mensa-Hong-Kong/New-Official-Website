@@ -41,6 +41,9 @@
                     case 'content':
                         feedbacks.content = value;
                         break;
+                    default:
+                        alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
+                        break;
                 }
             }
         }
@@ -55,7 +58,6 @@
             submitting = 'create'+submitAt;
             if(submitting == 'create'+submitAt) {
                 if(form.validation()) {
-                    console.log(4);
                     creating = true;
                     post(
                         route('admin.custom-web-pages.store'),
