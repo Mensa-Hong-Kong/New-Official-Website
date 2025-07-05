@@ -14,6 +14,7 @@ use App\Models\TeamRole;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -38,8 +39,9 @@ class RoleController extends Controller implements HasMiddleware
         }
         $displayOptions[0] = 'top';
         ksort($displayOptions);
+        $team->makeHidden(['display_order', 'type_id', 'created_at', 'updated_at', 'roles']);
 
-        return view('admin.teams.roles.create')
+        return Inertia::render('Admin/Teams/Roles/Create')
             ->with('team', $team)
             ->with(
                 'roles', Role::whereDoesntHave(
