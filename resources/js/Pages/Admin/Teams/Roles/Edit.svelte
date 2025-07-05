@@ -1,0 +1,102 @@
+<script>
+    import { Button, Spinner } from '@sveltestrap/sveltestrap';
+    import Form from './Form.svelte';
+    import { post } from "@/submitForm.svelte";
+
+    let {
+        team, roles, displayOptions, modules, permissions, modulePermissions,
+        role, displayOrder, roleHasModulePermissions
+    } = $props();
+    let inputs = $state({});
+    let feedbacks = $state({
+        name: '',
+        displayOrder: '',
+    });
+    let submitting = $state(false);
+    let updating = $state(false);
+    let form;
+
+    function successCallback(response) {
+        updating = false;
+        submitting = false;
+        window.location.href = response.request.responseURL;
+    }
+
+    function failCallback(error) {
+        if(error.status == 422) {
+            for(let key in error.response.data.errors) {
+                let value = error.response.data.errors[key];
+                switch(key) {
+                    case 'name':
+                        feedbacks.name = value;
+                        break;
+                    case 'display_order':
+                        feedbacks.displayOrder = value;
+                        break;
+                    default:
+                        alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
+                        break;
+                }
+            }
+        }
+        updating = false;
+        submitting = false;
+    }
+    function update(event) {
+        event.preventDefault();
+        if(! submitting) {
+            let submitAt = Date.now();
+            submitting = 'update'+submitAt;
+            if(submitting == 'update'+submitAt) {
+                if(form.validation()) {
+                    updating = true;
+                    let data = {
+                        name: inputs.name.value,
+                        display_order: inputs.displayOrder.value,
+                    };
+                    let modulePermissions = [];
+                    for(let [modulePermissionID, checkbox] of Object.entries(inputs.permissions)) {
+                        if(checkbox.checked) {
+                            modulePermissions.push(checkbox.value);
+                        }
+                    }
+                    if(modulePermissions.length) {
+                        data['module_permissions'] = modulePermissions;
+                    }
+                    post(
+                        route(
+                            'admin.teams.roles.update',
+                            {
+                                team: team.id,
+                                role: role.id
+                            }
+                        ),
+                        successCallback,
+                        failCallback,
+                        'put', data
+                    );
+                } else {
+                    submitting = false;
+                }
+            }
+        }
+    }
+</script>
+
+<section class="container">
+    <form id="form" method="POST" novalidate onsubmit={update}>
+        <h2 class="mb-2 fw-bold text-uppercase">Edit Team</h2>
+        <Form role={role} roleHasModulePermissions={roleHasModulePermissions}
+            roles={roles} displayOrder={displayOrder} displayOptions={displayOptions}
+            modules={modules} permissions={permissions} modulePermissions={modulePermissions}
+            bind:inputs={inputs} bind:feedbacks={feedbacks}
+            bind:submitting={updating} bind:this={form} />
+        <Button color="primary" class="form-control" disabled={submitting}>
+            {#if updating}
+                <Spinner type="border" size="sm" />Saving...
+            {:else}
+                Save
+            {/if}
+        </Button>
+    </form>
+</section>

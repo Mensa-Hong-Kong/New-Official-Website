@@ -90,14 +90,23 @@ class RoleController extends Controller implements HasMiddleware
             $modulePermissions[$row->module_id][$row->permission_id] = $row->id;
         }
         $displayOptions = [];
+        $displayOrder = '';
         foreach ($team->roles as $thisRole) {
             if ($thisRole->id == $role->id) {
-                $displayOption = $role->display_order;
+                $displayOrder = $thisRole->pivot->display_order;
             }
-            $displayOptions[$thisRole->pivot->display_order] = "before \"$thisRole->name\"";
+        }
+        foreach ($team->roles as $thisRole) {
+            $thisDisplayOrder = $thisRole->pivot->display_order;
+            if($thisDisplayOrder != $displayOrder) {
+                if ($thisDisplayOrder > $displayOrder) {
+                    $thisDisplayOrder -= 1;
+                }
+                $displayOptions[$thisDisplayOrder] = "before \"$thisRole->name\"";
+            }
         }
         $displayOptions[0] = 'top';
-        if ($displayOption == max(array_keys($displayOptions))) {
+        if ($displayOrder == max(array_keys($displayOptions))) {
             $displayOptions[max(array_keys($displayOptions))] = 'latest';
         } else {
             $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
@@ -109,10 +118,12 @@ class RoleController extends Controller implements HasMiddleware
                     ->where('role_id', $role->id);
             }
         )->get('id')
-            ->pluck('id', 'id')
+            ->pluck('id')
             ->toArray();
+        $team->makeHidden(['display_order', 'type_id', 'created_at', 'updated_at', 'roles']);
+        $role->makeHidden(['created_at', 'updated_at']);
 
-        return view('admin.teams.roles.edit')
+        return Inertia::render('Admin/Teams/Roles/Edit')
             ->with('team', $team)
             ->with('role', $role)
             ->with(
@@ -124,6 +135,7 @@ class RoleController extends Controller implements HasMiddleware
                     ->pluck('name')
                     ->toArray()
             )->with('displayOptions', $displayOptions)
+            ->with('displayOrder', $displayOrder)
             ->with(
                 'modules', Module::orderBy('display_order')
                     ->get(['id', 'name'])

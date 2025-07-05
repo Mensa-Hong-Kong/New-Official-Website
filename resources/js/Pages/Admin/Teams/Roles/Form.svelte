@@ -4,6 +4,7 @@
     let {
         inputs = $bindable(), feedbacks = $bindable(), submitting,
         roles, displayOptions, modules, permissions, modulePermissions,
+        role = {}, displayOrder = null, roleHasModulePermissions = []
     } = $props();
     inputs.permissions = {};
 
@@ -42,7 +43,7 @@
             maxlength="170" pattern="(?!.*:).*" required
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
-            bind:inner={inputs.name} />
+            bind:inner={inputs.name} value={role.name} />
         <Datalist id="roles" data={roles} />
     </FormGroup>
 </div>
@@ -52,15 +53,15 @@
             feedback={feedbacks.type} valid={feedbacks.type == 'Looks good!'}
             invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!'}
             bind:inner={inputs.displayOrder}>
-            <option value="" selected disabled>Please display order</option>
+            <option value="" selected={! displayOrder} disabled>Please display order</option>
             {#each Object.entries(displayOptions) as [key, value]}
-                <option value="{key}">{value}</option>
+                <option value="{key}" selected={key == displayOrder}>{value}</option>
             {/each}
         </Input>
     </FormGroup>
 </div>
 <div class="mb-4 form-outline">
-    <Label>Permissions</Label>
+    <h3 class="mb-2 fw-bold">Permissions</h3>
     <Table hover>
         <thead>
             <tr>
@@ -81,6 +82,7 @@
                                     <input type="checkbox" name="module_permissions[]"
                                         value="{modulePermissions[module.id][permission.id]}"
                                         class="form-check-input permission"
+                                        checked={roleHasModulePermissions.includes(modulePermissions[module.id][permission.id])}
                                         bind:this={inputs['permissions'][modulePermissions[module.id][permission.id]]} />
                                 </div>
                             {/if}
