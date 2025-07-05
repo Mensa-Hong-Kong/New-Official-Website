@@ -2,10 +2,9 @@
     import { FormGroup, Input } from '@sveltestrap/sveltestrap';
     let {
         inputs = $bindable(), feedbacks = $bindable(), submitting,
-        types, displayOptions,
+        types, displayOptions, team={}
     } = $props();
-
-    let typeValue = $state('');
+    let typeValue = $state();
 
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
@@ -31,7 +30,7 @@
             minlength="1" maxlength="170" pattern="(?!.*:).*" required
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
-            bind:inner={inputs.name} />
+            bind:inner={inputs.name} value={team.name} />
     </FormGroup>
 </div>
 <div class="mb-4 form-outline">
@@ -41,9 +40,9 @@
             invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!'}
             bind:inner={inputs.type} bind:value={typeValue}
             onchange={() => inputs.displayOrder.value = ""}>
-            <option value="" selected disabled>Please select type</option>
+            <option value="" selected={! team.type_id} disabled>Please select type</option>
             {#each Object.entries(types) as [key, value]}
-                <option value="{key}">{value}</option>
+                <option value="{key}" selected={key == team.type_id}>{value}</option>
             {/each}
         </Input>
     </FormGroup>
@@ -54,10 +53,11 @@
             feedback={feedbacks.displayOrder} valid={feedbacks.displayOrder == 'Looks good!'}
             invalid={feedbacks.displayOrder != '' && feedbacks.displayOrder != 'Looks good!'}
             bind:inner={inputs.displayOrder}>
-            <option value="" selected disabled>Please display order type</option>
+            <option value="" selected={! team.display_order} disabled>Please display order type</option>
             {#each Object.entries(displayOptions) as [typeID, object]}
                 {#each Object.entries(object) as [key, value]}
-                    <option value="{key}" hidden={typeID != typeValue}>{value}</option>
+                    <option value="{key}" hidden={typeID != typeValue}
+                        selected={typeID == team.type_id && key == team.display_order}>{value}</option>
                 {/each}
             {/each}
         </Input>

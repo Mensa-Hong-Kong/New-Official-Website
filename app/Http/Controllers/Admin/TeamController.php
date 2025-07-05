@@ -98,6 +98,7 @@ class TeamController extends Controller implements HasMiddleware
 
     public function edit(Team $team)
     {
+        $team->makeHidden(['created_at', 'updated_at']);
         $types = TeamType::with([
             'teams' => function ($query) {
                 $query->orderBy('display_order')
@@ -114,7 +115,11 @@ class TeamController extends Controller implements HasMiddleware
                     $type->id != $team->type_id ||
                     $thisTeam->id != $team->id
                 ) {
-                    $displayOptions[$type->id][$thisTeam->display_order] = "before \"$team->name\"";
+                    $displayOrder = $thisTeam->display_order;
+                    if($type->id == $team->type_id && $displayOrder > $team->display_order) {
+                        --$displayOrder;
+                    }
+                    $displayOptions[$type->id][$displayOrder] = "before \"$thisTeam->name\"";
                 }
             }
             if (count($displayOptions[$type->id])) {
@@ -132,7 +137,7 @@ class TeamController extends Controller implements HasMiddleware
         $types = $types->pluck('name', 'id')
             ->toArray();
 
-        return view('admin.teams.edit')
+        return Inertia::render('Admin/Teams/Edit')
             ->with('types', $types)
             ->with('displayOptions', $displayOptions)
             ->with('team', $team);
