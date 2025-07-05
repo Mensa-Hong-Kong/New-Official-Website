@@ -85,15 +85,21 @@ class TeamController extends Controller implements HasMiddleware
 
     public function show(Team $team)
     {
-        return view('admin.teams.show')
-            ->with(
-                'team', $team->load([
-                    'roles' => function ($query) {
-                        $query->orderBy('pivot_display_order')
-                            ->orderBy('id');
-                    },
-                ])
-            );
+        $team->load([
+            'type' => function ($query) {
+                $query->select(['id', 'name', 'title']);
+            },
+            'roles' => function ($query) {
+                $query->orderBy('pivot_display_order')
+                    ->orderBy('id');
+            },
+        ]);
+        $team->makeHidden(['type_id', 'display_order', 'created_at', 'updated_at']);
+        $team->type->makeHidden('id');
+        $team->roles->makeHidden(['pivot', 'created_at', 'updated_at']);
+        
+        return Inertia::render('Admin/Teams/Show')
+            ->with('team', $team);
     }
 
     public function edit(Team $team)
