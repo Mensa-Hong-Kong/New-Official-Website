@@ -19,7 +19,21 @@
         for(let key in feedbacks) {
             feedbacks[key] = 'Looks good!';
         }
-        // ...
+        if(inputs.name.validity.valueMissing) {
+            feedbacks.name = 'The name field is required.';
+        } else if(inputs.name.validity.tooShort) {
+            feedbacks.name = `The name field must be as least ${inputs.name.minLength} characters.`;
+        } else if(inputs.name.validity.tooLong) {
+            feedbacks.name = `The name field must not be greater than ${inputs.name.maxLength} characters.`;
+        } else if(inputs.name.validity.petterMismatch) {
+            feedbacks.name = `The name field cannot has ";".`;
+        }
+        if(inputs.type.validity.valueMissing) {
+            feedbacks.type = 'The type field is required.';
+        }
+        if(inputs.displayOrder.validity.valueMissing) {
+            feedbacks.displayOrder = 'The displayOption field is required.';
+        }
         return ! hasError();
     }
 </script>
