@@ -117,26 +117,24 @@ class TeamController extends Controller implements HasMiddleware
         foreach ($types as $type) {
             $displayOptions[$type->id] = [];
             foreach ($type->teams as $thisTeam) {
-                if (
-                    $type->id != $team->type_id ||
-                    $thisTeam->id != $team->id
-                ) {
-                    $displayOrder = $thisTeam->display_order;
-                    if($type->id == $team->type_id && $displayOrder > $team->display_order) {
-                        --$displayOrder;
-                    }
-                    $displayOptions[$type->id][$displayOrder] = "before \"$thisTeam->name\"";
+                $displayOrder = $thisTeam->display_order;
+                if($type->id == $team->type_id && $displayOrder > $team->display_order) {
+                    --$displayOrder;
                 }
+                $displayOptions[$type->id][$displayOrder] = "before \"$thisTeam->name\"";
             }
-            if (count($displayOptions[$type->id])) {
-                if (
-                    $type->id == $team->type_id &&
-                    $team->display_order == max(array_keys($displayOptions[$type->id]))
+            if (
+                $type->teams->count() > 1 ||
+                $type->id != $team->type_id
+            ) {
+                $index = max(array_keys($displayOptions[$type->id]));
+                if(
+                    $type->id != $team->type_id ||
+                    $index != $type->teams->max('display_order')
                 ) {
-                    $displayOptions[$type->id][max(array_keys($displayOptions[$type->id]))] = 'latest';
-                } else {
-                    $displayOptions[$type->id][max(array_keys($displayOptions[$type->id])) + 1] = 'latest';
+                    ++$index;
                 }
+                $displayOptions[$type->id][$index] = 'latest';
             }
             $displayOptions[$type->id][0] = 'top';
         }

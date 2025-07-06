@@ -106,9 +106,11 @@ class RoleController extends Controller implements HasMiddleware
             }
         }
         $displayOptions[0] = 'top';
-        if ($displayOrder == max(array_keys($displayOptions))) {
-            $displayOptions[max(array_keys($displayOptions))] = 'latest';
-        } else {
+        if($team->roles->count() > 1) {
+            $index = max(array_keys($displayOptions));
+            if($index != $team->roles->max('pivot.display_order')) {
+                ++$index;
+            }
             $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
         }
         ksort($displayOptions);

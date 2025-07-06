@@ -61,22 +61,27 @@ class TypeController extends Controller implements HasMiddleware
     public function edit(AdmissionTestType $type)
     {
         $types = AdmissionTestType::orderBy('display_order')
-            ->get(['name', 'display_order'])
-            ->pluck('name', 'display_order')
-            ->toArray();
-        foreach ($types as $displayOrder => $name) {
-            $types[$displayOrder] = "before \"$name\"";
+            ->get(['name', 'display_order']);
+        $displayOptions = [];
+        foreach ($types as $thisType) {
+            $displayOrder = $thisType->display_order;
+            if($displayOrder > $type->display_order) {
+                --$displayOrder;
+            }
+            $displayOptions[$displayOrder] = "before \"{$thisType->name}\"";
         }
-        if ($type->display_order == max(array_keys($types))) {
-            $types[max(array_keys($types))] = 'latest';
-        } else {
-            $types[max(array_keys($types)) + 1] = 'latest';
+        if(count($types) > 1) {
+            $index = max(array_keys($displayOptions));
+            if($index != $types->max('display_order')) {
+                ++$index;
+            }
+            $displayOptions[$index] = 'latest';
         }
-        $types[0] = 'top';
+        $displayOptions[0] = 'top';
 
         return view('admin.admission-test.types.edit')
             ->with('type', $type)
-            ->with('types', $types);
+            ->with('types', $displayOptions);
     }
 
     public function update(FormRequest $request, AdmissionTestType $type)
