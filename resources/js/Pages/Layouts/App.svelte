@@ -264,7 +264,7 @@
                                 ]}>Admission Test Types</button>
                             <ul id="asideNavAdminAdmissionTestType" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current('admin.admission-test.types.')},
+                                {show: route().current().startsWith('admin.admission-test.types.')},
                             ]}>
                                 <li>
                                     <a href="{route('admin.admission-test.types.index')}" class={[
