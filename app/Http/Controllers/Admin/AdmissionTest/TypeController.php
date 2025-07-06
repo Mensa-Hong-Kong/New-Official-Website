@@ -9,6 +9,7 @@ use App\Models\AdmissionTestType;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TypeController extends Controller implements HasMiddleware
 {
@@ -25,20 +26,20 @@ class TypeController extends Controller implements HasMiddleware
 
     public function create()
     {
-        $types = AdmissionTestType::orderBy('display_order')
+        $displayOptions = AdmissionTestType::orderBy('display_order')
             ->get(['name', 'display_order'])
             ->pluck('name', 'display_order')
             ->toArray();
-        foreach ($types as $displayOrder => $name) {
+        foreach ($displayOptions as $displayOrder => $name) {
             $types[$displayOrder] = "before \"$name\"";
         }
-        if (count($types)) {
-            $types[max(array_keys($types)) + 1] = 'latest';
+        if (count($displayOptions)) {
+            $displayOptions[max(array_keys($types)) + 1] = 'latest';
         }
-        $types[0] = 'top';
+        $displayOptions[0] = 'top';
 
-        return view('admin.admission-test.types.create')
-            ->with('types', $types);
+        return Inertia::render('Admin/AdmissionTest/Types/Create')
+            ->with('displayOptions', $displayOptions);
     }
 
     public function store(FormRequest $request)
