@@ -20,7 +20,7 @@ class TypeController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.admission-test.types.index')
+        return Inertia::render('Admin/AdmissionTest/Types/Index')
             ->with('types', AdmissionTestType::orderBy('display_order')->get());
     }
 
