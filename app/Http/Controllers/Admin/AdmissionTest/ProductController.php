@@ -9,6 +9,7 @@ use App\Models\AdmissionTestProduct;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -25,7 +26,7 @@ class ProductController extends Controller implements HasMiddleware
 
     public function create()
     {
-        return view('admin.admission-test.products.create');
+        return Inertia::render('Admin/AdmissionTest/Products/Create');
     }
 
     public function store(ProductRequest $request)
