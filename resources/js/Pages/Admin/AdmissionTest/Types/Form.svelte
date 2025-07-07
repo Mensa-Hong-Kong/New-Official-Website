@@ -1,6 +1,9 @@
 <script>
-    import { FormGroup, Input, Label } from '@sveltestrap/sveltestrap';
-    let { inputs = $bindable(), feedbacks = $bindable(), submitting, displayOptions } = $props();
+    import { FormGroup, Input } from '@sveltestrap/sveltestrap';
+    let {
+        inputs = $bindable(), feedbacks = $bindable(), submitting,
+        displayOptions, type = {}
+    } = $props();
 
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
@@ -40,7 +43,7 @@
             maxlength="255" required
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
-            bind:inner={inputs.name} />
+            bind:inner={inputs.name} value={type.name} />
     </FormGroup>
 </div>
 <div class="mb-4 form-outline">
@@ -49,12 +52,12 @@
             min="0" step="1" max="60" required disabled={submitting}
             feedback={feedbacks.intervalMonth} valid={feedbacks.intervalMonth == 'Looks good!'}
             invalid={feedbacks.intervalMonth != '' && feedbacks.intervalMonth != 'Looks good!'}
-            bind:inner={inputs.intervalMonth} />
+            bind:inner={inputs.intervalMonth} value={type.interval_month} />
     </FormGroup>
 </div>
 <div class="mb-4 form-outline">
     <Input type="switch" name="is_active" label="Is Active"
-        value={true} disabled={submitting} bind:inner={inputs.isActive} />
+        value={true} disabled={submitting} bind:inner={inputs.isActive} checked={type.is_active} />
 </div>
 <div class="mb-4 form-outline">
     <FormGroup floating label="Display Order">
@@ -62,9 +65,9 @@
             feedback={feedbacks.displayOrder} valid={feedbacks.displayOrder == 'Looks good!'}
             invalid={feedbacks.displayOrder != '' && feedbacks.displayOrder != 'Looks good!'}
             bind:inner={inputs.displayOrder}>
-            <option value="" selected disabled>Please select display order</option>
+            <option value="" selected={! type.display_order} disabled>Please select display order</option>
             {#each Object.entries(displayOptions) as [key, value]}
-                <option value="{key}">{value}</option>
+                <option value="{key}" selected={key == type.display_order}>{value}</option>
             {/each}
         </Input>
     </FormGroup>

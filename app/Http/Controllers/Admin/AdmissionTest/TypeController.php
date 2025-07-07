@@ -78,10 +78,11 @@ class TypeController extends Controller implements HasMiddleware
             $displayOptions[$index] = 'latest';
         }
         $displayOptions[0] = 'top';
+        $type->makeHidden(['created_at', 'updated_at']);
 
-        return view('admin.admission-test.types.edit')
+        return Inertia::render('Admin/AdmissionTest/Types/Edit')
             ->with('type', $type)
-            ->with('types', $displayOptions);
+            ->with('displayOptions', $displayOptions);
     }
 
     public function update(FormRequest $request, AdmissionTestType $type)
