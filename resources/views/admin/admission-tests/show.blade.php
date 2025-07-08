@@ -6,7 +6,7 @@
             <form id="form" method="POST" action="{{ route('admin.admission-tests.update', ['admission_test' => $test]) }}" novalidate>
                 @csrf
                 @method('put')
-                <h3 class="fw-bold mb-2">
+                <h3 class="mb-2 fw-bold">
                     Info
                         <button class="btn btn-primary" id="savingButton" type="button" disabled hidden>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -130,7 +130,7 @@
         @can('View:User')
             @can('Edit:Admission Test')
                 <article id="proctor">
-                    <h3 class="fw-bold mb-2">Proctors</h3>
+                    <h3 class="mb-2 fw-bold">Proctors</h3>
                     <div class="row g-3">
                         <div class="col-md-1">User ID</div>
                         <div class="col-md-2">Name</div>
@@ -176,11 +176,11 @@
             @endcan
         @endcan
         @if(
-            $test->inTestingTimeRange() ||
+            $test->inTestingTimeRange ||
             auth()->user()->can('View:User')
         )
             <article id="candidate">
-                <h3 class="fw-bold mb-2">Candidates</h3>
+                <h3 class="mb-2 fw-bold">Candidates</h3>
                 <div class="row g-3">
                     <div class="col-md-1">User ID</div>
                     <div class="col-md-2">Name</div>
@@ -227,9 +227,9 @@
                                 href="{{ route('admin.users.show', ['user' => $candidate]) }}">Show</a>
                             <span class="spinner-border spinner-border-sm candidateLoader" id="candidateLoader{{ $candidate->id }}" role="status" aria-hidden="true"></span>
                             <button name="status" id="presentButton{{ $candidate->id }}" form="presentForm{{ $candidate->id }}" value="{{ !$candidate->pivot->is_present }}"
-                                data-disabled="{{ ! $test->inTestingTimeRange() || in_array($candidate->pivot->is_pass, ['0', '1']) }}"
+                                data-disabled="{{ ! $test->inTestingTimeRange || in_array($candidate->pivot->is_pass, ['0', '1']) }}"
                                 @disabled(
-                                    ! $test->inTestingTimeRange() ||
+                                    ! $test->inTestingTimeRange ||
                                     in_array($candidate->pivot->is_pass, ['0', '1'])
                                 ) @class([
                                 'btn',

@@ -467,7 +467,7 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'in_testing_time_range' => $this->test->inTestingTimeRange,
             'present_url' => route(
                 'admin.admission-tests.candidates.present.update',
                 [
@@ -525,7 +525,7 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'in_testing_time_range' => $this->test->inTestingTimeRange,
             'present_url' => route(
                 'admin.admission-tests.candidates.present.update',
                 [
@@ -589,7 +589,7 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'in_testing_time_range' => $this->test->inTestingTimeRange,
             'present_url' => route(
                 'admin.admission-tests.candidates.present.update',
                 [
@@ -660,7 +660,7 @@ class StoreTest extends TestCase
                 'admin.users.show',
                 ['user' => $this->user]
             ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange(),
+            'in_testing_time_range' => $this->test->inTestingTimeRange,
             'present_url' => route(
                 'admin.admission-tests.candidates.present.update',
                 [

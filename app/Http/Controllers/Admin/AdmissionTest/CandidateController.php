@@ -74,7 +74,7 @@ class CandidateController extends Controller implements HasMiddleware
                             $request->user()->can('View:User') &&
                             $request->user()->can('Edit:Admission Test')
                         ) && ! (
-                            $test->inTestingTimeRange() &&
+                            $test->inTestingTimeRange &&
                             in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
                         )
                     ) {
@@ -155,7 +155,7 @@ class CandidateController extends Controller implements HasMiddleware
                 'admin.users.show',
                 ['user' => $request->user]
             ),
-            'in_testing_time_range' => $admissionTest->inTestingTimeRange(),
+            'in_testing_time_range' => $admissionTest->inTestingTimeRange,
             'present_url' => route(
                 'admin.admission-tests.candidates.present.update',
                 [

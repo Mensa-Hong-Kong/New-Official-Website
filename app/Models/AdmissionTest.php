@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
@@ -50,14 +51,19 @@ class AdmissionTest extends Model
         return $this->belongsToMany(User::class, AdmissionTestHasProctor::class, 'test_id');
     }
 
-    public function inTestingTimeRange()
-    {
-        return $this->testing_at <= now()->addHours(2) && $this->expect_end_at >= now()->subHour();
-    }
-
     public function candidates()
     {
         return $this->belongsToMany(User::class, AdmissionTestHasCandidate::class, 'test_id')
             ->withPivot(['is_present', 'is_pass']);
+    }
+
+    protected function inTestingTimeRange(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return $attributes['testing_at'] <= now()->addHours(2) &&
+                    $attributes['expect_end_at'] >= now()->subHour();
+            }
+        );
     }
 }

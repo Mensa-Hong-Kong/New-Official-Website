@@ -40,7 +40,7 @@ class Controller extends BaseController implements HasMiddleware
                     $test = $request->route('admission_test');
                     if (
                         $request->user()->can('Edit:Admission Test') || (
-                            $test->inTestingTimeRange() &&
+                            $test->inTestingTimeRange &&
                             in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
                         )
                     ) {
