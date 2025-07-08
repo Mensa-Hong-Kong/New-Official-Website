@@ -78,7 +78,7 @@ class ProductController extends Controller implements HasMiddleware
         ]);
         $product->prices->makeHidden('product_id');
 
-        return view('admin.admission-test.products.show')
+        return Inertia::render('Admin/AdmissionTest/Products/Show')
             ->with('product', $product);
     }
 
