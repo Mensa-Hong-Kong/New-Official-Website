@@ -60,9 +60,20 @@ class Controller extends BaseController implements HasMiddleware
         } else {
             $tests = $request->user()->proctorTests();
         }
-        $tests = $tests->sortable('testing_at')->paginate();
+        $tests = $tests->select(['id', 'testing_at', 'location_id', 'maximum_candidates', 'is_public'])
+            ->withCount('candidates')
+            ->with([
+                'location' => function($query) {
+                    $query->select(['id', 'name']);
+                }
+            ])->sortable('testing_at')->paginate();
+        $tests->append('in_testing_time_range');
+        $tests->makeHidden('location_id');
+        foreach($tests as $test) {
+            $test->location->makeHidden('id');
+        }
 
-        return view('admin.admission-tests.index')
+        return Inertia::render('Admin/AdmissionTests/Index')
             ->with('tests', $tests);
     }
 
