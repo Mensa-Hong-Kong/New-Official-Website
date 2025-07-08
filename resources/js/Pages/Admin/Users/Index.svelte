@@ -186,7 +186,7 @@
                     <th scope="col">Gender</th>
                     <th scope="col"><SortableLink column="created_at" title="Created At" /></th>
                     <th scope="col"><SortableLink column="updated_at" title="Updated At" /></th>
-                    <th scope="col"><SortableLink column="lastLoginLogs.created_at" title="Last Login Time" /></th>
+                    <th scope="col"><SortableLink column="lastLoginLog.created_at" title="Last Login Time" /></th>
                     <th scope="col">Control</th>
                 </tr>
             </thead>

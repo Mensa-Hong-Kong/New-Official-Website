@@ -34,7 +34,7 @@ class UserController extends Controller implements HasMiddleware
         $isSearch = false;
         $append = [];
         $users = User::with([
-            'lastLoginLogs' => function($query) {
+            'lastLoginLog' => function($query) {
                 $query->select(['id', 'user_id', 'created_at']);
             },
         ]);
@@ -97,8 +97,8 @@ class UserController extends Controller implements HasMiddleware
             'birthday', 'member',
         ]);
         foreach($users as $user) {
-            if($user->lastLoginLogs) {
-                $user->lastLoginLogs->makeHidden(['id', 'user_id']);
+            if($user->lastLoginLog) {
+                $user->lastLoginLog->makeHidden(['id', 'user_id']);
             }
         }
         $passportTypes = PassportType::get(['id', 'name'])

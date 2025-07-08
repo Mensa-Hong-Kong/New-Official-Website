@@ -175,7 +175,7 @@ class User extends Authenticatable
         return $this->hasMany(UserLoginLog::class);
     }
 
-    public function lastLoginLogs(): HasOne
+    public function lastLoginLog(): HasOne
     {
         return $this->hasOne(UserLoginLog::class)
             ->latest('id');
