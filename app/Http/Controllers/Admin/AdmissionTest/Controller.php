@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class Controller extends BaseController implements HasMiddleware
 {
@@ -81,7 +82,7 @@ class Controller extends BaseController implements HasMiddleware
             }
         }
 
-        return view('admin.admission-tests.create')
+        return Inertia::render('Admin/AdmissionTests/Create')
             ->with(
                 'types', AdmissionTestType::orderBy('display_order')
                     ->get(['id', 'name'])
