@@ -73,7 +73,7 @@ class StoreRequest extends FormRequest
                             'user_id',
                             'The selected user id have no scheduled other admission test after than now.'
                         );
-                    } elseif ($user->hasSamePassportAlreadyQualificationOfMembership()) {
+                    } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         $validator->errors()->add(
                             'user_id',
                             'The passport of selected user id has already been qualification for membership.'

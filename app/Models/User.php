@@ -128,6 +128,26 @@ class User extends Authenticatable
         );
     }
 
+    public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return User::where('passport_type_id', $attributes['passport_type_id'])
+                    ->where('passport_number', $attributes['passport_number'])
+                    ->where(
+                        function ($query) {
+                            $query->has('member')
+                                ->orWhereHas(
+                                    'admissionTests', function ($query) {
+                                        $query->where('is_pass', true);
+                                    }
+                                );
+                        }
+                    )->exists();
+            }
+        );
+    }
+
     protected function stripeName(): string
     {
         return $this->preferredName;
@@ -270,7 +290,7 @@ class User extends Authenticatable
             ->latest('testing_at');
     }
 
-    public function lastPresentAdmissionTest()
+    public function lastPresentedAdmissionTest()
     {
         return $this->lastAdmissionTest()->where('is_present', true);
     }
@@ -288,22 +308,6 @@ class User extends Authenticatable
     public function hasQualificationOfMembership()
     {
         return $this->member || $this->hasPassedAdmissionTest();
-    }
-
-    public function hasSamePassportAlreadyQualificationOfMembership()
-    {
-        return self::where('passport_type_id', $this->passport_type_id)
-            ->where('passport_number', $this->passport_number)
-            ->where(
-                function ($query) {
-                    $query->has('member')
-                        ->orWhereHas(
-                            'admissionTests', function ($query) {
-                                $query->where('is_pass', true);
-                            }
-                        );
-                }
-            )->exists();
     }
 
     public function hasOtherSamePassportUserTested(?AdmissionTest $ignore = null)

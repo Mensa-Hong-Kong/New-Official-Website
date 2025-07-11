@@ -34,7 +34,7 @@
                 <td @class([
                     'text-warning' => $user->hasOtherUserSamePassportJoinedFutureTest(),
                     'text-danger' => $user->hasOtherSamePassportUserTested() ||
-                        $user->hasSamePassportAlreadyQualificationOfMembership() || (
+                        $user->hasSamePassportAlreadyQualificationOfMembership || (
                             $user->lastAdmissionTest &&
                             $user->hasTestedWithinDateRange(
                                 $test->testing_at->subMonths($user->lastAdmissionTest->type->interval_month), now(), $test

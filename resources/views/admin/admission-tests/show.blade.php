@@ -212,7 +212,7 @@
                             'col-md-2',
                             'text-warning' => $candidate->hasOtherUserSamePassportJoinedFutureTest(),
                             'text-danger' => $candidate->hasOtherSamePassportUserTested() ||
-                                $candidate->hasSamePassportAlreadyQualificationOfMembership() || (
+                                $candidate->hasSamePassportAlreadyQualificationOfMembership || (
                                     $candidate->lastAdmissionTest &&
                                     $candidate->hasTestedWithinDateRange(
                                         $test->testing_at->subMonths(
