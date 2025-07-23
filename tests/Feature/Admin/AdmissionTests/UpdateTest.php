@@ -421,6 +421,8 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test update success!';
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
     }
 
@@ -451,6 +453,8 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test update success!';
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
     }
 
@@ -480,6 +484,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertEquals($addressID, $this->test->address->id);
@@ -509,6 +515,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $newAddress->id;
         $response->assertJson($data);
         $this->assertNull(Address::find($addressID));
         $this->assertEquals($newAddress->id, $this->test->address->id);
@@ -544,6 +552,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertNotNull($this->test->address);
@@ -578,6 +588,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $newAddress->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertEquals($newAddress->id, $this->test->address->id);
@@ -606,6 +618,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($locationID, $this->test->location->id);
@@ -635,6 +649,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $newLocation->id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
@@ -667,6 +683,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertNotNull($this->test->location);
@@ -701,6 +719,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $newLocation->id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
@@ -729,6 +749,8 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test update success!';
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         Queue::assertNothingPushed();
     }
@@ -761,6 +783,8 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test update success!';
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         Queue::assertNothingPushed();
     }
@@ -794,6 +818,8 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test update success!';
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         Queue::assertPushed(
             SendQueuedNotifications::class, function (SendQueuedNotifications $job) {
@@ -830,6 +856,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertEquals($addressID, $this->test->address->id);
@@ -866,6 +894,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $newAddress->id;
         $response->assertJson($data);
         $this->assertNull(Address::find($addressID));
         $this->assertEquals($newAddress->id, $this->test->address->id);
@@ -908,6 +938,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertNotNull($this->test->address);
@@ -949,6 +981,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $newAddress->id;
         $response->assertJson($data);
         $this->assertNotNull(Address::find($addressID));
         $this->assertEquals($newAddress->id, $this->test->address->id);
@@ -984,6 +1018,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($locationID, $this->test->location->id);
@@ -1020,6 +1056,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $newLocation->id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
@@ -1059,6 +1097,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $this->test->location_id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertNotNull($this->test->location);
@@ -1100,6 +1140,8 @@ class UpdateTest extends TestCase
         $data['success'] = 'The admission test update success!';
         $this->test->refresh();
         $response->assertSuccessful();
+        $data['location_id'] = $newLocation->id;
+        $data['address_id'] = $this->test->address->id;
         $response->assertJson($data);
         $this->assertNotNull(Location::find($locationID));
         $this->assertEquals($newLocation->id, $this->test->location->id);
