@@ -462,33 +462,9 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'has_same_passport' => false,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $this->user]
-            ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange,
-            'present_url' => route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'result_url' => route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'delete_url' => route(
-                'admin.admission-tests.candidates.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
+            'passport_type' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+            'has_other_user_same_passport_joined_future_test' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -520,33 +496,9 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'has_same_passport' => true,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $this->user]
-            ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange,
-            'present_url' => route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'result_url' => route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'delete_url' => route(
-                'admin.admission-tests.candidates.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
+            'passport_type' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+            'has_other_user_same_passport_joined_future_test' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -584,33 +536,9 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'has_same_passport' => false,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $this->user]
-            ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange,
-            'present_url' => route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'result_url' => route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'delete_url' => route(
-                'admin.admission-tests.candidates.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
+            'passport_type' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+            'has_other_user_same_passport_joined_future_test' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -655,33 +583,9 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'has_same_passport' => true,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $this->user]
-            ),
-            'in_testing_time_range' => $this->test->inTestingTimeRange,
-            'present_url' => route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'result_url' => route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
-            'delete_url' => route(
-                'admin.admission-tests.candidates.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            ),
+            'passport_type' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+            'has_other_user_same_passport_joined_future_test' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(

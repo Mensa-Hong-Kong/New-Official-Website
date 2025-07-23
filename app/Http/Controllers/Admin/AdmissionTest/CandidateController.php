@@ -148,35 +148,9 @@ class CandidateController extends Controller implements HasMiddleware
             'success' => 'The candidate create success',
             'user_id' => $request->user->id,
             'name' => $request->user->adornedName,
-            'passport_type' => $request->user->passportType->name,
+            'passport_type' => $request->user->passport_type_id,
             'passport_number' => $request->user->passport_number,
-            'has_same_passport' => $request->user->hasOtherUserSamePassportJoinedFutureTest(),
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $request->user]
-            ),
-            'in_testing_time_range' => $admissionTest->inTestingTimeRange,
-            'present_url' => route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $admissionTest,
-                    'candidate' => $request->user,
-                ]
-            ),
-            'result_url' => route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $admissionTest,
-                    'candidate' => $request->user,
-                ]
-            ),
-            'delete_url' => route(
-                'admin.admission-tests.candidates.destroy',
-                [
-                    'admission_test' => $admissionTest,
-                    'candidate' => $request->user,
-                ]
-            ),
+            'has_other_user_same_passport_joined_future_test' => $request->user->hasOtherUserSamePassportJoinedFutureTest(),
         ];
     }
 
