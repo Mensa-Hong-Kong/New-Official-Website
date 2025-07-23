@@ -55,24 +55,6 @@ class ProctorController extends Controller implements HasMiddleware
             'success' => 'The proctor update success',
             'user_id' => $request->user->id,
             'name' => $request->user->adornedName,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $request->user]
-            ),
-            'update_proctor_url' => route(
-                'admin.admission-tests.proctors.update',
-                [
-                    'admission_test' => $admissionTest,
-                    'proctor' => $request->user,
-                ]
-            ),
-            'delete_proctor_url' => route(
-                'admin.admission-tests.proctors.destroy',
-                [
-                    'admission_test' => $admissionTest,
-                    'proctor' => $request->user,
-                ]
-            ),
         ];
     }
 

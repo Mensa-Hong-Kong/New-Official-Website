@@ -183,24 +183,6 @@ class UpdateTest extends TestCase
             'success' => 'The proctor update success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $this->user]
-            ),
-            'update_proctor_url' => route(
-                'admin.admission-tests.proctors.update',
-                [
-                    'admission_test' => $this->test,
-                    'proctor' => $this->user,
-                ]
-            ),
-            'delete_proctor_url' => route(
-                'admin.admission-tests.proctors.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'proctor' => $this->user,
-                ]
-            ),
         ]);
     }
 
@@ -222,24 +204,6 @@ class UpdateTest extends TestCase
             'success' => 'The proctor update success',
             'user_id' => $user->id,
             'name' => $user->adornedName,
-            'show_user_url' => route(
-                'admin.users.show',
-                ['user' => $user]
-            ),
-            'update_proctor_url' => route(
-                'admin.admission-tests.proctors.update',
-                [
-                    'admission_test' => $this->test,
-                    'proctor' => $user,
-                ]
-            ),
-            'delete_proctor_url' => route(
-                'admin.admission-tests.proctors.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'proctor' => $user,
-                ]
-            ),
         ]);
     }
 }
