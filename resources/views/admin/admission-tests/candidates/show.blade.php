@@ -2,7 +2,7 @@
 
 @section('main')
     <section class="container">
-        <h2 class="fw-bold mb-2">
+        <h2 class="mb-2 fw-bold">
             Candidate
             <a class="btn btn-primary" id="editLink"
                 href="{{ route('admin.admission-tests.candidates.edit', ['admission_test' => $test, 'candidate' => $user]) }}">Edit</a>
@@ -32,7 +32,7 @@
             <tr>
                 <th>Passport Number</th>
                 <td @class([
-                    'text-warning' => $user->hasOtherUserSamePassportJoinedFutureTest(),
+                    'text-warning' => $user->hasOtherUserSamePassportJoinedFutureTest,
                     'text-danger' => $user->hasOtherSamePassportUserTested() ||
                         $user->hasSamePassportAlreadyQualificationOfMembership || (
                             $user->lastAdmissionTest &&

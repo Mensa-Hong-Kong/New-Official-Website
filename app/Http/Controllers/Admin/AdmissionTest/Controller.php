@@ -165,7 +165,7 @@ class Controller extends BaseController implements HasMiddleware
                             'type' => function($query) {
                                 $query->select(['id', 'interval_month']);
                             }
-                        ])->where('test_id', $admissionTest->id);
+                        ])->whereNot('test_id', $admissionTest->id);
                     }, 'passportType' => function($query) {
                         $query->select(['id', 'name']);
                     }
@@ -180,7 +180,8 @@ class Controller extends BaseController implements HasMiddleware
             'synced_to_stripe', 'created_at', 'updated_at', 'pivot',
         ]);
         $admissionTest->candidates->append([
-            'adorned_name', 'has_same_passport_already_qualification_of_membership'
+            'adorned_name', 'has_other_user_same_passport_joined_future_test',
+            'has_same_passport_already_qualification_of_membership'
         ]);
         $admissionTest->candidates->makeHidden([
             'username', 'member', 'family_name', 'middle_name', 'given_name',

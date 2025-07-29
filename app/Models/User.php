@@ -128,6 +128,22 @@ class User extends Authenticatable
         );
     }
 
+    public function hasOtherUserSamePassportJoinedFutureTest(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return User::whereNot('id', $this->id)
+                    ->where('passport_type_id', $attributes['passport_type_id'])
+                    ->where('passport_number', $attributes['passport_number'])
+                    ->whereHas(
+                        'admissionTests', function ($query) {
+                            $query->where('testing_at', '>', now());
+                        }
+                    )->exists();
+            }
+        );
+    }
+
     public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
     {
         return Attribute::make(
@@ -338,17 +354,5 @@ class User extends Authenticatable
         }
 
         return false;
-    }
-
-    public function hasOtherUserSamePassportJoinedFutureTest()
-    {
-        return User::whereNot('id', $this->id)
-            ->where('passport_type_id', $this->passport_type_id)
-            ->where('passport_number', $this->passport_number)
-            ->whereHas(
-                'admissionTests', function ($query) {
-                    $query->where('testing_at', '>', now());
-                }
-            )->exists();
     }
 }
