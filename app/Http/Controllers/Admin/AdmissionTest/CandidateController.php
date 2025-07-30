@@ -98,7 +98,10 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
-                    } elseif ($user->hasOtherSamePassportUserTested($test)) {
+                    } elseif (
+                        $user->lastAttendedAdmissionTestOfOtherSamePassportUser &&
+                        $user->lastAttendedAdmissionTestOfOtherSamePassportUser->id != $test->id
+                    ) {
                         abort(409, 'The candidate has other same passport user account tested.');
                     } elseif (
                         $user->lastAdmissionTest &&

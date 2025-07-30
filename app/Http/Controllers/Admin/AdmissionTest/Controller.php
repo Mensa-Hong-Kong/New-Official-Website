@@ -181,6 +181,7 @@ class Controller extends BaseController implements HasMiddleware
         ]);
         $admissionTest->candidates->append([
             'adorned_name', 'has_other_user_same_passport_joined_future_test',
+            'last_attended_admission_test_of_other_same_passport_user',
             'has_same_passport_already_qualification_of_membership'
         ]);
         $admissionTest->candidates->makeHidden([

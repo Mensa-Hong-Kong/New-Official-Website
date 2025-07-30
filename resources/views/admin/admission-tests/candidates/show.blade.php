@@ -33,7 +33,7 @@
                 <th>Passport Number</th>
                 <td @class([
                     'text-warning' => $user->hasOtherUserSamePassportJoinedFutureTest,
-                    'text-danger' => $user->hasOtherSamePassportUserTested() ||
+                    'text-danger' => $user->lastAttendedAdmissionTestOfOtherSamePassportUser ||
                         $user->hasSamePassportAlreadyQualificationOfMembership || (
                             $user->lastAdmissionTest &&
                             $user->hasTestedWithinDateRange(

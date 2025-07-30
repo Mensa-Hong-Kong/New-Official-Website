@@ -78,7 +78,7 @@ class StoreRequest extends FormRequest
                             'user_id',
                             'The passport of selected user id has already been qualification for membership.'
                         );
-                    } elseif ($user->hasOtherSamePassportUserTested()) {
+                    } elseif ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has other same passport user account tested.'

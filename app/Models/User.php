@@ -164,6 +164,26 @@ class User extends Authenticatable
         );
     }
 
+    public function lastAttendedAdmissionTestOfOtherSamePassportUser(): Attribute
+    {
+        $table = $this->getTable();
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($table) {
+                return AdmissionTest::where('testing_at', '<', now())
+                    ->whereHas(
+                        'candidates', function($query) use($attributes, $table) {
+                            $query->where('passport_type_id', $attributes['passport_type_id'])
+                                ->where('passport_number', $attributes['passport_number'])
+                                ->whereNot("$table.id", $attributes['id'])
+                                ->where('is_present', true);
+                        }
+                    )->orderByDesc('testing_at')
+                    ->first();
+            }
+        );
+    }
+
     protected function stripeName(): string
     {
         return $this->preferredName;
@@ -324,22 +344,6 @@ class User extends Authenticatable
     public function hasQualificationOfMembership()
     {
         return $this->member || $this->hasPassedAdmissionTest();
-    }
-
-    public function hasOtherSamePassportUserTested(?AdmissionTest $ignore = null)
-    {
-        return self::where('passport_type_id', $this->passport_type_id)
-            ->where('passport_number', $this->passport_number)
-            ->whereNot('id', $this->id)
-            ->whereHas(
-                'admissionTests', function ($query) use ($ignore) {
-                    $query->where('is_present', true)
-                        ->where('testing_at', '<', now());
-                    if ($ignore) {
-                        $query->whereNot('test_id', $ignore->id);
-                    }
-                }
-            )->exists();
     }
 
     public function hasTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)

@@ -44,7 +44,7 @@ class CandidateController extends Controller implements HasMiddleware
                     if ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         return $errorReturn->withErrors(['message' => 'Your passport has already been qualification for membership.']);
                     }
-                    if ($user->hasOtherSamePassportUserTested()) {
+                    if ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
                         return $errorReturn->withErrors(['message' => 'You other same passport user account tested.']);
                     }
                     if (
@@ -85,7 +85,7 @@ class CandidateController extends Controller implements HasMiddleware
                         if ($user->hasSamePassportAlreadyQualificationOfMembership) {
                             return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has already been qualification for membership.']);
                         }
-                        if ($user->hasOtherSamePassportUserTested()) {
+                        if ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
                             return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has other same passport user account tested.']);
                         }
                         if (

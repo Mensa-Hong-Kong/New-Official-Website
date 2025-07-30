@@ -10,7 +10,6 @@
         candidates: []
     });
     let booleans = ['0', '1'];
-    console.log(initCandidates);
 
     for(let row of initCandidates) {
         inputs['candidates'].push({});
@@ -20,13 +19,14 @@
             passportType: row.passport_type.name,
             passportNumber: row.passport_number,
             hasOtherUserSamePassportJoinedFutureTest: row.has_other_user_same_passport_joined_future_test,
+            lastAttendedAdmissionTestOfOtherSamePassportUser: row.last_attended_admission_test_of_other_same_passport_user,
+            hasSamePassportAlreadyQualificationOfMembership: row.has_same_passport_already_qualification_of_membership,
             lastPresentedAdmissionTest: row.last_presented_admission_test,
             isPresent: row.pivot.is_present,
             isPass: row.pivot.is_pass,
             updatingStatue: false,
             deleting: false,
         });
-        console.log(row);
     }
 
     function getIndexById(id) {
@@ -38,7 +38,6 @@
     }
 
     function updatePresentStatueSuccessCallback(response) {
-        console.log(response);
         alert(response.data.success);
         let id = route().match(response.request.responseURL, 'put').params.candidate;
         let index = getIndexById(id);
@@ -239,7 +238,7 @@
     }
 </script>
 
-<article id="candidate">
+<article>
     <h3 class="mb-2 fw-bold">Candidates</h3>
     <Row class="g-3">
         <Col md=1>User ID</Col>
@@ -255,7 +254,7 @@
             <Col md=2>{row.passportType}</Col>
             <div class={['col-md-2', {
                 'text-warning': row.hasOtherUserSamePassportJoinedFutureTest,
-                'text-danger': row.hasOtherSamePassportUserTested ||
+                'text-danger': row.lastAttendedAdmissionTestOfOtherSamePassportUser ||
                     row.hasSamePassportAlreadyQualificationOfMembership || (
                         row.lastPresentedAdmissionTest &&
                         row.lastPresentedAdmissionTest.testing_at >= new Date(
