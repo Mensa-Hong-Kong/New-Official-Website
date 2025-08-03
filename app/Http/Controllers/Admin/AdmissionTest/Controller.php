@@ -288,8 +288,8 @@ class Controller extends BaseController implements HasMiddleware
         DB::beginTransaction();
         $from = [
             'testing_date' => $admissionTest->testing_at->format('Y-m-d'),
-            'testing_time' => $admissionTest->testing_at->format('H:i'),
-            'expect_end_time' => $admissionTest->expect_end_at->format('H:i'),
+            'testing_time' => $admissionTest->testing_at->format('H:i:s'),
+            'expect_end_time' => $admissionTest->expect_end_at->format('H:i:s'),
             'location' => $admissionTest->location->name,
             'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
@@ -307,8 +307,8 @@ class Controller extends BaseController implements HasMiddleware
         $admissionTest->refresh();
         $to = [
             'testing_date' => $admissionTest->testing_at->format('Y-m-d'),
-            'testing_time' => $admissionTest->testing_at->format('H:i'),
-            'expect_end_time' => $admissionTest->expect_end_at->format('H:i'),
+            'testing_time' => $admissionTest->testing_at->format('H:i:s'),
+            'expect_end_time' => $admissionTest->expect_end_at->format('H:i:s'),
             'location' => $admissionTest->location->name,
             'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
@@ -328,8 +328,8 @@ class Controller extends BaseController implements HasMiddleware
         return [
             'success' => 'The admission test update success!',
             'type_id' => $admissionTest->type_id,
-            'testing_at' => $admissionTest->testing_at->format('Y-m-d H:i'),
-            'expect_end_at' => $admissionTest->expect_end_at->format('Y-m-d H:i'),
+            'testing_at' => $admissionTest->testing_at->format('Y-m-d H:i:s'),
+            'expect_end_at' => $admissionTest->expect_end_at->format('Y-m-d H:i:s'),
             'location_id' => $admissionTest->location_id,
             'location' => $admissionTest->location->name,
             'district_id' => $admissionTest->address->district_id,
