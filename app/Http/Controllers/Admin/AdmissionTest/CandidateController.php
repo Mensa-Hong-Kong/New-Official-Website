@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class CandidateController extends Controller implements HasMiddleware
 {
@@ -159,7 +160,45 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function show(Request $request, AdmissionTest $admissionTest, User $candidate)
     {
-        return view('admin.admission-tests.candidates.show')
+        $admissionTest->makeHidden([
+            'type_id', 'testing_at', 'expect_end_at',
+            'location_id', 'address_id', 'maximum_candidates',
+            'is_public', 'created_at', 'updated_at',
+        ]);
+        $candidate->load([
+            'lastPresentedAdmissionTest' => function($query) use($admissionTest) {
+                $query->with([
+                    'type' => function($query) {
+                        $query->select(['id', 'interval_month']);
+                    }
+                ])->whereNot('test_id', $admissionTest->id);
+            }, 'passportType' => function($query) {
+                $query->select(['id', 'name']);
+            }, 'gender' => function($query) {
+                $query->select(['id', 'name']);
+            }, 
+        ]);
+        $candidate->append([
+            'adorned_name', 'has_other_user_same_passport_joined_future_test',
+            'last_attended_admission_test_of_other_same_passport_user',
+            'has_same_passport_already_qualification_of_membership'
+        ]);
+        $candidate->makeHidden([
+            'username', 'member', 'family_name', 'middle_name', 'given_name',
+            'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
+        ]);
+        $candidate->passportType->makeHidden('id');
+        $candidate->gender->makeHidden('id');
+        if($candidate->lastPresentedAdmissionTest) {
+            $candidate->lastPresentedAdmissionTest->makeHidden([
+                'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
+                'maximum_candidates', 'is_public', 'created_at', 'updated_at',
+                'laravel_through_key',
+            ]);
+            $candidate->lastPresentedAdmissionTest->type->makeHidden('id');
+        }
+
+        return Inertia::render('Admin/AdmissionTests/Candidates/Show')
             ->with('test', $admissionTest)
             ->with('user', $candidate)
             ->with('isPresent', $request->pivot->is_present);
