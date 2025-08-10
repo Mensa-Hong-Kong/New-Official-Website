@@ -21,6 +21,7 @@ class UpdateRequest extends FormRequest
             'passport_type_id' => 'required|integer|exists:'.PassportType::class.',id',
             'passport_number' => 'required|regex:/^[A-Z0-9]+$/|min:8|max:18',
             'gender' => 'required|string|max:255',
+            'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
         ];
     }
 

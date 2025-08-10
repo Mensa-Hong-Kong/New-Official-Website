@@ -21,6 +21,7 @@ class UpdateTest extends TestCase
         'passport_type_id' => 2,
         'passport_number' => 'C668668E',
         'gender' => 'Female',
+        'birthday' => '2003-09-15',
     ];
 
     protected function setUp(): void
@@ -450,10 +451,61 @@ class UpdateTest extends TestCase
                         'admission_test' => $this->test,
                         'candidate' => $this->user,
                     ]
-                ),
-                $data
+                ), $data
             );
         $response->assertInvalid(['gender' => 'The gender field must not be greater than 255 characters.']);
+    }
+
+    public function test_missing_birthday()
+    {
+        $data = $this->happyCase;
+        unset($data['birthday']);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.admission-tests.candidates.update',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                ), $data
+            );
+        $response->assertInvalid(['birthday' => 'The birthday field is required.']);
+    }
+
+    public function test_birthday_is_not_date()
+    {
+        $data = $this->happyCase;
+        $data['birthday'] = 'abc';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.admission-tests.candidates.update',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                ), $data
+            );
+        $response->assertInvalid(['birthday' => 'The birthday field must be a valid date.']);
+    }
+
+    public function test_birthday_too_close()
+    {
+        $data = $this->happyCase;
+        $data['birthday'] = now()->subYears(2)->addDay()->format('Y-m-d');
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.admission-tests.candidates.update',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                ), $data
+            );
+        $beforeTwoYear = now()->subYears(2)->format('Y-m-d');
+        $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
     public function test_happy_case_without_middle_name()
@@ -482,6 +534,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($this->happyCase['passport_type_id'], $this->user->passport_type_id);
         $this->assertEquals($this->happyCase['passport_number'], $this->user->passport_number);
         $this->assertEquals($this->happyCase['gender'], $this->user->gender->name);
+        $this->assertEquals($this->happyCase['birthday'], $this->user->birthday->format('Y-m-d'));
     }
 
     public function test_happy_case_with_middle_name()
@@ -513,5 +566,6 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_type_id'], $this->user->passport_type_id);
         $this->assertEquals($data['passport_number'], $this->user->passport_number);
         $this->assertEquals($data['gender'], $this->user->gender->name);
+        $this->assertEquals($data['birthday'], $this->user->birthday->format('Y-m-d'));
     }
 }

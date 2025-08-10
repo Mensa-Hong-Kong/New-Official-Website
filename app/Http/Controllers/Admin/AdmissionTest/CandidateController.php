@@ -231,6 +231,7 @@ class CandidateController extends Controller implements HasMiddleware
             'gender_id' => $gender->id,
             'passport_type_id' => $request->passport_type_id,
             'passport_number' => $request->passport_number,
+            'birthday' => $request->birthday,
         ]);
         DB::commit();
 
