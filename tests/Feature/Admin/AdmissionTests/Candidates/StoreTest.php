@@ -462,7 +462,7 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'passport_type' => $this->user->passport_type_id,
+            'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_user_same_passport_joined_future_test' => false,
         ]);
@@ -496,7 +496,7 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'passport_type' => $this->user->passport_type_id,
+            'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_user_same_passport_joined_future_test' => true,
         ]);
@@ -536,7 +536,7 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'passport_type' => $this->user->passport_type_id,
+            'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_user_same_passport_joined_future_test' => false,
         ]);
@@ -583,7 +583,7 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
-            'passport_type' => $this->user->passport_type_id,
+            'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_user_same_passport_joined_future_test' => true,
         ]);
