@@ -5,17 +5,17 @@
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
+    import { formatToDatetime } from '@/timeZoneDatetime';
 
     let { auth, test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
-    console.log(initTest);
     let submitting = $state(false);
     let editing = $state(false);
     let updating = $state(false);
     let test = $state({
         id: initTest.id,
         typeID: initTest.type_id,
-        testingAt: (new Date(initTest.testing_at)).toISOString().split('.')[0].replace('T', ' '),
-        expectEndAt: (new Date(initTest.expect_end_at)).toISOString().split('.')[0].replace('T', ' '),
+        testingAt: formatToDatetime(initTest.testing_at),
+        expectEndAt: formatToDatetime(initTest.expect_end_at),
         locationID: initTest.location_id,
         districtID: initTest.address.district_id,
         addressID: initTest.address.id,
@@ -100,8 +100,8 @@
     
     function successCallback(response) {
         test.type = response.data.type_id;
-        test.testingAt = response.data.testing_at;
-        test.expectEndAt = response.data.expect_end_at;
+        test.testingAt = formatToDatetime(response.data.testing_at);
+        test.expectEndAt = formatToDatetime(response.data.expect_end_at);
         locations[response.data.location_id] = response.data.location;
         test.locationID = response.data.location_id;
         test.districtID = response.data.district_id;

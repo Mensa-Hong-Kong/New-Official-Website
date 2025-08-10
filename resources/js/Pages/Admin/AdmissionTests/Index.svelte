@@ -5,6 +5,7 @@
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+    import { formatToDatetime } from '@/timeZoneDatetime';
 
     let { auth, tests: initTests } = $props();
     let submitting = $state();
@@ -79,7 +80,7 @@
                 {#each tests as row, index}
                     <tr>
                         <th scope="row">{row.id}</th>
-                        <td>{(new Date(row.testing_at)).toISOString().split('.')[0].replace('T', ' ')}</td>
+                        <td>{formatToDatetime(row.testing_at)}</td>
                         <td>{row.location.name}</td>
                         <td>{row.candidates_count}/{row.maximum_candidates}</td>
                         <td>{row.is_public ? 'Public' : 'Private'}</td>

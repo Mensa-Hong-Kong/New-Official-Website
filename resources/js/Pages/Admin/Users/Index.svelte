@@ -2,8 +2,9 @@
     import { Accordion, AccordionItem, Col, Label, Input, Button, Table, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
     import Pagination from '@/Pages/Components/Pagination.svelte';
-    let {isSearch = false, users, passportTypes, maxBirthday, genders, append = {}} = $props();
+    import { formatToDatetime } from '@/timeZoneDatetime';
 
+    let {isSearch = false, users, passportTypes, maxBirthday, genders, append = {}} = $props();
     let inputs = $state({});
     let feedbacks = $state({
         familyName: '',
@@ -208,11 +209,11 @@
                                 {genders[row.gender_id]}
                             {/if}
                         </td>
-                        <td>{(new Date(row.created_at)).toISOString().split('.')[0].replace('T', ' ')}</td>
-                        <td>{(new Date(row.updated_at)).toISOString().split('.')[0].replace('T', ' ')}</td>
+                        <td>{formatToDatetime(row.created_at)}</td>
+                        <td>{formatToDatetime(row.updated_at)}</td>
                         <td>
                             {#if row.last_login_logs}
-                                {(new Date(row.last_login_logs.created_at)).toISOString().split('.')[0].replace('T', ' ')}
+                                {formatToDatetime(row.last_login_logs.created_at)}
                             {:else}
                                 --
                             {/if}

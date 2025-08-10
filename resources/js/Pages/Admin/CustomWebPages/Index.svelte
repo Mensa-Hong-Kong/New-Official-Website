@@ -4,6 +4,7 @@
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+    import { formatToDatetime } from '@/timeZoneDatetime';
 
     let {pages: initPages} = $props();
     let pages = $state([]);
@@ -79,8 +80,8 @@
                     <tr>
                         <th scope="row">{page.pathname}</th>
                         <td>{page.title}</td>
-                        <td>{page.created_at}</td>
-                        <td>{page.updated_at}</td>
+                        <td>{formatToDatetime(page.created_at)}</td>
+                        <td>{formatToDatetime(page.updated_at)}</td>
                         <td>
                             <a class="btn btn-primary" href="{
                                 route(

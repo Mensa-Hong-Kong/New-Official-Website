@@ -1,11 +1,10 @@
 <script>
-    let { user: initUser, genders, passportTypes, maxBirthday } = $props();
 	import Datalist from '@/Pages/Components/Datalist.svelte';
+	import Contacts from './Contacts.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-	import Contacts from './Contacts.svelte';
-
-    console.log(initUser);
+    import { formatToDate } from '@/timeZoneDatetime';
+    let { user: initUser, genders, passportTypes, maxBirthday } = $props();
 
     let user = $state({
         username: initUser.username,
@@ -15,7 +14,7 @@
         passportTypeID: initUser.passport_type_id,
         passportNumber: initUser.passport_number,
         genderID: initUser.gender_id,
-        birthday: (new Date(initUser.birthday)).toISOString().split('T')[0],
+        birthday: formatToDate(initUser.birthday),
     });
 
     let inputs = $state({});
@@ -97,7 +96,7 @@
         genders[response.data.gender_id] = response.data.gender
         user.username = response.data.username;
         user.genderID = response.data.gender_id;
-        user.birthday = response.data.birthday;
+        user.birthday = formatToDate(response.data.birthday);
         editing = false;
         resetInputValues();
         submitting = false;
@@ -339,7 +338,7 @@
                 <tbody>
                     {#each initUser.admission_tests as test}
                         <tr>
-                            <th>{(new Date(test.testing_at)).toISOString().split('T')[0]}</th>
+                            <th>{formatToDate(test.testing_at)}</th>
                             <td>
                                 <i class={[
                                     'bi', {

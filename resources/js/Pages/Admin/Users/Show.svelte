@@ -4,8 +4,9 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm.svelte";
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
-    let {auth, user: initUser, passportTypes, genders, maxBirthday} = $props();
+    import { formatToDate } from '@/timeZoneDatetime';
 
+    let {auth, user: initUser, passportTypes, genders, maxBirthday} = $props();
     let user = $state({
         id: initUser.id,
         username: initUser.username,
@@ -15,7 +16,7 @@
         passportTypeID: initUser.passport_type_id,
         passportNumber: initUser.passport_number,
         genderID: initUser.gender_id,
-        birthday: (new Date(initUser.birthday)).toISOString().split('T')[0],
+        birthday: formatToDate(initUser.birthday),
         defaultEmail: null,
         defaultMobile: null
     });
@@ -228,7 +229,7 @@
 
     function resetPasswordFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.contact_type);
+            alert(error.response.data.errors.contact_type);
         }
         resettingPassword = false;
     }
