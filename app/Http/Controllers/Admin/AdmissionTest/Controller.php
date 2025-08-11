@@ -160,7 +160,7 @@ class Controller extends BaseController implements HasMiddleware
                 $query->select(['id', 'district_id']);
             }, 'candidates' => function($query) use($admissionTest) {
                 $query->with([
-                    'lastPresentedAdmissionTest' => function($query) use($admissionTest) {
+                    'lastAttendedAdmissionTest' => function($query) use($admissionTest) {
                         $query->with([
                             'type' => function($query) {
                                 $query->select(['id', 'interval_month']);
@@ -182,7 +182,8 @@ class Controller extends BaseController implements HasMiddleware
         $admissionTest->candidates->append([
             'adorned_name', 'has_other_user_same_passport_joined_future_test',
             'last_attended_admission_test_of_other_same_passport_user',
-            'has_same_passport_already_qualification_of_membership'
+            'has_same_passport_already_qualification_of_membership',
+            'last_attended_admission_test',
         ]);
         $admissionTest->candidates->makeHidden([
             'username', 'member', 'family_name', 'middle_name', 'given_name',
@@ -190,13 +191,13 @@ class Controller extends BaseController implements HasMiddleware
         ]);
         foreach($admissionTest->candidates as $candidate) {
             $candidate->passportType->makeHidden('id');
-            if($candidate->lastPresentedAdmissionTest) {
-                $candidate->lastPresentedAdmissionTest->makeHidden([
+            if($candidate->lastAttendedAdmissionTest) {
+                $candidate->lastAttendedAdmissionTest->makeHidden([
                     'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
                     'maximum_candidates', 'is_public', 'created_at', 'updated_at',
                     'laravel_through_key',
                 ]);
-                $candidate->lastPresentedAdmissionTest->type->makeHidden('id');
+                $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
             }
         }
 

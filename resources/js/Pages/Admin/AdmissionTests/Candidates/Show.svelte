@@ -94,13 +94,13 @@
                     'text-warning': user.has_other_user_same_passport_joined_future_test,
                     'text-danger': user.has_same_passport_already_qualification_of_membership ||
                         user.last_attended_admission_test_of_other_same_passport_user || (
-                            user.lastAdmissionTest &&
-                            row.lastPresentedAdmissionTest.testing_at >= new Date(
-                                (new Date(row.lastPresentedAdmissionTest.testing_at)).setMonth(
-                                    (new Date(row.lastPresentedAdmissionTest.testing_at))
-                                        .getMonth - row.lastPresentedAdmissionTest.type.interval_month
+                            user.last_attended_admission_test &&
+                            user.last_attended_admission_test.testing_at >= new Date(
+                                (new Date(user.last_attended_admission_test.testing_at)).setMonth(
+                                    (new Date(user.last_attended_admission_test.testing_at))
+                                        .getMonth - user.last_attended_admission_test.type.interval_month
                                 )
-                            ) && new Date(lastPresentedAdmissionTest.testing_at) <= new Date
+                            ) && new Date(last_attended_admission_test.testing_at) <= new Date
                         ),
                 }]}>{user.passport_number}</td>
             </tr>

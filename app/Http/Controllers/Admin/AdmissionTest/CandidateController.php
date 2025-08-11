@@ -166,7 +166,7 @@ class CandidateController extends Controller implements HasMiddleware
             'is_public', 'created_at', 'updated_at',
         ]);
         $candidate->load([
-            'lastPresentedAdmissionTest' => function($query) use($admissionTest) {
+            'lastAttendedAdmissionTest' => function($query) use($admissionTest) {
                 $query->with([
                     'type' => function($query) {
                         $query->select(['id', 'interval_month']);
@@ -181,7 +181,8 @@ class CandidateController extends Controller implements HasMiddleware
         $candidate->append([
             'adorned_name', 'has_other_user_same_passport_joined_future_test',
             'last_attended_admission_test_of_other_same_passport_user',
-            'has_same_passport_already_qualification_of_membership'
+            'has_same_passport_already_qualification_of_membership',
+            'last_attended_admission_test',
         ]);
         $candidate->makeHidden([
             'username', 'member', 'family_name', 'middle_name', 'given_name',
@@ -189,13 +190,13 @@ class CandidateController extends Controller implements HasMiddleware
         ]);
         $candidate->passportType->makeHidden('id');
         $candidate->gender->makeHidden('id');
-        if($candidate->lastPresentedAdmissionTest) {
-            $candidate->lastPresentedAdmissionTest->makeHidden([
+        if($candidate->lastAttendedAdmissionTest) {
+            $candidate->lastAttendedAdmissionTest->makeHidden([
                 'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
                 'maximum_candidates', 'is_public', 'created_at', 'updated_at',
                 'laravel_through_key',
             ]);
-            $candidate->lastPresentedAdmissionTest->type->makeHidden('id');
+            $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
         }
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')

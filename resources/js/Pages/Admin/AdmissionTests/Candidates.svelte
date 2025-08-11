@@ -21,7 +21,7 @@
             hasOtherUserSamePassportJoinedFutureTest: row.has_other_user_same_passport_joined_future_test,
             lastAttendedAdmissionTestOfOtherSamePassportUser: row.last_attended_admission_test_of_other_same_passport_user,
             hasSamePassportAlreadyQualificationOfMembership: row.has_same_passport_already_qualification_of_membership,
-            lastPresentedAdmissionTest: row.last_presented_admission_test,
+            lastAttendedAdmissionTest: row.last_presented_admission_test,
             isPresent: row.pivot.is_present,
             isPass: row.pivot.is_pass,
             updatingStatue: false,
@@ -191,7 +191,7 @@
             passportType: response.data.passport_type,
             passportNumber: response.data.passport_number,
             hasOtherUserSamePassportJoinedFutureTest: response.has_other_user_same_passport_joined_future_test,
-            lastPresentedAdmissionTest: null,
+            lastAttendedAdmissionTest: null,
             isPresent: null,
             isPass: false,
             updatingStatue: false,
@@ -256,13 +256,13 @@
                 'text-warning': row.hasOtherUserSamePassportJoinedFutureTest,
                 'text-danger': row.lastAttendedAdmissionTestOfOtherSamePassportUser ||
                     row.hasSamePassportAlreadyQualificationOfMembership || (
-                        row.lastPresentedAdmissionTest &&
-                        row.lastPresentedAdmissionTest.testing_at >= new Date(
-                            (new Date(row.lastPresentedAdmissionTest.testing_at)).setMonth(
-                                (new Date(row.lastPresentedAdmissionTest.testing_at))
-                                    .getMonth - row.lastPresentedAdmissionTest.type.interval_month
+                        row.lastAttendedAdmissionTest &&
+                        row.lastAttendedAdmissionTest.testing_at >= new Date(
+                            (new Date(row.lastAttendedAdmissionTest.testing_at)).setMonth(
+                                (new Date(row.lastAttendedAdmissionTest.testing_at))
+                                    .getMonth - row.lastAttendedAdmissionTest.type.interval_month
                             )
-                        ) && new Date(lastPresentedAdmissionTest.testing_at) <= new Date
+                        ) && new Date(lastAttendedAdmissionTest.testing_at) <= new Date
                     ),
             }]}>{row.passportNumber}</div>
             {#if

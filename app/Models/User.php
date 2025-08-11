@@ -326,7 +326,7 @@ class User extends Authenticatable
             ->latest('testing_at');
     }
 
-    public function lastPresentedAdmissionTest()
+    public function lastAttendedAdmissionTest()
     {
         return $this->lastAdmissionTest()->where('is_present', true);
     }
