@@ -9,6 +9,7 @@ use App\Models\NavigationItem;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class NavigationItemController extends Controller implements HasMiddleware
 {
@@ -30,9 +31,9 @@ class NavigationItemController extends Controller implements HasMiddleware
     public function create()
     {
         $items = NavigationItem::orderBy('display_order')
-            ->get();
+            ->get(['id', 'master_id', 'name', 'display_order']);
         $displayOptions = array_fill_keys($items->pluck('id')->toArray(), []);
-        $displayOptions[0] = [];
+        $displayOptions = [];
         foreach ($items as $item) {
             $displayOptions[$item->master_id ?? 0][$item->display_order] = "before \"$item->name\"";
         }
@@ -42,8 +43,9 @@ class NavigationItemController extends Controller implements HasMiddleware
             }
             $displayOptions[$masterID][0] = 'top';
         }
+        $items->makeHidden('display_order');
 
-        return view('admin.navigation-items.create')
+        return Inertia::render('Admin/NavigationItems/Create')
             ->with('items', $items)
             ->with('displayOptions', $displayOptions);
     }
