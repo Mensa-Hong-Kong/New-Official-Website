@@ -17,7 +17,7 @@ function formatting(date, type = 'date') {
     const parts = formatter.formatToParts(new Date(date));
   
     // Extract and assemble the parts into the desired format
-    const year = parts.find(p => p.type === 'year').value;
+    const year = parts.find(p => p.type === 'year').value.toString().padStart(4, '0');
     const month = parts.find(p => p.type === 'month').value;
     const day = parts.find(p => p.type === 'day').value;
     const hour = parts.find(p => p.type === 'hour').value;
