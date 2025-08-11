@@ -206,17 +206,22 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function edit(AdmissionTest $admissionTest, User $candidate)
     {
-        return view('admin.admission-tests.candidates.edit')
-            ->with('test', $admissionTest)
+        $candidate->makeHidden(['username', 'synced_to_stripe', 'created_at', 'updated_at', 'member']);
+
+        return Inertia::render('Admin/AdmissionTests/Candidates/Edit')
             ->with('user', $candidate)
             ->with(
+                'passportTypes', PassportType::all()
+                    ->pluck('name', 'id')
+                    ->toArray()
+            )->with(
                 'genders', Gender::all()
                     ->pluck('name', 'id')
                     ->toArray()
             )->with(
-                'passportTypes', PassportType::all()
-                    ->pluck('name', 'id')
-                    ->toArray()
+                'maxBirthday', now()
+                    ->subYears(2)
+                    ->format('Y-m-d')
             );
     }
 
