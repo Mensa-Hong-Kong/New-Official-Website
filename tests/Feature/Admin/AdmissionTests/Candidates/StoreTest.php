@@ -464,7 +464,7 @@ class StoreTest extends TestCase
             'name' => $this->user->adornedName,
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
-            'has_other_user_same_passport_joined_future_test' => false,
+            'has_other_same_passport_user_joined_future_test' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -498,7 +498,7 @@ class StoreTest extends TestCase
             'name' => $this->user->adornedName,
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
-            'has_other_user_same_passport_joined_future_test' => true,
+            'has_other_same_passport_user_joined_future_test' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -538,7 +538,7 @@ class StoreTest extends TestCase
             'name' => $this->user->adornedName,
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
-            'has_other_user_same_passport_joined_future_test' => false,
+            'has_other_same_passport_user_joined_future_test' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -585,7 +585,7 @@ class StoreTest extends TestCase
             'name' => $this->user->adornedName,
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
-            'has_other_user_same_passport_joined_future_test' => true,
+            'has_other_same_passport_user_joined_future_test' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(

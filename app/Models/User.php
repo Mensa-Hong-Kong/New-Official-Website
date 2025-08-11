@@ -128,7 +128,7 @@ class User extends Authenticatable
         );
     }
 
-    public function hasOtherUserSamePassportJoinedFutureTest(): Attribute
+    public function hasOtherSamePassportUserJoinedFutureTest(): Attribute
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {

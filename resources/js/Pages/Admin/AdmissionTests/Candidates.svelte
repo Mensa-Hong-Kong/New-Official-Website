@@ -18,10 +18,10 @@
             name: row.adorned_name,
             passportType: row.passport_type.name,
             passportNumber: row.passport_number,
-            hasOtherUserSamePassportJoinedFutureTest: row.has_other_user_same_passport_joined_future_test,
+            hasOtherSamePassportUserJoinedFutureTest: row.has_other_same_passport_user_joined_future_test,
             lastAttendedAdmissionTestOfOtherSamePassportUser: row.last_attended_admission_test_of_other_same_passport_user,
             hasSamePassportAlreadyQualificationOfMembership: row.has_same_passport_already_qualification_of_membership,
-            lastAttendedAdmissionTest: row.last_presented_admission_test,
+            lastAttendedAdmissionTest: row.last_attended_admission_test,
             isPresent: row.pivot.is_present,
             isPass: row.pivot.is_pass,
             updatingStatue: false,
@@ -190,7 +190,7 @@
             name: response.data.name,
             passportType: response.data.passport_type,
             passportNumber: response.data.passport_number,
-            hasOtherUserSamePassportJoinedFutureTest: response.has_other_user_same_passport_joined_future_test,
+            hasOtherSamePassportUserJoinedFutureTest: response.has_other_same_passport_user_joined_future_test,
             lastAttendedAdmissionTest: null,
             isPresent: null,
             isPass: false,
@@ -253,7 +253,7 @@
             <Col md=2>{row.name}</Col>
             <Col md=2>{row.passportType}</Col>
             <div class={['col-md-2', {
-                'text-warning': row.hasOtherUserSamePassportJoinedFutureTest,
+                'text-warning': row.hasOtherSamePassportUserJoinedFutureTest,
                 'text-danger': row.lastAttendedAdmissionTestOfOtherSamePassportUser ||
                     row.hasSamePassportAlreadyQualificationOfMembership || (
                         row.lastAttendedAdmissionTest &&

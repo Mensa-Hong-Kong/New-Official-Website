@@ -91,7 +91,7 @@
             <tr>
                 <th>Passport Number</th>
                 <td class={[{
-                    'text-warning': user.has_other_user_same_passport_joined_future_test,
+                    'text-warning': user.has_other_same_passport_user_joined_future_test,
                     'text-danger': user.has_same_passport_already_qualification_of_membership ||
                         user.last_attended_admission_test_of_other_same_passport_user || (
                             user.last_attended_admission_test &&
