@@ -156,7 +156,7 @@ class TeamController extends Controller implements HasMiddleware
                 ->decrement('display_order');
             $request->display_order -= 1;
         } elseif (
-            $team->type_id > $request->type_id ||
+            $team->type_id != $request->type_id ||
             $team->display_order > $request->display_order
         ) {
             Team::where('type_id', $request->type_id)
