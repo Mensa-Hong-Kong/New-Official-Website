@@ -74,7 +74,7 @@ class NavigationItemController extends Controller implements HasMiddleware
     public function edit(NavigationItem $navigationItem)
     {
         $items = NavigationItem::orderBy('display_order')
-            ->get();
+            ->get(['id', 'master_id', 'name', 'display_order']);
         $displayOptions = array_fill_keys($items->pluck('id')->toArray(), []);
         $displayOptions[0] = [];
         foreach ($items as $item) {
@@ -100,8 +100,10 @@ class NavigationItemController extends Controller implements HasMiddleware
             }
             $displayOptions[$masterID][0] = 'top';
         }
+        $items->makeHidden('display_order');
+        $navigationItem->makeHidden(['created_at', 'updated_at']);
 
-        return view('admin.navigation-items.edit')
+        return Inertia::render('Admin/NavigationItems/Edit')
             ->with('item', $navigationItem)
             ->with('items', $items)
             ->with('displayOptions', $displayOptions);

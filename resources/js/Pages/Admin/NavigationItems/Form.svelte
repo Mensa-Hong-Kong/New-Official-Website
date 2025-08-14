@@ -4,7 +4,7 @@
 
     let {
         inputs = $bindable(), feedbacks = $bindable(), submitting,
-        items, displayOptions
+        items, displayOptions, item = {},
     } = $props();
     let masterValue = $state();
 
@@ -49,16 +49,16 @@
             feedback={feedbacks.master} valid={feedbacks.master == 'Looks good!'}
             invalid={feedbacks.master != '' && feedbacks.master != 'Looks good!'}
             bind:inner={inputs.master} bind:value={masterValue}>
-            <option value="" selected disabled>Please display order master</option>
-            <option value="0">root</option>
-            <MasterOptions items={items} />
+            <option value="" selected={! item.master_id} disabled>Please display order master</option>
+            <option value="0" selected={item.master_id === null}>root</option>
+            <MasterOptions items={items} selected={item.master_id} ignore={item.id} />
         </Input>
     </FormGroup>
 </div>
 <div class="mb-3 row g-3 form-outline">
     <FormGroup floating label="Name">
         <Input name="name" placeholder="name..." disabled={submitting}
-            maxlength="255" required
+            maxlength="255" required value={item.name}
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
             bind:inner={inputs.name} />
@@ -67,7 +67,7 @@
 <div class="mb-3 row g-3 form-outline">
     <FormGroup floating label="URL">
         <Input type="url" name="url" disabled={submitting}
-            placeholder="https://google.com" maxlength=8000
+            placeholder="https://google.com" maxlength=8000 value={item.url}
             feedback={feedbacks.url} valid={feedbacks.url == 'Looks good!'}
             invalid={feedbacks.url != '' && feedbacks.url != 'Looks good!'}
             bind:inner={inputs.url} />
@@ -79,7 +79,7 @@
             feedback={feedbacks.displayOrder} valid={feedbacks.displayOrder == 'Looks good!'}
             invalid={feedbacks.displayOrder != '' && feedbacks.displayOrder != 'Looks good!'}
             bind:inner={inputs.displayOrder}>
-            <option value="" selected disabled>Please display order</option>
+            <option value="" selected={item.master_id === undefined} disabled>Please display order</option>
             {#each Object.entries(displayOptions) as [masterID, object]}
                 {#each Object.entries(object) as [key, value]}
                     <option hidden={masterID != masterValue} value={key}>{value}</option>
