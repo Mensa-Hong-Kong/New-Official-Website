@@ -6,6 +6,7 @@ use App\Models\AdmissionTest;
 use App\Models\CustomWebPage;
 use App\Models\SiteContent;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PageController extends Controller
 {
@@ -15,11 +16,19 @@ class PageController extends Controller
         if (str_starts_with($pathname, '/')) {
             $pathname = substr($pathname, 1);
         }
-        $page = CustomWebPage::where('pathname', strtolower($pathname))
+        $page = CustomWebPage::select([
+                'title',
+                'og_image_url',
+                'description',
+                'content',
+            ])->where('pathname', strtolower($pathname))
             ->firstOrFail();
 
-        return view('pages.custom-web-page')
-            ->with('page', $page);
+        return Inertia::render('Pages/CustomWebPage')
+            ->with('title', $page->title)
+            ->with('og_image_url', $page->og_image_url)
+            ->with('description', $page->description)
+            ->with('content', $page->content);
     }
 
     public function admissionTests(Request $request)
