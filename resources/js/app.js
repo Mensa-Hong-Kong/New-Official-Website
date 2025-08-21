@@ -71,6 +71,102 @@ window.range = function(start, stop, step = 1) {
     return Array.from({ length: (stop - start) / step + 1 }, (_, index) => start + index * step);
 }
 
+Date.prototype.addYear = function() {
+    var date = new Date(this.valueOf());
+    date.setFullYear(date.getFullYear() + 1);
+    return date;
+}
+
+Date.prototype.addYears = function(years) {
+    var date = new Date(this.valueOf());
+    date.setFullYear(date.getFullYear() + years);
+    return date;
+}
+
+Date.prototype.subYear = function() {
+    var date = new Date(this.valueOf());
+    date.setFullYear(date.getFullYear() - 1);
+    return date;
+}
+
+Date.prototype.subYears = function(years) {
+    var date = new Date(this.valueOf());
+    date.setFullYear(date.getFullYear() - years);
+    return date;
+}
+
+Date.prototype.addMonth = function() {
+    var date = new Date(this.valueOf());
+    date.setMonth(date.getMonth() + 1);
+    return date;
+}
+
+Date.prototype.addMonths = function(months) {
+    var date = new Date(this.valueOf());
+    date.setMonth(date.getMonth() + months);
+    return date;
+}
+
+Date.prototype.subMonth = function() {
+    var date = new Date(this.valueOf());
+    date.setMonth(date.getMonth() - 1);
+    return date;
+}
+
+Date.prototype.subMonths = function(months) {
+    var date = new Date(this.valueOf());
+    date.setMonth(date.getMonth() - months);
+    return date;
+}
+
+Date.prototype.startOfMonth = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(1);
+    return date;
+}
+
+Date.prototype.endOfMonth = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(new Date(date.getFullYear, date.getMonth + 1, 0).getDate());
+    return date;
+}
+
+Date.prototype.addDay = function() {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + 1);
+    return date;
+}
+
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+Date.prototype.subDay = function() {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - 1);
+    return date;
+}
+
+Date.prototype.subDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - days);
+    return date;
+}
+
+Date.prototype.startOfDay = function(days) {
+    var date = new Date(this.valueOf());
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
+Date.prototype.endOfDay = function(days) {
+    var date = new Date(this.valueOf());
+    date.setHours(23, 59, 59, 999);
+    return date;
+}
+
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import Layout from "@/Pages/Layouts/App.svelte";
