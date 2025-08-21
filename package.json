@@ -23,7 +23,6 @@
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
         "ckeditor5": "^44.1.0",
-        "jquery": "^3.7.1",
         "jquery-ui": "^1.14.1",
         "svelte": "^5.34.1",
         "svelte-dnd-action": "^0.9.64"
