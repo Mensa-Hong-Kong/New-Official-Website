@@ -345,18 +345,4 @@ class User extends Authenticatable
     {
         return $this->member || $this->hasPassedAdmissionTest();
     }
-
-    public function hasTestedWithinDateRange($form, $to, ?AdmissionTest $ignore = null)
-    {
-        foreach ($this->admissionTests as $test) {
-            if (
-                $test->testing_at >= $form && $test->testing_at <= $to &&
-                (! $ignore || $ignore->id != $test->id)
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

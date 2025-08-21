@@ -84,12 +84,11 @@ class StoreRequest extends FormRequest
                             'The selected user id has other same passport user account tested.'
                         );
                     } elseif (
-                        $user->lastAdmissionTest &&
-                        $user->hasTestedWithinDateRange(
-                            $admissionTest->testing_at->subMonths(
+                        $user->lastAttendedAdmissionTest &&
+                        $user->lastAttendedAdmissionTest->testing_at
+                            ->addMonths(
                                 $user->lastAdmissionTest->type->interval_month
-                            ), $now
-                        )
+                            )->endOfDay() >= $now
                     ) {
                         $validator->errors()->add(
                             'user_id',
