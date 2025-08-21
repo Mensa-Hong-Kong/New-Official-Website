@@ -35,18 +35,20 @@
         </button>
         <div class="collapse navbar-collapse" id="bdNavbar">
             <ul class="navbar-nav me-auto">
-                {#each Object.entries($page.props.nav) as [id, item]}
-                    {#if item.children}
+                {#each $page.props.navigationNodes.root as itemID}
+                    {#if $page.props.navigationNodes[itemID].length}
                         <li class="nav-item dropdown">
-                            <button class="nav-link dropdown-toggle" id="dropdown{id}"
+                            <button class="nav-link dropdown-toggle" id="dropdown{itemID}"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {item.name}
+                                {$page.props.navigationItems[itemID]['name']}
                             </button>
-                            <NavDropdown items={item.children} id={id} />
+                            <NavDropdown nodes={$page.props.navigationNodes}
+                                items={$page.props.navigationItems} id={itemID} />
                         </li>
                     {:else}
                         <li class="nav-item">
-                            <a href="{item.url ?? '#'}" class="nav-link">{item.name}</a>
+                            <a href="{$page.props.navigationItems[itemID]['url'] ?? '#'}"
+                                class="nav-link">{$page.props.navigationItems[itemID]['name']}</a>
                         </li>
                     {/if}
                 {/each}

@@ -1,20 +1,20 @@
 <script>
-	let { items, id } = $props();
+	let { nodes, items, id } = $props();
 </script>
 
 <ul class="dropdown-menu" aria-labelledby="dropdown{{ id }}">
-    {#each Object.entries(items) as [id, item]}
-        {#if item.children}
+    {#each nodes[id] as itemID}
+        {#if nodes[itemID].length}
             <li class="dropdown dropend">
-                <a class="dropdown-item dropdown-toggle" href="{item.url ?? '#'}" role="button"
-                    id="dropdown{id}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    {item.name}
+                <a class="dropdown-item dropdown-toggle" href="{items[itemID]['url'] ?? '#'}" role="button"
+                    id="dropdown{itemID}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    {items[itemID]['name']}
                 </a>
-                <NavDropdown items={item.children} id={id} />
+                <NavDropdown nodes={nodes} items={items} id={itemID} />
             </li>
         {:else}
             <li>
-                <a class="dropdown-item" href="{item.url ?? '#'}">{item.name}</a>
+                <a class="dropdown-item" href="{items[itemID]['url'] ?? '#'}">{items[itemID]['name']}</a>
             </li>
         {/if}
     {/each}

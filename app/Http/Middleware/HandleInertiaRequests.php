@@ -9,30 +9,16 @@ use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
-    public function navChildren($items, $masterID)
-    {
-        $return = [];
-        foreach ($items as $id => $thisItem) {
-            if ($thisItem['master_id'] == $masterID) {
-                $item = [
-                    'name' => $thisItem['name'],
-                    'url' => $thisItem['url'],
-                ];
-                unset($items[$id]);
-                $children = $this->navChildren($items, $id);
-                $items = array_diff_key($items, $children);
-                if (count($children)) {
-                    $item['children'] = $children;
-                }
-                $return[$id] = $item;
-            }
-        }
-
-        return $return;
-    }
-
 	public function share(Request $request): array
 	{
+        $navigationItems = NavigationItem::orderBy('display_order')
+            ->get(['id', 'master_id', 'name', 'url'])
+            ->keyBy('id');
+        $navigationNodes = array_fill_keys($navigationItems->pluck('id')->toArray(), []);
+        $navigationNodes['root'] = [];
+        foreach($navigationItems as $item) {
+            $navigationNodes[$item->master_id ?? 'root'][] = $item->id;
+        }
 		return [
 			...parent::share($request),
             'csrf_token' => csrf_token(),
@@ -49,13 +35,8 @@ class HandleInertiaRequests extends Middleware
                 return null;
             },
             'ziggy' => new Ziggy,
-            'nav' => $this->navChildren(
-                NavigationItem::orderBy('display_order')
-                    ->get(['id', 'master_id', 'name', 'url'])
-                    ->keyBy('id')
-                    ->toArray(),
-                null
-            ),
+            'navigationItems' => $navigationItems,
+            'navigationNodes' => $navigationNodes,
             'flash' => function () {
                 return [
                     'success' => session('success'),
