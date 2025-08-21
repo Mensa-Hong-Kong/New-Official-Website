@@ -20,12 +20,7 @@ class NavigationItemController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('admin.navigation-items.index')
-            ->with(
-                'items', NavigationItem::whereNull('master_id')
-                    ->orderBy('display_order')
-                    ->get()
-            );
+        return Inertia::render('Admin/NavigationItems/Index');
     }
 
     public function create()
