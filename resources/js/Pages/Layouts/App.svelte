@@ -19,9 +19,16 @@
 <svelte:head>
     {#if $page.props.title}
         <title>{$page.props.title} | {import.meta.env.VITE_APP_NAME}</title>
+        <meta name="title" content="{$page.props.title} | {import.meta.env.VITE_APP_NAME}">
     {:else}
-        <title>{import.meta.env.VITE_APP_NAME} </title>
+        <title>{import.meta.env.VITE_APP_NAME}</title>
+        <meta name="title" content="{import.meta.env.VITE_APP_NAME}">
     {/if}
+    <meta name="description" content="{$page.props.description ?? import.meta.env.VITE_APP_DESCRIPTION}">
+    <meta name="og:description" content="{$page.props.description ?? import.meta.env.VITE_APP_DESCRIPTION}">
+    <meta name="og:image" content="{$page.props.og_image ?? 'og_image.png'}">
+    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
+    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
 </svelte:head>
 
 <header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
