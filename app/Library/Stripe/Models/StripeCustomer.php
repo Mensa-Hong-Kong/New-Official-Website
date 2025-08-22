@@ -3,6 +3,8 @@
 namespace App\Library\Stripe\Models;
 
 use App\Library\Stripe\Client;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,6 +23,18 @@ class StripeCustomer extends Model
         'customerable_type',
         'customerable_id',
     ];
+
+    public function type(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                switch($attributes['customerable_type']) {
+                    case User::class:
+                        return 'user';
+                }
+            }
+        );
+    }
 
     public function customerable()
     {

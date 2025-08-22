@@ -5,13 +5,13 @@
         @auth
             <x-stripe-user-alert />
         @endauth
-        <h2 class="fw-bold mb-2 text-uppercase">Admission Tests</h2>
+        <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
         @vite('resources/css/ckEditor.css')
         <article class="ck-content">
             {!! $contents['Info'] !!}
         </article>
         <article>
-            <h3 class="fw-bold mb-2">Upcoming Admission Tests</h3>
+            <h3 class="mb-2 fw-bold">Upcoming Admission Tests</h3>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -19,7 +19,7 @@
                         <th scope="col">Time</th>
                         <th scope="col">Location</th>
                         <th scope="col">Candidates</th>
-                        @if(!auth()->user() || !auth()->user()->hasQualificationOfMembership())
+                        @if(!auth()->user() || !auth()->user()->hasQualificationOfMembership)
                             <th scope="col">Control</th>
                         @endif
                     </tr>

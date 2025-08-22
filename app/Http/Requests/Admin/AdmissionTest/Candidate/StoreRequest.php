@@ -53,7 +53,7 @@ class StoreRequest extends FormRequest
                             'user_id',
                             'The selected user id has already member.'
                         );
-                    } elseif ($this->user->hasQualificationOfMembership()) {
+                    } elseif ($this->user->hasQualificationOfMembership) {
                         $validator->errors()->add(
                             'user_id',
                             'The selected user id has already qualification for membership.'

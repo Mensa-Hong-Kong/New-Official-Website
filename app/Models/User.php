@@ -184,6 +184,17 @@ class User extends Authenticatable
         );
     }
 
+    public function hasQualificationOfMembership(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->member || $user->hasPassedAdmissionTest;
+            }
+        );
+    }
+
     protected function stripeName(): string
     {
         return $this->preferredName;
@@ -333,16 +344,6 @@ class User extends Authenticatable
 
     public function hasPassedAdmissionTest()
     {
-        return in_array(
-            true,
-            $this->admissionTests
-                ->pluck('pivot.is_pass')
-                ->toArray(),
-        );
-    }
-
-    public function hasQualificationOfMembership()
-    {
-        return $this->member || $this->hasPassedAdmissionTest();
+        return $this->lastAdmissionTest()->where('is_pass', true);
     }
 }
