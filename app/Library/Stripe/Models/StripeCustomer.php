@@ -24,18 +24,6 @@ class StripeCustomer extends Model
         'customerable_id',
     ];
 
-    public function type(): Attribute
-    {
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                switch($attributes['customerable_type']) {
-                    case User::class:
-                        return 'user';
-                }
-            }
-        );
-    }
-
     public function customerable()
     {
         return $this->morphTo();
