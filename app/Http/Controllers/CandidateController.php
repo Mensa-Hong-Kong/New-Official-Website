@@ -25,7 +25,7 @@ class CandidateController extends Controller implements HasMiddleware
                     $user = $request->user();
                     $now = now();
                     $admissionTest = $request->route('admission_test');
-                    $errorReturn = redirect()->back(302, [], route('admission-tests.index'));
+                    $errorReturn = redirect()->route('admission-tests.index');
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
@@ -38,7 +38,7 @@ class CandidateController extends Controller implements HasMiddleware
                     if ($user->isActiveMember()) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
                     }
-                    if ($user->hasQualificationOfMembership()) {
+                    if ($user->hasQualificationOfMembership) {
                         return $errorReturn->withErrors(['message' => 'You has already been qualification for membership.']);
                     }
                     if ($user->hasSamePassportAlreadyQualificationOfMembership) {
@@ -71,14 +71,14 @@ class CandidateController extends Controller implements HasMiddleware
                     $user = $request->user();
                     $admissionTest = $request->route('admission_test');
                     if (! in_array($user->id, $admissionTest->candidates->pluck('id')->toArray())) {
-                        $redirect = redirect()->back(302, [], route('admission-tests.index'));
+                        $redirect = redirect()->route('admission-tests.index');
                         if (! $admissionTest->is_public) {
                             return $redirect->withErrors(['message' => 'You have no register this admission test and this test is private, please register other admission test.']);
                         }
                         if ($user->isActiveMember()) {
                             return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been member.']);
                         }
-                        if ($user->hasQualificationOfMembership()) {
+                        if ($user->hasQualificationOfMembership) {
                             return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been qualification for membership.']);
                         }
                         if ($user->hasSamePassportAlreadyQualificationOfMembership) {
@@ -100,8 +100,10 @@ class CandidateController extends Controller implements HasMiddleware
                             return $redirect->withErrors(['message' => 'You have no register this admission test and cannot register after than before testing date two days, please register other admission test.']);
                         }
                         if ($admissionTest->candidates()->count() < $admissionTest->maximum_candidates) {
-                            return redirect()->back(302, [], route('admission-tests.candidates.create', ['admission_test' => $admissionTest]))
-                                ->withErrors(['message' => 'You have no register this admission test, please register first.']);
+                            return redirect()->route(
+                                    'admission-tests.candidates.create',
+                                    ['admission_test' => $admissionTest]
+                                )->withErrors(['message' => 'You have no register this admission test, please register first.']);
                         }
 
                         return $redirect->withErrors(['message' => 'You have no register this admission test and this test is fulled, please register other admission test.']);
