@@ -31,10 +31,11 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
                     if (! $user->stripe) {
-                        return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
+                        return $errorReturn->withErrors(['error' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
                     }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
-                        return $errorReturn->withErrors(['message' => 'You has already schedule this admission test.']);
+                        return redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest])
+                            ->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
                     if ($user->isActiveMember()) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
