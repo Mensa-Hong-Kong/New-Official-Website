@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class CandidateController extends Controller implements HasMiddleware
 {
@@ -115,10 +116,29 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
-    public function create(AdmissionTest $admissionTest)
+    public function create(Request $request, AdmissionTest $admissionTest)
     {
-        return view('admission-tests.confirmation')
-            ->with('test', $admissionTest);
+        $user = [
+            'future_admission_test' => $request->user()->futureAdmissionTest ? [
+                'id' => $request->user()->futureAdmissionTest->id,
+            ] : null,
+            'created_stripe_account' => (bool) $request->user()->stripe,
+            'default_email' => $request->user()->defaultEmail ? [
+                'contact' => $request->user()->defaultEmail->contact,
+            ] : null,
+        ];
+        $admissionTest->load(['address.district.area', 'location']);
+        $admissionTest->address->district->area
+            ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
+        $admissionTest->address->district
+            ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
+        $admissionTest->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
+        $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
+        $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
+
+        return Inertia::render('AdmissionTests/Confirmation')
+            ->with('test', $admissionTest)
+            ->with('user', $user);
     }
 
     public function store(Request $request, AdmissionTest $admissionTest)
