@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\NavigationItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -37,12 +38,10 @@ class HandleInertiaRequests extends Middleware
             'ziggy' => new Ziggy,
             'navigationItems' => $navigationItems,
             'navigationNodes' => $navigationNodes,
-            'flash' => function () {
-                return [
-                    'success' => session('success'),
-                    'error' => session('error'),
-                ];
-            },
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('errors', new MessageBag)->first('message') ?? null,
+            ],
 		];
 	}
 }
