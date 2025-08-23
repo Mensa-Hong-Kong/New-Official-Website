@@ -167,6 +167,30 @@ Date.prototype.endOfDay = function(days) {
     return date;
 }
 
+Date.prototype.addHour = function() {
+    var date = new Date(this.valueOf());
+    date.setHours(date.getHours() + 1);
+    return date;
+}
+
+Date.prototype.addHours = function(hours) {
+    var date = new Date(this.valueOf());
+    date.setHours(date.getHours() + hours);
+    return date;
+}
+
+Date.prototype.subHour = function() {
+    var date = new Date(this.valueOf());
+    date.setHours(date.getHours() - 1);
+    return date;
+}
+
+Date.prototype.subHours = function(hours) {
+    var date = new Date(this.valueOf());
+    date.setHours(date.getHours() - hours);
+    return date;
+}
+
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import Layout from "@/Pages/Layouts/App.svelte";
