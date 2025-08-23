@@ -105,7 +105,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute(
-            'admission-tests.candidate.show',
+            'admission-tests.candidates.show',
             ['admission_test' => $this->test]
         );
         $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
