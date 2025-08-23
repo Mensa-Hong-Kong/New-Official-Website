@@ -34,7 +34,7 @@ class PageController extends Controller
     public function admissionTests(Request $request)
     {
         $user = [
-            'has_qualification_of_membership' => $request->user()->hasQualificationOfMembership,
+            'has_qualification_of_membership' => $request->user()->hasQualificationOfMembership ?? null,
             'last_attended_admission_test' => $request->user()->lastAttendedAdmissionTest ? [
                 'id' => $request->user()->hasQualificationOfMembership->id,
                 'testing_at' => $request->user()->hasQualificationOfMembership->testing_at,
