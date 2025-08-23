@@ -35,18 +35,18 @@ class PageController extends Controller
     {
         $user = [
             'has_qualification_of_membership' => $request->user()->hasQualificationOfMembership ?? null,
-            'last_attended_admission_test' => $request->user()->lastAttendedAdmissionTest ? [
+            'last_attended_admission_test' => (bool) $request->user()->lastAttendedAdmissionTest ? [
                 'id' => $request->user()->hasQualificationOfMembership->id,
                 'testing_at' => $request->user()->hasQualificationOfMembership->testing_at,
                 'type' => [
                     'interval_month' => $request->user()->hasQualificationOfMembership->type->interval_month,
                 ],
             ] : null,
-            'future_admission_test' => $request->user()->futureAdmissionTest ? [
+            'future_admission_test' => (bool) $request->user()->futureAdmissionTest ? [
                 'id' => $request->user()->futureAdmissionTest->id,
             ] : null,
             'created_stripe_account' => (bool) $request->user()->stripe,
-            'default_email' => $request->user()->defaultEmail ? [
+            'default_email' => (bool) $request->user()->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
         ];
