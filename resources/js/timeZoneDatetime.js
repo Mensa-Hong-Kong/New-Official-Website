@@ -24,11 +24,14 @@ function formatting(date, type = 'date') {
     const minute = parts.find(p => p.type === 'minute').value;
     const second = parts.find(p => p.type === 'second').value;
   
-    let result = `${year}-${month}-${day}`;
-    if(type == 'datetime') {
-        result += ` ${hour}:${minute}:${second}`;
-    } 
-    return result;
+    switch(type) {
+        case 'date':
+            return`${year}-${month}-${day}`;
+        case 'datetime':
+            return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        case 'time': 
+            return ` ${hour}:${minute}:${second}`;
+    }
 }
 
 export function formatToDate(date) {
@@ -37,4 +40,8 @@ export function formatToDate(date) {
 
 export function formatToDatetime(date) {
     return formatting(date, 'datetime');
+}
+
+export function formatToTime(date) {
+    return formatting(date, 'time');
 }
