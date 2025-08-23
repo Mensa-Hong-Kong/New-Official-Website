@@ -96,7 +96,10 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertRedirectToRoute(
+            'admission-tests.candidate.show'
+            ['admission_test' => $this->test]
+        );
         $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
     }
 
