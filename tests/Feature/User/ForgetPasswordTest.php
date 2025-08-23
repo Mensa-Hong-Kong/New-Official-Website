@@ -496,7 +496,7 @@ class ForgetPasswordTest extends TestCase
             [
                 'passport_type_id' => $user->passport_type_id,
                 'passport_number' => $user->passport_number,
-                'birthday' => $user->birthday,
+                'birthday' => $user->birthday->format('Y-m-d'),
                 'verified_contact_type' => $contact->type,
                 'verified_contact' => $contact->contact,
             ]
@@ -516,7 +516,7 @@ class ForgetPasswordTest extends TestCase
             [
                 'passport_type_id' => $user->passport_type_id,
                 'passport_number' => $user->passport_number,
-                'birthday' => $user->birthday,
+                'birthday' => $user->birthday->format('Y-m-d'),
                 'verified_contact_type' => $contact->type,
                 'verified_contact' => $contact->contact,
             ]
@@ -551,7 +551,7 @@ class ForgetPasswordTest extends TestCase
             [
                 'passport_type_id' => $user->passport_type_id,
                 'passport_number' => $user->passport_number,
-                'birthday' => $user->birthday,
+                'birthday' => $user->birthday->format('Y-m-d'),
                 'verified_contact_type' => $contact->type,
                 'verified_contact' => $contact->contact,
             ]
@@ -591,7 +591,7 @@ class ForgetPasswordTest extends TestCase
             [
                 'passport_type_id' => $user->passport_type_id,
                 'passport_number' => $user->passport_number,
-                'birthday' => $user->birthday,
+                'birthday' => $user->birthday->format('Y-m-d'),
                 'verified_contact_type' => $contact->type,
                 'verified_contact' => $contact->contact,
             ]
