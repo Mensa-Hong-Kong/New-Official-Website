@@ -457,7 +457,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
         $this->assertEquals($data['passport_number'], $user->passport_number);
         $this->assertEquals($data['gender'], $user->gender->name);
-        $this->assertEquals($data['birthday'], $user->birthday);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
     }
 
     public function test_happy_case_with_middle_name()
@@ -483,6 +483,6 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
         $this->assertEquals($data['passport_number'], $user->passport_number);
         $this->assertEquals($data['gender'], $user->gender->name);
-        $this->assertEquals($data['birthday'], $user->birthday);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
     }
 }
