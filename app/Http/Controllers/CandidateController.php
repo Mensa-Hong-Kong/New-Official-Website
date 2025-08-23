@@ -198,10 +198,31 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function show(Request $request, AdmissionTest $admissionTest)
     {
-        $return = view('admission-tests.ticket')
+        $admissionTest->load(['address.district.area', 'location']);
+        $admissionTest->address->district->area
+            ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
+        $admissionTest->address->district
+            ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
+        $admissionTest->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
+        $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
+        $admissionTest->makeHidden(['id', 'type_id', 'address_id', 'location_id', 'is_public', 'created_at', 'updated_at', 'candidates']);
+        $candidate = $admissionTest->candidates()
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $return = Inertia::render('AdmissionTests/Ticket')
             ->with('test', $admissionTest);
         if ($admissionTest->expect_end_at >= now()->subHour()) {
             $return = $return->with('qrCode', $this->qrCode($admissionTest, $request->user()));
+        } else {
+            $return = $return->with(
+                'candidate', [
+                    'pivot' => [
+                        'is_present' => $candidate->pivot->is_present,
+                        'is_pass' => $candidate->pivot->is_pass,
+                    ]
+                ]
+            );
         }
 
         return $return;
