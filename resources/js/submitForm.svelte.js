@@ -25,7 +25,7 @@ function failHandle(error, callback) {
             alert('Database connect fail, please try again later, or contact I.T.');
             break;
         default:
-            if(error.data.message) {
+            if(error.data && error.data.message) {
                 alert(error.data.message);
             }
             break;
