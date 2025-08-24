@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import path from 'path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import path from 'path';
 
 export default defineConfig({
-    build: { manifest: true },
     plugins: [
         laravel({
 			input: ['resources/css/app.scss', 'resources/js/app.js'],
