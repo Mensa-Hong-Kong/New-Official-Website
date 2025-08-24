@@ -278,7 +278,7 @@ class CandidateController extends Controller implements HasMiddleware
         DB::beginTransaction();
         $request->pivot->update(['is_pass' => $request->status]);
         if ($request->pivot->is_pass) {
-            $candidate->notify(new PassAdmissionTest);
+            $candidate->notify(new PassAdmissionTest($admissionTest));
         } else {
             $candidate->notify(new FailAdmissionTest($admissionTest));
         }
