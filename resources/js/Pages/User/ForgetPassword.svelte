@@ -1,10 +1,11 @@
 <script>
-	let { passportTypes, maxBirthday } = $props();
+    import { FormGroup, Input, Button, Spinner, Alert, Col } from '@sveltestrap/sveltestrap';
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
+	let { passportTypes, maxBirthday } = $props();
     let inputs = $state({});
     let submitting = $state(false);
     let forgetting = $state(false);
@@ -91,7 +92,7 @@
     }
 
     function successCallback(response) {
-        bootstrapAlert(response.data.success);
+        alert(response.data.success);
         feedbacks.succeeded = response.data.success;
         submitting = false;
         forgetting = false;
@@ -138,6 +139,7 @@
         let submitAt = Date.now();
         submitting = 'forgetPassword'+submitAt;
         feedbacks.failed = '';
+        feedbacks.succeeded = '';
         if (submitting == 'forgetPassword'+submitAt) {
             if(validation()) {
                 forgetting = true;
@@ -164,141 +166,88 @@
     <form class="mx-auto w-25" novalidate onsubmit="{forgetPassword}">
         <h2 class="mb-2 fw-bold text-uppercase">Forget Password</h2>
         <div class="mb-4">
-            <div class="form-floating">
-                <select name="passport_type_id" required disabled="{forgetting}"
-                    bind:this="{inputs.passportType}" class={[
-                        'form-select', {
-                            'is-valid': feedbacks.passportType == 'Looks good!',
-                            'is-invalid': feedbacks.failed != '' ||
-                                ! ['', 'Looks good!'].includes(feedbacks.passportType),
-                        }
-                    ]}>
+            <FormGroup floating label="Passport Type">
+                <Input type="select" name="passport_type_id" disabled={forgetting} required
+                    feedback={feedbacks.passportType} valid={feedbacks.passportType == 'Looks good!'}
+                    invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
+                    bind:inner={inputs.passportType}>
                     <option value="" selected disabled>Please select passport type</option>
                     {#each Object.entries(passportTypes) as [key, value]}
                         <option value="{key}">{value}</option>
                     {/each}
-                </select>
-                <label for="passport_type_id" class="form-label">Passport Type</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.passportType),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.passportType),
-                }]}>{feedbacks.passportType}</div>
-            </div>
+                </Input>
+            </FormGroup>
         </div>
         <div class="mb-4">
-            <div class="form-floating">
-                <input name="passport_number" type="text" disabled="{forgetting}"
-                    minlength="8" maxlength="18" required placeholder="passport number"
-                    bind:this="{inputs.passportNumber}" class={[
-                        'form-control', {
-                            'is-valid': feedbacks.passportNumber == 'Looks good!',
-                            'is-invalid': feedbacks.failed != '' ||
-                                ! ['', 'Looks good!'].includes(feedbacks.passportNumber),
-                        }
-                    ]} />
-                <label for="passport_number">Passport Number</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.passportNumber),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.passportNumber),
-                }]}>{feedbacks.passportNumber}</div>
-            </div>
+            <FormGroup floating label="Passport Number">
+                <Input name="passport_number" disabled={forgetting}
+                    minlength=8 maxlength=18 required placeholder="passport number"
+                    feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
+                    invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
+                    bind:inner="{inputs.passportNumber}" />
+            </FormGroup>
         </div>
         <div class="mb-4">
-            <div class="form-floating">
-                <input name="birthday" type="date" disabled="{forgetting}"
-                    max="{maxBirthday}" required placeholder="birthday"
-                    bind:this="{inputs.birthday}" class={[
-                        'form-control', {
-                            'is-valid': feedbacks.birthday == 'Looks good!',
-                            'is-invalid': feedbacks.failed != '' ||
-                                ! ['', 'Looks good!'].includes(feedbacks.birthday),
-                        }
-                    ]} />
-                <label for="birthday">Birthday</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.birthday),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.birthday),
-                }]}>{feedbacks.birthday}</div>
-            </div>
+            <FormGroup floating label="Date of Birth">
+                <Input name="birthday" type="date" disabled={forgetting}
+                    max={maxBirthday} required placeholder="birthday"
+                    feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                    invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                    bind:inner={inputs.birthday} />
+            </FormGroup>
         </div>
         <div class="mb-4">
-            <div class="form-floating">
-                <select name="verified_contact_type" required disabled="{forgetting}"
-                    bind:this="{inputs.verifiedContactType}" class={[
-                        'form-select', {
-                            'is-valid': feedbacks.verifiedContactType == 'Looks good!',
-                            'is-invalid': feedbacks.failed != '' ||
-                                ! ['', 'Looks good!'].includes(feedbacks.verifiedContactType),
-                        }
-                    ]} bind:value="{verifiedContactTypeValue}">
+            <FormGroup floating label="Verified Contact Type">
+                <Input type="select" name="verified_contact_type" required disabled={forgetting}
+                    feedback={feedbacks.verifiedContactType} valid={feedbacks.verifiedContactType == 'Looks good!'}
+                    invalid={feedbacks.verifiedContactType != '' && feedbacks.verifiedContactType != 'Looks good!'}
+                    bind:inner={inputs.verifiedContactType} bind:value={verifiedContactTypeValue}>
                     <option value="" selected disabled>Please select verified contact type</option>
                     <option value="email">Email</option>
                     <option value="mobile">Mobile</option>
-                </select>
-                <label for="verified_contact_type" class="form-label">Verified Contact Type</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.verifiedContactType),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.verifiedContactType),
-                }]}>{feedbacks.verifiedContactType}</div>
-            </div>
+                </Input>
+            </FormGroup>
         </div>
         <div class="mb-4">
-            <div class="form-floating">
+            <FormGroup floating label="Verified Contact">
                 {#if verifiedContactTypeValue == 'email'}
-                    <input name="email" type="email" disabled="{forgetting}"
-                        maxlength="320" required placeholder="dammy@example.com"
-                        bind:this="{inputs.verifiedContact}" class={[
-                            'form-control', {
-                                'is-valid': feedbacks.verifiedContact == 'Looks good!',
-                                'is-invalid': feedbacks.failed != '' ||
-                                    ! ['', 'Looks good!'].includes(feedbacks.verifiedContact),
-                            }
-                        ]}>
+                    <Input name="email" type="email" disabled={forgetting}
+                        maxlength=320 required placeholder="dammy@example.com"
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
                 {:else if verifiedContactTypeValue == 'mobile'}
-                    <input type="tel"  name="verified_contact" disabled="{forgetting}"
-                        minlength="5" maxlength="15" required placeholder="85298765432"
-                        bind:this="{inputs.verifiedContact}" class={[
-                            'form-control', {
-                                'is-valid': feedbacks.verifiedContact == 'Looks good!',
-                                'is-invalid': feedbacks.failed != '' ||
-                                    ! ['', 'Looks good!'].includes(feedbacks.verifiedContact),
-                            }
-                        ]}>
+                    <Input type="tel"  name="verified_contact" disabled={forgetting}
+                        minlength=5 maxlength=15 required placeholder=85298765432
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
                 {:else}
-                    <input type="text" name="verified_contact" placeholder="Verified Contact"
-                        bind:this="{inputs.verifiedContact}" disabled class={[
-                            'form-control', {
-                                'is-valid': feedbacks.verifiedContact == 'Looks good!',
-                                'is-invalid': feedbacks.failed != '' ||
-                                    ! ['', 'Looks good!'].includes(feedbacks.verifiedContact),
-                            }
-                        ]}>
+                    <Input name="verified_contact" placeholder="Verified Contact" disabled
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
                 {/if}
-                <label for="verified_contact">Verified Contact</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.verifiedContact),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.verifiedContact),
-                }]}>{feedbacks.verifiedContact}</div>
-            </div>
+            </FormGroup>
         </div>
         <div class="mb-4">
-            <input type="submit" class="form-control btn btn-primary" value="Reset Password" hidden="{submitting}">
-            <div class="alert alert-danger" role="alert" hidden="{feedbacks.failed == ''}">{feedbacks.failed}</div>
-            <div class="alert alert-danger" role="alert" hidden="{feedbacks.succeeded == ''}">{feedbacks.succeeded}</div>
-            <button class="form-control btn btn-primary" type="button" disabled hidden="{! submitting}">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Resetting...
-            </button>
+            <Button color="primary" class="form-control" disabled={submitting}>
+                {#if submitting}
+                    <Spinner type="border" size="sm" />Resetting...
+                {:else}
+                    Reset Password
+                {/if}
+            </Button>
+            <Alert color="danger" hidden={! feedbacks.failed}>{feedbacks.failed}</Alert>
+            <Alert color="danger" hidden={! feedbacks.succeeded}>{feedbacks.succeeded}</Alert>
         </div>
         <div class="mb-4 row">
-            <div class="col d-flex justify-content-center">
-                <a id="login" href="{route('login')}" class="form-control btn btn-outline-primary">Login</a>
-                <button id="disabledLogin" class="form-control btn btn-outline-primary" disabled hidden>Login</button>
-            </div>
-            <div class="col d-flex justify-content-center">
-                <a id="register" href="{route('register')}" class="form-control btn btn-outline-success">Register</a>
-                <button id="disabledRegister" class="form-control btn btn-outline-success" disabled hidden>Register</button>
-            </div>
+            <Col class="d-flex justify-content-center">
+                <a href="{route('login')}" class="form-control btn btn-outline-primary">Login</a>
+            </Col>
+            <Col class="d-flex justify-content-center">
+                <a href="{route('register')}" class="form-control btn btn-outline-success">Register</a>
+            </Col>
         </div>
     </form>
 </section>
