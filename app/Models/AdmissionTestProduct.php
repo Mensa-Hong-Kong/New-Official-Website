@@ -57,6 +57,7 @@ class AdmissionTestProduct extends Model
                         ->orWhere('start_at', '<=', now());
                 }
             )
-            ->orderBy('start_at');
+            ->orderBy('start_at')
+            ->orderBy('updated_at');
     }
 }
