@@ -1,8 +1,10 @@
 <script>
-    let { type, contacts: initContacts, submitting = $bindable() } = $props();
+    import { Row, Col, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post, get } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+
+    let { type, contacts: initContacts, submitting = $bindable() } = $props();
     let contacts = $state([]);
     let inputs = $state([]);
 
@@ -396,99 +398,90 @@
         {/if}
     </h3>
     {#each contacts as row, index}
-        <div class="row g-3">
-            <div class="col-md-3" hidden="{row.editing}">{row.contact}</div>
+        <Row class=" g-3">
+            <Col md=3 hidden={row.editing}>{row.contact}</Col>
             <form class="col-md-3" id="editContactForm{row.id}" novalidate
-                hidden="{! row.editing}" onsubmit="{(event) => update(event, index)}">
+                hidden="{! row.editing}" onsubmit={(event) => update(event, index)}>
                 {#if type == 'email'}
-                    <input name="email" type="email" disabled="{row.updating}"
-                        maxlength="320" required 
-                        value="{row.contact}" placeholder="dammy@example.com"
-                        bind:this="{inputs[index]['contact']}" class="form-control" />
+                    <Input name="email" type="email" disabled={row.updating}
+                        maxlength=320 required 
+                        value={row.contact} placeholder="dammy@example.com"
+                        bind:inner="{inputs[index]['contact']}" />
                 {:else if type == 'mobile'}
-                    <input name="mobile" type="tel" disabled="{row.updating}"
-                        minlength="5" maxlength="15" required 
-                        value="{row.contact}" placeholder="85298765432"
-                        bind:this="{inputs[index]['contact']}" class="form-control" />
+                    <Input name="mobile" type="tel" disabled={row.updating}
+                        minlength=5 maxlength=15 required 
+                        value={row.contact} placeholder=85298765432
+                        bind:inner="{inputs[index]['contact']}" class="form-control" />
                 {/if}
             </form>
-            <div class="col-md-2" hidden="{! row.isDefault}">Default</div>
-            <button onclick="{() => setDefault(index)}"
-                hidden="{row.isDefault || row.settingDefault}"
-                disabled="{submitting}" class={[
-                    'btn', 'col-md-2', {
-                        'btn-primary': row.isVerified,
-                        'btn-secondary': ! row.isVerified,
-                    }
-                ]} >Set to Default</button>
-            <button class="btn btn-primary col-md-2" disabled hidden="{! row.settingDefault}">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Setting...
-            </button>
+            <Col md=2 hidden={! row.isDefault}>Default</Col>
+            <Button hidden={row.isDefault} disabled={submitting || row.settingDefault}
+                color={row.isVerified ? 'primary' : 'secondary'}
+                onclick={() => setDefault(index)} class={['btn', 'col-md-2']}>
+                {#if row.settingDefault}
+                    <Spinner type="border" size="sm" />Setting...
+                {:else}
+                    Set to Default
+                {/if}
+            </Button>
             <form class="col-md-2" id="verifyContactForm{row.id}" novalidate
                 onsubmit="{(event) => validate(event, index)}">
-                <input type="text" name="code" class="form-control"
-                    minlength="6" maxlength="6" pattern="[A-Za-z0-9]&lcub;6&rcub;" required
-                    autocomplete="off" placeholder="Verify Code" hidden="{! row.verifying}"
-                    bind:this="{inputs[index]['verifyCode']}"/>
+                <Input name="code" class="form-control"
+                    minlength=6 maxlength=6 pattern="[A-Za-z0-9]&lcub;6&rcub;" required
+                    autocomplete="off" placeholder="Verify Code" hidden={! row.verifying}
+                    bind:inner="{inputs[index]['verifyCode']}"/>
             </form>
-            <button onclick="{() => {if(!row.isVerified) (row.verifying = true)}}" class={[
-                'btn', 'col-md-1', {
-                    'btn-secondary': row.isVerified,
-                    'btn-primary': ! row.isVerified,
-                }
-            ]} disabled="{submitting || row.isVerified}" hidden="{row.verifying || row.editing || row.deleting}">
-                {row.isVerified ? 'Verified' : 'Verify'}
-            </button>
-            <button class="btn btn-primary col-md-2" onclick="{() => requestNewVerifyCode(index)}"
-                hidden={row.requestingVerifyCode || ! row.verifying || row.validating}>
-                Send New Verify Code
-            </button>
-            <button class="btn btn-primary col-md-4" hidden="{! row.requestingVerifyCode}" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Requesting...
-            </button>
-            <button class="btn btn-primary col-md-1" form="verifyContactForm{row.id}"
-                hidden="{! row.verifying}">Submit</button>
-            <button class="btn btn-danger col-md-1" onclick="{() => cancelVerify(index)}"
-                hidden="{! row.verifying || row.validating}">Cancel</button>
-            <button class="btn btn-danger col-md-4" hidden="{! row.validating}" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Submitting...
-            </button>
-            <button class="btn btn-primary col-md-1" onclick="{() => edit(index)}"
-                hidden="{row.editing || row.updating || row.verifying || row.deleting}">Edit</button>
-            <button class="btn btn-primary col-md-1" form="editContactForm{row.id}"
-                hidden="{! row.editing || row.updating}">Save</button>
-            <button class="btn btn-danger col-md-1" onclick="{(event) => cancel(index)}"
-                hidden="{! row.editing || row.updating}">Cancel</button>
-            <button class="btn btn-primary col-md-2" hidden="{! row.updating}" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Saving...
-            </button>
-            <button class="btn btn-danger col-md-1" hidden="{row.verifying || row.editing || row.deleting}"
-                onclick="{() => destroy(index)}">Delete</button>
-            <button class="btn btn-danger col-md-4" hidden="{! row.deleting}" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Deleting...
-            </button>
-        </div>
+            <Button color={row.isVerified ? 'secondary' : 'primary'}
+                disabled={submitting || row.isVerified}
+                hidden={row.verifying || row.editing || row.deleting}
+                onclick={() => {if(!row.isVerified) (row.verifying = true)}}
+                class="col-md-1">{row.isVerified ? 'Verified' : 'Verify'}</Button>
+            <Button color="primary" onclick={() => requestNewVerifyCode(index)}
+                hidden={row.requestingVerifyCode || ! row.verifying || row.validating}
+                class="col-md-2">Send New Verify Code</Button>
+            <Button color="primary" hidden={! row.requestingVerifyCode} disabled class="col-md-4">
+                <Spinner type="border" size="sm" />Requesting...
+            </Button>
+            <Button color="primary" form="verifyContactForm{row.id}"
+                hidden={! row.verifying} class="col-md-1">Submit</Button>
+            <Button color="danger" onclick={() => cancelVerify(index)}
+                hidden={! row.verifying || row.validating} class="col-md-1">Cancel</Button>
+            <Button color="danger" hidden={! row.validating} disabled class="col-md-4">
+                <Spinner type="border" size="sm" />Submitting...
+            </Button>
+            <Button color="primary" onclick={() => edit(index)} class="col-md-1"
+                hidden={row.editing || row.updating || row.verifying || row.deleting}>Edit</Button>
+            <Button color="primary" form="editContactForm{row.id}"
+                hidden={! row.editing || row.updating} class="col-md-1">Save</Button>
+            <Button color="danger" onclick={(event) => cancel(index)}
+                hidden={! row.editing || row.updating} class="col-md-1">Cancel</Button>
+            <Button color="primary" hidden={! row.updating} disabled class="col-md-2">
+                <Spinner type="border" size="sm" />Saving...
+            </Button>
+            <Button color="danger" hidden={row.verifying || row.editing || row.deleting}
+                onclick={() => destroy(index)} class="col-md-1">Delete</Button>
+            <Button color="danger" hidden={! row.deleting} disabled class="col-md-4">
+                <Spinner type="border" size="sm" />Deleting...
+            </Button>
+        </Row>
     {/each}
     <form class="row g-3 createContact" novalidate onsubmit="{create}">
-        <div class="col-md-3">
+        <Col md=3>
             {#if type == 'email'}
-                <input name="contact" type="email" placeholder="dammy@example.com"
-                    maxlength="320" required class="form-control" bind:this="{createContact}" />
+                <Input name="contact" type="email" placeholder="dammy@example.com"
+                    maxlength=320 required bind:inner={createContact} />
             {:else if type == 'mobile'}
-                <input name="contact" type="tel" placeholder="85298765432"
-                    minlength="5" maxlength="15" required class="form-control" bind:this="{createContact}" />
+                <Input name="contact" type="tel" placeholder=85298765432
+                    minlength=5 maxlength=15 required bind:inner={createContact} />
             {/if}
-        </div>
-        <div class="col-md-4"></div>
-        <button class="btn btn-success col-md-3" hidden="{creating}">Create</button>
-        <button class="btn btn-success col-md-3" hidden="{! creating}" disabled>
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Creating
-        </button>
+        </Col>
+        <Col md=4 />
+        <Button color="success" hidden={creating} class="col-md-3" disabled={creating}>
+            {#if creating}
+                <Spinner type="border" size="sm" />Creating...
+            {:else}
+                Create
+            {/if}
+        </Button>
     </form>
 </article>
