@@ -1,11 +1,12 @@
 <script>
-	let { genders, passportTypes, maxBirthday } = $props();
+    import { Alert, Col, Label, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
+	let { genders, passportTypes, maxBirthday } = $props();
     let inputs = $state({});
     let submitting = $state(false);
     let creating = $state(false);
@@ -92,7 +93,7 @@
         if(inputs.birthday.validity.valueMissing) {
             feedbacks.birthday = 'The birthday field is required.';
         } else if(inputs.birthday.validity.rangeOverflow) {
-            feedbacks.birthday = `The birthday not be greater than ${inputs.birthday.max} characters.`;
+            feedbacks.birthday = `The birthday field must be a date before or equal to ${inputs.birthday.max}.`;
         }
         if(inputs.email.value) {
             if(inputs.email.validity.tooLong) {
@@ -203,7 +204,7 @@
 </script>
 
 <section class="container">
-    <div class="alert alert-primary" role="alert">
+    <Alert color="primary">
         <ol>
             <li>
                 Passport number include inside brackets number but without all symbol<br>
@@ -213,197 +214,115 @@
             <li>The family name, middle name, given name and gender must match passport</li>
             <li>Mobile number include country code without "+" and "-"</li>
         </ol>
-    </div>
+    </Alert>
     <form class="row g-3" onsubmit="{register}" novalidate>
         <h2 class="mb-2 fw-bold text-uppercase">Register</h2>
-        <div class="col-md-4">
-            <label for="username" class="form-label">Username</label>
-            <input name="username" type="text" placeholder="username" disabled="{creating}"
-                minlength="8" maxlength="16" required bind:this="{inputs.username}"
-                class={[
-                    'form-control', {
-                        'is-valid': feedbacks.username == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.username),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.username),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.username),
-            }]}>{feedbacks.username}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="password" class="form-label">Password</label>
-            <input name="password" type="password" placeholder="password" disabled="{creating}"
-                minlength="8" maxlength="16" required bind:this="{inputs.password}"
-                class={[
-                    'form-control', {
-                        'is-valid': feedbacks.password == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.password),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.password),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.password),
-            }]}>{feedbacks.password}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="password_confirmation" class="form-label">Confirm Password</label>
-            <input name="password_confirmation" type="password" disabled="{creating}"
-                minlength="8" maxlength="16" required placeholder="confirm password"
-                bind:this="{inputs.confirmPassword}"
-                class={[
-                    'form-control', {
-                        'is-valid': feedbacks.password == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.password),
-                    }
-                ]} />
-        </div>
-        <div class="col-md-4">
-            <label for="family_name" class="form-label">Family Name</label>
-            <input name="family_name" type="text" disabled="{creating}"
-                maxlength="255" required placeholder="family name"
-                bind:this="{inputs.familyName}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.familyName == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.familyName),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.familyName),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.familyName),
-            }]}>{feedbacks.familyName}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="middle_name" class="form-label">Middle Name</label>
-            <input name="middle_name" type="text" disabled="{creating}"
+        <Col md=4>
+            <Label>Username</Label>
+            <Input name="username" placeholder="username" disabled={creating}
+                minlength=8 maxlength=16 required bind:inner={inputs.username}
+                feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
+                invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'} />
+        </Col>
+        <Col md=4>
+            <Label>Password</Label>
+            <Input name="password" type="password" placeholder="password" disabled={creating}
+                minlength=8 maxlength=16 required bind:inner={inputs.password}
+                feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
+                invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'} />
+        </Col>
+        <Col md=4>
+            <Label>Confirm Password</Label>
+            <Input name="password_confirmation" type="password" disabled={creating}
+                minlength=8 maxlength=16 required placeholder="confirm password"
+                invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
+                valid={feedbacks.password == 'Looks good!'} bind:inner={inputs.confirmPassword} />
+        </Col>
+        <Col md=4>
+            <Label>Family Name</Label>
+            <Input name="family_name" disabled={creating}
+                maxlength=255 required placeholder="family name"
+                feedback={feedbacks.familyName} valid={feedbacks.familyName == 'Looks good!'}
+                invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!'}
+                bind:inner="{inputs.familyName}" />
+        </Col>
+        <Col md=4>
+            <Label>Middle Name</Label>
+            <Input name="middle_name" disabled={creating}
                 maxlength="255" placeholder="middle name"
-                bind:this="{inputs.middleName}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.middleName == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.middleName),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.middleName),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.middleName),
-            }]}>{feedbacks.middleName}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="given_name" class="form-label">Given Name</label>
-            <input name="given_name" type="text" disabled="{creating}"
-                maxlength="255" required placeholder="given name"
-                bind:this="{inputs.givenName}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.givenName == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.givenName),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.givenName),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.givenName),
-            }]}>{feedbacks.givenName}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="passport_type_id" class="form-label">Passport Type</label>
-            <select name="passport_type_id" required disabled="{creating}"
-                bind:this="{inputs.passportType}" class={[
-                    'form-select', {
-                        'is-valid': feedbacks.passportType == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.passportType),
-                    }
-                ]}>
+                feedback={feedbacks.middleName} valid={feedbacks.middleName == 'Looks good!'}
+                invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!'}
+                bind:inner="{inputs.middleName}" />
+        </Col>
+        <Col md=4>
+            <Label>Given Name</Label>
+            <Input name="given_name" type="text" disabled={creating}
+                maxlength=255 required placeholder="given name"
+                feedback={feedbacks.givenName} valid={feedbacks.givenName == 'Looks good!'}
+                invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!'}
+                bind:inner="{inputs.givenName}" />
+        </Col>
+        <Col md=4>
+            <Label>Passport Type</Label>
+            <Input type="select" name="passport_type_id" required disabled={creating}
+                feedback={feedbacks.passportType} valid={feedbacks.passportType == 'Looks good!'}
+                invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
+                bind:inner="{inputs.passportType}">
                 <option value="" selected disabled>Please select passport type</option>
                 {#each Object.entries(passportTypes) as [key, value]}
                     <option value="{key}">{value}</option>
                 {/each}
-            </select>
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.passportType),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.passportType),
-            }]}>{feedbacks.passportType}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="passport_number">Passport Number</label>
-            <input name="passport_number" type="text" disabled="{creating}"
-                minlength="8" maxlength="18" required placeholder="passport number"
-                bind:this="{inputs.passportNumber}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.passportNumber == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.passportNumber),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.passportNumber),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.passportNumber),
-            }]}>{feedbacks.passportNumber}</div>
-        </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <label for="gender" class="form-label">Gender</label>
-            <input name="gender" type="text" disabled="{creating}"
+            </Input>
+        </Col>
+        <Col md=4>
+            <Label>Passport Type</Label>
+            <Input name="passport_number" disabled={creating}
+                minlength=8 maxlength=18 required placeholder="passport number"
+                feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
+                invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
+                bind:inner="{inputs.passportNumber}" />
+        </Col>
+        <Col md=4 />
+        <Col md=4>
+            <Label>Passport Type</Label>
+            <Input name="gender" disabled={creating}
                 maxlength="255" list="genders" required placeholder="gender"
-                bind:this="{inputs.gender}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.gender == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.gender),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.gender),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.gender),
-            }]}>{feedbacks.gender}</div>
-        </div>
+                feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
+                invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
+                bind:inner={inputs.gender} />
+        </Col>
         <Datalist id="genders" data={genders} />
-        <div class="col-md-4">
-            <label for="birthday">Date of Birth</label>
-            <input name="birthday" type="date" disabled="{creating}"
-                max="{maxBirthday}" required placeholder="birthday"
-                bind:this="{inputs.birthday}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.birthday == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.birthday),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.birthday),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.birthday),
-            }]}>{feedbacks.birthday}</div>
-        </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <label for="email">Email</label>
-            <input name="email" type="email" disabled="{creating}"
-                maxlength="320" required placeholder="dammy@example.com"
-                bind:this="{inputs.email}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.email == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.email),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.email),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.email),
-            }]}>{feedbacks.email}</div>
-        </div>
-        <div class="col-md-4">
-            <label for="mobile">Mobile</label>
-            <input name="mobile" type="tel" disabled="{creating}"
-                minlength="5" maxlength="15" required placeholder="85298765432"
-                bind:this="{inputs.mobile}" class={[
-                    'form-control', {
-                        'is-valid': feedbacks.mobile == 'Looks good!',
-                        'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.mobile),
-                    }
-                ]} />
-            <div class={[{
-                'valid-feedback': ['', 'Looks good!'].includes(feedbacks.mobile),
-                'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.mobile),
-            }]}>{feedbacks.mobile}</div>
-        </div>
-        <input type="submit" class="form-control btn btn-primary" value="Submit" hidden="{submitting}">
-        <button class="form-control btn btn-primary" type="button" disabled hidden="{!submitting}">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Submitting...
-        </button>
+        <Col md=4>
+            <Label>Date of Birth</Label>
+            <Input name="birthday" type="date" disabled={creating}
+                max={maxBirthday} required placeholder="birthday"
+                feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                bind:inner="{inputs.birthday}" />
+        </Col>
+        <Col md=4 />
+        <Col md=4>
+            <Label>Email</Label>
+            <Input name="email" type="email" disabled={creating}
+                maxlength=320 required placeholder="dammy@example.com"
+                feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                bind:inner={inputs.email} />
+        </Col>
+        <Col md=4>
+            <Label>Email</Label>
+            <Input name="mobile" type="tel" disabled={creating}
+                minlength=5 maxlength=15 required placeholder=85298765432
+                feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                bind:inner={inputs.mobile} />
+        </Col>
+        <Button color="primary" disabled={submitting} class="form-control">
+            {#if submitting}
+                <Spinner type="border" size="sm" />Submitting...
+            {:else}
+                Submit
+            {/if}
+        </Button>
     </form>
 </section>
