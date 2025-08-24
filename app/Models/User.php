@@ -190,7 +190,7 @@ class User extends Authenticatable
 
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
-                return $user->member || $user->hasPassedAdmissionTest;
+                return $user->member || $user->hasPassedAdmissionTest();
             }
         );
     }
@@ -344,6 +344,6 @@ class User extends Authenticatable
 
     public function hasPassedAdmissionTest()
     {
-        return $this->lastAdmissionTest()->where('is_pass', true);
+        return $this->admissionTests()->where('is_pass', true)->exists();
     }
 }
