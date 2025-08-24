@@ -1,5 +1,5 @@
 <script>
-    import StripeAlert from "@/Pages/Components/StripeAlert.svelte";
+    import StripeCustomerAlert from "@/Pages/Components/StripeAlert/Customer.svelte";
     import { formatToDate, formatToTime } from '@/timeZoneDatetime';
     import { Table, Button } from '@sveltestrap/sveltestrap';
 
@@ -7,7 +7,7 @@
 </script>
 
 <section class="container">
-    <StripeAlert customer={user} type="user" />
+    <StripeCustomerAlert customer={user} type="user" />
     <h3 class="mb-2 fw-bold">
         {user.future_admission_test ? 'Reschedule' : 'Schedule'}
         Admission Tests
