@@ -243,10 +243,10 @@
         </div>
         <div class="mb-4 row">
             <Col class="d-flex justify-content-center">
-                <a href="{route('login')}" class="form-control btn btn-outline-primary">Login</a>
+                <a href={route('login')} class="form-control btn btn-outline-primary">Login</a>
             </Col>
             <Col class="d-flex justify-content-center">
-                <a href="{route('register')}" class="form-control btn btn-outline-success">Register</a>
+                <a href={route('register')} class="form-control btn btn-outline-success">Register</a>
             </Col>
         </div>
     </form>
