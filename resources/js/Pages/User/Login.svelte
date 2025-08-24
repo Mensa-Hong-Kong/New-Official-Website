@@ -1,7 +1,9 @@
 <script>
+    import { FormGroup, Input, Row, Col, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let inputs = $state({});
     let submitting = $state(false);
@@ -119,60 +121,40 @@
     <form class="mx-auto w-25" novalidate onsubmit="{login}">
         <h2 class="mb-2 fw-bold text-uppercase">Login</h2>
         <div class="mb-4 form-outline">
-            <div class="form-floating">
-                <input name="username" type="text" placeholder="username"
-                    minlength="7" maxlength="320" required disabled="{loggingIn}"
-                    bind:this={inputs.username} class={[
-                        'form-control', {
-                            'is-valid': feedbacks.username == 'Looks good!' && feedbacks.failed == '',
-                            'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.username) ||  feedbacks.failed != '',
-                        }
-                    ]} />
-                <label for="username">Username</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.username) && feedbacks.failed == '',
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.username) || feedbacks.failed != '',
-                }]}>{feedbacks.username}</div>
-            </div>
+            <FormGroup floating label="Username">
+                <Input name="username" placeholder="username"
+                    minlength=7 maxlength=320 required disabled={loggingIn}
+                    feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
+                    invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
+                    bind:inner={inputs.username} />
+            </FormGroup>
         </div>
         <div class="mb-4 form-outline">
-            <div class="form-floating">
-                <input name="password" type="password" placeholder="password"
-                    minlength="8" maxlength="16" required disabled="{loggingIn}"
-                    bind:this={inputs.password} class={[
-                        'form-control', {
-                            'is-valid': feedbacks.password == 'Looks good!',
-                            'is-invalid': ! ['', 'Looks good!'].includes(feedbacks.password),
-                        }
-                    ]} />
-                <label for="validationPassword">Password</label>
-                <div class={[{
-                    'valid-feedback': ['', 'Looks good!'].includes(feedbacks.password),
-                    'invalid-feedback': ! ['', 'Looks good!'].includes(feedbacks.password),
-                }]}>{feedbacks.password}</div>
-            </div>
+            <FormGroup floating label="Password">
+                <Input name="password" type="password" placeholder="password"
+                    minlength=8 maxlength=16 required disabled={loggingIn}
+                    feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
+                    invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
+                    bind:inner={inputs.password} />
+            </FormGroup>
         </div>
-        <div class="mb-4 row">
-            <div class="col d-flex justify-content-center">
-                <div class="form-check">
-                    <input name="remember_me" type="checkbox" value="true" disabled="{loggingIn}"
-                       id="rememberMe" bind:this={inputs.rememberMe} class="form-check-input" />
-                    <label class="form-check-label" for="rememberMe">Remember Me</label>
-                </div>
-            </div>
-            <div class="col d-flex justify-content-center">
-                <a href="{route('forget-password')}">Forgot password?</a>
-            </div>
-        </div>
-        <input type="submit" class="form-control btn btn-primary"
-            value="Login" hidden="{submitting}" />
-        <div class="alert alert-danger" role="alert" hidden="{feedbacks.failed == ''}">
-            {feedbacks.failed}
-        </div>
-        <button class="form-control btn btn-primary" type="button" disabled hidden="{! submitting}">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Logging In...
-        </button>
+        <Row class="mb-4">
+            <Col class="d-flex justify-content-center">
+                <Input type="checkbox" name="remember_me" value={true} label="Remember Me"
+                    bind:inner={inputs.rememberMe} />
+            </Col>
+            <Col class="d-flex justify-content-center">
+                <a href={route('forget-password')}>Forgot password?</a>
+            </Col>
+        </Row>
+        <Button color="primary" disabled={submitting} class="form-control">
+            {#if submitting}
+                <Spinner type="border" size="sm" />Logging in...
+            {:else}
+                Login
+            {/if}
+        </Button>
+        <Alert color="danger" hidden={feedbacks.failed == ''}>{feedbacks.failed}</Alert>
         <div class="text-center form-control">
             <p>Not a member? <a href="{route('register')}">Register</a></p>
         </div>
