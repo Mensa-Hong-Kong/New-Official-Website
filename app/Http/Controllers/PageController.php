@@ -45,7 +45,7 @@ class PageController extends Controller
             'future_admission_test' => $request->user()->futureAdmissionTest ?? false ? [
                 'id' => $request->user()->futureAdmissionTest->id,
             ] : null,
-            'created_stripe_account' => $request->user()->stripe ?? null,
+            'created_stripe_customer' => $request->user()->stripe ?? null,
             'default_email' => $request->user()->defaultEmail ?? false ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,

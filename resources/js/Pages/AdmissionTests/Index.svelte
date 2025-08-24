@@ -4,12 +4,13 @@
     import { formatToDate, formatToTime } from '@/timeZoneDatetime';
     import { Table, Button } from '@sveltestrap/sveltestrap';
 
-    let { contents, tests, user } = $props();
+    let { contents, tests, user: initUser } = $props();
+    let user = $state(initUser);
 </script>
 
 <section class="container">
     {#if user}
-        <StripeAlert customer={user} type="user" />
+        <StripeAlert bind:customer={user} type="user" />
     {/if}
     <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
     <article class="ck-content">
@@ -48,7 +49,7 @@
                                         }">Ticket</a>
                                     {:else}
                                         {#if
-                                            user.created_stripe_account &&
+                                            user.created_stripe_customer &&
                                             new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
                                                 ! user || ! user.last_attended_admission_test ||
                                                 test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
@@ -68,7 +69,7 @@
                                     {/if}
                                 {:else}
                                     {#if
-                                        user.created_stripe_account &&
+                                        user.created_stripe_customer &&
                                         new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
                                             ! user || ! user.last_attended_admission_test ||
                                             test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
