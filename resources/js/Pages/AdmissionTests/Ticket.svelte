@@ -1,5 +1,4 @@
 <script>
-    import StripeAlert from "@/Pages/Components/StripeAlert.svelte";
     import "ckeditor5/ckeditor5.css";
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
     import { Table } from '@sveltestrap/sveltestrap';
