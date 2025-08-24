@@ -91,6 +91,7 @@ class ScheduleAdmissionTest extends Notification
 
     public function toWhatsApp(object $notifiable)
     {
+        // content maximum 1600 character
         return (new Message)
             ->content(
                 implode(

@@ -57,6 +57,7 @@ class RemovedAdmissionTestRecord extends Notification
 
     public function toWhatsApp(object $notifiable)
     {
+        // content maximum 1600 character
         $message = [
             'We are removed your admission test record.',
             'Date: '.$this->test->testing_at->format('Y-m-d'),
