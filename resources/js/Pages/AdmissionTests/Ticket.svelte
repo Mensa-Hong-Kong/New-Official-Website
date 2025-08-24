@@ -5,7 +5,6 @@
     import { Table } from '@sveltestrap/sveltestrap';
 
     let { test, qrCode, candidate } = $props();
-    console.log(test);
 </script>
 
 <section class="container">

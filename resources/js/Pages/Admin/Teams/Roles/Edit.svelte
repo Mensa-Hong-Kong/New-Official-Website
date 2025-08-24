@@ -2,6 +2,7 @@
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let {
         team, roles, displayOptions, modules, permissions, modulePermissions,
@@ -42,6 +43,7 @@
         updating = false;
         submitting = false;
     }
+    
     function update(event) {
         event.preventDefault();
         if(! submitting) {

@@ -6,9 +6,6 @@
     
     let { auth, types: initTypes } = $props();
     let submitting = $state(false);
-
-    console.log(initTypes);
-
     let types = $state(initTypes);
 
     function getTypeAndTeamIndexById(id) {
@@ -41,7 +38,7 @@
         if(submitting == '') {
             let submitAt = Date.now();
             submitting = 'deleteTeam'+submitAt;
-            let [typeIndex, teamIndex] = indexes
+            let [typeIndex, teamIndex] = indexes;
             if(submitting == 'deleteTeam'+submitAt) {
                 types[typeIndex]['teams'][teamIndex]['deleting'] = true;
                 post(
@@ -119,7 +116,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;

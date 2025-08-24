@@ -97,7 +97,6 @@
                     if(inputs['prices'][index]['name']['value']) {
                         data['name'] = inputs['prices'][index]['name']['value'];
                     }
-                    console.log(data)
                     post(
                         route(
                             'admin.admission-test.products.prices.update',

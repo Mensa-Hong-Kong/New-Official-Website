@@ -166,17 +166,17 @@ class CandidateController extends Controller implements HasMiddleware
             'is_public', 'created_at', 'updated_at',
         ]);
         $candidate->load([
-            'lastAttendedAdmissionTest' => function($query) use($admissionTest) {
+            'lastAttendedAdmissionTest' => function ($query) use ($admissionTest) {
                 $query->with([
-                    'type' => function($query) {
+                    'type' => function ($query) {
                         $query->select(['id', 'interval_month']);
-                    }
+                    },
                 ])->whereNot('test_id', $admissionTest->id);
-            }, 'passportType' => function($query) {
+            }, 'passportType' => function ($query) {
                 $query->select(['id', 'name']);
-            }, 'gender' => function($query) {
+            }, 'gender' => function ($query) {
                 $query->select(['id', 'name']);
-            }, 
+            },
         ]);
         $candidate->append([
             'adorned_name', 'has_other_same_passport_user_joined_future_test',
@@ -189,7 +189,7 @@ class CandidateController extends Controller implements HasMiddleware
         ]);
         $candidate->passportType->makeHidden('id');
         $candidate->gender->makeHidden('id');
-        if($candidate->lastAttendedAdmissionTest) {
+        if ($candidate->lastAttendedAdmissionTest) {
             $candidate->lastAttendedAdmissionTest->makeHidden([
                 'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
                 'maximum_candidates', 'is_public', 'created_at', 'updated_at',

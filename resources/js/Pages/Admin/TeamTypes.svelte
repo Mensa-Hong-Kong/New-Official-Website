@@ -39,7 +39,7 @@
 
     function updateNameFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.name);
+            alert(error.response.data.errors.name);
         }
         let location = new URL(error.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.team_type;
@@ -53,7 +53,6 @@
             let submitAt = Date.now();
             submitting = 'updateName'+submitAt;
             if(submitting == 'updateName'+submitAt) {
-                console.log(inputNames[index]);
                 if(nameValidation(inputNames[index])) {
                     types[index]['updating'] = true;
                     post(
@@ -133,7 +132,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;

@@ -98,7 +98,7 @@ class RoleController extends Controller implements HasMiddleware
         }
         foreach ($team->roles as $thisRole) {
             $thisDisplayOrder = $thisRole->pivot->display_order;
-            if($thisDisplayOrder != $displayOrder) {
+            if ($thisDisplayOrder != $displayOrder) {
                 if ($thisDisplayOrder > $displayOrder) {
                     $thisDisplayOrder -= 1;
                 }
@@ -106,10 +106,10 @@ class RoleController extends Controller implements HasMiddleware
             }
         }
         $displayOptions[0] = 'top';
-        if($team->roles->count() > 1) {
+        if ($team->roles->count() > 1) {
             $index = max(array_keys($displayOptions));
-            if($index != $team->roles->max('pivot.display_order')) {
-                ++$index;
+            if ($index != $team->roles->max('pivot.display_order')) {
+                $index++;
             }
             $displayOptions[max(array_keys($displayOptions)) + 1] = 'latest';
         }

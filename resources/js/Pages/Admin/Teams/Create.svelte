@@ -2,6 +2,7 @@
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let { types, displayOptions } = $props();
     let inputs = $state({});
@@ -43,6 +44,7 @@
         creating = false;
         submitting = false;
     }
+    
     function create(event) {
         event.preventDefault();
         if(! submitting) {

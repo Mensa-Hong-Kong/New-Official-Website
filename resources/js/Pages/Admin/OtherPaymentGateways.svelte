@@ -44,7 +44,7 @@
 
     function updateNameFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.name);
+            alert(error.response.data.errors.name);
         }
         let location = new URL(error.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
@@ -89,7 +89,7 @@
 
     function updateActionFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.status);
+            alert(error.response.data.errors.status);
         }
         let id = route().match(location.host + location.pathname, 'PUT').params.other_payment_gateway;
         paymentGateways[getIndex(id)]['updatingActiveStatus'] = false;
@@ -176,7 +176,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;

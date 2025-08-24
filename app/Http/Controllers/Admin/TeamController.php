@@ -32,7 +32,7 @@ class TeamController extends Controller implements HasMiddleware
             ->orderBy('display_order')
             ->orderBy('id')
             ->get();
-        foreach($types as $type) {
+        foreach ($types as $type) {
             $type->teams->makeHidden('type_id');
         }
 
@@ -97,7 +97,7 @@ class TeamController extends Controller implements HasMiddleware
         $team->makeHidden(['type_id', 'display_order', 'created_at', 'updated_at']);
         $team->type->makeHidden('id');
         $team->roles->makeHidden(['pivot', 'created_at', 'updated_at']);
-        
+
         return Inertia::render('Admin/Teams/Show')
             ->with('team', $team);
     }
@@ -118,8 +118,8 @@ class TeamController extends Controller implements HasMiddleware
             $displayOptions[$type->id] = [];
             foreach ($type->teams as $thisTeam) {
                 $displayOrder = $thisTeam->display_order;
-                if($type->id == $team->type_id && $displayOrder > $team->display_order) {
-                    --$displayOrder;
+                if ($type->id == $team->type_id && $displayOrder > $team->display_order) {
+                    $displayOrder--;
                 }
                 $displayOptions[$type->id][$displayOrder] = "before \"$thisTeam->name\"";
             }
@@ -128,11 +128,11 @@ class TeamController extends Controller implements HasMiddleware
                 $type->id != $team->type_id
             ) {
                 $index = max(array_keys($displayOptions[$type->id]));
-                if(
+                if (
                     $type->id != $team->type_id ||
                     $index != $type->teams->max('display_order')
                 ) {
-                    ++$index;
+                    $index++;
                 }
                 $displayOptions[$type->id][$index] = 'latest';
             }

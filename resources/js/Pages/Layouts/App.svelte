@@ -4,6 +4,7 @@
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
 	import { setCsrfToken } from '@/submitForm.svelte';
+
 	let { children } = $props();
 
     setCsrfToken($page.props.csrf_token);

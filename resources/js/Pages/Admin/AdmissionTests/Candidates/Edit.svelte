@@ -16,7 +16,6 @@
         passportNumber: initUser.passport_number,
         birthday: formatToDate(initUser.birthday),
     }
-    console.log(user.birthday);
     let inputs = $state({});
     let feedbacks = $state({
         familyName: '',

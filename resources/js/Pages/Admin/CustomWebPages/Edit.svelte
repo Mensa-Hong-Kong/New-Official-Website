@@ -2,6 +2,7 @@
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
 	import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     
     let { page } = $props();
     let inputs = $state({});
@@ -59,7 +60,6 @@
             submitting = 'update'+submitAt;
             if(submitting == 'update'+submitAt) {
                 if(form.validation()) {
-                    console.log(4);
                     updating = true;
                     post(
                         route(

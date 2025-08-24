@@ -74,21 +74,21 @@ class NavigationItemController extends Controller implements HasMiddleware
         $displayOptions[0] = [];
         foreach ($items as $item) {
             $displayOrder = $item->display_order;
-            if($navigationItem->id == $item->id && $displayOrder > $navigationItem->display_order) {
-                --$displayOrder;
+            if ($navigationItem->id == $item->id && $displayOrder > $navigationItem->display_order) {
+                $displayOrder--;
             }
             $displayOptions[$item->master_id ?? 0][$displayOrder] = "before \"$item->name\"";
         }
         foreach ($displayOptions as $masterID => $array) {
             if (count($array) || $masterID != $navigationItem->master_id) {
                 $index = 0;
-                if(count($array)) {
+                if (count($array)) {
                     $index = max(array_keys($array));
                     if (
                         $masterID != $navigationItem->master_id ||
                         $navigationItem->display_order != $index
                     ) {
-                        ++$index;
+                        $index++;
                     }
                 }
                 $displayOptions[$masterID][$index] = 'latest';

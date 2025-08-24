@@ -1,5 +1,5 @@
 <script>
-    import { FormGroup, Input, Button, Spinner, Alert, Col } from '@sveltestrap/sveltestrap';
+    import { FormGroup, Input, Button, Spinner, Alert, Row, Col } from '@sveltestrap/sveltestrap';
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
@@ -241,13 +241,13 @@
             <Alert color="danger" hidden={! feedbacks.failed}>{feedbacks.failed}</Alert>
             <Alert color="danger" hidden={! feedbacks.succeeded}>{feedbacks.succeeded}</Alert>
         </div>
-        <div class="mb-4 row">
+        <Row class="mb-4">
             <Col class="d-flex justify-content-center">
                 <a href={route('login')} class="form-control btn btn-outline-primary">Login</a>
             </Col>
             <Col class="d-flex justify-content-center">
                 <a href={route('register')} class="form-control btn btn-outline-success">Register</a>
             </Col>
-        </div>
+        </Row>
     </form>
 </section>

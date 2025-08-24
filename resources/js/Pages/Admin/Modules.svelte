@@ -39,7 +39,7 @@
 
     function updateNameFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.name);
+            alert(error.response.data.errors.name);
         }
         let location = new URL(error.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.module;
@@ -132,7 +132,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;
@@ -174,11 +174,11 @@
             auth.user.permissions.includes('Edit:Permission') ||
             auth.user.roles.includes('Super Administrator')
         }
-            <Button color="primary" onclick="{editDisplayOrder}"
-                hidden="{editingDisplayOrder || updatingDisplayOrder}">Edit Display Order</Button>
-            <Button color="primary" onclick="{updateDisplayOrder}" disabled="{submitting}"
+            <Button color="primary" onclick={editDisplayOrder}
+                hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
+            <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
                 hidden={! editingDisplayOrder || updatingDisplayOrder}>Save Display Order</Button>
-            <Button color="danger" onclick="{cancelEditDisplay}"
+            <Button color="danger" onclick={cancelEditDisplay}
                 hidden={! editingDisplayOrder || updatingDisplayOrder}>Cancel</Button>
             <Button color="primary" hidden={! updatingDisplayOrder} disabled>
                 <Spinner type="border" size="sm" />
@@ -212,22 +212,22 @@
                             <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
                                 onsubmit={(event) => updateName(event, index)}>
                                 <Input name="name" maxlength="255"
-                                    value="{row.title}" disabled="{row.updating}"
+                                    value={row.title} disabled={row.updating}
                                     bind:inner={inputNames[index]} />
-                                </form>
+                            </form>
                         </td>
                         {#if
                             auth.user.permissions.includes('Edit:Permission') ||
                             auth.user.roles.includes('Super Administrator')
                         }
                             <td>
-                                <Button color="primary" hidden="{row.editing || row.updating}"
+                                <Button color="primary" hidden={row.editing || row.updating}
                                     onclick={() => modules[index]['editing'] = true}>Edit</Button>
                                 <Button color="primary" form="updateName{row.id}"
-                                    hidden="{! row.editing || row.updating}" disabled="{submitting}">Save</Button>
-                                <Button color="danger" hidden="{! row.editing || row.updating}"
+                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                                <Button color="danger" hidden={! row.editing || row.updating}
                                     onclick={() => cancelEditName(index)}>Cancel</Button>
-                                <Button color="primary" hidden="{! row.updating}" disabled>
+                                <Button color="primary" hidden={! row.updating} disabled>
                                     <Spinner type="border" size="sm" />
                                     Saving...
                                 </Button>

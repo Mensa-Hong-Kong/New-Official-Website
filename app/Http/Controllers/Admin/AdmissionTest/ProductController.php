@@ -23,7 +23,7 @@ class ProductController extends Controller implements HasMiddleware
         return Inertia::render('Admin/AdmissionTest/Products/Index')
             ->with(
                 'products', AdmissionTestProduct::select([
-                    'id', 'name', 'minimum_age', 'maximum_age'
+                    'id', 'name', 'minimum_age', 'maximum_age',
                 ])->orderBy('name')->get()
             );
     }

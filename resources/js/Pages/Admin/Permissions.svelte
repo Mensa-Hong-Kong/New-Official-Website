@@ -39,7 +39,7 @@
 
     function updateNameFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.name);
+            alert(error.response.data.errors.name);
         }
         let location = new URL(error.request.responseURL);
         let id = route().match(location.host + location.pathname, 'PUT').params.permission;
@@ -132,7 +132,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;

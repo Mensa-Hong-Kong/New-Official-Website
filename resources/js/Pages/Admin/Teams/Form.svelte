@@ -41,7 +41,7 @@
 <div class="mb-4 form-outline">
     <FormGroup floating label="Name">
         <Input name="name" placeholder="name" disabled={submitting}
-            minlength="1" maxlength="170" pattern="(?!.*:).*" required
+            maxlength="170" pattern="(?!.*:).*" required
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
             bind:inner={inputs.name} value={team.name} />

@@ -1,8 +1,8 @@
 <script>
     import { FormGroup, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
-    let { displayOptions } = $props();
     let inputs = $state({});
     let feedbacks = $state({
         name: '',

@@ -10,22 +10,23 @@ use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
-	public function share(Request $request): array
-	{
+    public function share(Request $request): array
+    {
         $navigationItems = NavigationItem::orderBy('display_order')
             ->get(['id', 'master_id', 'name', 'url'])
             ->keyBy('id');
         $navigationNodes = array_fill_keys($navigationItems->pluck('id')->toArray(), []);
         $navigationNodes['root'] = [];
-        foreach($navigationItems as $item) {
+        foreach ($navigationItems as $item) {
             $navigationNodes[$item->master_id ?? 'root'][] = $item->id;
         }
-		return [
-			...parent::share($request),
+
+        return [
+            ...parent::share($request),
             'csrf_token' => csrf_token(),
-            'auth.user' => function(Request $request) {
+            'auth.user' => function (Request $request) {
                 $user = $request->user();
-                if($user) {
+                if ($user) {
                     return [
                         'id' => $user->id,
                         'roles' => $user->getRoleNames(),
@@ -33,6 +34,7 @@ class HandleInertiaRequests extends Middleware
                         'hasProctorTests' => $user->proctorTests()->count(),
                     ];
                 }
+
                 return null;
             },
             'ziggy' => new Ziggy,
@@ -42,6 +44,6 @@ class HandleInertiaRequests extends Middleware
                 'success' => session('success'),
                 'error' => session('errors', new MessageBag)->first('message') ?? null,
             ],
-		];
-	}
+        ];
+    }
 }

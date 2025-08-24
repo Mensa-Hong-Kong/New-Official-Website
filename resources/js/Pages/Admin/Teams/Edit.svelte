@@ -2,6 +2,7 @@
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let { types, displayOptions, team } = $props();
     let inputs = $state({});
@@ -11,11 +12,11 @@
         displayOrder: '',
     });
     let submitting = $state(false);
-    let creating = $state(false);
+    let updating = $state(false);
     let form;
 
     function successCallback(response) {
-        creating = false;
+        updating = false;
         submitting = false;
         window.location.href = response.request.responseURL;
     }
@@ -40,9 +41,10 @@
                 }
             }
         }
-        creating = false;
+        updating = false;
         submitting = false;
     }
+    
     function update(event) {
         event.preventDefault();
         if(! submitting) {
@@ -50,7 +52,7 @@
             submitting = 'update'+submitAt;
             if(submitting == 'update'+submitAt) {
                 if(form.validation()) {
-                    creating = true;
+                    updating = true;
                     post(
                         route(
                             'admin.teams.update',
@@ -77,9 +79,9 @@
         <h2 class="mb-2 fw-bold text-uppercase">Edit Team</h2>
         <Form types={types} displayOptions={displayOptions} team={team}
             bind:inputs={inputs} bind:feedbacks={feedbacks}
-            bind:submitting={creating} bind:this={form} />
+            bind:submitting={updating} bind:this={form} />
         <Button color="primary" class="form-control" disabled={submitting}>
-            {#if creating}
+            {#if updating}
                 <Spinner type="border" size="sm" />Saving...
             {:else}
                 Save

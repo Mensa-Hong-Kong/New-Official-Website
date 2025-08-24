@@ -25,7 +25,7 @@ class TeamTypeController extends Controller implements HasMiddleware
                 'types', TeamType::orderBy('display_order')
                     ->orderBy('id')
                     ->get()
-                    ->makeHidden(['display_order', 'created_at' ])
+                    ->makeHidden(['display_order', 'created_at'])
             );
     }
 

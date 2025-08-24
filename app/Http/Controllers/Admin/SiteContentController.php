@@ -20,12 +20,12 @@ class SiteContentController extends Controller implements HasMiddleware
     public function index()
     {
         $pages = SitePage::with([
-                'contents' => function($query) {
-                    $query->select(['id', 'name', 'page_id']);
-                }
-            ])->select(['id', 'name'])
+            'contents' => function ($query) {
+                $query->select(['id', 'name', 'page_id']);
+            },
+        ])->select(['id', 'name'])
             ->get();
-        foreach($pages as $page) {
+        foreach ($pages as $page) {
             $page->contents->makeHidden('page_id');
         }
 
@@ -36,9 +36,9 @@ class SiteContentController extends Controller implements HasMiddleware
     public function edit(SiteContent $siteContent)
     {
         $siteContent->load([
-            'page' => function($query) {
+            'page' => function ($query) {
                 $query->select(['id', 'name']);
-            }
+            },
         ]);
         $siteContent->makeHidden(['page_id', 'created_at', 'updated_at']);
         $siteContent->page->makeHidden('id');

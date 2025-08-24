@@ -3,8 +3,6 @@
 namespace App\Library\Stripe\Models;
 
 use App\Library\Stripe\Client;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

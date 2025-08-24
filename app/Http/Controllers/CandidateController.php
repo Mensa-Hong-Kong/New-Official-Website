@@ -103,9 +103,9 @@ class CandidateController extends Controller implements HasMiddleware
                         }
                         if ($admissionTest->candidates()->count() < $admissionTest->maximum_candidates) {
                             return redirect()->route(
-                                    'admission-tests.candidates.create',
-                                    ['admission_test' => $admissionTest]
-                                )->withErrors(['message' => 'You have no register this admission test, please register first.']);
+                                'admission-tests.candidates.create',
+                                ['admission_test' => $admissionTest]
+                            )->withErrors(['message' => 'You have no register this admission test, please register first.']);
                         }
 
                         return $redirect->withErrors(['message' => 'You have no register this admission test and this test is fulled, please register other admission test.']);
@@ -220,7 +220,7 @@ class CandidateController extends Controller implements HasMiddleware
                     'pivot' => [
                         'is_present' => $candidate->pivot->is_present,
                         'is_pass' => $candidate->pivot->is_pass,
-                    ]
+                    ],
                 ]
             );
         }

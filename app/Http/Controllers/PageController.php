@@ -17,11 +17,11 @@ class PageController extends Controller
             $pathname = substr($pathname, 1);
         }
         $page = CustomWebPage::select([
-                'title',
-                'og_image_url',
-                'description',
-                'content',
-            ])->where('pathname', strtolower($pathname))
+            'title',
+            'og_image_url',
+            'description',
+            'content',
+        ])->where('pathname', strtolower($pathname))
             ->firstOrFail();
 
         return Inertia::render('Pages/CustomWebPage')
@@ -67,7 +67,7 @@ class PageController extends Controller
                 }
             )->orderBy('testing_at')
             ->get();
-        foreach($tests as $test) {
+        foreach ($tests as $test) {
             $test->address->district->area
                 ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
             $test->address->district

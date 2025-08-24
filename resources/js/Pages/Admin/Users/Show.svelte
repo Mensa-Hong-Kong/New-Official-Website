@@ -115,7 +115,7 @@
         if(inputs.birthday.validity.valueMissing) {
             feedbacks.birthday = 'The birthday field is required.';
         } else if(inputs.birthday.validity.rangeOverflow) {
-            feedbacks.birthday = `The birthday not be greater than ${inputs.birthday.max} characters.`;
+            feedbacks.birthday = `The birthday field must be a date before or equal to ${inputs.birthday.max}.`;
         }
         return ! hasError();
     }
@@ -366,7 +366,7 @@
             <Col md="4">
                 <Label for="gender">Gender</Label>
                 <div hidden="{editing}">{genders[user.genderID]}</div>
-                <Input name="gender" minlength="8" maxlength="18" required
+                <Input name="gender" maxlength=255 required
                     hidden={! editing} disabled={updating} list="genders"
                     value={genders[user.genderID]} placeholder="gender"
                     valid={feedbacks.gender == 'Looks good!'}
@@ -379,7 +379,7 @@
                 <div hidden="{editing}">{user.birthday}</div>
                 <Input type="date" name="birthday" max={maxBirthday} required
                     hidden={! editing} disabled={updating}
-                    value={user.birthday} placeholder="given name"
+                    value={user.birthday} placeholder="birthday"
                     valid={feedbacks.birthday == 'Looks good!'}
                     invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!' }
                     feedback={feedbacks.birthday} bind:inner={inputs.birthday} />

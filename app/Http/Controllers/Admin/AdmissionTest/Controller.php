@@ -62,13 +62,13 @@ class Controller extends BaseController implements HasMiddleware
         }
         $tests = $tests->withCount('candidates')
             ->with([
-                'location' => function($query) {
+                'location' => function ($query) {
                     $query->select(['id', 'name']);
-                }
+                },
             ])->sortable('testing_at')->paginate();
         $tests->append('in_testing_time_range');
         $tests->makeHidden(['type_id', 'expect_end_at', 'location_id', 'address_id', 'created_at', 'updated_at']);
-        foreach($tests as $test) {
+        foreach ($tests as $test) {
             $test->location->makeHidden('id');
         }
 
@@ -155,19 +155,19 @@ class Controller extends BaseController implements HasMiddleware
             }
         }
         $admissionTest->load([
-             'proctors', 'address' => function($query) {
+            'proctors', 'address' => function ($query) {
                 $query->select(['id', 'district_id']);
-            }, 'candidates' => function($query) use($admissionTest) {
+            }, 'candidates' => function ($query) use ($admissionTest) {
                 $query->with([
-                    'lastAttendedAdmissionTest' => function($query) use($admissionTest) {
+                    'lastAttendedAdmissionTest' => function ($query) use ($admissionTest) {
                         $query->with([
-                            'type' => function($query) {
+                            'type' => function ($query) {
                                 $query->select(['id', 'interval_month']);
-                            }
+                            },
                         ])->whereNot('test_id', $admissionTest->id);
-                    }, 'passportType' => function($query) {
+                    }, 'passportType' => function ($query) {
                         $query->select(['id', 'name']);
-                    }
+                    },
                 ]);
             },
         ]);
@@ -188,9 +188,9 @@ class Controller extends BaseController implements HasMiddleware
             'username', 'member', 'family_name', 'middle_name', 'given_name',
             'birthday', 'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
         ]);
-        foreach($admissionTest->candidates as $candidate) {
+        foreach ($admissionTest->candidates as $candidate) {
             $candidate->passportType->makeHidden('id');
-            if($candidate->lastAttendedAdmissionTest) {
+            if ($candidate->lastAttendedAdmissionTest) {
                 $candidate->lastAttendedAdmissionTest->makeHidden([
                     'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
                     'maximum_candidates', 'is_public', 'created_at', 'updated_at',

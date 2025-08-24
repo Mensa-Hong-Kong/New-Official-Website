@@ -30,7 +30,6 @@
     function updateSuccessCallback(response) {
         editing = false;
         alert(response.data.success);
-        console.log(response.data.display_order);
         for(let key in navNodes) {
             navNodes[key]['children'] = [];
             if(response.data.display_order[key == 'root' ? '0' : key]) {
@@ -64,7 +63,7 @@
                     }
                 }
                 post(
-                    window.location.href+'/display-order',
+                    route('admin.other-payment-gateways.display-order.update'),
                     updateSuccessCallback,
                     updateFailCallback,
                     'put', data

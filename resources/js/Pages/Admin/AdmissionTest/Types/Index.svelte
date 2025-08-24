@@ -2,7 +2,6 @@
     import { Button, Spinner, Table, Alert } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 
     let { types: initTypes } = $props();
     let submitting = $state(false);
@@ -64,7 +63,7 @@
 
     function updateDisplayOrderFailCallback(error) {
         if(error.status == 422) {
-            alert(error.data.errors.display_order);
+            alert(error.response.data.errors.display_order);
         }
         updatingDisplayOrder = false;
         submitting = false;

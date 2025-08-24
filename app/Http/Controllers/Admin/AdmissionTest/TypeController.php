@@ -65,15 +65,15 @@ class TypeController extends Controller implements HasMiddleware
         $displayOptions = [];
         foreach ($types as $thisType) {
             $displayOrder = $thisType->display_order;
-            if($displayOrder > $type->display_order) {
-                --$displayOrder;
+            if ($displayOrder > $type->display_order) {
+                $displayOrder--;
             }
             $displayOptions[$displayOrder] = "before \"{$thisType->name}\"";
         }
-        if(count($types) > 1) {
+        if (count($types) > 1) {
             $index = max(array_keys($displayOptions));
-            if($index != $types->max('display_order')) {
-                ++$index;
+            if ($index != $types->max('display_order')) {
+                $index++;
             }
             $displayOptions[$index] = 'latest';
         }

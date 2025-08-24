@@ -14,7 +14,6 @@ use App\Models\UserHasContact;
 use App\Models\UserLoginLog;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Closure;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -22,6 +21,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -96,11 +96,11 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = $request->user();
         $user->load([
-            'admissionTests', 'emails.lastVerification' => function($query) {
+            'admissionTests', 'emails.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            }, 'mobiles.lastVerification' => function($query) {
+            }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            }, 
+            },
         ]);
         $user->emails->append('is_verified');
         $user->mobiles->append('is_verified');
@@ -112,11 +112,12 @@ class UserController extends Controller implements HasMiddleware
         $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->admissionTests->makeHidden([
             'type_id', 'expect_end_at', 'location_id', 'address_id',
-            'is_public', 'maximum_candidates', 'pivot.test_id', 'pivot.user_id'
+            'is_public', 'maximum_candidates', 'pivot.test_id', 'pivot.user_id',
         ]);
         foreach ($user->admissionTests as $test) {
             $test->pivot->makeHidden('user_id', 'test_id');
         }
+
         return Inertia::render('User/Profile')
             ->with('user', $user)
             ->with(

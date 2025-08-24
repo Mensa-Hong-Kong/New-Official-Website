@@ -55,7 +55,7 @@ return [
         ],
         'lifetime' => [
             'transaction' => env('STRIPE_TRANSACTION_LIFETIME', 120),
-            'webhook' =>  env('STRIPE_WEBHOOK_LIFETIME', 300),
+            'webhook' => env('STRIPE_WEBHOOK_LIFETIME', 300),
         ],
     ],
 

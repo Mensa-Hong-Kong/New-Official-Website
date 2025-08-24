@@ -34,7 +34,7 @@ class UserController extends Controller implements HasMiddleware
         $isSearch = false;
         $append = [];
         $users = User::with([
-            'lastLoginLog' => function($query) {
+            'lastLoginLog' => function ($query) {
                 $query->select(['id', 'user_id', 'created_at']);
             },
         ]);
@@ -96,8 +96,8 @@ class UserController extends Controller implements HasMiddleware
             'passport_type_id', 'passport_number',
             'birthday', 'member',
         ]);
-        foreach($users as $user) {
-            if($user->lastLoginLog) {
+        foreach ($users as $user) {
+            if ($user->lastLoginLog) {
                 $user->lastLoginLog->makeHidden(['id', 'user_id']);
             }
         }
@@ -120,9 +120,9 @@ class UserController extends Controller implements HasMiddleware
     public function show(User $user)
     {
         $user->load([
-            'emails.lastVerification' => function($query) {
+            'emails.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            }, 'mobiles.lastVerification' => function($query) {
+            }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             },
         ]);
@@ -130,7 +130,7 @@ class UserController extends Controller implements HasMiddleware
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->mobiles->append('is_verified');
         $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
-        
+
         return Inertia::render('Admin/Users/Show')
             ->with('user', $user)
             ->with(

@@ -172,7 +172,7 @@ class User extends Authenticatable
             get: function (mixed $value, array $attributes) use ($table) {
                 return AdmissionTest::where('testing_at', '<', now())
                     ->whereHas(
-                        'candidates', function($query) use($attributes, $table) {
+                        'candidates', function ($query) use ($attributes, $table) {
                             $query->where('passport_type_id', $attributes['passport_type_id'])
                                 ->where('passport_number', $attributes['passport_number'])
                                 ->whereNot("$table.id", $attributes['id'])

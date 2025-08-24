@@ -74,8 +74,6 @@
             let submitAt = Date.now();
             submitting = 'updateProctor'+submitAt;
             if(submitting == 'updateProctor'+submitAt) {
-                console.log(inputs['proctors']);
-                console.log(index);
                 if(validation(inputs['proctors'][index]['user'])) {
                     proctors[index]['updating'] = true;
                     post(

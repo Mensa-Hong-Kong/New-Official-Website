@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('webhooks')
                 ->name('webhooks.')
-                ->group(__DIR__.'/../routes/webhooks.php',);
+                ->group(__DIR__.'/../routes/webhooks.php');
         },
     )
     ->withMiddleware(function (Middleware $middleware) {

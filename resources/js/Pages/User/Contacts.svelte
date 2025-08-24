@@ -398,7 +398,7 @@
         {/if}
     </h3>
     {#each contacts as row, index}
-        <Row class=" g-3">
+        <Row class="g-3">
             <Col md=3 hidden={row.editing}>{row.contact}</Col>
             <form class="col-md-3" id="editContactForm{row.id}" novalidate
                 hidden="{! row.editing}" onsubmit={(event) => update(event, index)}>

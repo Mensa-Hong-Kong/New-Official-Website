@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { Row, InputGroup, Label, InputGroupText, Input } from '@sveltestrap/sveltestrap';
-    import "ckeditor5/ckeditor5.css"
+    import "ckeditor5/ckeditor5.css";
     import {
         ClassicEditor, Essentials, TextTransformation, GeneralHtmlSupport, AutoImage, AutoLink,
         PasteFromOffice, Clipboard,
