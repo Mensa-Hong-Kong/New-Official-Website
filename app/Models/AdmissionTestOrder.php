@@ -16,6 +16,7 @@ class AdmissionTestOrder extends Model
         'quota',
         'type',
         'status',
+        'expired_at',
     ];
 
     public function user()
@@ -26,5 +27,10 @@ class AdmissionTestOrder extends Model
     public function tests()
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id');
+    }
+
+    public function attendedTests()
+    {
+        return $this->tests()->where('is_present', true);
     }
 }

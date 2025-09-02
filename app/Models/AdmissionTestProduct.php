@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Library\Stripe\Concerns\Models\HasStripeProduct;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,6 +43,34 @@ class AdmissionTestProduct extends Model
                 }
             }
         );
+    }
+
+    public function scopeWhereInAge(Builder $query, int $age) {
+        return $query->where(
+                function($query) use ($age) {
+                    $query->whereNull('minimum_age')
+                        ->orWhere('minimum_age', '<=', $age);
+                }
+            )->where(
+                function($query) use ($age) {
+                    $query->whereNull('maximum_age')
+                        ->orWhere('maximum_age', '>', $age);
+                }
+            );
+    }
+
+    public function scopeWhereInDateRange(Builder $query, Carbon $date) {
+        return $query->where(
+                function($query) use ($date) {
+                    $query->whereNull('start_at')
+                        ->orWhere('start_at', '<=', $date);
+                }
+            )->where(
+                function($query) use ($date) {
+                    $query->whereNull('end_at')
+                        ->orWhere('end_at', '=>', $date);
+                }
+            );
     }
 
     public function prices()

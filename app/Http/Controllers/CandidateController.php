@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CandidateStoreRequest;
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestProduct;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
@@ -30,9 +32,6 @@ class CandidateController extends Controller implements HasMiddleware
                     $errorReturn = redirect()->route('admission-tests.index');
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
-                    }
-                    if (! $user->stripe) {
-                        return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
                     }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         return redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest])
@@ -69,6 +68,31 @@ class CandidateController extends Controller implements HasMiddleware
                     return $next($request);
                 }
             ))->except('show'),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $request->user()->load([
+                        'lastAdmissionTestOrder' => function($query) {
+                            $query->withCount('attendedTests');
+                        }
+                    ]);
+                    if(
+                        ! $request->user()->lastAdmissionTestOrder ||
+                        $request->user()->lastAdmissionTestOrder->attended_tests_count >= $request->user()->lastAdmissionTestOrder->quota
+                    ) {
+                        $products = AdmissionTestProduct::whereHas('price')
+                            ->whereInAge($request->user()->age)
+                            ->whereInDateRange(now())
+                            ->get(['id', 'option_name', 'quota']);
+                        if (! $products->count()) {
+                            return redirect()->route('admission-tests.index')
+                                ->withErrors(['message' => 'Sorry, this admission test is not yet ready, please again later.']);
+                        }
+                        $request->merge(['products' => $products]);
+                    }
+
+                    return $next($request);
+                }
+            ))->only('create'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->user();
@@ -110,6 +134,8 @@ class CandidateController extends Controller implements HasMiddleware
                         }
 
                         return $redirect->withErrors(['message' => 'You have no register this admission test and this test is fulled, please register other admission test.']);
+                    } else if($user->lastAdmissionTestOrder->status != 'succeeded') {
+                        return 
                     }
 
                     return $next($request);
@@ -137,18 +163,40 @@ class CandidateController extends Controller implements HasMiddleware
         $admissionTest->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
         $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
         $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
-
-        return Inertia::render('AdmissionTests/Confirmation')
+        $return = Inertia::render('AdmissionTests/Confirmation')
             ->with('test', $admissionTest)
             ->with('user', $user);
+        if($request->products) {
+            $request->products->load('price');
+            foreach($request->products as $product) {
+                $product->price->makeHidden(['product_id', 'name', 'stripe_id', 'synced_to_stripe', 'created_at', 'updated_at']);
+            }
+            $return = $return->with('products', $request->products);
+        }
+        
+        return $return;
     }
 
-    public function store(Request $request, AdmissionTest $admissionTest)
+    public function store(CandidateStoreRequest $request, AdmissionTest $admissionTest)
     {
         $user = $request->user();
         $redirect = redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest]);
         DB::beginTransaction();
-        $admissionTest->candidates()->attach($user->id);
+        $order = $redirect->order ?? false;
+        if(
+            ! $request->user()->lastAdmissionTestOrder ||
+            $request->user()->lastAdmissionTestOrder->attended_tests_count >= $request->user()->lastAdmissionTestOrder->quota
+        ) {
+            $order = AdmissionTestOrder::create([
+                'user_id' => $request->user()->id,
+                'product_name' => $request->price->product->name,
+                'price_id' => $request->price->id,
+                'quota' => $request->price->product->quota,
+                'type' => 'stripe',
+                'status' => 'pending',
+            ]);
+        }
+        $admissionTest->candidates()->attach($user->id, ['order_id' => $order->id]);
         if ($user->futureAdmissionTest) {
             $oldTest = clone $user->futureAdmissionTest;
             $oldTest->delete();

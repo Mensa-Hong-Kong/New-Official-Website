@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('quota')->default(2);
             $table->enum('type', ['stripe', 'other']);
             $table->enum('status', ['pending', 'cancelled', 'failed', 'expired', 'succeeded']);
+            $table->dateTime('expired_at');
             $table->timestamps();
         });
     }
