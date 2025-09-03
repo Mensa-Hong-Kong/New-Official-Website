@@ -1,4 +1,5 @@
 <script> 
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import NavigationItems from './NavigationItems.svelte';
     import { post } from "@/submitForm.svelte";
@@ -85,27 +86,33 @@
     }
 </script>
 
-<section class="container">
-    <h2 class="mb-2 fw-bold text-uppercase">
-        Navigation Items
+<svelte:head>
+    <title>Administration Navigation Items | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <h2 class="mb-2 fw-bold text-uppercase">
+            Navigation Items
+            {#if navNodes.root.children.length}
+                <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
+                <Button color="primary" onclick={update} hidden={! editing}>
+                    {#if updating}
+                        <Spinner type="border" size="sm" />Saving Display Order...
+                    {:else}
+                        Save Display Order
+                    {/if}
+                </Button>
+                <Button color="danger" onclick={cancel} hidden={! editing || updating}>Cancel</Button>
+            {/if}
+        </h2>
         {#if navNodes.root.children.length}
-            <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
-            <Button color="primary" onclick={update} hidden={! editing}>
-                {#if updating}
-                    <Spinner type="border" size="sm" />Saving Display Order...
-                {:else}
-                    Save Display Order
-                {/if}
-            </Button>
-            <Button color="danger" onclick={cancel} hidden={! editing || updating}>Cancel</Button>
+            <NavigationItems bind:navNodes={navNodes} navNode={navNodes.root}
+                editing={editing} updating={updating} bind:submitting={submitting} />
+        {:else}
+            <Alert color="danger">
+                No Result
+            </Alert>
         {/if}
-    </h2>
-    {#if navNodes.root.children.length}
-        <NavigationItems bind:navNodes={navNodes} navNode={navNodes.root}
-            editing={editing} updating={updating} bind:submitting={submitting} />
-    {:else}
-        <Alert color="danger">
-            No Result
-        </Alert>
-    {/if}
-</section>
+    </section>
+</Layout>

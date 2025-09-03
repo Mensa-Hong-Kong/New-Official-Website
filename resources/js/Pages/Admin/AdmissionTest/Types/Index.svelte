@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Table, Alert } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
@@ -98,60 +99,66 @@
     }
 </script>
 
-<section class="container">
-    <h2 class="mb-2 fw-bold">
-        Admission Test Types
-        <Button color="primary" hidden={editingDisplayOrder}
-            onclick={editDisplayOrder}>Edit Display Order</Button>
-        <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
-            onclick={updateDisplayOrder}>
-            {#if savingDisplayOrder}
-                <Spinner type="border" size="sm" />Saving Display Order...
-            {:else}
-                Save Display Order
-            {/if}
-        </Button>
-        <Button color="danger" hidden={! editingDisplayOrder || savingDisplayOrder}
-            onclick={cancelEditDisplay}>Cancel</Button>
-    </h2>
-    {#if types.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Interval Month</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each types as row}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
-                            draggable: editingDisplayOrder && ! updatingDisplayOrder
-                        }}>
-                        <td>{row.id}</td>
-                        <td>{row.name}</td>
-                        <td>{row.interval_month}</td>
-                        <td>{row.is_active ? 'Active' : 'Inactive'}</td>
-                        <td>
-                            <a class="btn btn-primary"
-                                href="{
-                                    route(
-                                        'admin.admission-test.types.edit',
-                                        {type: row.id}
-                                    )
-                                }">Edit</a>
-                        </td>
+<svelte:head>
+    <title>Administration Admission Test Types | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <h2 class="mb-2 fw-bold">
+            Admission Test Types
+            <Button color="primary" hidden={editingDisplayOrder}
+                onclick={editDisplayOrder}>Edit Display Order</Button>
+            <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
+                onclick={updateDisplayOrder}>
+                {#if savingDisplayOrder}
+                    <Spinner type="border" size="sm" />Saving Display Order...
+                {:else}
+                    Save Display Order
+                {/if}
+            </Button>
+            <Button color="danger" hidden={! editingDisplayOrder || savingDisplayOrder}
+                onclick={cancelEditDisplay}>Cancel</Button>
+        </h2>
+        {#if types.length}
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Interval Month</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Edit</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
-    {:else}
-        <Alert color="danger">
-            No Result
-        </Alert>
-    {/if}
-</section>
+                </thead>
+                <tbody>
+                    {#each types as row}
+                        <tr data-id="{row.id}"
+                            ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
+                            draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
+                                draggable: editingDisplayOrder && ! updatingDisplayOrder
+                            }}>
+                            <td>{row.id}</td>
+                            <td>{row.name}</td>
+                            <td>{row.interval_month}</td>
+                            <td>{row.is_active ? 'Active' : 'Inactive'}</td>
+                            <td>
+                                <a class="btn btn-primary"
+                                    href="{
+                                        route(
+                                            'admin.admission-test.types.edit',
+                                            {type: row.id}
+                                        )
+                                    }">Edit</a>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        {:else}
+            <Alert color="danger">
+                No Result
+            </Alert>
+        {/if}
+    </section>
+</Layout>

@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { onMount } from 'svelte';
     import { Row, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
@@ -150,24 +151,30 @@
     }
 </script>
 
-<form method="POST" novalidate onsubmit="{update}">
-    <h2 class="mb-2 fw-bold text-uppercase">
-        Edit Site Content -
-        {content.page.name} -
-        {content.name}
-    </h2>
-    <Row class="mb-3 g-3 form-outline">
-        <Input type="textarea" label="Content" name="content" maxlength="65535" required
-            feedback={contentFeedback} valid={contentFeedback == 'Looks good!'}
-            invalid={contentFeedback != '' && contentFeedback != 'Looks good!' }
-            disabled={updating} bind:inner={contentInput} value={content.content} />
-    </Row>
-    <Button color="primary" class="form-control" disabled={submitting}>
-        {#if updating}
-            <Spinner type="border" size="sm" />
-            Saving...
-        {:else}
-            Save
-        {/if}
-    </Button>
-</form>
+<svelte:head>
+    <title>Administration Edit Site Content | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <form method="POST" novalidate onsubmit="{update}">
+        <h2 class="mb-2 fw-bold text-uppercase">
+            Edit Site Content -
+            {content.page.name} -
+            {content.name}
+        </h2>
+        <Row class="mb-3 g-3 form-outline">
+            <Input type="textarea" label="Content" name="content" maxlength="65535" required
+                feedback={contentFeedback} valid={contentFeedback == 'Looks good!'}
+                invalid={contentFeedback != '' && contentFeedback != 'Looks good!' }
+                disabled={updating} bind:inner={contentInput} value={content.content} />
+        </Row>
+        <Button color="primary" class="form-control" disabled={submitting}>
+            {#if updating}
+                <Spinner type="border" size="sm" />
+                Saving...
+            {:else}
+                Save
+            {/if}
+        </Button>
+    </form>
+</Layout>

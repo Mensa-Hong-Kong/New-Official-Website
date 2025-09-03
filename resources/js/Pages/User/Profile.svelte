@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Alert, Col, Label, Input, Table } from '@sveltestrap/sveltestrap';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
 	import Contacts from './Contacts.svelte';
@@ -21,7 +22,6 @@
     let editing = $state(false);
     let submitting = $state(false);
     let updating = $state(false);
-
     let feedbacks = $state({
         username: '',
         password: '',
@@ -182,149 +182,155 @@
     }
 </script>
 
-<section class="container">
-    <article>
-        <form class="row g-3" novalidate onsubmit="{update}">
-            <h2 class="mb-2 fw-bold">
-                Profile
-                <Button color="primary" disabled={updating} hidden={! editing} outline={! updating}>
-                    {#if updating}
-                        <Spinner type="border" size="sm" />Saving...
-                    {:else}
-                        Save
-                    {/if}
-                </Button>
-                <Button color="primary" outline onclick={edit}
-                    hidden={editing || updating}>Edit</Button>
-                <Button color="danger" outline onclick={cancel}
-                    hidden={! editing || updating}>Cancel</Button>
-            </h2>
-            <Alert color="primary" hidden={! editing}>
-                <ol>
-                    <li>Password only require when you change the username or password</li>
-                    <li>New password and confirm password is not require unless you want to change a new password</li>
-                </ol>
-            </Alert>
-            <Col md=4>
-                <Label>Username</Label>
-                <div hidden={editing}>{user.username}</div>
-                <Input name="username" type="text" hidden={! editing} disabled={updating}
-                    minlength=8 maxlength=16 required value={user.username} placeholder="username"
-                    feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
-                    invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
-                    bind:inner={inputs.username} />
-            </Col>
-            <Col md=4>
-                <Label>Password</Label>
-                <div hidden="{editing}">********</div>
-                <Input name="password" type="password" disabled={updating} hidden={! editing}
-                    minlength=8 maxlength=16 required placeholder="password"
-                    feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
-                    invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
-                    bind:inner="{inputs.password}" />
-            </Col>
-            <Col md=4 />
-            <Col md=4 hidden={! editing}>
-                <Label>New Password</Label>
-                <Input name="new_password" type="password" disabled={updating}
-                    minlength=8 maxlength=16 placeholder="New password"
-                    feedback={feedbacks.newPassword} valid={feedbacks.newPassword == 'Looks good!'}
-                    invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
-                    bind:inner={inputs.newPassword} />
-            </Col>
-            <Col md=4 hidden={! editing}>
-                <Label>Confirm New Password</Label>
-                <Input name="new_password_confirmation" type="password" disabled={updating}
-                    minlength=8 maxlength=16 placeholder="confirm new password"
-                    invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
-                    valid={feedbacks.newPassword == 'Looks good!'} bind:inner={inputs.confirmNewPassword} />
-            </Col>
-            <Col md=4 hidden={! editing}></Col>
-            <Col md=4>
-                <div class="form-label">Family Name</div>
-                <div>{user.familyName}</div>
-            </Col>
-            <Col md=4>
-                <div class="form-label">Middle Name</div>
-                <div>{user.middleName}</div>
-            </Col>
-            <Col md=4>
-                <div class="form-label">Given Name</div>
-                <div>{user.givenName}</div>
-            </Col>
-            <Col md=4>
-                <div class="form-label">Passport Type</div>
-                <div>{passportTypes[user.passportTypeID]}</div>
-            </Col>
-            <Col md=4>
-                <div class="form-label">Passport Number</div>
-                <div>{user.passportNumber}</div>
-            </Col>
-            <Col md=4 />
-            <Col md=4>
-                <Label>Gender</Label>
-                <div hidden="{editing}">{genders[user.genderID]}</div>
-                <Input name="gender" type="text" list="genders" hidden={! editing} disabled={updating}
-                    maxlength="255" required value={genders[user.genderID]} placeholder="gender"
-                    feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
-                    invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
-                    bind:inner={inputs.gender} />
-            </Col>
-            <Datalist id="genders" data={genders} />
-            <Col md=4>
-                <Label>Date of Birth</Label>
-                <div hidden="{editing}">{user.birthday}</div>
-                <Input name="birthday" type="date" hidden={! editing} disabled={updating}
-                    max={maxBirthday} required value={user.birthday}
-                    feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
-                    invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
-                    bind:inner={inputs.birthday} />
-            </Col>
-        </form>
-    </article>
-    <Contacts type="email" contacts={initUser.emails} bind:submitting={submitting} />
-    <Contacts type="mobile" contacts={initUser.mobiles} bind:submitting={submitting} />
-    {#if initUser.admission_tests.length}
+<svelte:head>
+    <title>Profile | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
         <article>
-            <h3 class="mb-2 fw-bold"><i class="bi bi-clipboard"></i> Admission Test</h3>
-            <Table hover>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Is Present</th>
-                        <th>Is Pass</th>
-                        <th>Show</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each initUser.admission_tests as test}
+            <form class="row g-3" novalidate onsubmit="{update}">
+                <h2 class="mb-2 fw-bold">
+                    Profile
+                    <Button color="primary" disabled={updating} hidden={! editing} outline={! updating}>
+                        {#if updating}
+                            <Spinner type="border" size="sm" />Saving...
+                        {:else}
+                            Save
+                        {/if}
+                    </Button>
+                    <Button color="primary" outline onclick={edit}
+                        hidden={editing || updating}>Edit</Button>
+                    <Button color="danger" outline onclick={cancel}
+                        hidden={! editing || updating}>Cancel</Button>
+                </h2>
+                <Alert color="primary" hidden={! editing}>
+                    <ol>
+                        <li>Password only require when you change the username or password</li>
+                        <li>New password and confirm password is not require unless you want to change a new password</li>
+                    </ol>
+                </Alert>
+                <Col md=4>
+                    <Label>Username</Label>
+                    <div hidden={editing}>{user.username}</div>
+                    <Input name="username" type="text" hidden={! editing} disabled={updating}
+                        minlength=8 maxlength=16 required value={user.username} placeholder="username"
+                        feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
+                        invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
+                        bind:inner={inputs.username} />
+                </Col>
+                <Col md=4>
+                    <Label>Password</Label>
+                    <div hidden="{editing}">********</div>
+                    <Input name="password" type="password" disabled={updating} hidden={! editing}
+                        minlength=8 maxlength=16 required placeholder="password"
+                        feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
+                        invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
+                        bind:inner="{inputs.password}" />
+                </Col>
+                <Col md=4 />
+                <Col md=4 hidden={! editing}>
+                    <Label>New Password</Label>
+                    <Input name="new_password" type="password" disabled={updating}
+                        minlength=8 maxlength=16 placeholder="New password"
+                        feedback={feedbacks.newPassword} valid={feedbacks.newPassword == 'Looks good!'}
+                        invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
+                        bind:inner={inputs.newPassword} />
+                </Col>
+                <Col md=4 hidden={! editing}>
+                    <Label>Confirm New Password</Label>
+                    <Input name="new_password_confirmation" type="password" disabled={updating}
+                        minlength=8 maxlength=16 placeholder="confirm new password"
+                        invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
+                        valid={feedbacks.newPassword == 'Looks good!'} bind:inner={inputs.confirmNewPassword} />
+                </Col>
+                <Col md=4 hidden={! editing}></Col>
+                <Col md=4>
+                    <div class="form-label">Family Name</div>
+                    <div>{user.familyName}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Middle Name</div>
+                    <div>{user.middleName}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Given Name</div>
+                    <div>{user.givenName}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Passport Type</div>
+                    <div>{passportTypes[user.passportTypeID]}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Passport Number</div>
+                    <div>{user.passportNumber}</div>
+                </Col>
+                <Col md=4 />
+                <Col md=4>
+                    <Label>Gender</Label>
+                    <div hidden="{editing}">{genders[user.genderID]}</div>
+                    <Input name="gender" type="text" list="genders" hidden={! editing} disabled={updating}
+                        maxlength="255" required value={genders[user.genderID]} placeholder="gender"
+                        feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
+                        invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
+                        bind:inner={inputs.gender} />
+                </Col>
+                <Datalist id="genders" data={genders} />
+                <Col md=4>
+                    <Label>Date of Birth</Label>
+                    <div hidden="{editing}">{user.birthday}</div>
+                    <Input name="birthday" type="date" hidden={! editing} disabled={updating}
+                        max={maxBirthday} required value={user.birthday}
+                        feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                        invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                        bind:inner={inputs.birthday} />
+                </Col>
+            </form>
+        </article>
+        <Contacts type="email" contacts={initUser.emails} bind:submitting={submitting} />
+        <Contacts type="mobile" contacts={initUser.mobiles} bind:submitting={submitting} />
+        {#if initUser.admission_tests.length}
+            <article>
+                <h3 class="mb-2 fw-bold"><i class="bi bi-clipboard"></i> Admission Test</h3>
+                <Table hover>
+                    <thead>
                         <tr>
-                            <th>{formatToDate(test.testing_at)}</th>
-                            <td>
-                                <i class={[
-                                    'bi', {
-                                        'bi-check': test.pivot.is_present,
-                                        'bi-x': ! test.pivot.is_present,
-                                    }
-                                ]}></i>
-                            </td>
-                            <td>
-                                {#if test.pivot.is_pass !== null}
+                            <th>Date</th>
+                            <th>Is Present</th>
+                            <th>Is Pass</th>
+                            <th>Show</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each initUser.admission_tests as test}
+                            <tr>
+                                <th>{formatToDate(test.testing_at)}</th>
+                                <td>
                                     <i class={[
                                         'bi', {
-                                            'bi-check': test.pivot.is_pass,
-                                            'bi-x': ! test.pivot.is_pass,
+                                            'bi-check': test.pivot.is_present,
+                                            'bi-x': ! test.pivot.is_present,
                                         }
                                     ]}></i>
-                                {/if}
-                            </td>
-                            <td>
-                                <a class="btn btn-primary" href="{route('admission-tests.candidates.show', {'admission_test': test.id})}">Show</a>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </Table>
-        </article>
-    {/if}
-</section>
+                                </td>
+                                <td>
+                                    {#if test.pivot.is_pass !== null}
+                                        <i class={[
+                                            'bi', {
+                                                'bi-check': test.pivot.is_pass,
+                                                'bi-x': ! test.pivot.is_pass,
+                                            }
+                                        ]}></i>
+                                    {/if}
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary" href="{route('admission-tests.candidates.show', {'admission_test': test.id})}">Show</a>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </Table>
+            </article>
+        {/if}
+    </section>
+</Layout>

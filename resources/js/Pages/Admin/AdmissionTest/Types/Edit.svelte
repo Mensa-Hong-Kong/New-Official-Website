@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
@@ -75,18 +76,24 @@
     }
 </script>
 
-<section class="container">
-    <form id="form" method="POST" novalidate onsubmit={update}>
-        <h2 class="mb-2 fw-bold text-uppercase">Edit Admission Test Type</h2>
-        <Form displayOptions={displayOptions} type={type}
-            bind:inputs={inputs} bind:feedbacks={feedbacks}
-            bind:submitting={updating} bind:this={form} />
-        <Button color="primary" class="form-control" disabled={submitting}>
-            {#if updating}
-                <Spinner type="border" size="sm" />Saving...
-            {:else}
-                Save
-            {/if}
-        </Button>
-    </form>
-</section>
+<svelte:head>
+    <title>Administration Edit Admission Test Type | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <form id="form" method="POST" novalidate onsubmit={update}>
+            <h2 class="mb-2 fw-bold text-uppercase">Edit Admission Test Type</h2>
+            <Form displayOptions={displayOptions} type={type}
+                bind:inputs={inputs} bind:feedbacks={feedbacks}
+                bind:submitting={updating} bind:this={form} />
+            <Button color="primary" class="form-control" disabled={submitting}>
+                {#if updating}
+                    <Spinner type="border" size="sm" />Saving...
+                {:else}
+                    Save
+                {/if}
+            </Button>
+        </form>
+    </section>
+</Layout>

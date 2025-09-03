@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
     import { post } from "@/submitForm.svelte";
@@ -62,56 +63,62 @@
     }
 </script>
 
-<section class="container">
-    <h2 class="mb-2 fw-bold text-uppercase">Custom Web Pages</h2>
-    {#if pages.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col"><SortableLink column="pathname" title="Pathname At" /></th>
-                    <th scope="col"><SortableLink column="title" title="Title" /></th>
-                    <th scope="col"><SortableLink column="created_at" title="Created At" /></th>
-                    <th scope="col"><SortableLink column="updated_at" title="Updated At" /></th>
-                    <th scope="col">Control</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each pages as page, index}
+<svelte:head>
+    <title>Administration Custom Web Pages | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <h2 class="mb-2 fw-bold text-uppercase">Custom Web Pages</h2>
+        {#if pages.length}
+            <Table hover>
+                <thead>
                     <tr>
-                        <th scope="row">{page.pathname}</th>
-                        <td>{page.title}</td>
-                        <td>{formatToDatetime(page.created_at)}</td>
-                        <td>{formatToDatetime(page.updated_at)}</td>
-                        <td>
-                            <a class="btn btn-primary" href="{
-                                route(
-                                    'custom-web-page',
-                                    {pathname: page.pathname}
-                                )
-                            }">Show</a>
-                            <a class="btn btn-primary" href="{
-                                route(
-                                    'admin.custom-web-pages.edit',
-                                    {custom_web_page: page.id}
-                                )
-                            }">Edit</a>
-                            <Button color="danger"
-                                disabled={submitting} onclick={() => destroy(index)}>
-                                {#if page.deleting}
-                                    <Spinner type="border" size="sm" />
-                                    Deleting...
-                                {:else}
-                                    Delete
-                                {/if}
-                            </Button>
-                        </td>
+                        <th scope="col"><SortableLink column="pathname" title="Pathname At" /></th>
+                        <th scope="col"><SortableLink column="title" title="Title" /></th>
+                        <th scope="col"><SortableLink column="created_at" title="Created At" /></th>
+                        <th scope="col"><SortableLink column="updated_at" title="Updated At" /></th>
+                        <th scope="col">Control</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
-    {:else}
-        <Alert color="danger">
-            No Result
-        </Alert>
-    {/if}
-</section>
+                </thead>
+                <tbody>
+                    {#each pages as page, index}
+                        <tr>
+                            <th scope="row">{page.pathname}</th>
+                            <td>{page.title}</td>
+                            <td>{formatToDatetime(page.created_at)}</td>
+                            <td>{formatToDatetime(page.updated_at)}</td>
+                            <td>
+                                <a class="btn btn-primary" href="{
+                                    route(
+                                        'custom-web-page',
+                                        {pathname: page.pathname}
+                                    )
+                                }">Show</a>
+                                <a class="btn btn-primary" href="{
+                                    route(
+                                        'admin.custom-web-pages.edit',
+                                        {custom_web_page: page.id}
+                                    )
+                                }">Edit</a>
+                                <Button color="danger"
+                                    disabled={submitting} onclick={() => destroy(index)}>
+                                    {#if page.deleting}
+                                        <Spinner type="border" size="sm" />
+                                        Deleting...
+                                    {:else}
+                                        Delete
+                                    {/if}
+                                </Button>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        {:else}
+            <Alert color="danger">
+                No Result
+            </Alert>
+        {/if}
+    </section>
+</Layout>

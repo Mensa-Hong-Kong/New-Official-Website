@@ -1,11 +1,12 @@
 <script>
+    import { inertia } from '@inertiajs/svelte'
     import { page } from "@inertiajs/svelte";
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
 	import { setCsrfToken } from '@/submitForm.svelte';
 
-	let { children } = $props();
+    let { children } = $props();
 
     setCsrfToken($page.props.csrf_token);
 
@@ -16,21 +17,6 @@
         alert($page.props.flash.error);
     }
 </script>
-
-<svelte:head>
-    {#if $page.props.title}
-        <title>{$page.props.title} | {import.meta.env.VITE_APP_NAME}</title>
-        <meta name="title" content="{$page.props.title} | {import.meta.env.VITE_APP_NAME}">
-    {:else}
-        <title>{import.meta.env.VITE_APP_NAME}</title>
-        <meta name="title" content="{import.meta.env.VITE_APP_NAME}">
-    {/if}
-    <meta name="description" content="{$page.props.description ?? import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:description" content="{$page.props.description ?? import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:image" content="{$page.props.og_image ?? 'og_image.png'}">
-    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
-    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
-</svelte:head>
 
 <header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
     <nav class="flex-wrap container-xxl" aria-label="Main navigation">
@@ -509,7 +495,9 @@
         </aside>
     {/if}
     <main class="w-100">
-        {@render children()}
+        {#if children}
+            {@render children()}
+        {/if}
     </main>
 </div>
 

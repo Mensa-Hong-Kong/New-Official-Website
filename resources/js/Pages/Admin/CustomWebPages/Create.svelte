@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
 	import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
@@ -80,17 +81,23 @@
     }
 </script>
 
-<section class="container">
-    <form method="POST" novalidate onsubmit="{create}">
-        <h2 class="mb-2 fw-bold text-uppercase">Create Custom Web Page</h2>
-        <Form bind:inputs={inputs} bind:feedbacks={feedbacks}
-            bind:submitting={creating} bind:this={form} />
-        <Button color="success" class="form-control" disabled={submitting}>
-            {#if creating}
-                <Spinner type="border" size="sm" />Creating...
-            {:else}
-                Create
-            {/if}
-        </Button>
-    </form>
-</section>
+<svelte:head>
+    <title>Administration Create Custom Web Page | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <form method="POST" novalidate onsubmit="{create}">
+            <h2 class="mb-2 fw-bold text-uppercase">Create Custom Web Page</h2>
+            <Form bind:inputs={inputs} bind:feedbacks={feedbacks}
+                bind:submitting={creating} bind:this={form} />
+            <Button color="success" class="form-control" disabled={submitting}>
+                {#if creating}
+                    <Spinner type="border" size="sm" />Creating...
+                {:else}
+                    Create
+                {/if}
+            </Button>
+        </form>
+    </section>
+</Layout>

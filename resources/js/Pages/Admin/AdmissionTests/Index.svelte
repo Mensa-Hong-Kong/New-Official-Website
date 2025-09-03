@@ -1,4 +1,5 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
     import Pagination from '@/Pages/Components/Pagination.svelte';
@@ -62,61 +63,68 @@
         confirm(message, confirmedDelete, index);
     }
 </script>
-<section class="container">
-    <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
-    {#if tests.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col"><SortableLink column="id" title="#" /></th>
-                    <th scope="col"><SortableLink column="testing_at" title="Testing At" /></th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Candidates</th>
-                    <th scope="col">Is Public</th>
-                    <th scope="col">Control</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each tests as row, index}
+
+<svelte:head>
+    <title>Administration Admission Tests | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section class="container">
+        <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
+        {#if tests.length}
+            <Table hover>
+                <thead>
                     <tr>
-                        <th scope="row">{row.id}</th>
-                        <td>{formatToDatetime(row.testing_at)}</td>
-                        <td>{row.location.name}</td>
-                        <td>{row.candidates_count}/{row.maximum_candidates}</td>
-                        <td>{row.is_public ? 'Public' : 'Private'}</td>
-                        <td>
-                            {#if
-                                row.in_testing_time_range ||
-                                auth.user.permissions.includes('Edit:Admission Test') ||
-                                auth.user.roles.includes('Super Administrator')
-                            }
-                                <a class="btn btn-primary" href={
-                                    route(
-                                        'admin.admission-tests.show',
-                                        {admission_test: row.id}
-                                    )
-                                }>Show</a>
-                                <Button color="danger"
-                                    disabled={submitting} onclick={() => destroy(index)}>
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />
-                                        Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
-                            {:else}
-                                <Button color="secondary" disabled={submitting}>Show</Button>
-                            {/if}
-                        </td>
+                        <th scope="col"><SortableLink column="id" title="#" /></th>
+                        <th scope="col"><SortableLink column="testing_at" title="Testing At" /></th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Candidates</th>
+                        <th scope="col">Is Public</th>
+                        <th scope="col">Control</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
-        <Pagination total={tests.last_page} current={tests.current_page} />
-    {:else}
-        <Alert color="danger">
-            No Result
-        </Alert>
-    {/if}
-</section>
+                </thead>
+                <tbody>
+                    {#each tests as row, index}
+                        <tr>
+                            <th scope="row">{row.id}</th>
+                            <td>{formatToDatetime(row.testing_at)}</td>
+                            <td>{row.location.name}</td>
+                            <td>{row.candidates_count}/{row.maximum_candidates}</td>
+                            <td>{row.is_public ? 'Public' : 'Private'}</td>
+                            <td>
+                                {#if
+                                    row.in_testing_time_range ||
+                                    auth.user.permissions.includes('Edit:Admission Test') ||
+                                    auth.user.roles.includes('Super Administrator')
+                                }
+                                    <a class="btn btn-primary" href={
+                                        route(
+                                            'admin.admission-tests.show',
+                                            {admission_test: row.id}
+                                        )
+                                    }>Show</a>
+                                    <Button color="danger"
+                                        disabled={submitting} onclick={() => destroy(index)}>
+                                        {#if row.deleting}
+                                            <Spinner type="border" size="sm" />
+                                            Deleting...
+                                        {:else}
+                                            Delete
+                                        {/if}
+                                    </Button>
+                                {:else}
+                                    <Button color="secondary" disabled={submitting}>Show</Button>
+                                {/if}
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+            <Pagination total={tests.last_page} current={tests.current_page} />
+        {:else}
+            <Alert color="danger">
+                No Result
+            </Alert>
+        {/if}
+    </section>
+</Layout>

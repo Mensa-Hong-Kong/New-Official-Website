@@ -1,12 +1,14 @@
 <script>
+    import Layout from '@/Pages/Layouts/App.svelte';
     import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm.svelte";
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
 
-    let {paymentGateways: initPaymentGateways} = $props();
-    const paymentGateways = $state([]);
+    let { paymentGateways: initPaymentGateways } = $props();
+    let paymentGateways = $state([]);
     let submitting = $state(false);
-    const inputNames = {};
+    let inputNames = $state({});
+
     for (const data of initPaymentGateways) {
         paymentGateways.push({
             id: data.id,
@@ -211,77 +213,83 @@
     }
 </script>
 
-<section>
-    <h2 class="mb-2 fw-bold text-uppercase">
-        Other Payment Gateway
-        <Button color="primary" onclick={editDisplayOrder}
-            hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
-        <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
-            hidden={! editingDisplayOrder || updatingDisplayOrder}>Save Display Order</Button>
-        <Button color="danger" onclick={cancelEditDisplay}
-            hidden={! editingDisplayOrder || updatingDisplayOrder}>Cancel</Button>
-        <Button color="primary" hidden={! updatingDisplayOrder} disabled>
-            <Spinner type="border" size="sm" />
-            Saving Display Order...
-        </Button>
-    </h2>
-    {#if paymentGateways.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Control</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each paymentGateways as row, index}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
-                        class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
-                        <th>{row.id}</th>
-                        <td>
-                            <span hidden="{row.editing}">{row.name}</span>
-                            <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
-                                onsubmit={(event) => updateName(event, index)}>
-                                <Input name="name" maxlength="255"
-                                    value={row.name} disabled={row.updating}
-                                    bind:inner={inputNames[index]} />
-                            </form>
-                        </td>
-                        <td>
-                            <Button color={row.isActive ? 'success' : 'danger'}
-                                onclick={() => updateAction(index, ! row.isActive)}
-                                disabled={row.updatingActiveStatus}>
-                                {#if row.updatingActiveStatus}
-                                    <Spinner type="border" size="sm" />
-                                    Updating...
-                                {:else}
-                                    {row.isActive ? 'Active' : 'Inactive'}
-                                {/if}
-                            </Button>
-                        </td>
-                        <td>
-                            <Button color="primary" hidden={row.editing || row.updating}
-                                onclick={() => paymentGateways[index]['editing'] = true}>Edit</Button>
-                            <Button color="primary" form="updateName{row.id}"
-                                hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
-                            <Button color="danger" hidden={! row.editing || row.updating}
-                                onclick={() => cancelEditName(index)}>Cancel</Button>
-                            <Button color="primary" hidden={! row.updating} disabled>
-                                <Spinner type="border" size="sm" />
-                                Saving...
-                            </Button>
-                        </td>
+<svelte:head>
+    <title>Administration Other Payment Gateways | {import.meta.env.VITE_APP_NAME}</title>
+</svelte:head>
+
+<Layout>
+    <section>
+        <h2 class="mb-2 fw-bold text-uppercase">
+            Other Payment Gateway
+            <Button color="primary" onclick={editDisplayOrder}
+                hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
+            <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
+                hidden={! editingDisplayOrder || updatingDisplayOrder}>Save Display Order</Button>
+            <Button color="danger" onclick={cancelEditDisplay}
+                hidden={! editingDisplayOrder || updatingDisplayOrder}>Cancel</Button>
+            <Button color="primary" hidden={! updatingDisplayOrder} disabled>
+                <Spinner type="border" size="sm" />
+                Saving Display Order...
+            </Button>
+        </h2>
+        {#if paymentGateways.length}
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Control</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
-    {:else}
-        <Alert color="danger">
-            No Result
-        </Alert>
-    {/if}
-</section>
+                </thead>
+                <tbody>
+                    {#each paymentGateways as row, index}
+                        <tr data-id="{row.id}"
+                            ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
+                            draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
+                            class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
+                            <th>{row.id}</th>
+                            <td>
+                                <span hidden="{row.editing}">{row.name}</span>
+                                <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
+                                    onsubmit={(event) => updateName(event, index)}>
+                                    <Input name="name" maxlength="255"
+                                        value={row.name} disabled={row.updating}
+                                        bind:inner={inputNames[index]} />
+                                </form>
+                            </td>
+                            <td>
+                                <Button color={row.isActive ? 'success' : 'danger'}
+                                    onclick={() => updateAction(index, ! row.isActive)}
+                                    disabled={row.updatingActiveStatus}>
+                                    {#if row.updatingActiveStatus}
+                                        <Spinner type="border" size="sm" />
+                                        Updating...
+                                    {:else}
+                                        {row.isActive ? 'Active' : 'Inactive'}
+                                    {/if}
+                                </Button>
+                            </td>
+                            <td>
+                                <Button color="primary" hidden={row.editing || row.updating}
+                                    onclick={() => paymentGateways[index]['editing'] = true}>Edit</Button>
+                                <Button color="primary" form="updateName{row.id}"
+                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                                <Button color="danger" hidden={! row.editing || row.updating}
+                                    onclick={() => cancelEditName(index)}>Cancel</Button>
+                                <Button color="primary" hidden={! row.updating} disabled>
+                                    <Spinner type="border" size="sm" />
+                                    Saving...
+                                </Button>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        {:else}
+            <Alert color="danger">
+                No Result
+            </Alert>
+        {/if}
+    </section>
+</Layout>

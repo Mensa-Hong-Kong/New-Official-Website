@@ -18,17 +18,14 @@ class PageController extends Controller
         }
         $page = CustomWebPage::select([
             'title',
-            'og_image_url',
             'description',
+            'og_image_url',
             'content',
         ])->where('pathname', strtolower($pathname))
             ->firstOrFail();
 
         return Inertia::render('Pages/CustomWebPage')
-            ->with('title', $page->title)
-            ->with('og_image_url', $page->og_image_url)
-            ->with('description', $page->description)
-            ->with('content', $page->content);
+            ->with('page', $page);
     }
 
     public function admissionTests(Request $request)
