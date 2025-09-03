@@ -1,12 +1,22 @@
 <script>
     import { inertia } from '@inertiajs/svelte'
     import { page } from "@inertiajs/svelte";
+    import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavLink, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
 	import { setCsrfToken } from '@/submitForm.svelte';
 
     let { children } = $props();
+    let isOpenNav = $state(false);
+
+    function handleNavUpdate(event) {
+        isOpenNav = event.detail.isOpenNav;
+    }
+
+    function navToggle() {
+        isOpenNav = !isOpenNav;
+    }
 
     setCsrfToken($page.props.csrf_token);
 
@@ -18,84 +28,59 @@
     }
 </script>
 
-<header class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark nav-pills ">
-    <nav class="flex-wrap container-xxl" aria-label="Main navigation">
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-label="Toggle admin navigation">
+<header>
+    <Navbar color="dark" theme="dark" expand="lg" container="xxl" sticky="top" pills fixed="wrap">
+        <button class="navbar-toggler" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-label="Toggle admin navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{route('index')}">Mensa</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="bdNavbar">
-            <ul class="navbar-nav me-auto">
+        <NavbarBrand href={route('index')} class="me-auto">Mensa</NavbarBrand>
+        <NavbarToggler on:click={navToggle} />
+        <Collapse {isOpenNav} navbar expand="md" on:update={handleNavUpdate}>
+            <Nav class="me-auto" navbar>
                 {#each $page.props.navigationNodes.root as itemID}
                     {#if $page.props.navigationNodes[itemID].length}
-                        <li class="nav-item dropdown">
-                            <button class="nav-link dropdown-toggle" id="dropdown{itemID}"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {$page.props.navigationItems[itemID]['name']}
-                            </button>
+                        <Dropdown nav inNavbar>
+                            <DropdownToggle nav caret>{$page.props.navigationItems[itemID]['name']}</DropdownToggle>
                             <NavDropdown nodes={$page.props.navigationNodes}
                                 items={$page.props.navigationItems} id={itemID} />
-                        </li>
+                        </Dropdown>
                     {:else}
-                        <li class="nav-item">
-                            <a href="{$page.props.navigationItems[itemID]['url'] ?? '#'}"
-                                class="nav-link">{$page.props.navigationItems[itemID]['name']}</a>
-                        </li>
+                        <NavLink href={$page.props.navigationItems[itemID]['url'] ?? '#'}>
+                            {$page.props.navigationItems[itemID]['name']}
+                        </NavLink>
                     {/if}
                 {/each}
-            </ul>
+            </Nav>
             <hr class="d-lg-none text-white-50">
-            <ul class="navbar-nav">
+            <Nav class="ms-auto" navbar>
                 {#if $page.props.auth.user}
                     {#if
                         $page.props.auth.user.hasProctorTests ||
                         $page.props.auth.user.permissions.length ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        <li class="nav-item">
-                            <a href="{
-                                $page.props.auth.user.permissions.length ||
-                                $page.props.auth.user.roles.includes('Super Administrator') ?
-                                route('admin.index') :
-                                route('admin.admission-tests.index')
-                            }" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current().startsWith('admin.')}
-                            ]}>Admin</a>
-                        </li>
+                        <NavLink active={route().current().startsWith('admin.')} href={
+                            $page.props.auth.user.permissions.length ||
+                            $page.props.auth.user.roles.includes('Super Administrator') ?
+                            route('admin.index') :
+                            route('admin.admission-tests.index')
+                        }>Admin</NavLink>
                         <hr class="d-lg-none text-white-50">
                     {/if}
-                    <li class="nav-item">
-                        <a href="{route('profile.show')}" class={[
-                            'nav-link', 'align-items-center',
-                            {active: route().current('profile.show')}
-                        ]}>Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{route('logout')}" class='nav-link align-items-center'>Logout</a>
-                    </li>
+                    <NavLink active={route().current('profile.show')}
+                        href={route('profile.show')}>Profile</NavLink>
+                    <NavLink href={route('logout')}>Logout</NavLink>
                 {:else}
-                    <li class="nav-item">
-                        <a href="{route('login')}" class={[
-                            'nav-link', 'align-items-center',
-                            {active: route().current('login')}
-                        ]}>Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{route('register')}" class={[
-                            'nav-link', 'align-items-center',
-                            {active: route().current('register')}
-                        ]}>Register</a>
-                    </li>
+                    <NavLink active={route().current('login')}
+                        href={route('login')}>Login</NavLink>
+                    <NavLink active={route().current('register')}
+                        href={route('register')}>Register</NavLink>
                 {/if}
-            </ul>
-        </div>
-    </nav>
+            </Nav>
+        </Collapse>
+    </Navbar>
 </header>
-<div class={['container-xxl', {'d-flex': route().current().startsWith('admin.')}]}>
+<Container xxl class={{'d-flex': route().current().startsWith('admin.')}}>
     {#if route().current().startsWith('admin.')}
         <aside class="offcanvas-lg offcanvas-start" tabindex="-1" id="bdSidebar" aria-labelledby="bdSidebarOffcanvasLabel">
             <div class="offcanvas-header">
@@ -103,17 +88,15 @@
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdSidebar"></button>
             </div>
             <nav class="offcanvas-body">
-                <ul class="nav flex-column nav-pills">
+                <Nav vertical pills class="offcanvas-body">
                     {#if
                         $page.props.auth.user.permissions.length ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        <li class="nav-item">
-                            <a href="{route('admin.index')}" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current('admin.index')},
-                            ]}>Dashboard</a>
-                        </li>
+                        <NavItem>
+                            <NavLink active={route().current('admin.index')}
+                                href={route('admin.index')}>Dashboard</NavLink>
+                        </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('View:User') ||
                             $page.props.auth.user.roles.includes('Super Administrator')
@@ -126,38 +109,31 @@
                                             'nav-item', 'accordion-button',
                                             {collapsed: ! route().current().startsWith('admin.users.')},
                                         ]}>Users</button>
-                                    <ul id="asideNavAdminUser" class={[
-                                        'accordion-collapse', 'collapse',
-                                        {show: route().current().startsWith('admin.users.')},
-                                    ]}>
-                                        <li>
-                                            <a href="{route('admin.users.index')}" class={[
-                                                'nav-link', 'align-items-center',
-                                                {active: route().current('admin.users.index')},
-                                            ]}>Index</a>
-                                        </li>
-                                        {#if route().current('admin.users.show')}
-                                            <a href="{route().current()}"
-                                                class="nav-link align-items-center active">Show</a>
-                                        {/if}
+                                    <ul id="asideNavAdminUser" class="accordion-collapse collapse show">
+                                        <NavItem>
+                                            <NavLink href={route('admin.users.index')}>Index</NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink href={
+                                                route(
+                                                    "admin.users.show",
+                                                    {user: route().params.user}
+                                                )
+                                            } active>Show</NavLink>
+                                        </NavItem>
                                     </ul>
                                 </li>
                             {:else}
-                                <li class="nav-item">
-                                    <a href="{route('admin.users.index')}" class={[
-                                        'nav-link',
-                                        'align-items-center',
-                                        {active: route().current('admin.users.index')},
-                                    ]}>Users</a>
-                                </li>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.users.index')}
+                                        href={route('admin.users.index')}>Users</NavLink>
+                                </NavItem>
                             {/if}
                         {/if}
-                        <li class="nav-item">
-                            <a href="{route('admin.team-types.index')}" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current('admin.team-types.index')},
-                            ]}>Team Types</a>
-                        </li>
+                        <NavItem>
+                            <NavLink active={route().current('admin.team-types.index')}
+                                href={route('admin.team-types.index')}>Team Types</NavLink>
+                        </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('Edit:Permission') ||
                             $page.props.auth.user.roles.includes('Super Administrator') ||
@@ -177,75 +153,67 @@
                                     'accordion-collapse', 'collapse',
                                     {show: route().current().startsWith('admin.teams.')},
                                 ]}>
-                                    <li>
-                                        <a href="{route('admin.teams.index')}" class={[
-                                            'nav-link', 'align-items-center',
-                                            {active: route().current('admin.teams.index')},
-                                        ]}>Index</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink active={route().current('admin.teams.index')}
+                                            href={route('admin.teams.index')}>Index</NavLink>
+                                    </NavItem>
                                     {#if
                                         $page.props.auth.user.permissions.includes('Edit:Permission') ||
                                         $page.props.auth.user.roles.includes('Super Administrator')
                                     }
-                                        <li>
-                                            <a href="{route('admin.teams.create')}" class={[
-                                                'nav-link', 'align-items-center',
-                                                {active: route().current('admin.teams.create')},
-                                            ]}>Create</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink active={route().current('admin.teams.create')}
+                                                href={route('admin.teams.create')}>Create</NavLink>
+                                        </NavItem>
                                     {/if}
                                     {#if
                                         route().current().startsWith('admin.teams.roles.') ||
                                         ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
                                     }
-                                        <li>
-                                            <a href="{route('admin.teams.show', {team: route().params.team}) }"
-                                                class={[
-                                                    'nav-link', 'align-items-center',
-                                                    {active: route().current('admin.teams.show')},
-                                                ]}>Show</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink active={route().current('admin.teams.show')}
+                                                href={route('admin.teams.show', {team: route().params.team})}>Show</NavLink>
+                                        </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.edit')}
-                                        <li>
-                                            <a href="{route('admin.teams.edit', {team: route().params.team}) }"
-                                                class="nav-link align-items-center active">Edit</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink href={route('admin.teams.edit', {team: route().params.team})} active>Edit</NavLink>
+                                        </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.roles.create')}
-                                        <li>
-                                            <a href="{route('admin.teams.roles.create', {team: route().params.team}) }"
-                                                class="nav-link align-items-center active">Create Role</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink href={route('admin.teams.roles.create', {team: route().params.team})} active>Create Role</NavLink>
+                                        </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.roles.edit')}
-                                        <li>
-                                            <a href="{route().current()}"
-                                                class="nav-link align-items-center active">Edit Role</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink href={
+                                                route(
+                                                    'admin.teams.roles.edit',
+                                                    {
+                                                        team: route().params.team,
+                                                        role: route().params.role,
+                                                    }
+                                                )
+                                            } active>Edit Role</NavLink>
+                                        </NavItem>
                                     {/if}
                                 </ul>
                             </li>
                         {:else}
-                            <li class="nav-item">
-                                <a href="{route('admin.teams.index')}" class={[
-                                    'nav-link', 'align-items-center',
-                                    {active: route().current('admin.teams.index')},
-                                ]}>Teams</a>
-                            </li>
+                            <NavItem>
+                                <NavLink active={route().current('admin.teams.index')}
+                                    href={route('admin.teams.index')}>Teams</NavLink>
+                            </NavItem>
                         {/if}
-                        <li class="nav-item">
-                            <a href="{route('admin.modules.index')}" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current('admin.modules.index')},
-                            ]}>Module</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{route('admin.permissions.index')}" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current('admin.permissions.index')},
-                            ]}>Permission</a>
-                        </li>
+                        <NavItem>
+                            <NavLink active={route().current('admin.modules.index')}
+                                href={route('admin.modules.index')}>Module</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink active={route().current('admin.permissions.index')}
+                                href={route('admin.permissions.index')}>Permission</NavLink>
+                        </NavItem>
                     {/if}
                     {#if
                         $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
@@ -262,23 +230,23 @@
                                 'accordion-collapse', 'collapse',
                                 {show: route().current().startsWith('admin.admission-test.types.')},
                             ]}>
-                                <li>
-                                    <a href="{route('admin.admission-test.types.index')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.admission-test.types.index')},
-                                    ]}>Index</a>
-                                </li>
-                                <li>
-                                    <a href="{route('admin.admission-test.types.create')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.admission-test.types.create')},
-                                    ]}>Create</a>
-                                </li>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.admission-test.types.index')}
+                                        href={route('admin.admission-test.types.index')}>Index</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.admission-test.types.create')}
+                                        href={route('admin.admission-test.types.create')}>Create</NavLink>
+                                </NavItem>
                                 {#if route().current('admin.admission-test.types.edit')}
-                                    <li>
-                                        <a href="{route().current()}"
-                                            class="nav-link align-items-center active">Edit</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink href={
+                                            route(
+                                                'admin.admission-test.types.edit',
+                                                {type: route().params.type}
+                                            )
+                                        } active>Edit</NavLink>
+                                    </NavItem>
                                 {/if}
                             </ul>
                         </li>
@@ -295,23 +263,23 @@
                                 'accordion-collapse', 'collapse',
                                 {show: route().current().startsWith('admin.admission-test.products.')},
                             ]}>
-                                <li>
-                                    <a href="{route('admin.admission-test.products.index')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.admission-test.products.index')},
-                                    ]}>Index</a>
-                                </li>
-                                <li>
-                                    <a href="{route('admin.admission-test.products.create')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.admission-test.products.create')},
-                                    ]}>Create</a>
-                                </li>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.admission-test.products.index')}
+                                        href={route('admin.admission-test.products.index')}>Index</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.admission-test.products.create')}
+                                        href={route('admin.admission-test.products.create')}>Create</NavLink>
+                                </NavItem>
                                 {#if route().current('admin.admission-test.products.show')}
-                                    <li>
-                                        <a href="{route().current()}"
-                                            class="nav-link align-items-center active">Show</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink href={
+                                            route(
+                                                'admin.admission-test.products.show',
+                                                {product: route().params.product}
+                                            )
+                                        } active>Show</NavLink>
+                                    </NavItem>
                                 {/if}
                             </ul>
                         </li>
@@ -327,12 +295,10 @@
                                 $page.props.auth.user.roles.includes('Super Administrator')
                             ) && ! route().current('admin.admission-tests.show')
                         }
-                            <li class="nav-item">
-                                <a href="{route('admin.admission-tests.index')}" class={[
-                                    'nav-link', 'align-items-center',
-                                    {active: route().current('admin.admission-tests.index')},
-                                ]}>Admission Tests</a>
-                            </li>
+                            <NavItem>
+                                <NavLink active={route().current('admin.admission-tests.index')}
+                                    href={route('admin.admission-tests.index')}>Admission Tests</NavLink>
+                            </NavItem>
                         {:else}
                             <li class="accordion">
                                 <button data-bs-toggle="collapse" aria-expanded="true"
@@ -347,28 +313,28 @@
                                     'accordion-collapse', 'collapse',
                                     {show: route().current().startsWith('admin.admission-tests.')},
                                 ]}>
-                                    <li>
-                                        <a href="{route('admin.admission-tests.index')}" class={[
-                                            'nav-link', 'align-items-center',
-                                            {active: route().current('admin.admission-tests.index')},
-                                        ]}>Index</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink active={route().current('admin.admission-tests.index')}
+                                            href={route('admin.admission-tests.index')}>Index</NavLink>
+                                    </NavItem>
                                     {#if
                                         $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
                                         $page.props.auth.user.roles.includes('Super Administrator')
                                     }
-                                        <li>
-                                            <a href="{route('admin.admission-tests.create')}" class={[
-                                                'nav-link', 'align-items-center',
-                                                {active: route().current('admin.admission-tests.create')},
-                                            ]}>Create</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink active={route().current('admin.admission-tests.create')}
+                                                href={route('admin.admission-tests.create')}>Create</NavLink>
+                                        </NavItem>
                                     {/if}
                                     {#if route().current('admin.admission-tests.show')}
-                                        <li>
-                                            <a href="{route().current()}"
-                                                class="nav-link align-items-center active">Show</a>
-                                        </li>
+                                        <NavItem>
+                                            <NavLink href={
+                                                route(
+                                                    'admin.admission-tests.show',
+                                                    {admission_test: route().params.admission_test}
+                                                )
+                                            } active>Show</NavLink>
+                                        </NavItem>
                                     {/if}
                                 </ul>
                             </li>
@@ -378,12 +344,10 @@
                         $page.props.auth.user.permissions.includes('Edit:Other Payment Gateway') ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        <li class="nav-item">
-                            <a href="{route('admin.other-payment-gateways.index')}" class={[
-                                'nav-link', 'align-items-center',
-                                {active: route().current('admin.other-payment-gateways.index')},
-                            ]}>Other Payment Gateway</a>
-                        </li>
+                        <NavItem>
+                            <NavLink active={route().current('admin.other-payment-gateways.index')}
+                                href={route('admin.other-payment-gateways.index')}>Other Payment Gateway</NavLink>
+                        </NavItem>
                     {/if}
                     {#if
                         $page.props.auth.user.permissions.includes('Edit:Site Content') ||
@@ -397,23 +361,24 @@
                                     Site Content
                                 </button>
                                 <ul id="asideNavSiteContent" class="accordion-collapse collapse show">
-                                    <li>
-                                        <a href="{route('admin.site-contents.index')}"
-                                            class="nav-link align-items-center">Index</a>
-                                    </li>
-                                    <li>
-                                        <a href="{route().current()}"
-                                            class="nav-link align-items-center active">Edit</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink href={route('admin.site-contents.index')}>Index</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink href={
+                                            route(
+                                                'admin.site-contents.edit',
+                                                {site_content: route().params.site_content}
+                                            )
+                                        } active>Edit</NavLink>
+                                    </NavItem>
                                 </ul>
                             </li>
                         {:else}
-                            <li class="nav-item">
-                                <a href="{route('admin.site-contents.index')}" class={[
-                                    'nav-link', 'align-items-center',
-                                    {active: route().current('admin.site-contents.index')},
-                                ]}>Site Content</a>
-                            </li>
+                            <NavItem>
+                                <NavLink active={route().current('admin.site-contents.index')}
+                                    href={route('admin.site-contents.index')}>Site Content</NavLink>
+                            </NavItem>
                         {/if}
                     {/if}
                     {#if
@@ -433,23 +398,23 @@
                                 'accordion-collapse', 'collapse',
                                 {show: route().current().startsWith('admin.custom-web-pages.')},
                             ]}>
-                                <li>
-                                    <a href="{route('admin.custom-web-pages.index')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.custom-web-pages.index')},
-                                    ]}>Index</a>
-                                </li>
-                                <li>
-                                    <a href="{route('admin.custom-web-pages.create')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.custom-web-pages.create')},
-                                    ]}>Create</a>
-                                </li>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.custom-web-pages.index')}
+                                        href={route('admin.custom-web-pages.index')}>Index</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.custom-web-pages.create')}
+                                        href={route('admin.custom-web-pages.create')}>Create</NavLink>
+                                </NavItem>
                                 {#if route().current('admin.custom-web-pages.edit')}
-                                    <li>
-                                        <a href="{route().current()}"
-                                            class="nav-link align-items-center active">Edit</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink href={
+                                            route(
+                                                'admin.custom-web-pages.edit',
+                                                {custom_web_page: route().params.custom_web_page}
+                                            )
+                                        } active>Edit</NavLink>
+                                    </NavItem>
                                 {/if}
                             </ul>
                         </li>
@@ -469,28 +434,28 @@
                                 'accordion-collapse', 'collapse',
                                 {show: route().current().startsWith('admin.navigation-items.')},
                             ]}>
-                                <li>
-                                    <a href="{route('admin.navigation-items.index')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.navigation-items.index')},
-                                    ]}>Index</a>
-                                </li>
-                                <li>
-                                    <a href="{route('admin.navigation-items.create')}" class={[
-                                        'nav-link', 'align-items-center',
-                                        {active: route().current('admin.navigation-items.create')},
-                                    ]}>Create</a>
-                                </li>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.navigation-items.index')}
+                                        href={route('admin.navigation-items.index')}>Index</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink active={route().current('admin.navigation-items.create')}
+                                        href={route('admin.navigation-items.create')} >Create</NavLink>
+                                </NavItem>
                                 {#if route().current('admin.navigation-items.edit')}
-                                    <li>
-                                        <a href="{route().current()}"
-                                            class="nav-link align-items-center active">Edit</a>
-                                    </li>
+                                    <NavItem>
+                                        <NavLink href={
+                                            route(
+                                                'admin.navigation-items.edit',
+                                                {navigation_item: route().params.navigation_item}
+                                            )
+                                        } active>Edit</NavLink>
+                                    </NavItem>
                                 {/if}
                             </ul>
                         </li>
                     {/if}
-                </ul>
+                </Nav>
             </nav>
         </aside>
     {/if}
@@ -499,7 +464,6 @@
             {@render children()}
         {/if}
     </main>
-</div>
-
+</Container>
 <Alert />
 <Confirm />
