@@ -4,6 +4,7 @@
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { router } from '@inertiajs/svelte';
 
     let {
         team, roles, displayOptions, modules, permissions, modulePermissions,
@@ -21,7 +22,7 @@
     function successCallback(response) {
         updating = false;
         submitting = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

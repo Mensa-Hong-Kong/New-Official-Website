@@ -3,7 +3,6 @@
     import { onMount } from 'svelte';
     import { Row, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
-    import "ckeditor5/ckeditor5.css"
     import {
         ClassicEditor, Essentials, TextTransformation, GeneralHtmlSupport, AutoImage, AutoLink,
         PasteFromOffice, Clipboard,
@@ -16,6 +15,8 @@
         TableToolbar, TableProperties, TableCellProperties, TableColumnResize,
     } from 'ckeditor5';
     import coreTranslations from 'ckeditor5/translations/zh.js';
+    import { router } from '@inertiajs/svelte';
+    import "ckeditor5/ckeditor5.css";
     
     let {content} = $props();
     let contentInput;
@@ -115,7 +116,7 @@
     function successCallback(response) {
         updating = false;
         submitting = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

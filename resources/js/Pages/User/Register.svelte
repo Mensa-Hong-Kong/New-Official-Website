@@ -6,6 +6,7 @@
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { router } from '@inertiajs/svelte';
 
 	let { genders, passportTypes, maxBirthday } = $props();
     let inputs = $state({});
@@ -119,7 +120,7 @@
     function successCallback(response) {
         submitting = false;
         creating = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

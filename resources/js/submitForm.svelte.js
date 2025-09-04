@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/svelte'
 import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
 let csrf_token = $state('');
@@ -10,7 +11,7 @@ function failHandle(error, callback) {
     switch(error.status) {
         case 401:
             alert('Unauthorized, please login first');
-            window.location = route('login');
+            router.get(route('login'));
             break;
         case 403:
             alert('Sorry, you have no permission');

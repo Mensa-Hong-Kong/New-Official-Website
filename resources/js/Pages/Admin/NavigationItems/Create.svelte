@@ -4,6 +4,7 @@
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { router } from '@inertiajs/svelte';
 
     let { items, displayOptions } = $props();
     let inputs = $state({});
@@ -20,7 +21,7 @@
     function successCallback(response) {
         creating = false;
         submitting = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

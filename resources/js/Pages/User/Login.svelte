@@ -6,6 +6,7 @@
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { router } from '@inertiajs/svelte';
 
     let inputs = $state({});
     let submitting = $state(false);
@@ -61,7 +62,7 @@
     function successCallback(response) {
         submitting = false;
         loggingIn = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

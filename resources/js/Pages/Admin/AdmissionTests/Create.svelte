@@ -4,6 +4,7 @@
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
+    import { router } from '@inertiajs/svelte';
 
     let { types, locations, districts, addresses } = $props();
     let inputs = $state({});
@@ -67,7 +68,7 @@
     function successCallback(response) {
         creating = false;
         submitting = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {

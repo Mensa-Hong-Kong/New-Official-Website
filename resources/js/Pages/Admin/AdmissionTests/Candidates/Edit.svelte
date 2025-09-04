@@ -5,6 +5,7 @@
     import { FormGroup, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
+    import { router } from '@inertiajs/svelte';
 
     let { user: initUser, passportTypes, genders, maxBirthday } = $props();
     let user = {
@@ -82,7 +83,7 @@
     function successCallback(response) {
         updating = false;
         submitting = false;
-        window.location.href = response.request.responseURL;
+        router.get(response.request.responseURL);
     }
 
     function failCallback(error) {
