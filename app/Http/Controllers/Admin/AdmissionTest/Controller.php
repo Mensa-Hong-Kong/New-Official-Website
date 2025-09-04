@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Inertia\EncryptHistoryMiddleware;
 use Inertia\Inertia;
 
 class Controller extends BaseController implements HasMiddleware
@@ -24,6 +25,7 @@ class Controller extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
+            (new Middleware(EncryptHistoryMiddleware::class))->only('show'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (

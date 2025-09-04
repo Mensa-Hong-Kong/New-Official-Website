@@ -17,6 +17,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\EncryptHistoryMiddleware;
 use Inertia\Inertia;
 
 class UserController extends Controller implements HasMiddleware
@@ -24,8 +25,11 @@ class UserController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            (new Middleware('permission:View:User'))->only(['index', 'show']),
-            (new Middleware('permission:Edit:User'))->only(['update', 'resetPassword']),
+            (new Middleware(
+                ['permission:View:User', EncryptHistoryMiddleware::class])
+            )->only(['index', 'show']),
+            (new Middleware('permission:Edit:User'))
+                ->only(['update', 'resetPassword']),
         ];
     }
 

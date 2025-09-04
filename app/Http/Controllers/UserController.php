@@ -21,27 +21,31 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\EncryptHistoryMiddleware;
 use Inertia\Inertia;
 
 class UserController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
-        return [(new Middleware(
-            function (Request $request, Closure $next) {
-                $failForgetPasswordLogsWithin24Hours = ResetPasswordLog::where('passport_type_id', $request->passport_type_id)
-                    ->where('passport_number', $request->passport_number)
-                    ->where('created_at', '>=', now()->subDay())
-                    ->where('middleware_should_count', true)
-                    ->get();
-                if ($failForgetPasswordLogsWithin24Hours->count() >= 10) {
-                    $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];
-                    abort(429, "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime.");
-                }
+        return [
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $failForgetPasswordLogsWithin24Hours = ResetPasswordLog::where('passport_type_id', $request->passport_type_id)
+                        ->where('passport_number', $request->passport_number)
+                        ->where('created_at', '>=', now()->subDay())
+                        ->where('middleware_should_count', true)
+                        ->get();
+                    if ($failForgetPasswordLogsWithin24Hours->count() >= 10) {
+                        $firstInRangeResetPasswordFailedTime = $failForgetPasswordLogsWithin24Hours[0]['created_at'];
+                        abort(429, "Too many failed reset password attempts. Please try again later than $firstInRangeResetPasswordFailedTime.");
+                    }
 
-                return $next($request);
-            }
-        ))->only('resetPassword')];
+                    return $next($request);
+                }
+            ))->only('resetPassword'),
+            (new Middleware(EncryptHistoryMiddleware::class))->only('show'),
+        ];
     }
 
     public function create()
@@ -166,6 +170,7 @@ class UserController extends Controller implements HasMiddleware
     public function logout()
     {
         Auth::logout();
+        inertia()->clearHistory();
 
         return redirect()->route('index');
     }
