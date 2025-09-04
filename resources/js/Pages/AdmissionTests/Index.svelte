@@ -1,9 +1,10 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import StripeCustomerAlert from "@/Pages/Components/StripeAlert/Customer.svelte";
+    import { Table, Button } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import "ckeditor5/ckeditor5.css";
     import { formatToDate, formatToTime } from '@/timeZoneDatetime';
-    import { Table, Button } from '@sveltestrap/sveltestrap';
 
     let { contents, tests, user: initUser } = $props();
     let user = $state(initUser);
@@ -53,12 +54,12 @@
                                 <td>
                                     {#if user && user.future_admission_test}
                                         {#if user && user.future_admission_test.id == test.id}
-                                            <a class="btn btn-primary" href="{
+                                            <Link class="btn btn-primary" href={
                                                 route(
                                                     'admission-tests.candidates.show',
                                                     {admission_test: test.id}
                                                 )
-                                            }">Ticket</a>
+                                            }>Ticket</Link>
                                         {:else}
                                             {#if
                                                 new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
@@ -68,12 +69,12 @@
                                                         .endOfDay()
                                                 )
                                             }
-                                                <a class="btn btn-danger" href="{
+                                                <Link class="btn btn-danger" href={
                                                     route(
                                                         'admission-tests.candidates.create',
                                                         {admission_test: test.id}
                                                     )
-                                                }">Reschedule</a>
+                                                }>Reschedule</Link>
                                             {:else}
                                                 <Button color="secondary">Reschedule</Button>
                                             {/if}
@@ -88,12 +89,12 @@
                                                     .endOfDay()
                                             )
                                         }
-                                            <a class="btn btn-primary" href="{
+                                            <Link class="btn btn-primary" href={
                                                 route(
                                                     'admission-tests.candidates.create',
                                                     {admission_test: test.id}
                                                 )
-                                            }">Schedule</a>
+                                            }>Schedule</Link>
                                         {:else}
                                             <Button color="secondary">Schedule</Button>
                                         {/if}

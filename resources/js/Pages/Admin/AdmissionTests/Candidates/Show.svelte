@@ -1,8 +1,9 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
+    import { Table, Button } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { Table, Button } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
 
     let { test, user, isPresent } = $props();
@@ -61,8 +62,8 @@
     <section class="container">
         <h2 class="mb-2 fw-bold">
             Candidate
-            <a class="btn btn-primary"
-                href="{
+            <Link class="btn btn-primary"
+                href={
                     route(
                         'admin.admission-tests.candidates.edit',
                         {
@@ -70,7 +71,7 @@
                             candidate: user.id,
                         }
                     )
-                }">Edit</a>
+                }>Edit</Link>
         </h2>
         <Table>
             <tbody>

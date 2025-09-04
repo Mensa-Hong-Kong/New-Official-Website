@@ -2,12 +2,13 @@
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
 
-    let {pages: initPages} = $props();
+    let { pages: initPages } = $props();
     let pages = $state([]);
     let submitting = $state(false);
     for(let row of initPages) {
@@ -89,18 +90,18 @@
                             <td>{formatToDatetime(page.created_at)}</td>
                             <td>{formatToDatetime(page.updated_at)}</td>
                             <td>
-                                <a class="btn btn-primary" href="{
+                                <Link class="btn btn-primary" href={
                                     route(
                                         'custom-web-page',
                                         {pathname: page.pathname}
                                     )
-                                }">Show</a>
-                                <a class="btn btn-primary" href="{
+                                }>Show</Link>
+                                <Link class="btn btn-primary" href={
                                     route(
                                         'admin.custom-web-pages.edit',
                                         {custom_web_page: page.id}
                                     )
-                                }">Edit</a>
+                                }>Edit</Link>
                                 <Button color="danger"
                                     disabled={submitting} onclick={() => destroy(index)}>
                                     {#if page.deleting}

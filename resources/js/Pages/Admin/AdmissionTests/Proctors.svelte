@@ -3,6 +3,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Row, Col, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     
     let { proctors: initProctors, submitting = $bindable() } = $props();
     let proctors = $state([]);
@@ -214,13 +215,13 @@
                     bind:inner={inputs['proctors'][index]['user']} />
             </Col>
             <Col md=2>{row.name}</Col>
-            <a class="btn btn-primary col-md-1"
+            <Link class="btn btn-primary col-md-1"
                 href={
                     route(
                         'admin.users.show',
                         {user: row.id}
                     )
-                }>Show</a>
+                }>Show</Link>
             <Button color="primary" class="col-md-1"
                 hidden={row.editing || row.updating || row.deleting}
                 onclick={(event) => edit(event, index)}>Edit</Button>

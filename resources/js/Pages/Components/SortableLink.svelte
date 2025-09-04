@@ -1,6 +1,7 @@
 <script>
-    let directions = ['asc', 'desc'];
+    import { Link } from "@inertiajs/svelte";
 
+    let directions = ['asc', 'desc'];
 	let {
         column: sortColumn,
         class: anchorClass = [],
@@ -13,11 +14,15 @@
     if (title === null) {
         title = sortColumn.split('.').pop();
     }
+
     let icon = "fa fa-sort";
+
     for (const [key, value] of Object.entries(queryParameters)) {
         url.searchParams.set(key, value);
     }
+
     let url = new URL(window.location);
+
     if(route().params.sort == sortColumn && directions.includes(route().params.direction)) {
         if(route().params.direction == 'desc') {
             direction = 'asc';
@@ -31,5 +36,5 @@
     url.searchParams.set('direction', direction);
 </script>
 
-<a class={anchorClass} href="{url.toString()}" {...restProps}>{title.ucfirst()}</a>
+<Link class={anchorClass} href={url.toString()} {...restProps}>{title.ucfirst()}</Link>
 <i class="{icon}"></i>

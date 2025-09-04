@@ -2,6 +2,7 @@
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Accordion, AccordionItem, Col, Label, Input, Button, Table, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
+    import { Link } from "@inertiajs/svelte";
     import Pagination from '@/Pages/Components/Pagination.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
 
@@ -178,8 +179,8 @@
                         <Button block color="primary">Search</Button>
                     </Col>
                     <Col md="6">
-                        <a class="form-control btn btn-danger"
-                            href="{route('admin.users.index')}">Clear</a>
+                        <Link class="form-control btn btn-danger"
+                            href={route('admin.users.index')}>Clear</Link>
                     </Col>
                 </form>
             </AccordionItem>
@@ -225,7 +226,8 @@
                                 {/if}
                             </td>
                             <td>
-                                <a class="btn btn-primary" href="{route('admin.users.show', {user: row.id})}">Show</a>
+                                <Link href={route('admin.users.show', {user: row.id})}
+                                   class="btn btn-primary">Show</Link>
                             </td>
                         </tr>
                     {/each}

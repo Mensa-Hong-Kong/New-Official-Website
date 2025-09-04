@@ -3,6 +3,7 @@
     import { Button, Spinner, Alert, Col, Label, Input, Table } from '@sveltestrap/sveltestrap';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
 	import Contacts from './Contacts.svelte';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
@@ -324,7 +325,7 @@
                                     {/if}
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary" href="{route('admission-tests.candidates.show', {'admission_test': test.id})}">Show</a>
+                                    <Link class="btn btn-primary" href={route('admission-tests.candidates.show', {'admission_test': test.id})}>Show</Link>
                                 </td>
                             </tr>
                         {/each}

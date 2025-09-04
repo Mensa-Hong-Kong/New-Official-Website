@@ -2,6 +2,7 @@
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
+    import { Link } from "@inertiajs/svelte";
     import Pagination from '@/Pages/Components/Pagination.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
@@ -97,12 +98,12 @@
                                     auth.user.permissions.includes('Edit:Admission Test') ||
                                     auth.user.roles.includes('Super Administrator')
                                 }
-                                    <a class="btn btn-primary" href={
+                                    <Link class="btn btn-primary" href={
                                         route(
                                             'admin.admission-tests.show',
                                             {admission_test: row.id}
                                         )
-                                    }>Show</a>
+                                    }>Show</Link>
                                     <Button color="danger"
                                         disabled={submitting} onclick={() => destroy(index)}>
                                         {#if row.deleting}

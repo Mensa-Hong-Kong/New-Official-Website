@@ -1,5 +1,7 @@
 <script>
-    import { Pagination, PaginationItem, PaginationLink } from '@sveltestrap/sveltestrap';
+    import { Pagination, PaginationItem } from '@sveltestrap/sveltestrap';
+    import PaginationLink from './PaginationLink.svelte';
+
     let { total, current } = $props();
     let min = Math.max(current - 3, 1)
     let max = Math.min(current + 3, total)

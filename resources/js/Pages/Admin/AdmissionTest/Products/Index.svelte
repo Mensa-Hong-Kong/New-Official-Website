@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Alert } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
 
     let { products } = $props();
 </script>
@@ -31,12 +32,12 @@
                             <td>{row.minimum_age}</td>
                             <td>{row.maximum_age}</td>
                             <td>
-                                <a class="btn btn-primary" href="{
+                                <Link class="btn btn-primary" href={
                                     route(
                                         'admin.admission-test.products.show',
                                         {product: row.id}
                                     )
-                                }">Show</a>
+                                }>Show</Link>
                             </td>
                         </tr>
                     {/each}

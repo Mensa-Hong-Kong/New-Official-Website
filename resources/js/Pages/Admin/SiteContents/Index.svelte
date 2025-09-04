@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Accordion, AccordionItem, Table } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     
     let {pages} = $props();
 </script>
@@ -29,12 +30,12 @@
                                         <td>{content.id}</td>
                                         <td>{content.name}</td>
                                         <td>
-                                            <a class="btn btn-primary" href="{
+                                            <Link class="btn btn-primary" href={
                                                 route(
                                                     'admin.site-contents.edit',
                                                     {site_content: content.id}
                                                 )
-                                            }">Edit</a>
+                                            }>Edit</Link>
                                         </td>
                                     </tr>
                                 {/each}

@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Table } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
@@ -161,9 +162,9 @@
                     auth.user.permissions.includes('Edit:Permission') ||
                     auth.user.roles.includes('Super Administrator')
                 }
-                    <a class="btn btn-primary" href="{
+                    <Link class="btn btn-primary" href={
                         route('admin.teams.edit', {team: team.id})
-                    }">Edit</a>
+                    }>Edit</Link>
                 {/if}
             </h3>
             <table class="table">
@@ -185,8 +186,8 @@
                 auth.user.permissions.includes('Edit:Permission') ||
                 auth.user.roles.includes('Super Administrator')
             }
-                <a href="{route('admin.teams.roles.create', {team: team.id})}"
-                    class="btn btn-success">Create</a>
+                <Link href={route('admin.teams.roles.create', {team: team.id})}
+                    class="btn btn-success">Create</Link>
                 <Button color="primary" hidden={editingDisplayOrder}
                     onclick={editDisplayOrder}>Edit Display Order</Button>
                 <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
@@ -226,8 +227,8 @@
                             auth.user.roles.includes('Super Administrator')
                         }
                             <td>
-                                <a class="btn btn-primary editRole"
-                                    href="{
+                                <Link class="btn btn-primary editRole"
+                                    href={
                                         route(
                                             'admin.teams.roles.edit', 
                                             {
@@ -235,7 +236,7 @@
                                                 role: row.id,
                                             }
                                         )
-                                    }">Edit</a>
+                                    }>Edit</Link>
                                 <Button color="danger" disabled={submitting} onclick={() => destroy(index)}>
                                     {#if row.deleting}
                                         <Spinner type="border" size="sm" />Deleting...

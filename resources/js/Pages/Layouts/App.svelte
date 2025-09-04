@@ -1,6 +1,5 @@
 <script>
-    import { inertia } from '@inertiajs/svelte'
-    import { page } from "@inertiajs/svelte";
+    import { page, Link } from "@inertiajs/svelte";
     import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavLink, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
@@ -59,22 +58,34 @@
                         $page.props.auth.user.permissions.length ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        <NavLink active={route().current().startsWith('admin.')} href={
+                        <Link href={
                             $page.props.auth.user.permissions.length ||
                             $page.props.auth.user.roles.includes('Super Administrator') ?
                             route('admin.index') :
                             route('admin.admission-tests.index')
-                        }>Admin</NavLink>
+                        } class={[
+                            'nav-link',
+                            {active: route().current().startsWith('admin.')}
+                        ]}>Admin</Link>
                         <hr class="d-lg-none text-white-50">
                     {/if}
-                    <NavLink active={route().current('profile.show')}
-                        href={route('profile.show')}>Profile</NavLink>
-                    <NavLink href={route('logout')}>Logout</NavLink>
+                    <NavLink href={route('profile.show')}
+                        class={[
+                            'nav-link',
+                            {active: route().current('profile.show')}
+                        ]}>Profile</NavLink>
+                    <Link href={route('logout')} class="nav-link">Logout</Link>
                 {:else}
-                    <NavLink active={route().current('login')}
-                        href={route('login')}>Login</NavLink>
-                    <NavLink active={route().current('register')}
-                        href={route('register')}>Register</NavLink>
+                    <Link href={route('login')}
+                        class={[
+                            'nav-link',
+                            {active: route().current('login')}
+                        ]}>Login</Link>
+                    <Link href={route('register')}
+                        class={[
+                            'nav-link',
+                            {active: route().current('register')}
+                        ]}>Register</Link>
                 {/if}
             </Nav>
         </Collapse>
@@ -94,8 +105,11 @@
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <NavItem>
-                            <NavLink active={route().current('admin.index')}
-                                href={route('admin.index')}>Dashboard</NavLink>
+                            <Link href={route('admin.index')}
+                                class={[
+                                    'nav-link',
+                                    {active: route().current('admin.index')}
+                                ]}>Dashboard</Link>
                         </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('View:User') ||
@@ -111,28 +125,35 @@
                                         ]}>Users</button>
                                     <ul id="asideNavAdminUser" class="accordion-collapse collapse show">
                                         <NavItem>
-                                            <NavLink href={route('admin.users.index')}>Index</NavLink>
+                                            <Link href={route('admin.users.index')}
+                                                class="nav-link">Index</Link>
                                         </NavItem>
                                         <NavItem>
-                                            <NavLink href={
+                                            <Link href={
                                                 route(
                                                     "admin.users.show",
                                                     {user: route().params.user}
                                                 )
-                                            } active>Show</NavLink>
+                                            } class="nav-link active">Show</Link>
                                         </NavItem>
                                     </ul>
                                 </li>
                             {:else}
                                 <NavItem>
-                                    <NavLink active={route().current('admin.users.index')}
-                                        href={route('admin.users.index')}>Users</NavLink>
+                                    <Link href={route('admin.users.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.users.index')}
+                                        ]}>Users</Link>
                                 </NavItem>
                             {/if}
                         {/if}
                         <NavItem>
-                            <NavLink active={route().current('admin.team-types.index')}
-                                href={route('admin.team-types.index')}>Team Types</NavLink>
+                            <Link href={route('admin.team-types.index')}
+                                class={[
+                                    'nav-link',
+                                    {active: route().current('admin.team-types.index')}
+                                ]}>Team Types</Link>
                         </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('Edit:Permission') ||
@@ -154,16 +175,22 @@
                                     {show: route().current().startsWith('admin.teams.')},
                                 ]}>
                                     <NavItem>
-                                        <NavLink active={route().current('admin.teams.index')}
-                                            href={route('admin.teams.index')}>Index</NavLink>
+                                        <Link href={route('admin.teams.index')}
+                                            class={[
+                                                'nav-link',
+                                                {active: route().current('admin.teams.index')}
+                                            ]}>Index</Link>
                                     </NavItem>
                                     {#if
                                         $page.props.auth.user.permissions.includes('Edit:Permission') ||
                                         $page.props.auth.user.roles.includes('Super Administrator')
                                     }
                                         <NavItem>
-                                            <NavLink active={route().current('admin.teams.create')}
-                                                href={route('admin.teams.create')}>Create</NavLink>
+                                            <Link href={route('admin.teams.create')}
+                                                class={[
+                                                    'nav-link',
+                                                    {active: route().current('admin.teams.create')}
+                                                ]}>Create</Link>
                                         </NavItem>
                                     {/if}
                                     {#if
@@ -171,23 +198,36 @@
                                         ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
                                     }
                                         <NavItem>
-                                            <NavLink active={route().current('admin.teams.show')}
-                                                href={route('admin.teams.show', {team: route().params.team})}>Show</NavLink>
+                                            <Link href={route('admin.teams.show', {team: route().params.team})}
+                                                class={[
+                                                    'nav-link',
+                                                    {active: route().current('admin.teams.show')}
+                                                ]}>Show</Link>
                                         </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.edit')}
                                         <NavItem>
-                                            <NavLink href={route('admin.teams.edit', {team: route().params.team})} active>Edit</NavLink>
+                                            <Link href={
+                                                route(
+                                                    'admin.teams.edit',
+                                                    {team: route().params.team}
+                                                )
+                                            } class="nav-link active">Edit</Link>
                                         </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.roles.create')}
                                         <NavItem>
-                                            <NavLink href={route('admin.teams.roles.create', {team: route().params.team})} active>Create Role</NavLink>
+                                            <Link href={
+                                                route(
+                                                    'admin.teams.roles.create',
+                                                    {team: route().params.team}
+                                                )
+                                            } class="nav-link active">Create Role</Link>
                                         </NavItem>
                                     {/if}
                                     {#if route().current('admin.teams.roles.edit')}
                                         <NavItem>
-                                            <NavLink href={
+                                            <Link href={
                                                 route(
                                                     'admin.teams.roles.edit',
                                                     {
@@ -195,24 +235,33 @@
                                                         role: route().params.role,
                                                     }
                                                 )
-                                            } active>Edit Role</NavLink>
+                                            } class="nav-link active">Edit Role</Link>
                                         </NavItem>
                                     {/if}
                                 </ul>
                             </li>
                         {:else}
                             <NavItem>
-                                <NavLink active={route().current('admin.teams.index')}
-                                    href={route('admin.teams.index')}>Teams</NavLink>
+                                <Link href={route('admin.teams.index')}
+                                    class={[
+                                        'nav-link',
+                                        {active: route().current('admin.teams.index')}
+                                    ]}>Teams</Link>
                             </NavItem>
                         {/if}
                         <NavItem>
-                            <NavLink active={route().current('admin.modules.index')}
-                                href={route('admin.modules.index')}>Module</NavLink>
+                            <Link href={route('admin.modules.index')}
+                                class={[
+                                    'nav-link',
+                                    {active: route().current('admin.modules.index')}
+                                ]}>Module</Link>
                         </NavItem>
                         <NavItem>
-                            <NavLink active={route().current('admin.permissions.index')}
-                                href={route('admin.permissions.index')}>Permission</NavLink>
+                            <Link href={route('admin.permissions.index')}
+                            class={[
+                                'nav-link',
+                                {active: route().current('admin.permissions.index')}
+                            ]}>Permission</Link>
                         </NavItem>
                     {/if}
                     {#if
@@ -231,21 +280,27 @@
                                 {show: route().current().startsWith('admin.admission-test.types.')},
                             ]}>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.admission-test.types.index')}
-                                        href={route('admin.admission-test.types.index')}>Index</NavLink>
+                                    <Link href={route('admin.admission-test.types.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.types.index')}
+                                        ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.admission-test.types.create')}
-                                        href={route('admin.admission-test.types.create')}>Create</NavLink>
+                                    <Link href={route('admin.admission-test.types.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.types.create')}
+                                        ]}>Create</Link>
                                 </NavItem>
                                 {#if route().current('admin.admission-test.types.edit')}
                                     <NavItem>
-                                        <NavLink href={
+                                        <Link href={
                                             route(
                                                 'admin.admission-test.types.edit',
                                                 {type: route().params.type}
                                             )
-                                        } active>Edit</NavLink>
+                                        } class="nav-link active">Edit</Link>
                                     </NavItem>
                                 {/if}
                             </ul>
@@ -264,21 +319,27 @@
                                 {show: route().current().startsWith('admin.admission-test.products.')},
                             ]}>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.admission-test.products.index')}
-                                        href={route('admin.admission-test.products.index')}>Index</NavLink>
+                                    <Link href={route('admin.admission-test.products.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.products.index')}
+                                        ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.admission-test.products.create')}
-                                        href={route('admin.admission-test.products.create')}>Create</NavLink>
+                                    <Link href={route('admin.admission-test.products.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.products.create')}
+                                        ]}>Index</Link>
                                 </NavItem>
                                 {#if route().current('admin.admission-test.products.show')}
                                     <NavItem>
-                                        <NavLink href={
+                                        <Link href={
                                             route(
                                                 'admin.admission-test.products.show',
                                                 {product: route().params.product}
                                             )
-                                        } active>Show</NavLink>
+                                        } class="nav-link active">Show</Link>
                                     </NavItem>
                                 {/if}
                             </ul>
@@ -296,8 +357,11 @@
                             ) && ! route().current('admin.admission-tests.show')
                         }
                             <NavItem>
-                                <NavLink active={route().current('admin.admission-tests.index')}
-                                    href={route('admin.admission-tests.index')}>Admission Tests</NavLink>
+                                <Link href={route('admin.admission-tests.index')}
+                                    class={[
+                                        'nav-link',
+                                        {active: route().current('admin.admission-tests.create')}
+                                    ]}>Admission Tests</Link>
                             </NavItem>
                         {:else}
                             <li class="accordion">
@@ -314,26 +378,32 @@
                                     {show: route().current().startsWith('admin.admission-tests.')},
                                 ]}>
                                     <NavItem>
-                                        <NavLink active={route().current('admin.admission-tests.index')}
-                                            href={route('admin.admission-tests.index')}>Index</NavLink>
+                                        <Link href={route('admin.admission-tests.index')}
+                                            class={[
+                                                'nav-link',
+                                                {active: route().current('admin.admission-tests.index')}
+                                            ]}>Index</Link>
                                     </NavItem>
                                     {#if
                                         $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
                                         $page.props.auth.user.roles.includes('Super Administrator')
                                     }
                                         <NavItem>
-                                            <NavLink active={route().current('admin.admission-tests.create')}
-                                                href={route('admin.admission-tests.create')}>Create</NavLink>
+                                            <Link href={route('admin.admission-tests.create')}
+                                                class={[
+                                                    'nav-link',
+                                                    {active: route().current('admin.admission-tests.create')}
+                                                ]}>Create</Link>
                                         </NavItem>
                                     {/if}
                                     {#if route().current('admin.admission-tests.show')}
                                         <NavItem>
-                                            <NavLink href={
+                                            <Link href={
                                                 route(
                                                     'admin.admission-tests.show',
                                                     {admission_test: route().params.admission_test}
                                                 )
-                                            } active>Show</NavLink>
+                                            } class="nav-link active">Show</Link>
                                         </NavItem>
                                     {/if}
                                 </ul>
@@ -345,8 +415,11 @@
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <NavItem>
-                            <NavLink active={route().current('admin.other-payment-gateways.index')}
-                                href={route('admin.other-payment-gateways.index')}>Other Payment Gateway</NavLink>
+                            <Link href={route('admin.other-payment-gateways.index')}
+                                class={[
+                                    'nav-link',
+                                    {active: route().current('admin.other-payment-gateways.index')}
+                                ]}>Other Payment Gateway</Link>
                         </NavItem>
                     {/if}
                     {#if
@@ -362,22 +435,25 @@
                                 </button>
                                 <ul id="asideNavSiteContent" class="accordion-collapse collapse show">
                                     <NavItem>
-                                        <NavLink href={route('admin.site-contents.index')}>Index</NavLink>
+                                        <Link href={route('admin.site-contents.index')}>Index</Link>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink href={
+                                        <Link href={
                                             route(
                                                 'admin.site-contents.edit',
                                                 {site_content: route().params.site_content}
                                             )
-                                        } active>Edit</NavLink>
+                                        } class="nav-link active">Edit</Link>
                                     </NavItem>
                                 </ul>
                             </li>
                         {:else}
                             <NavItem>
-                                <NavLink active={route().current('admin.site-contents.index')}
-                                    href={route('admin.site-contents.index')}>Site Content</NavLink>
+                                <Link href={route('admin.site-contents.index')}
+                                    class={[
+                                        'nav-link',
+                                        {active: route().current('admin.site-contents.index')}
+                                    ]}>Site Content</Link>
                             </NavItem>
                         {/if}
                     {/if}
@@ -399,21 +475,27 @@
                                 {show: route().current().startsWith('admin.custom-web-pages.')},
                             ]}>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.custom-web-pages.index')}
-                                        href={route('admin.custom-web-pages.index')}>Index</NavLink>
+                                    <Link href={route('admin.custom-web-pages.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.custom-web-pages.index')}
+                                        ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.custom-web-pages.create')}
-                                        href={route('admin.custom-web-pages.create')}>Create</NavLink>
+                                    <Link href={route('admin.custom-web-pages.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.custom-web-pages.create')}
+                                        ]}>Create</Link>
                                 </NavItem>
                                 {#if route().current('admin.custom-web-pages.edit')}
                                     <NavItem>
-                                        <NavLink href={
+                                        <Link href={
                                             route(
                                                 'admin.custom-web-pages.edit',
                                                 {custom_web_page: route().params.custom_web_page}
                                             )
-                                        } active>Edit</NavLink>
+                                        } class="nav-link active">Edit</Link>
                                     </NavItem>
                                 {/if}
                             </ul>
@@ -435,21 +517,27 @@
                                 {show: route().current().startsWith('admin.navigation-items.')},
                             ]}>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.navigation-items.index')}
-                                        href={route('admin.navigation-items.index')}>Index</NavLink>
+                                    <Link href={route('admin.navigation-items.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.navigation-items.index')}
+                                        ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink active={route().current('admin.navigation-items.create')}
-                                        href={route('admin.navigation-items.create')} >Create</NavLink>
+                                    <Link href={route('admin.navigation-items.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.navigation-items.create')}
+                                        ]}>Create</Link>
                                 </NavItem>
                                 {#if route().current('admin.navigation-items.edit')}
                                     <NavItem>
-                                        <NavLink href={
+                                        <Link href={
                                             route(
                                                 'admin.navigation-items.edit',
                                                 {navigation_item: route().params.navigation_item}
                                             )
-                                        } active>Edit</NavLink>
+                                        } class="nav-link active">Edit</Link>
                                     </NavItem>
                                 {/if}
                             </ul>
@@ -460,9 +548,7 @@
         </aside>
     {/if}
     <main class="w-100">
-        {#if children}
-            {@render children()}
-        {/if}
+        {@render children?.()}
     </main>
 </Container>
 <Alert />

@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Row, Col, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
@@ -156,7 +157,7 @@
                         bind:inner={inputs.rememberMe} />
                 </Col>
                 <Col class="d-flex justify-content-center">
-                    <a href={route('forget-password')}>Forgot password?</a>
+                    <Link href={route('forget-password')}>Forgot password?</Link>
                 </Col>
             </Row>
             <Button color="primary" disabled={submitting} class="form-control">
@@ -168,7 +169,7 @@
             </Button>
             <Alert color="danger" hidden={feedbacks.failed == ''}>{feedbacks.failed}</Alert>
             <div class="text-center form-control">
-                <p>Not a member? <a href="{route('register')}">Register</a></p>
+                <p>Not a member? <Link href={route('register')}>Register</Link></p>
             </div>
         </form>
     </section>

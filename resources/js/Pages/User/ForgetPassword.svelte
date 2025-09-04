@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Button, Spinner, Alert, Row, Col } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
@@ -256,10 +257,10 @@
             </div>
             <Row class="mb-4">
                 <Col class="d-flex justify-content-center">
-                    <a href={route('login')} class="form-control btn btn-outline-primary">Login</a>
+                    <Link href={route('login')} class="form-control btn btn-outline-primary">Login</Link>
                 </Col>
                 <Col class="d-flex justify-content-center">
-                    <a href={route('register')} class="form-control btn btn-outline-success">Register</a>
+                    <Link href={route('register')} class="form-control btn btn-outline-success">Register</Link>
                 </Col>
             </Row>
         </form>

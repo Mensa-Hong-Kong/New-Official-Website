@@ -3,6 +3,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Row, Col, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     
     let { auth, candidates: initCandidates, submitting = $bindable(), test } = $props();
     let candidates = $state([]);
@@ -269,13 +270,13 @@
                 auth.user.permissions.includes('View:User') ||
                 auth.user.roles.includes('Super Administrator')
             }
-                <a class="btn btn-primary col-md-1"
-                    href="{
+                <Link class="btn btn-primary col-md-1"
+                    href={
                         route(
                             'admin.users.show', 
                             {user: row.id}
                         )
-                    }">Show</a>
+                    }>Show</Link>
                 <Button color={row.isPresent ? 'success' : 'danger'}
                     name="status" value={! row.isPresent}
                     disabled={test.inTestingTimeRange || booleans.includes(row.isPass)}
@@ -303,8 +304,8 @@
                     </Button>
                 {/if}
             {:else}
-                <a class="btn btn-primary col-md-1"
-                    href="{
+                <Link class="btn btn-primary col-md-1"
+                    href={
                         route(
                             'admin.admission-tests.candidates.show', 
                             {
@@ -312,7 +313,7 @@
                                 candidate: row[index]['id'],
                             }
                         )
-                    }">Show</a>
+                    }>Show</Link>
             {/if}
         </Row>
     {/each}

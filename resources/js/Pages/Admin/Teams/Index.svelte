@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, TabContent, TabPane, Table } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
@@ -208,13 +209,13 @@
                                     }}>
                                     <th>{team.name}</th>
                                     <td>
-                                        <a class="btn btn-primary"
-                                            href="{
+                                        <Link class="btn btn-primary"
+                                            href={
                                                 route(
                                                     'admin.teams.show',
                                                     {team: team.id}
                                                 )
-                                            }">Show</a>
+                                            }>Show</Link>
                                         {#if
                                             auth.user.permissions.includes('Edit:Permission') ||
                                             auth.user.roles.includes('Super Administrator')

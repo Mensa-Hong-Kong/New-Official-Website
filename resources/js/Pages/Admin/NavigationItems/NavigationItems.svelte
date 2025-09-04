@@ -1,5 +1,6 @@
 <script>
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
@@ -84,12 +85,20 @@
         </div>
         <div class="col text-end">
             {#if navNode.url}
-                <a href="{navNode.url}" class="btn button btn-primary">Url</a>
+                {#if route().match('navNode.url').name == undefined}
+                    <a href={navNode.url} class="btn button btn-primary">Url</a>
+                {:else}
+                    <Link href={navNode.url} class="btn button btn-primary">Url</Link>
+                {/if}
             {:else}
                 <Button color="secondary">Url</Button>
             {/if}
-            <a href="{route('admin.navigation-items.edit', {navigation_item: navNode.id})}"
-                class="btn button btn-primary">Edit</a>
+            <Link href={
+                route(
+                    'admin.navigation-items.edit',
+                    {navigation_item: navNode.id}
+                )
+            } class="btn button btn-primary">Edit</Link>
             <Button color="danger" onclick={() => destroy(navNode.id)} disabled={submitting || editing || updating}>
                 {#if navNode.deleting}
                     <Spinner type="border" size="sm" />Deleting...

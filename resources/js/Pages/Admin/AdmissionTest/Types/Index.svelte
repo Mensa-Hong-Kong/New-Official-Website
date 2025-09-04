@@ -1,6 +1,7 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Table, Alert } from '@sveltestrap/sveltestrap';
+    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
@@ -143,13 +144,13 @@
                             <td>{row.interval_month}</td>
                             <td>{row.is_active ? 'Active' : 'Inactive'}</td>
                             <td>
-                                <a class="btn btn-primary"
-                                    href="{
+                                <Link class="btn btn-primary"
+                                    href={
                                         route(
                                             'admin.admission-test.types.edit',
                                             {type: row.id}
                                         )
-                                    }">Edit</a>
+                                    }>Edit</Link>
                             </td>
                         </tr>
                     {/each}
