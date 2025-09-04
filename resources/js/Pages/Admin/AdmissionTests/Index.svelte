@@ -2,7 +2,7 @@
     import Layout from '@/Pages/Layouts/App.svelte';
     import { Table, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
-    import { Link } from "@inertiajs/svelte";
+    import { Link, router } from "@inertiajs/svelte";
     import Pagination from '@/Pages/Components/Pagination.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
@@ -22,7 +22,7 @@
     }
 
     function alertCallback() {
-        window.location.reload();
+        router.get(window.location);
     }
 
     function deleteSuccessCallback(response) {
