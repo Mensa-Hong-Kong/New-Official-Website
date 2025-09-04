@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdmissionTest;
-use App\Models\AdmissionTestProduct;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -116,7 +115,7 @@ class CandidateController extends Controller implements HasMiddleware
                         }
 
                         return $next($request);
-                    }
+                    },
                 ]
             ))->only('show'),
         ];
