@@ -10,43 +10,57 @@ class ModuleSeeder extends Seeder
 {
     public function run(): void
     {
-        $module = Module::firstOrCreate(['name' => 'User']);
         $viewPermission = Permission::firstOrCreate(['name' => 'View']);
         $viewPermission->update(['display_order' => 0]);
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
         $editPermission->update(['display_order' => 1]);
+        
+        $module = Module::firstOrCreate(['name' => 'User']);
         $module->update(['display_order' => 1]);
         $module->permissions()->sync([
             $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
+
         $module = Module::firstOrCreate(['name' => 'Permission']);
         $module->update(['display_order' => 2]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
+
         $module = Module::firstOrCreate(['name' => 'Admission Test']);
         $module->update(['display_order' => 3]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
-        $module = Module::firstOrCreate(['name' => 'Custom Web Page']);
+
+        $module = Module::firstOrCreate(['name' => 'Admission Test Order']);
+        $module->update(['display_order' => 4]);
+        $module->permissions()->sync([
+            $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+
+        $module = Module::firstOrCreate(['name' => 'Site Content']);
         $module->update(['display_order' => 5]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
-        $module = Module::firstOrCreate(['name' => 'Navigation Item']);
+
+        $module = Module::firstOrCreate(['name' => 'Custom Web Page']);
         $module->update(['display_order' => 6]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
-        $module = Module::firstOrCreate(['name' => 'Site Content']);
-        $module->update(['display_order' => 4]);
+
+        $module = Module::firstOrCreate(['name' => 'Navigation Item']);
+        $module->update(['display_order' => 7]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
+
         $module = Module::firstOrCreate(['name' => 'Other Payment Gateway']);
-        $module->update(['display_order' => 7]);
+        $module->update(['display_order' => 8]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
