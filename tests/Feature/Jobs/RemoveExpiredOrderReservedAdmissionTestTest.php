@@ -25,7 +25,7 @@ class RemoveExpiredOrderReservedAdmissionTestTest extends TestCase
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new RemoveExpiredOrderReservedAdmissionTest($order->id), 'handle']);
         $this->assertEquals(0, $test->candidates()->count());
-        $this->assertEquals('expired', $test->fresh()->status);
+        $this->assertEquals('expired', $order->fresh()->status);
     }
 
     public function test_succeeded_order()
@@ -40,6 +40,6 @@ class RemoveExpiredOrderReservedAdmissionTestTest extends TestCase
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new RemoveExpiredOrderReservedAdmissionTest($order->id), 'handle']);
         $this->assertEquals(1, $test->candidates()->count());
-        $this->assertEquals($status, $test->fresh()->status);
+        $this->assertEquals($status, $order->fresh()->status);
     }
 }
