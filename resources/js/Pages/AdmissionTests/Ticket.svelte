@@ -1,6 +1,5 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
-    import "ckeditor5/ckeditor5.css";
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
     import { Table } from '@sveltestrap/sveltestrap';
 
