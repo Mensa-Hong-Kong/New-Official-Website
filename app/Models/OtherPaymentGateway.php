@@ -14,4 +14,9 @@ class OtherPaymentGateway extends Model
         'is_active',
         'display_order',
     ];
+    
+    public function admissionTestOrders()
+    {
+        return $this->morphMany(AdmissionTestOrder::class, 'gatewayable');
+    }
 }
