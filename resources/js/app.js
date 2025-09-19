@@ -99,13 +99,13 @@ Date.prototype.subDays = function(days) {
     return date;
 }
 
-Date.prototype.startOfDay = function(days) {
+Date.prototype.startOfDay = function() {
     var date = new Date(this.valueOf());
     date.setHours(0, 0, 0, 0);
     return date;
 }
 
-Date.prototype.endOfDay = function(days) {
+Date.prototype.endOfDay = function() {
     var date = new Date(this.valueOf());
     date.setHours(23, 59, 59, 999);
     return date;
@@ -132,6 +132,42 @@ Date.prototype.subHour = function() {
 Date.prototype.subHours = function(hours) {
     var date = new Date(this.valueOf());
     date.setHours(date.getHours() - hours);
+    return date;
+}
+
+Date.prototype.addMinute = function() {
+    var date = new Date(this.valueOf());
+    date.setMinutes(date.getMinutes() + 1);
+    return date;
+}
+
+Date.prototype.addMinutes = function(minutes) {
+    var date = new Date(this.valueOf());
+    date.setMinutes(date.getMinutes() + minutes);
+    return date;
+}
+
+Date.prototype.subMinute = function() {
+    var date = new Date(this.valueOf());
+    date.setMinutes(date.getMinutes() - 1);
+    return date;
+}
+
+Date.prototype.subMinutes = function(minutes) {
+    var date = new Date(this.valueOf());
+    date.setMinutes(date.getMinutes() - minutes);
+    return date;
+}
+
+Date.prototype.startOfMinute = function() {
+    var date = new Date(this.valueOf());
+    date.setHours(0);
+    return date;
+}
+
+Date.prototype.endOfMinute = function() {
+    var date = new Date(this.valueOf());
+    date.setSeconds(59);
     return date;
 }
 
