@@ -327,7 +327,8 @@
     }
         <form class="row g-3" method="POST" novalidate onsubmit={create}>
             <Col md=1>
-                <Input name="user_id" required bind:inner={inputs.user} />
+                <Input name="user_id" patten="^\+?[1-9][0-9]*" required
+                    bind:inner={inputs.user} />
             </Col>
             <Col md=6 />
             <Button color="success" class="col-md-2" disabled={submitting} hidden={creating}
