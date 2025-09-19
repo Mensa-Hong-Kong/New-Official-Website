@@ -25,7 +25,6 @@ class CandidateController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->user();
-                    $now = now();
                     $admissionTest = $request->route('admission_test');
                     $errorReturn = redirect()->route('admission-tests.index');
                     if (! $request->route('admission_test')->is_public) {
@@ -54,8 +53,8 @@ class CandidateController extends Controller implements HasMiddleware
                         $user->lastAttendedAdmissionTest &&
                         $user->lastAttendedAdmissionTest->testing_at
                             ->addMonths(
-                                $user->lastAdmissionTest->type->interval_month
-                            )->endOfDay() >= $now
+                                $user->lastAttendedAdmissionTest->type->interval_month
+                            )->endOfDay() >= $admissionTest->testing_at
                     ) {
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
@@ -96,10 +95,10 @@ class CandidateController extends Controller implements HasMiddleware
                                 $user->lastAttendedAdmissionTest &&
                                 $user->lastAttendedAdmissionTest->testing_at
                                     ->addMonths(
-                                        $user->lastAdmissionTest->type->interval_month
-                                    )->endOfDay() >= now()
+                                        $user->lastAttendedAdmissionTest->type->interval_month
+                                    )->endOfDay() >= $admissionTest->testing_at
                             ) {
-                                return $redirect->withErrors(['message' => "You have no register this admission test and You has admission test record within {$user->lastAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAdmissionTest->type->interval_month} months to now)."]);
+                                return $redirect->withErrors(['message' => "You have no register this admission test and You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                             }
                             if ($admissionTest->testing_at <= now()->addDays(2)->endOfDay()) {
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and cannot register after than before testing date two days, please register other admission test.']);

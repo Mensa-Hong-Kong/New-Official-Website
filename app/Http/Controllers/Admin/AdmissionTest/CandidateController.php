@@ -111,10 +111,10 @@ class CandidateController extends Controller implements HasMiddleware
                         $user->lastAttendedAdmissionTest->id != $test->id &&
                         $user->lastAttendedAdmissionTest->testing_at
                             ->addMonths(
-                                $user->lastAdmissionTest->type->interval_month
-                            )->endOfDay() >= now()
+                                $user->lastAttendedAdmissionTest->type->interval_month
+                            )->endOfDay() >= $test->testing_at
                     ) {
-                        abort(409, "The candidate has admission test record within {$user->lastAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAdmissionTest->type->interval_month} months to now).");
+                        abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     }
 
                     return $next($request);
