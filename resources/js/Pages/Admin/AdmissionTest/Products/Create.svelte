@@ -196,7 +196,7 @@
             </div>
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Option Name">
-                    <Input name="noption_nameme" placeholder="option name"
+                    <Input name="option_name" placeholder="option name"
                         maxlength="255" required disabled={creating}
                         feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
                         invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
