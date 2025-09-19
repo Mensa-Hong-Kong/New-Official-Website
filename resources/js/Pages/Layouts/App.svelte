@@ -411,6 +411,31 @@
                         {/if}
                     {/if}
                     {#if
+                        $page.props.auth.user.permissions.includes('Edit:Admission Test Order') ||
+                        $page.props.auth.user.roles.includes('Super Administrator')
+                    }
+                        <li class="accordion">
+                            <button data-bs-toggle="collapse" aria-expanded="true"
+                                data-bs-target="#asideNavAdminAdmissionTestOrder" aria-controls="asideNavAdminAdmissionTestOrder"
+                                style="height: 0em" class={[
+                                    'nav-item', 'accordion-button',
+                                    {collapsed: ! route().current().startsWith('admin.admission-test.orders.')},
+                                ]}>Admission Test Orders</button>
+                            <ul id="asideNavAdminAdmissionTestOrder" class={[
+                                'accordion-collapse', 'collapse',
+                                {show: route().current().startsWith('admin.admission-test.orders.')},
+                            ]}>
+                                <NavItem>
+                                    <Link href={route('admin.admission-test.orders.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.orders.create')}
+                                        ]}>Create</Link>
+                                </NavItem>
+                            </ul>
+                        </li>
+                    {/if}
+                    {#if
                         $page.props.auth.user.permissions.includes('Edit:Other Payment Gateway') ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
