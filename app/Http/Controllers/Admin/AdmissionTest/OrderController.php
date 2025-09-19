@@ -23,6 +23,39 @@ class OrderController extends BaseController implements HasMiddleware
         ];
     }
 
+    public function create()
+    {
+        return Inertia::render(
+            'Admin/AdmissionTest/Orders/Create',
+            [
+                'paymentGateways' => function() {
+                    return OtherPaymentGateway::where('is_active', true)
+                        ->get(['id', 'name'])
+                        ->pluck('name', 'id')
+                        ->toArray();
+                },
+                'tests' => function() {
+                    $tests = AdmissionTest::with(['address.district.area', 'location'])
+                        ->where('testing_at', '>=', now()->addDays(2)->endOfDay())
+                        ->whereAvailable()
+                        ->withCount('candidates')
+                        ->get();
+                    foreach ($tests as $test) {
+                        $test->address->district->area
+                            ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
+                        $test->address->district
+                            ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
+                        $test->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
+                        $test->location->makeHidden(['id', 'created_at', 'updated_at']);
+                        $test->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'created_at', 'updated_at']);
+                    }
+
+                    return $tests;
+                }
+            ]
+        );
+    }
+
     public function store(StoreRequest $request)
     {
         $booking = null;

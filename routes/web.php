@@ -136,7 +136,7 @@ Route::middleware('auth')->group(function () {
                     Route::match(['put', 'patch'], 'types/display-order', [AdmissionTestTypeController::class, 'displayOrder'])
                         ->name('types.display-order.update');
                     Route::resource('orders', AdmissionTestOrderController::class)
-                        ->only('store');
+                        ->only(['create', 'store']);
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
