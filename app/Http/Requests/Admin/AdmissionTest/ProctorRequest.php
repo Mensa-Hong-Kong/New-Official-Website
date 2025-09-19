@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\AdmissionTest;
 
 use App\Models\AdmissionTestHasProctor;
 use App\Models\User;
+use Closure;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -22,24 +23,18 @@ class ProctorRequest extends FormRequest
         if ($this->method() != 'POST') {
             $unique = $unique->ignore($this->route('proctor')->id, 'user_id');
         }
+        $request = $this;
 
-        return ['user_id' => ['required', 'integer', $unique]];
-    }
-
-    public function after()
-    {
         return [
-            function (Validator $validator) {
-                $user = User::find($this->user_id);
-                if (! $user) {
-                    $validator->errors()->add(
-                        'user_id',
-                        'The selected user id is invalid.'
-                    );
-                } else {
-                    $this->merge(['user' => $user]);
+            'user_id' => [
+                'required', 'integer', $unique,
+                function (string $attribute, mixed $value, Closure $fail) use ($request) {
+                    $request->merge(['user' => User::find($value)]);
+                    if (! $request->user) {
+                        $fail('The selected user id is invalid.');
+                    }
                 }
-            },
+            ],
         ];
     }
 }
