@@ -54,7 +54,7 @@ class StoreRequest extends FormRequest
                     ) {
                         $fail("The selected user id has admission test record within {$request->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$request->user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
-                        $fail('The selected user must at least has default contact.');
+                        $fail('The selected user must at least has one default contact.');
                     }
                 }
             ],

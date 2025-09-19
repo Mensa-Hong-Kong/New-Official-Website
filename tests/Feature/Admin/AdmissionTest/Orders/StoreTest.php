@@ -103,7 +103,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user must at least has default contact.']);
+        $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
     }
 
     public function test_user_id_has_already_member()

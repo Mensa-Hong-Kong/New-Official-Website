@@ -31,7 +31,7 @@ class StoreRequest extends FormRequest
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
-                        $fail('The selected user must at least has default contact.');
+                        $fail('The selected user must at least has one default contact.');
                     } elseif ($request->user->isActiveMember()) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {

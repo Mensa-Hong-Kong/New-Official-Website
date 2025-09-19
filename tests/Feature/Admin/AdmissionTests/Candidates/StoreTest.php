@@ -422,7 +422,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user must at least has default contact.']);
+        $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
     }
 
     public function test_admission_test_is_fulled()
