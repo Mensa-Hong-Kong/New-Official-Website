@@ -17,17 +17,21 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
-        $unique = Rule::unique(AdmissionTestHasCandidate::class)
-            ->where('test_id', $this->route('admission_test'));
         $request = $this;
 
         return [
             'user_id' => [
-                'required', 'integer', $unique,
+                'required', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
+                    } elseif (
+                        AdmissionTestHasCandidate::where('user_id', $value)
+                            ->where('test_id', $request->route('admission_test'))
+                            ->exists()
+                    ) {
+                        $fail('The user id has already been taken.');
                     } elseif ($request->user->isActiveMember()) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
