@@ -43,7 +43,7 @@ class StoreRequest extends FormRequest
                     } elseif ($request->user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
                         $fail('The selected user id has other same passport user account tested.');
                     }
-                }
+                },
             ],
             'product_name' => 'nullable|string|max:255',
             'price_name' => 'nullable|string|max:255',
@@ -51,27 +51,27 @@ class StoreRequest extends FormRequest
             'quota' => 'required|integer|min:1|max:255',
             'status' => 'required|string|in:pending,succeeded',
             'expired_at' => [
-                'required_if:status,pending', 'date', 
+                'required_if:status,pending', 'date',
                 'after_or_equal:'.now()->addMinutes(5)->format('Y-m-d H:i'),
-                'before_or_equal:'.now()->addDay()->format('Y-m-d H:i')
+                'before_or_equal:'.now()->addDay()->format('Y-m-d H:i'),
             ],
             'payment_gateway_id' => ['required', 'integer', $exists],
             'reference_number' => 'nullable|string|max:255',
             'test_id' => [
-                'nullable', 'integer', 
+                'nullable', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
                     $request->merge([
                         'test',
                         AdmissionTest::withCount('candidates')
-                            ->find($value)
+                            ->find($value),
                     ]);
                     if (! $request->test) {
                         $fail('The selected test is invalid.');
                     } elseif ($request->test->candidates_count >= $request->test->maximum_candidates) {
-                        // checking of lesser use row id because auto increment counter is not reset to its value before the transaction began 
+                        // checking of lesser use row id because auto increment counter is not reset to its value before the transaction began
                         $fail('The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
                     }
-                }
+                },
             ],
         ];
     }
@@ -104,7 +104,7 @@ class StoreRequest extends FormRequest
                         "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
                     );
                 }
-            }
+            },
         ];
     }
 }

@@ -28,13 +28,13 @@ class OrderController extends BaseController implements HasMiddleware
         return Inertia::render(
             'Admin/AdmissionTest/Orders/Create',
             [
-                'paymentGateways' => function() {
+                'paymentGateways' => function () {
                     return OtherPaymentGateway::where('is_active', true)
                         ->get(['id', 'name'])
                         ->pluck('name', 'id')
                         ->toArray();
                 },
-                'tests' => function() {
+                'tests' => function () {
                     $tests = AdmissionTest::with(['address.district.area', 'location'])
                         ->where('testing_at', '>=', now()->addDays(2)->endOfDay())
                         ->whereAvailable()
@@ -51,7 +51,7 @@ class OrderController extends BaseController implements HasMiddleware
                     }
 
                     return $tests;
-                }
+                },
             ]
         );
     }
@@ -59,15 +59,16 @@ class OrderController extends BaseController implements HasMiddleware
     public function store(StoreRequest $request)
     {
         $booking = null;
-        if($request->test) {
+        if ($request->test) {
             DB::beginTransaction();
             $booking = AdmissionTestHasCandidate::create([
                 'test_id', $request->test_id,
                 'user_id' => $request->user_id,
             ]);
             // check again for may be concurrent than over sell
-            if($request->test->candidates()->count() > $request->test->maximum_candidates) {
+            if ($request->test->candidates()->count() > $request->test->maximum_candidates) {
                 DB::rollback();
+
                 return response()->json([
                     'errors' => ['test_id' => 'The admission test is fulled, please other test, if you need update to date tests info, please reload the page or open a new window tab to read date tests info.'],
                 ], 422);

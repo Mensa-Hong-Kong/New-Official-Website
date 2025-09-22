@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Admin\AdmissionTest\CandidateController as AdminCandidateController;
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
+use App\Http\Controllers\Admin\AdmissionTest\OrderController as AdmissionTestOrderController;
 use App\Http\Controllers\Admin\AdmissionTest\PriceController as AdminAdmissionTestPriceController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\AdmissionTest\ProductController as AdminAdmissionTestProductController;
 use App\Http\Controllers\Admin\AdmissionTest\TypeController as AdmissionTestTypeController;
-use App\Http\Controllers\Admin\AdmissionTest\OrderController as AdmissionTestOrderController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CustomWebPageController as AdmissionCustomWebPageController;
 use App\Http\Controllers\Admin\ModuleController;

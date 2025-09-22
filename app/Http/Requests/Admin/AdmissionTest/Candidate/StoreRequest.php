@@ -6,7 +6,6 @@ use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -37,7 +36,7 @@ class StoreRequest extends FormRequest
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
                     } elseif (
-                        $request->user->futureAdmissionTest && 
+                        $request->user->futureAdmissionTest &&
                         $request->user->futureAdmissionTest->id == $request->route('admission_test')->id
                     ) {
                         $fail('The selected user id has already schedule this admission test.');
@@ -60,7 +59,7 @@ class StoreRequest extends FormRequest
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     }
-                }
+                },
             ],
             'function' => 'required|string|in:schedule,reschedule',
         ];

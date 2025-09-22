@@ -14,7 +14,7 @@ class ModuleSeeder extends Seeder
         $viewPermission->update(['display_order' => 0]);
         $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
         $editPermission->update(['display_order' => 1]);
-        
+
         $module = Module::firstOrCreate(['name' => 'User']);
         $module->update(['display_order' => 1]);
         $module->permissions()->sync([

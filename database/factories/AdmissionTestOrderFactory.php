@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\District;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Carbon\Carbon;

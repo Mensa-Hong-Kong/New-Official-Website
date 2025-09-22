@@ -34,7 +34,6 @@ class StoreTest extends TestCase
         $this->happyCase['user_id'] = $this->user->id;
     }
 
-
     public function test_have_no_login()
     {
         $response = $this->postJson(
@@ -544,7 +543,7 @@ class StoreTest extends TestCase
         $this->assertEquals($data['expired_at'], $order->expired_at);
         $this->assertEquals(1, $test->candidates()->where('order_id', $order->id)->count());
         Queue::assertPushed(RemoveExpiredOrderReservedAdmissionTest::class);
-        
+
     }
 
     public function test_happy_case_when_status_is_succeeded_and_without_expired_at_with_test()

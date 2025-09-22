@@ -5,7 +5,6 @@ namespace App\Http\Requests\Admin\AdmissionTest;
 use App\Models\AdmissionTestHasProctor;
 use App\Models\User;
 use Closure;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -33,7 +32,7 @@ class ProctorRequest extends FormRequest
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
                     }
-                }
+                },
             ],
         ];
     }
