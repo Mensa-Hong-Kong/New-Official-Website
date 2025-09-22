@@ -32,7 +32,7 @@ class StoreRequest extends FormRequest
                             ->exists()
                     ) {
                         $fail('The user id has already been taken.');
-                    } elseif ($request->user->isActiveMember()) {
+                    } elseif ($request->user->isActiveMember) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');

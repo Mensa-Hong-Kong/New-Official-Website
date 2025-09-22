@@ -184,13 +184,35 @@ class User extends Authenticatable
         );
     }
 
+    public function isActiveMember(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return (bool) $user->member && $user->member->is_active;
+            }
+        );
+    }
+
+    public function hasPassedAdmissionTest(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->admissionTests()->where('is_pass', true)->exists();
+            }
+        );
+    }
+
     public function hasQualificationOfMembership(): Attribute
     {
         $user = $this;
 
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
-                return $user->member || $user->hasPassedAdmissionTest();
+                return $user->member || $user->hasPassedAdmissionTest;
             }
         );
     }
@@ -308,11 +330,6 @@ class User extends Authenticatable
         return $this->hasOne(Member::class);
     }
 
-    public function isActiveMember()
-    {
-        return (bool) $this->member && $this->member->is_active;
-    }
-
     public function proctorTests()
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasProctor::class, 'user_id', 'test_id');
@@ -340,10 +357,5 @@ class User extends Authenticatable
     public function lastAttendedAdmissionTest()
     {
         return $this->lastAdmissionTest()->where('is_present', true);
-    }
-
-    public function hasPassedAdmissionTest()
-    {
-        return $this->admissionTests()->where('is_pass', true)->exists();
     }
 }
