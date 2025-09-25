@@ -61,8 +61,7 @@ class StoreRequest extends FormRequest
                 'nullable', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
                     $request->merge([
-                        'test',
-                        AdmissionTest::withCount('candidates')
+                        'test' => AdmissionTest::withCount('candidates')
                             ->find($value),
                     ]);
                     if (! $request->test) {
@@ -100,7 +99,7 @@ class StoreRequest extends FormRequest
                         )->endOfDay() >= $this->test->testing_at
                 ) {
                     $validator->errors()->add(
-                        'test_id',
+                        'user_id',
                         "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
                     );
                 }
