@@ -166,22 +166,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
     }
 
-    public function test_user_id_is_exists_candidate_for_this_admission_test()
-    {
-        $this->test->candidates()->attach($this->user->id);
-        $response = $this->actingAs($this->user)->postJson(
-            route(
-                'admin.admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-            [
-                'user_id' => $this->user->id,
-                'function' => 'schedule',
-            ]
-        );
-        $response->assertInvalid(['user_id' => 'The user id has already been taken.']);
-    }
-
     public function test_missing_function()
     {
         $response = $this->actingAs($this->user)->postJson(

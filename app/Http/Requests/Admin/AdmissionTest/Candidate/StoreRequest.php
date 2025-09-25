@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin\AdmissionTest\Candidate;
 
-use App\Models\AdmissionTestHasCandidate;
 use App\Models\User;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,19 +24,14 @@ class StoreRequest extends FormRequest
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
-                    } elseif (
-                        AdmissionTestHasCandidate::where('user_id', $value)
-                            ->where('test_id', $request->route('admission_test'))
-                            ->exists()
-                    ) {
-                        $fail('The user id has already been taken.');
                     } elseif ($request->user->isActiveMember) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
                     } elseif (
-                        $request->user->futureAdmissionTest &&
-                        $request->user->futureAdmissionTest->id == $request->route('admission_test')->id
+                        $request->user->admissionTests()
+                            ->where('test_id', $request->route('admission_test')->id)
+                            ->exists()
                     ) {
                         $fail('The selected user id has already schedule this admission test.');
                     } elseif ($request->function == 'schedule' && $request->user->futureAdmissionTest) {
