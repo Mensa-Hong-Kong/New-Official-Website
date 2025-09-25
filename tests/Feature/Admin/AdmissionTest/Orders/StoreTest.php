@@ -400,7 +400,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['payment_gateway_id' => 'The payment gateway field must be an integer.']);
+        $response->assertInvalid(['payment_gateway_id' => 'The payment gateway id field must be an integer.']);
     }
 
     public function test_payment_gateway_id_is_not_exist()
