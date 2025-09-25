@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\AdmissionTest\Orders;
 use App\Jobs\Orders\RemoveExpiredOrderReservedAdmissionTest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
+use App\Models\ContactHasVerification;
 use App\Models\Member;
 use App\Models\ModulePermission;
 use App\Models\User;
@@ -32,6 +33,19 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test Order']);
         $this->happyCase['user_id'] = $this->user->id;
+        $contact = UserHasContact::factory()
+            ->state([
+                'user_id' => $this->user->id,
+                'is_default' => true,
+            ])->create();
+        ContactHasVerification::create([
+            'contact_id' => $contact->id,
+            'contact' => $contact->contact,
+            'type' => $contact->type,
+            'verified_at' => now(),
+            'creator_id' => $this->user->id,
+            'creator_ip' => '127.0.0.1',
+        ]);
     }
 
     public function test_have_no_login()
