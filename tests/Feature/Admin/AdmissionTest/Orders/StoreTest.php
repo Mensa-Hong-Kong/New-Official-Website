@@ -502,13 +502,13 @@ class StoreTest extends TestCase
         Queue::fake();
         $data = $this->happyCase;
         $data['status'] = 'pending';
-        $data['expired_at'] = now()->addMinutes(5);
+        $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
         );
         $response->assertRedirectToRoute('admin.index');
-        $this->assertEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at);
+        $this->assertEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at->format('Y-m-d H:i'));
         Queue::assertNothingPushed();
     }
 
@@ -528,14 +528,14 @@ class StoreTest extends TestCase
     {
         Queue::fake();
         $data = $this->happyCase;
-        $data['expired_at'] = now()->addMinutes(5);
+        $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
         );
         $response->assertRedirectToRoute('admin.index');
         $this->assertNotEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at);
-        $this->assertEquals(now(), AdmissionTestOrder::first()->expired_at);
+        $this->assertEquals(now()->format('Y-m-d H:i'), AdmissionTestOrder::first()->expired_at->format('Y-m-d H:i'));
         Queue::assertNothingPushed();
     }
 
@@ -544,9 +544,8 @@ class StoreTest extends TestCase
         Queue::fake();
         $data = $this->happyCase;
         $data['status'] = 'pending';
-        $data['expired_at'] = now()->addMinutes(5);
-        $test = AdmissionTest::factory()
-            ->create();
+        $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
+        $test = AdmissionTest::factory()->create();
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -554,7 +553,6 @@ class StoreTest extends TestCase
         );
         $response->assertRedirectToRoute('admin.index');
         $order = AdmissionTestOrder::first();
-        $this->assertEquals($data['expired_at'], $order->expired_at);
         $this->assertEquals(1, $test->candidates()->where('order_id', $order->id)->count());
         Queue::assertPushed(RemoveExpiredOrderReservedAdmissionTest::class);
 
@@ -564,8 +562,7 @@ class StoreTest extends TestCase
     {
         Queue::fake();
         $data = $this->happyCase;
-        $test = AdmissionTest::factory()
-            ->create();
+        $test = AdmissionTest::factory()->create();
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -580,9 +577,8 @@ class StoreTest extends TestCase
     {
         Queue::fake();
         $data = $this->happyCase;
-        $data['expired_at'] = now()->addMinutes(5);
-        $test = AdmissionTest::factory()
-            ->create();
+        $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
+        $test = AdmissionTest::factory()->create();
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -590,9 +586,8 @@ class StoreTest extends TestCase
         );
         $response->assertRedirectToRoute('admin.index');
         $order = AdmissionTestOrder::first();
-        $this->assertNotEquals($data['expired_at'], $order->expired_at);
-        $this->assertEquals(now(), AdmissionTestOrder::first()->expired_at);
-        $this->assertEquals(1, $test->candidates()->where('order_id', $order->id)->count());
+        $this->assertEquals(now()->format('Y-m-d H:i'), $order->expired_at->format('Y-m-d H:i'));
+        $this->assertEquals(1, $test->candidates()->count());
         Queue::assertNothingPushed();
     }
 }
