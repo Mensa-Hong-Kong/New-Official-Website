@@ -354,7 +354,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['expired_at' => 'The expired at is not a valid date.']);
+        $response->assertInvalid(['expired_at' => 'The expired at field must be a valid date.']);
     }
 
     public function test_expired_at_before_than_after_5_minutes()
