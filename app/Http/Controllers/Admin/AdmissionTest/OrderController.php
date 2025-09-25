@@ -62,7 +62,7 @@ class OrderController extends BaseController implements HasMiddleware
         if ($request->test) {
             DB::beginTransaction();
             $booking = AdmissionTestHasCandidate::create([
-                'test_id', $request->test_id,
+                'test_id' => $request->test_id,
                 'user_id' => $request->user_id,
             ]);
             // check again for may be concurrent than over sell
