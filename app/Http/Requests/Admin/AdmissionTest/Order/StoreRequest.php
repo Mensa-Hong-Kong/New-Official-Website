@@ -65,7 +65,7 @@ class StoreRequest extends FormRequest
                             ->find($value),
                     ]);
                     if (! $request->test) {
-                        $fail('The selected test is invalid.');
+                        $fail('The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
                     } elseif ($request->test->candidates_count >= $request->test->maximum_candidates) {
                         // checking of lesser use row id because auto increment counter is not reset to its value before the transaction began
                         $fail('The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
@@ -82,7 +82,6 @@ class StoreRequest extends FormRequest
             'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 24 hours.',
             'payment_gateway_id.required' => 'The payment gateway field is required.',
             'payment_gateway_id.exists' => 'The selected payment gateway is invalid.',
-            'test_id.exists' => 'The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.',
         ];
     }
 
