@@ -361,7 +361,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $data['status'] = 'pending';
-        $data['expired_at'] = now()->addMinutes(4)->endOfMinute();
+        $data['expired_at'] = now()->addMinutes(4)->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
@@ -373,7 +373,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $data['status'] = 'pending';
-        $data['expired_at'] = now()->addMinutes(4)->endOfMinute();
+        $data['expired_at'] = now()->addHours(24)->addMinute()->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
