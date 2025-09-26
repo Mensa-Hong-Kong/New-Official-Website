@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class AdmissionTestOrder extends Model
 {
@@ -34,5 +35,20 @@ class AdmissionTestOrder extends Model
     public function tests()
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id');
+    }
+
+    public function attendedTests()
+    {
+        return $this->tests()->where('is_present', true);
+    }
+
+    public function scopeWhereHasUnusedQuota()
+    {
+        $thisTable = $this->getTable();
+
+        return $this->whereHas(
+            'attendedTests', null, '<=',
+            DB::raw("$thisTable.quota")
+        );
     }
 }

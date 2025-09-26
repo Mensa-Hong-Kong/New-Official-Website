@@ -111,10 +111,7 @@ class StoreTest extends TestCase
         UserHasContact::first()->delete();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
-            [
-                'user_id' => $this->user->id,
-                'function' => 'schedule',
-            ]
+            $this->happyCase
         );
         $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
     }
@@ -146,6 +143,16 @@ class StoreTest extends TestCase
             $this->happyCase
         );
         $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
+    }
+
+    public function test_user_id_of_user_has_unused_quota()
+    {
+        AdmissionTestOrder::factory()->create();
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $this->happyCase
+        );
+        $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
     }
 
     public function test_user_id_has_other_same_passport_user_account_tested()

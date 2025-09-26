@@ -358,4 +358,9 @@ class User extends Authenticatable
     {
         return $this->lastAdmissionTest()->where('is_present', true);
     }
+
+    public function admissionTestOrders()
+    {
+        return $this->hasMany(AdmissionTestOrder::class);
+    }
 }
