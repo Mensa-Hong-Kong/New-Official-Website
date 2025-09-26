@@ -150,11 +150,10 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_other_same_passport_user_account_tested()
     {
-        $testingAt = now()->subSecond();
         $test = AdmissionTest::factory()
             ->state([
-                'testing_at' => $testingAt,
-                'expect_end_at' => $testingAt->addHour(),
+                'testing_at' => now()->subSecond(),
+                'expect_end_at' => now()->subSecond()->addHour(),
             ])->create();
         $user = User::factory()
             ->state([
