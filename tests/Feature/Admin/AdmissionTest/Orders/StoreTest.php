@@ -145,6 +145,20 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
     }
 
+    public function test_user_id_of_user_has_future_admission_test_when_test_id_not_null()
+    {
+        $test1 = AdmissionTest::factory()->create();
+        $test1->candidates()->attach($this->user->id);
+        $test2 = AdmissionTest::factory()->create();
+        $data = $this->happyCase;
+        $data['test_id'] = $test2->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id has been scheduled admission test.']);
+    }
+
     public function test_user_id_of_user_has_unused_quota()
     {
         AdmissionTestOrder::factory()->create();

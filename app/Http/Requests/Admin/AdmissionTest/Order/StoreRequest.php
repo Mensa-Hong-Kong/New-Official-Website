@@ -36,8 +36,8 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
-                    } elseif ($request->user->futureAdmissionTest) {
-                        $fail('The selected user id has already schedule this admission test.');
+                    } elseif ($request->test_id && $request->user->futureAdmissionTest) {
+                        $fail('The selected user id has been scheduled admission test.');
                     } elseif (
                         $request->user->admissionTestOrders()
                             ->where('status', 'succeeded')
