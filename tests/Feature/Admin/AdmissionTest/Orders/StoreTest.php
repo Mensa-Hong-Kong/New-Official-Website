@@ -169,6 +169,25 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
     }
 
+    public function test_user_id_of_user_has_other_same_passport_user_already_membership_qualification()
+    {
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        Member::create([
+            'user_id' => $user->id,
+            'expired_on' => now()->subYears(2)->endOfYear(),
+            'actual_expired_on' => now()->subYear()->startOfYear()->addDays(21),
+        ]);
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $this->happyCase
+        );
+        $response->assertInvalid(['user_id' => 'The passport of selected user id has already been qualification for membership.']);
+    }
+
     public function test_user_id_has_other_same_passport_user_account_tested()
     {
         $test = AdmissionTest::factory()
