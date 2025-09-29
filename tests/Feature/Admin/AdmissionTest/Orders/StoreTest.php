@@ -161,7 +161,7 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota()
     {
-        AdmissionTestOrder::factory()->create();
+        AdmissionTestOrder::factory()->state(['status' => 'succeeded'])->create();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $this->happyCase
