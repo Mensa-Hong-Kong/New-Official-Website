@@ -12,6 +12,7 @@
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "reedware/laravel-relation-joins": "^8.0",
         "spatie/laravel-permission": "^6.10",
         "stripe/stripe-php": "^17.2",
         "tightenco/ziggy": "^2.x-dev",

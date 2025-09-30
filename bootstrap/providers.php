@@ -6,4 +6,5 @@ return [
     Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
     Tighten\Ziggy\ZiggyServiceProvider::class,
     Inertia\ServiceProvider::class,
+    Reedware\LaravelRelationJoins\LaravelRelationJoinServiceProvider::class,
 ];
