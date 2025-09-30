@@ -51,7 +51,7 @@ class AdmissionTestOrder extends Model
                 DB::raw("$thisTable.quota")
             );
         $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
-        if($quotaValidityMonths) {
+        if ($quotaValidityMonths) {
             $return->leftJoinRelation('attendedTests as attendedTests.type as type')
                 ->where(
                     DB::raw("

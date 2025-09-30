@@ -217,7 +217,7 @@ class StoreTest extends TestCase
         config(['app.admissionTestQuotaValidityMonths' => null]);
         AdmissionTestOrder::factory()->state([
             'status' => 'succeeded',
-            'created_at' => now()->subMonths()
+            'created_at' => now()->subMonths(),
         ])->create();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
