@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'admissionTestQuotaValidityMonths' => env('ADMISSION_TEST_QUOTA_VALIDITY_MONTHS'),
 ];

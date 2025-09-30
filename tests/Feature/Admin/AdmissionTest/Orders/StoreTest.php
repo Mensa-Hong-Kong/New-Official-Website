@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\AdmissionTest\Orders;
 use App\Jobs\Orders\RemoveExpiredOrderReservedAdmissionTest;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
+use App\Models\AdmissionTestType;
 use App\Models\ContactHasVerification;
 use App\Models\Member;
 use App\Models\ModulePermission;
@@ -159,9 +160,65 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has been scheduled admission test.']);
     }
 
-    public function test_user_id_of_user_has_unused_quota()
+    public function test_user_id_of_user_has_unused_quota_when_quota_validity_months_config_is_null()
     {
-        AdmissionTestOrder::factory()->state(['status' => 'succeeded'])->create();
+        config(['app.admissionTestQuotaValidityMonths' => null]);
+        AdmissionTestOrder::factory()->state([
+            'status' => 'succeeded',
+            'created_at' => '0000-01-01 00:00',
+        ])->create();
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $this->happyCase
+        );
+        $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
+    }
+
+    public function test_user_id_of_user_has_unused_quota_when_quota_within_validity_months_config()
+    {
+        config(['app.admissionTestQuotaValidityMonths' => 1]);
+        AdmissionTestOrder::factory()->state([
+            'status' => 'succeeded',
+            'created_at' => now()->subMonth()->addSecond(),
+        ])->create();
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $this->happyCase
+        );
+        $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
+    }
+
+    public function test_user_id_of_user_has_unused_quota_and_has_tested_record_order_when_unused_quota_within_validity_months_config()
+    {
+        config(['app.admissionTestQuotaValidityMonths' => 1]);
+        $order = AdmissionTestOrder::factory()->state([
+            'quota' => 2,
+            'status' => 'succeeded',
+            'created_at' => now()->subMonths(3)->addSecond(),
+        ])->create();
+        AdmissionTestType::factory()->state(['interval_month' => 1])->create();
+        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->addSecond()])->create();
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'is_present' => true,
+                'order_id' => $order->id,
+            ]
+        );
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $this->happyCase
+        );
+        $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
+    }
+
+    public function test_user_id_of_user_has_unused_quota_when_have_no_attended_record()
+    {
+        config(['app.admissionTestQuotaValidityMonths' => null]);
+        AdmissionTestOrder::factory()->state([
+            'status' => 'succeeded',
+            'created_at' => now()->subMonths()
+        ])->create();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $this->happyCase
@@ -536,9 +593,12 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => "The selected user id has admission test record within {$test->type->interval_month} months(count from testing at of this test sub {$test->type->interval_month} months to now)."]);
     }
 
-    public function test_happy_case_when_status_is_pending_without_test()
+    // test with invalidity quota (non-attended and with attended but has no retest within validity months)
+
+    public function test_happy_case_when_status_is_pending_without_test_and_quota_validity_months_config_is_null()
     {
         Queue::fake();
+        config(['app.admissionTestQuotaValidityMonths' => null]);
         $data = $this->happyCase;
         $data['status'] = 'pending';
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
@@ -551,9 +611,14 @@ class StoreTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_status_is_succeeded_and_without_expired_at_and_test()
+    public function test_happy_case_when_status_is_succeeded_and_without_expired_at_and_test_and_has_unused_quota_order_without_validity_months_config()
     {
         Queue::fake();
+        config(['app.admissionTestQuotaValidityMonths' => 1]);
+        AdmissionTestOrder::factory()->state([
+            'status' => 'succeeded',
+            'created_at' => now()->subMonth()->subSecond(),
+        ])->create();
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -563,9 +628,28 @@ class StoreTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_status_is_succeeded_with_expired_at_and_with_without_test()
+    public function test_happy_case_when_status_is_succeeded_with_expired_at_and_with_without_test_and_has_tested_record_order_when_unused_quota_within_validity_months_config()
     {
         Queue::fake();
+        config(['app.admissionTestQuotaValidityMonths' => 1]);
+        AdmissionTestOrder::factory()->state([
+            'status' => 'succeeded',
+            'created_at' => now()->subMonth()->subSecond(),
+        ])->create();
+        $order = AdmissionTestOrder::factory()->state([
+            'quota' => 2,
+            'status' => 'succeeded',
+            'created_at' => now()->subMonths(3)->subSecond(),
+        ])->create();
+        AdmissionTestType::factory()->state(['interval_month' => 1])->create();
+        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->subSecond()])->create();
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'is_present' => true,
+                'order_id' => $order->id,
+            ]
+        );
         $data = $this->happyCase;
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
@@ -574,7 +658,7 @@ class StoreTest extends TestCase
         );
         $response->assertRedirectToRoute('admin.index');
         $this->assertNotEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at);
-        $this->assertEquals(now()->format('Y-m-d H:i'), AdmissionTestOrder::first()->expired_at->format('Y-m-d H:i'));
+        $this->assertEquals(now()->format('Y-m-d H:i'), AdmissionTestOrder::latest('id')->first()->expired_at->format('Y-m-d H:i'));
         Queue::assertNothingPushed();
     }
 

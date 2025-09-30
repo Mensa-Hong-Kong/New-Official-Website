@@ -20,7 +20,7 @@ class AdmissionTestFactory extends Factory
             now()->addYear()
         )->getTimestamp();
         $testingAt = Carbon::createFromTimeStamp($testingAtTimestamp);
-        $type = AdmissionTestType::first() ?? AdmissionTestType::factory()->create();
+        $type = AdmissionTestType::inRandomOrder()->first() ?? AdmissionTestType::factory()->create();
 
         return [
             'type_id' => $type->id,
