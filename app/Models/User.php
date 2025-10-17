@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Kyslik\ColumnSortable\Sortable;
 use Laravel\Sanctum\HasApiTokens;
@@ -362,5 +363,37 @@ class User extends Authenticatable
     public function admissionTestOrders()
     {
         return $this->hasMany(AdmissionTestOrder::class);
+    }
+
+    public function hasUnusedQuotaAdmissionTestOrder()
+    {
+        $orderTable = (new AdmissionTestOrder)->getTable();
+        $return = $this->hasOne(AdmissionTestOrder::class)
+            ->where('status', 'succeeded')
+            ->whereHas(
+                'attendedTests', null, '<',
+                DB::raw("$orderTable.quota")
+            );
+        $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
+        if ($quotaValidityMonths) {
+            $return->leftJoinRelation('attendedTests as attendedTests.type as type')
+                ->where(
+                    DB::raw("
+                        if(
+                            attendedTests.testing_at IS NOT NULL,
+                            DATE_ADD(
+                                attendedTests.testing_at,
+                                INTERVAL type.interval_month + $quotaValidityMonths MONTH
+                            ),
+                            DATE_ADD(
+                                $orderTable.created_at,
+                                INTERVAL $quotaValidityMonths MONTH
+                            )
+                        )
+                    "), '>=', now()
+                )->select(["$orderTable.*"]);
+        }
+
+        return $return;
     }
 }
