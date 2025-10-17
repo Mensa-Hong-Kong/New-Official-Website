@@ -41,35 +41,4 @@ class AdmissionTestOrder extends Model
     {
         return $this->tests()->where('is_present', true);
     }
-
-    public function scopeWhereHasUnusedQuota()
-    {
-        $thisTable = $this->getTable();
-        $return = $this->where('status', 'succeeded')
-            ->whereHas(
-                'attendedTests', null, '<=',
-                DB::raw("$thisTable.quota")
-            );
-        $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
-        if ($quotaValidityMonths) {
-            $return->leftJoinRelation('attendedTests as attendedTests.type as type')
-                ->where(
-                    DB::raw("
-                        if(
-                            attendedTests.testing_at IS NOT NULL,
-                            DATE_ADD(
-                                attendedTests.testing_at,
-                                INTERVAL type.interval_month + $quotaValidityMonths MONTH
-                            ),
-                            DATE_ADD(
-                                $thisTable.created_at,
-                                INTERVAL $quotaValidityMonths MONTH
-                            )
-                        )
-                    "), '>=', now()
-                );
-        }
-
-        return $return;
-    }
 }
