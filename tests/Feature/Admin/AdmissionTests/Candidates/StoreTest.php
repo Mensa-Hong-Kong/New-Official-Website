@@ -646,7 +646,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -685,7 +685,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -730,7 +730,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -782,7 +782,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -1192,7 +1192,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -1229,7 +1229,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -1272,7 +1272,7 @@ class StoreTest extends TestCase
             'status' => 'succeeded',
         ])->create();
         $test = AdmissionTest::factory()->create();
-        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);

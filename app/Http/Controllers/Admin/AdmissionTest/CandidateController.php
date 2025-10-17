@@ -141,7 +141,7 @@ class CandidateController extends Controller implements HasMiddleware
             $admissionTest->candidates()->attach($request->user->id);
         } else {
             $admissionTest->candidates()->attach(
-                $request->user->id, 
+                $request->user->id,
                 [
                     'order_id' => $request->user
                         ->hasUnusedQuotaAdmissionTestOrder
