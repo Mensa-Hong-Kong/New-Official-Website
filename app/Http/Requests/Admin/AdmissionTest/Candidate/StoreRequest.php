@@ -50,11 +50,17 @@ class StoreRequest extends FormRequest
                             )->endOfDay() >= $request->route('admission_test')->testing_at
                     ) {
                         $fail("The selected user id has admission test record within {$request->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$request->user->lastAttendedAdmissionTest->type->interval_month} months to now).");
+                    } elseif (
+                        ! $request->is_free &&
+                        ! $request->user->hasUnusedQuotaAdmissionTestOrder
+                    ) {
+                        $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     }
                 },
             ],
+            'is_free' => 'nullable|boolean',
             'function' => 'required|string|in:schedule,reschedule',
         ];
     }

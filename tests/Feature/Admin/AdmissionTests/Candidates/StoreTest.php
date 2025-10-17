@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestOrder;
 use App\Models\ContactHasVerification;
 use App\Models\Member;
 use App\Models\User;
@@ -52,6 +53,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -69,6 +71,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -86,6 +89,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -101,6 +105,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -117,6 +122,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -131,7 +137,10 @@ class StoreTest extends TestCase
                 'admin.admission-tests.candidates.store',
                 ['admission_test' => $this->test]
             ),
-            ['function' => 'schedule']
+            [
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
         );
         $response->assertInvalid(['user_id' => 'The user id field is required.']);
     }
@@ -145,6 +154,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => 'abc',
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -160,52 +170,11 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => 0,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
-    }
-
-    public function test_missing_function()
-    {
-        $response = $this->actingAs($this->user)->postJson(
-            route(
-                'admin.admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-            ['user_id' => $this->user->id]
-        );
-        $response->assertInvalid(['function' => 'The function field is required.']);
-    }
-
-    public function test_function_is_not_string()
-    {
-        $response = $this->actingAs($this->user)->postJson(
-            route(
-                'admin.admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-            [
-                'user_id' => $this->user->id,
-                'function' => ['schedule'],
-            ]
-        );
-        $response->assertInvalid(['function' => 'The function field must be a string.']);
-    }
-
-    public function test_function_is_invalid()
-    {
-        $response = $this->actingAs($this->user)->postJson(
-            route(
-                'admin.admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-            [
-                'user_id' => $this->user->id,
-                'function' => 'abc',
-            ]
-        );
-        $response->assertInvalid(['function' => 'The function field does not exist in schedule, reschedule.']);
     }
 
     public function test_user_id_has_already_member()
@@ -223,6 +192,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'abc',
             ]
         );
@@ -243,6 +213,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -259,6 +230,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -281,6 +253,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -296,6 +269,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'reschedule',
             ]
         );
@@ -330,6 +304,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -361,6 +336,7 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
@@ -387,10 +363,26 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
         $response->assertInvalid(['user_id' => "The selected user id has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
+    }
+
+    public function test_user_id_have_no_unused_admission_test_quota_when_is_not_free()
+    {
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.']);
     }
 
     public function test_user_id_of_user_have_no_any_default_contact()
@@ -403,10 +395,74 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
         $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
+    }
+
+    public function test_is_free_field_is_not_boolean()
+    {
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => 'abc',
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['is_free' => 'The is free field must be true or false.']);
+    }
+
+    public function test_missing_function()
+    {
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+            ]
+        );
+        $response->assertInvalid(['function' => 'The function field is required.']);
+    }
+
+    public function test_function_is_not_string()
+    {
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => ['schedule'],
+            ]
+        );
+        $response->assertInvalid(['function' => 'The function field must be a string.']);
+    }
+
+    public function test_function_is_invalid()
+    {
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'abc',
+            ]
+        );
+        $response->assertInvalid(['function' => 'The function field does not exist in schedule, reschedule.']);
     }
 
     public function test_admission_test_is_fulled()
@@ -421,14 +477,546 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
+                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
         $response->assertInvalid(['user_id' => 'The admission test is fulled.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_have_no_order()
     {
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+    }
+
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order()
+    {
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+    }
+
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_have_no_order()
+    {
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+    }
+
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_have_no_order()
+    {
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+    }
+
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_only_has_all_quota_used_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(1, $order->tests()->count());
+        $this->assertEquals($test->id, $order->tests()->first()->id);
+    }
+
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_only_has_all_quota_used_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(1, $order->tests()->count());
+        $this->assertEquals($test->id, $order->tests()->first()->id);
+    }
+
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(1, $order->tests()->count());
+        $this->assertEquals($test->id, $order->tests()->first()->id);
+    }
+
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(1, $order->tests()->count());
+        $this->assertEquals($test->id, $order->tests()->first()->id);
+    }
+
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_has_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(0, $order->tests()->count());
+    }
+
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_has_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(0, $order->tests()->count());
+    }
+
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_has_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(0, $order->tests()->count());
+    }
+
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_has_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(0, $order->tests()->count());
+    }
+
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_have_no_used_record_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -453,10 +1041,16 @@ class StoreTest extends TestCase
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
         );
+        $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_have_no_used_record_order()
     {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
         $user = User::factory()
@@ -487,10 +1081,16 @@ class StoreTest extends TestCase
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
         );
+        $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_have_no_used_record_order()
     {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
@@ -528,10 +1128,16 @@ class StoreTest extends TestCase
         Notification::assertSentTo(
             [$this->user], RescheduleAdmissionTest::class
         );
+        $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_have_no_used_record_order()
     {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
@@ -575,5 +1181,202 @@ class StoreTest extends TestCase
         Notification::assertSentTo(
             [$this->user], RescheduleAdmissionTest::class
         );
+        $this->assertEquals(1, $order->tests()->count());
+    }
+
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 2,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(2, $order->tests()->count());
+    }
+
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 2,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        Notification::assertSentTo(
+            [$this->user], AssignAdmissionTest::class
+        );
+        $this->assertEquals(2, $order->tests()->count());
+    }
+
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 2,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond(),]);
+        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => false,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(2, $order->tests()->count());
+    }
+
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'quota' => 2,
+            'status' => 'succeeded',
+        ])->create();
+        $test = AdmissionTest::factory()->create();
+        $test->update([
+            'testing_at' => now()
+                ->subMonths($test->type->interval_month)
+                ->subSecond(),
+        ]);
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'order_id' => $order->id,
+                'is_present' => true,
+            ]
+        );
+        Notification::fake();
+        $this->user = User::find($this->user->id);
+        $newTestingAt = now()->addDay();
+        $this->test->update([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $newTestingAt = now()->addDay();
+        $oldTest = AdmissionTest::factory()
+            ->state([
+                'testing_at' => $newTestingAt,
+                'expect_end_at' => $newTestingAt->addHour(),
+            ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach($user->id);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'reschedule',
+            ]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The candidate create success',
+            'user_id' => $this->user->id,
+            'name' => $this->user->adornedName,
+            'passport_type' => $this->user->passportType->name,
+            'passport_number' => $this->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => true,
+        ]);
+        $this->assertEquals(0, $oldTest->candidates()->count());
+        Notification::assertSentTo(
+            [$this->user], RescheduleAdmissionTest::class
+        );
+        $this->assertEquals(2, $order->tests()->count());
     }
 }

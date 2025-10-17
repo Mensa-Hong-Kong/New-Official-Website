@@ -137,7 +137,18 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        $admissionTest->candidates()->attach($request->user->id);
+        if ($request->is_free) {
+            $admissionTest->candidates()->attach($request->user->id);
+        } else {
+            $admissionTest->candidates()->attach(
+                $request->user->id, 
+                [
+                    'order_id' => $request->user
+                        ->hasUnusedQuotaAdmissionTestOrder
+                        ->id,
+                ]
+            );
+        }
         switch ($request->function) {
             case 'schedule':
                 $request->user->notify(new AssignAdmissionTest($admissionTest));
