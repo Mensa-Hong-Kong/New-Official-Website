@@ -432,8 +432,8 @@
             </Col>
             <Col md=2>
                 <input type="checkbox" class="btn-check" id="{type}IsVerify"
-                disabled={creating} bind:this={createInputs.isVerify}
-                onchange="{(event) => isVerifyCheckboxOnChange(event, createInputs.isDefault)}" />
+                    disabled={creating} bind:this={createInputs.isVerify}
+                    onchange="{(event) => isVerifyCheckboxOnChange(event, createInputs.isDefault)}" />
                 <label class="form-control btn btn-outline-success" for="{type}IsVerify">Verified</label>
             </Col>
             <Col md=2>

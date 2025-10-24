@@ -330,7 +330,7 @@
                                         class={[
                                             'nav-link',
                                             {active: route().current('admin.admission-test.products.create')}
-                                        ]}>Index</Link>
+                                        ]}>Create</Link>
                                 </NavItem>
                                 {#if route().current('admin.admission-test.products.show')}
                                     <NavItem>
