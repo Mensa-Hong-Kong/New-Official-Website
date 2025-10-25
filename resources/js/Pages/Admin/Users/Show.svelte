@@ -358,7 +358,6 @@
                 </Col>
                 <Col md="4">
                     <Label for="passport_number">Passport Number</Label>
-                    <Label for="passport_number">Passport Number</Label>
                     <div hidden="{editing}">{user.passportNumber}</div>
                     <Input name="passport_number" minlength="8" maxlength="18" required
                         hidden={! editing} disabled={updating}
