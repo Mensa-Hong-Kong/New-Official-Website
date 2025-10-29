@@ -426,6 +426,13 @@
                                 {show: route().current().startsWith('admin.admission-test.orders.')},
                             ]}>
                                 <NavItem>
+                                    <Link href={route('admin.admission-test.orders.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: route().current('admin.admission-test.orders.index')}
+                                        ]}>Index</Link>
+                                </NavItem>
+                                <NavItem>
                                     <Link href={route('admin.admission-test.orders.create')}
                                         class={[
                                             'nav-link',
