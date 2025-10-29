@@ -126,6 +126,9 @@
                     case 'quota':
                         feedbacks.quota = message;
                         break;
+                    case 'expired_at':
+                        feedbacks.expiredAt = message;
+                        break;
                     case 'payment_gateway_id':
                         feedbacks.paymentGateway = message;
                         break;
@@ -173,7 +176,7 @@
                         data['reference_number'] = inputs.referenceNumber.value;
                     }
                     if(tests.length && testValue) {
-                        date['test_id'] = testValue;
+                        data['test_id'] = testValue;
                     }
                     post(
                         route('admin.admission-test.orders.store'),
