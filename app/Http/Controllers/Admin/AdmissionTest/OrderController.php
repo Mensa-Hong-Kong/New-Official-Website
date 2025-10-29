@@ -9,6 +9,7 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
 use App\Models\OtherPaymentGateway;
+use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -92,9 +93,9 @@ class OrderController extends BaseController implements HasMiddleware
             AdmissionTestHasCandidate::where('test_id', $request->test_id)
                 ->where('user_id', $request->user_id)
                 ->update(['order_id' => $order->id]);
-            if ($order->status != 'succeeded') {
-                AdmissionTestOrderExpiredHandle::dispatch($order->id)->delay($order->expired_at);
-            }
+        }
+        if ($order->status != 'succeeded') {
+            AdmissionTestOrderExpiredHandle::dispatch($order->id)->delay($order->expired_at);
         }
         DB::commit();
 
