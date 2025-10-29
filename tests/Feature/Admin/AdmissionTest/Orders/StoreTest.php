@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Orders;
 
-use App\Jobs\Orders\RemoveExpiredOrderReservedAdmissionTest;
+use App\Jobs\Orders\AdmissionTestOrderExpiredHandle;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestType;
@@ -608,7 +608,7 @@ class StoreTest extends TestCase
         );
         $response->assertRedirectToRoute('admin.index');
         $this->assertEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at->format('Y-m-d H:i'));
-        Queue::assertNothingPushed();
+        Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
     }
 
     public function test_happy_case_when_status_is_succeeded_and_without_expired_at_and_test_and_has_unused_quota_order_without_validity_months_config()
@@ -677,7 +677,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('admin.index');
         $order = AdmissionTestOrder::first();
         $this->assertEquals(1, $test->candidates()->where('order_id', $order->id)->count());
-        Queue::assertPushed(RemoveExpiredOrderReservedAdmissionTest::class);
+        Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
 
     }
 
