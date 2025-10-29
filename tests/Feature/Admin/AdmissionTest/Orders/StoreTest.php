@@ -109,12 +109,15 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
     }
 
-    public function test_user_id_of_user_have_no_any_default_contact()
+    public function test_with_test_id_and_user_id_of_user_have_no_any_default_contact()
     {
+        $test = AdmissionTest::factory()->create();
+        $data = $this->happyCase;
+        $data['test_id'] = $test->id;
         UserHasContact::first()->delete();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
-            $this->happyCase
+            $data
         );
         $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
     }

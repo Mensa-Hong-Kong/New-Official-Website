@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
-                    } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
+                    } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     } elseif ($request->user->isActiveMember) {
                         $fail('The selected user id has already member.');
