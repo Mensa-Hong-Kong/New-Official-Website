@@ -10,6 +10,7 @@ use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
 use App\Models\OtherPaymentGateway;
 use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +21,47 @@ class OrderController extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            (new Middleware('permission:Edit:Admission Test Order')),
+            (new Middleware('permission:View:Admission Test Order|Edit:Admission Test Order'))->only('index'),
+            (new Middleware('permission:Edit:Admission Test Order'))->except('index'),
         ];
+    }
+
+    public function index(Request $request)
+    {
+        $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'quota', 'status', 'created_at'])
+            ->withCount('tests')
+            ->with([
+                'user' => function($query) {
+                    $query->select(['id', 'family_name', 'middle_name', 'given_name']);
+                }
+            ]);
+        $append = [];
+        if (is_array($request->statuses)) {
+            $statuses = array_intersect(
+                $request->statuses,
+                ['pending', 'cancelled', 'failed', 'expired', 'succeeded']
+            );
+            $orders->whereIn('status', $statuses);
+            $append['statuses'] = $statuses;
+        }
+        if ($request->from) {
+            $append['from'] = $request->from;
+            $orders->where('created_at', '>=', $request->from);
+        }
+        if ($request->to) {
+            $append['to'] = $request->to;
+            $orders->where('created_at', '<=', $request->to);
+        }
+        $orders = $orders->paginate();
+        foreach($orders as $order) {
+            $order->makeHidden('user_id');
+            $order->user->append('adorned_name');
+            $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
+        }
+
+        return Inertia::render('Admin/AdmissionTest/Orders/Index')
+            ->with('orders', $orders)
+            ->with('append', $append);
     }
 
     public function create()
