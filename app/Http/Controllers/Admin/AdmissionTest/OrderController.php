@@ -93,6 +93,9 @@ class OrderController extends BaseController implements HasMiddleware
             AdmissionTestHasCandidate::where('test_id', $request->test_id)
                 ->where('user_id', $request->user_id)
                 ->update(['order_id' => $order->id]);
+            if ($order->status == 'succeeded') {
+                $request->user->notify(new AssignAdmissionTest($request->test));
+            }
         }
         if ($order->status != 'succeeded') {
             AdmissionTestOrderExpiredHandle::dispatch($order->id)->delay($order->expired_at);
