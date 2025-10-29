@@ -26,6 +26,11 @@ class AdmissionTestOrder extends Model
         'expired_at' => 'datetime',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function gatewayable()
     {
         return $this->morphTo();
