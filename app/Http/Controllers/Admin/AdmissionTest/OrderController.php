@@ -31,9 +31,9 @@ class OrderController extends BaseController implements HasMiddleware
         $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'quota', 'status', 'created_at'])
             ->withCount('tests')
             ->with([
-                'user' => function($query) {
+                'user' => function ($query) {
                     $query->select(['id', 'family_name', 'middle_name', 'given_name']);
-                }
+                },
             ]);
         $append = [];
         if (is_array($request->statuses)) {
@@ -53,7 +53,7 @@ class OrderController extends BaseController implements HasMiddleware
             $orders->where('created_at', '<=', $request->to);
         }
         $orders = $orders->paginate();
-        foreach($orders as $order) {
+        foreach ($orders as $order) {
             $order->makeHidden('user_id');
             $order->user->append('adorned_name');
             $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
