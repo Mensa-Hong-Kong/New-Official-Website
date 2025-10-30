@@ -142,7 +142,10 @@ class OrderController extends BaseController implements HasMiddleware
         }
         DB::commit();
 
-        return redirect()->route('admin.index');
+        return redirect()->route(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
     }
 
     public function show(Request $request, AdmissionTestOrder $order)

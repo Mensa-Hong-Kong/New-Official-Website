@@ -611,7 +611,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
+        $order = AdmissionTestOrder::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at->format('Y-m-d H:i'));
         Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
     }
@@ -629,7 +633,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
+        $order = AdmissionTestOrder::latest('id')->first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         Queue::assertNothingPushed();
     }
 
@@ -661,7 +669,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
+        $order = AdmissionTestOrder::latest('id')->first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertNotEquals($data['expired_at'], AdmissionTestOrder::first()->expired_at);
         $this->assertEquals(now()->format('Y-m-d H:i'), AdmissionTestOrder::latest('id')->first()->expired_at->format('Y-m-d H:i'));
         Queue::assertNothingPushed();
@@ -679,8 +691,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
         $order = AdmissionTestOrder::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertEquals(1, $test->candidates()->where('order_id', $order->id)->count());
         Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
     }
@@ -696,7 +711,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
+        $order = AdmissionTestOrder::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertEquals(1, $test->candidates()->where('order_id', AdmissionTestOrder::first()->id)->count());
         Queue::assertNothingPushed();
         Notification::assertSentTo(
@@ -716,8 +735,11 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertRedirectToRoute('admin.index');
         $order = AdmissionTestOrder::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertEquals(now()->format('Y-m-d H:i'), $order->expired_at->format('Y-m-d H:i'));
         $this->assertEquals(1, $test->candidates()->count());
         Queue::assertNothingPushed();
