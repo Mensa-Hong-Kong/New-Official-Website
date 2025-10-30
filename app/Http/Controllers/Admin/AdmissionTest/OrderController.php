@@ -21,8 +21,8 @@ class OrderController extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            (new Middleware('permission:View:Admission Test Order|Edit:Admission Test Order'))->only('index'),
-            (new Middleware('permission:Edit:Admission Test Order'))->except('index'),
+            (new Middleware('permission:View:Admission Test Order|Edit:Admission Test Order'))->only(['index', 'show']),
+            (new Middleware('permission:Edit:Admission Test Order'))->except(['index', 'show']),
         ];
     }
 
@@ -143,5 +143,46 @@ class OrderController extends BaseController implements HasMiddleware
         DB::commit();
 
         return redirect()->route('admin.index');
+    }
+
+    public function show(Request $request, AdmissionTestOrder $order)
+    {
+        $order->load([
+            'user' => function($query) {
+                $query->select(['id', 'family_name', 'middle_name', 'given_name']);
+            },
+            'gateway' => function($query) {
+                $query->select(['id', 'name']);
+            }
+        ]);
+        $order->makeHidden(['user_id', 'gateway_type', 'gateway_id', 'updated_at']);
+        $order->user->append('adorned_name');
+        $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
+        $order->gateway->append('type');
+        $order->gateway->makeHidden('id');
+        if ($request->user()->can('Edit:Admission Test')) {
+            $order->load([
+                'tests' => function($query) {
+                    $query->with([
+                        'type' => function($query) {
+                            $query->select(['id', 'name']);
+                        },
+                        'location' => function($query) {
+                            $query->select(['id', 'name']);
+                        }
+                    ]);
+                }
+            ]);
+            foreach($order->tests as $test) {
+                $test->makeHidden(['type_id', 'location_id', 'expect_end_at', 'maximum_candidates', 'is_public', 'created_at', 'updated_at', 'pivot']);
+                $test->type->makeHidden('id');
+                $test->location->makeHidden('id');
+            }
+        } else {
+            $order->loadCount('tests');
+        }
+
+        return Inertia::render('Admin/AdmissionTest/Orders/Show')
+            ->with('order', $order);
     }
 }
