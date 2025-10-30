@@ -102,7 +102,7 @@
                             </td>
                             <td>{row.price}</td>
                             <td>{row.tests_count}/{row.quota}</td>
-                            <td>{row.status}</td>
+                            <td>{row.status.ucfirst()}</td>
                             <td>{formatToDatetime(row.created_at)}</td>
                         </tr>
                     {/each}
