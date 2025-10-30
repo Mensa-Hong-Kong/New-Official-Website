@@ -17,21 +17,22 @@ class AdmissionTestOrder extends Model
         'quota',
         'status',
         'expired_at',
-        'gatewayable_type',
-        'gatewayable_id',
+        'gateway_type',
+        'gateway_id',
         'reference_number',
     ];
 
     protected $casts = [
         'expired_at' => 'datetime',
     ];
+    
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function gatewayable()
+    public function gateway()
     {
         return $this->morphTo();
     }

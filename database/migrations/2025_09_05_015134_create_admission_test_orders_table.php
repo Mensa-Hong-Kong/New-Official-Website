@@ -20,8 +20,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('quota')->default(2);
             $table->enum('status', ['pending', 'cancelled', 'failed', 'expired', 'succeeded']);
             $table->dateTime('expired_at')->useCurrent();
-            $table->string('gatewayable_type');
-            $table->unsignedBigInteger('gatewayable_id');
+            $table->string('gateway_type');
+            $table->unsignedBigInteger('gateway_id');
             $table->string('reference_number')->nullable();
             $table->timestamps();
         });

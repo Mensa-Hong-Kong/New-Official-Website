@@ -28,8 +28,8 @@ class AdmissionTestOrderFactory extends Factory
             'quota' => fake()->numberBetween(1, 255),
             'status' => fake()->randomElement(['pending', 'cancelled', 'succeeded']),
             'expired_at' => $expiredAt,
-            'gatewayable_type' => OtherPaymentGateway::class,
-            'gatewayable_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
             'reference_number' => fake()->randomElement([true, false]) ? fake()->uuid() : null,
         ];
     }

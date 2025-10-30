@@ -125,8 +125,8 @@ class OrderController extends BaseController implements HasMiddleware
             'quota' => $request->quota,
             'status' => $request->status,
             'expired_at' => $request->status == 'pending' && $request->expired_at ? $request->expired_at : now(),
-            'gatewayable_type' => OtherPaymentGateway::class,
-            'gatewayable_id' => $request->payment_gateway_id,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => $request->payment_gateway_id,
             'reference_number' => $request->reference_number,
         ]);
         if ($booking) {
