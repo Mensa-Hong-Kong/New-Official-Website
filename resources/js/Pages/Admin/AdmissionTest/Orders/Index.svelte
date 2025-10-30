@@ -104,6 +104,14 @@
                             <td>{row.tests_count}/{row.quota}</td>
                             <td>{row.status.ucfirst()}</td>
                             <td>{formatToDatetime(row.created_at)}</td>
+                            <td>
+                                <Link class="btn btn-primary" href={
+                                    route(
+                                        'admin.admission-test.orders.show',
+                                        {order: row.id}
+                                    )
+                                }>Show</Link>
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
