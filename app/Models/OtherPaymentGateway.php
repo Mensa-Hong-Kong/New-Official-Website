@@ -20,4 +20,13 @@ class OtherPaymentGateway extends Model
     {
         return $this->morphMany(AdmissionTestOrder::class, 'gateway');
     }
+    
+    protected function type(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes){
+                return 'Manual Handling';
+            }
+        );
+    }
 }
