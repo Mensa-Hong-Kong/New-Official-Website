@@ -67,7 +67,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">Payer</th>
                         <th scope="col">Price</th>
                         <th scope="col">Used/Quota</th>
                         <th scope="col">Status</th>
