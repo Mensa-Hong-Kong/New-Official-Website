@@ -151,12 +151,12 @@ class OrderController extends BaseController implements HasMiddleware
     public function show(Request $request, AdmissionTestOrder $order)
     {
         $order->load([
-            'user' => function($query) {
+            'user' => function ($query) {
                 $query->select(['id', 'family_name', 'middle_name', 'given_name']);
             },
-            'gateway' => function($query) {
+            'gateway' => function ($query) {
                 $query->select(['id', 'name']);
-            }
+            },
         ]);
         $order->makeHidden(['user_id', 'gateway_type', 'gateway_id', 'updated_at']);
         $order->user->append('adorned_name');
@@ -165,18 +165,18 @@ class OrderController extends BaseController implements HasMiddleware
         $order->gateway->makeHidden('id');
         if ($request->user()->can('Edit:Admission Test')) {
             $order->load([
-                'tests' => function($query) {
+                'tests' => function ($query) {
                     $query->with([
-                        'type' => function($query) {
+                        'type' => function ($query) {
                             $query->select(['id', 'name']);
                         },
-                        'location' => function($query) {
+                        'location' => function ($query) {
                             $query->select(['id', 'name']);
-                        }
+                        },
                     ]);
-                }
+                },
             ]);
-            foreach($order->tests as $test) {
+            foreach ($order->tests as $test) {
                 $test->makeHidden(['type_id', 'location_id', 'expect_end_at', 'maximum_candidates', 'is_public', 'created_at', 'updated_at', 'pivot']);
                 $test->type->makeHidden('id');
                 $test->location->makeHidden('id');
