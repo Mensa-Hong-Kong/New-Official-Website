@@ -6,7 +6,6 @@
     import Pagination from '@/Pages/Components/Pagination.svelte';
 
     let { auth, orders, append } = $props();
-    console.log(orders);
 </script>
 
 <svelte:head>
