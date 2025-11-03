@@ -137,6 +137,8 @@ Route::middleware('auth')->group(function () {
                         ->name('types.display-order.update');
                     Route::resource('orders', AdmissionTestOrderController::class)
                         ->except(['edit', 'update', 'destroy']);
+                    Route::match(['put', 'patch'], 'orders/{order}/status', [AdmissionTestOrderController::class, 'updateStatus'])
+                        ->name('orders.status.update');
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
