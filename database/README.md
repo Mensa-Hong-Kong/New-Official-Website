@@ -261,8 +261,8 @@ erDiagram
         tinyint quota
         enum status
         datetime expired_at
-        string gatewayable_type
-        bigint gatewayable_id
+        string gateway_type
+        bigint gateway_id
         string reference_number
         timestamp created_at
         timestamp updated_at
@@ -614,7 +614,7 @@ Payment orders for admission tests.
 -   `status` - ENUM('pending', 'cancelled', 'failed', 'expired', 'succeeded')
 -   `price` - Amount in smallest currency unit
 -   `quota` - Number of test attempts (default: 2)
--   `gatewayable_type`, `gatewayable_id` - Polymorphic relation to payment gateway
+-   `gateway_type`, `gateway_id` - Polymorphic relation to payment gateway
 -   `reference_number` - External transaction reference
 
 **Polymorphic Relationship:** Can relate to `StripeCustomer` or `OtherPaymentGateway`
@@ -985,8 +985,8 @@ Two polymorphic implementations:
 
 ```php
 // In admission_test_orders:
-'gatewayable_type' => 'App\Models\StripeCustomer'
-'gatewayable_id' => 123
+'gateway_type' => 'App\Models\StripeCustomer'
+'gateway_id' => 123
 
 // In stripe_customers:
 'customerable_type' => 'App\Models\User'
@@ -1214,7 +1214,7 @@ $tests = AdmissionTest::with(['type', 'location', 'address'])
     ->get();
 
 // Get user's test orders
-$orders = AdmissionTestOrder::with('gatewayable')
+$orders = AdmissionTestOrder::with('gateway')
     ->where('user_id', $userId)
     ->where('status', 'succeeded')
     ->get();

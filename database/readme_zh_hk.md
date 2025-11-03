@@ -263,8 +263,8 @@ erDiagram
         tinyint quota
         enum status
         datetime expired_at
-        string gatewayable_type
-        bigint gatewayable_id
+        string gateway_type
+        bigint gateway_id
         string reference_number
         timestamp created_at
         timestamp updated_at
@@ -616,7 +616,7 @@ Laravel 會話存儲。
 -   `status` - ENUM（'pending'、'cancelled'、'failed'、'expired'、'succeeded'）
 -   `price` - 最小貨幣單位金額
 -   `quota` - 考試嘗試次數（預設：2）
--   `gatewayable_type`、`gatewayable_id` - 多態關係到支付網關
+-   `gateway_type`、`gateway_id` - 多態關係到支付網關
 -   `reference_number` - 外部交易參考
 
 **多態關係：** 可以關聯到 `StripeCustomer` 或 `OtherPaymentGateway`
@@ -987,8 +987,8 @@ $user = User::factory()
 
 ```php
 // 在 admission_test_orders 中：
-'gatewayable_type' => 'App\Models\StripeCustomer'
-'gatewayable_id' => 123
+'gateway_type' => 'App\Models\StripeCustomer'
+'gateway_id' => 123
 
 // 在 stripe_customers 中：
 'customerable_type' => 'App\Models\User'
@@ -1216,7 +1216,7 @@ $tests = AdmissionTest::with(['type', 'location', 'address'])
     ->get();
 
 // 獲取用戶的考試訂單
-$orders = AdmissionTestOrder::with('gatewayable')
+$orders = AdmissionTestOrder::with('gateway')
     ->where('user_id', $userId)
     ->where('status', 'succeeded')
     ->get();
