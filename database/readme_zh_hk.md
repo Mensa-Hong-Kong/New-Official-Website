@@ -1199,6 +1199,13 @@ DB::select("SELECT * FROM users WHERE email = '$email'");
     @endcan
     ```
 
+    ```js
+    // in inertia
+    if (auth.user.permissions.includes('edit articles')) {
+        // ...
+    }
+    ```
+
 -   **團隊範圍權限：** 系統通過自定義樞紐表實現團隊型權限。
 
 ### 16. 常見查詢

@@ -1197,6 +1197,13 @@ The system uses Spatie's permission package. Key points:
     @endcan
     ```
 
+    ```js
+    // in inertia
+    if (auth.user.permissions.includes('edit articles')) {
+        // ...
+    }
+    ```
+
 -   **Team-scoped permissions:** The system implements team-based permissions through custom pivot tables.
 
 ### 16. Common Queries
