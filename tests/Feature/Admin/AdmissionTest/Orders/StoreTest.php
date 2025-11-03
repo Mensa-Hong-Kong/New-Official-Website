@@ -11,7 +11,7 @@ use App\Models\Member;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
@@ -719,7 +719,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $test->candidates()->where('order_id', AdmissionTestOrder::first()->id)->count());
         Queue::assertNothingPushed();
         Notification::assertSentTo(
-            [$this->user], AssignAdmissionTest::class
+            [$this->user], ScheduleAdmissionTest::class
         );
     }
 
@@ -744,7 +744,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $test->candidates()->count());
         Queue::assertNothingPushed();
         Notification::assertSentTo(
-            [$this->user], AssignAdmissionTest::class
+            [$this->user], ScheduleAdmissionTest::class
         );
     }
 }

@@ -9,7 +9,7 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
 use App\Models\OtherPaymentGateway;
-use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -134,7 +134,7 @@ class OrderController extends BaseController implements HasMiddleware
                 ->where('user_id', $request->user_id)
                 ->update(['order_id' => $order->id]);
             if ($order->status == 'succeeded') {
-                $request->user->notify(new AssignAdmissionTest($request->test));
+                $request->user->notify(new ScheduleAdmissionTest($request->test));
             }
         }
         if ($order->status != 'succeeded') {
