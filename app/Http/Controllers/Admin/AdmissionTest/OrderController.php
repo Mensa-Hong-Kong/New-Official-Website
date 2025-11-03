@@ -188,4 +188,33 @@ class OrderController extends BaseController implements HasMiddleware
         return Inertia::render('Admin/AdmissionTest/Orders/Show')
             ->with('order', $order);
     }
+
+    public function updateStatus(Request $request, $order)
+    {
+        DB::beginTransaction();
+        $order = AdmissionTestOrder::lockForUpdate()->withCount('tests')->findOrFail($order);
+        $request->validate(
+            ['status' => 'required|string|in:canceled,succeeded'],
+            ['status.in' => 'The status field does not exist in canceled, succeeded.']
+        );
+        if($order->expired_at < now()) {
+            DB::rollBack();
+            abort(410, 'The order has been expected.');
+        }
+        if($order->status != 'pending') {
+            DB::rollBack();
+            abort(410, "The order has been $order->status, cannot change to succeeded.");
+        }
+        $order->update(['status' => $request->status]);
+        if ($order->tests_count && $order->status == 'succeeded') {
+            if (! $order->user->defaultEmail && ! $order->user->defaultMobile) {
+                DB::rollBack();
+                abort(409, 'The selected user must at least has one default contact.');
+            }
+            $order->user->notify(new ScheduleAdmissionTest($request->test));
+        }
+        DB::commit();
+        
+        return ['success' => "The order status changed to $order->status"];
+    }
 }
