@@ -157,7 +157,10 @@ class UpdateStatusTest extends TestCase
                 ['status' => 'canceled']
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The order status changed to canceled"]);
+        $response->assertJson([
+            'success' => "The order status changed to canceled",
+            'status' => 'canceled',
+        ]);
     }
 
     public function test_happy_update_succeeded_case_when_have_no_test()
@@ -172,7 +175,10 @@ class UpdateStatusTest extends TestCase
                 ['status' => 'succeeded']
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The order status changed to succeeded"]);
+        $response->assertJson([
+            'success' => "The order status changed to succeeded",
+            'status' => 'succeeded',
+        ]);
         Notification::assertNothingSent();
     }
 
@@ -203,7 +209,10 @@ class UpdateStatusTest extends TestCase
                 ['status' => 'succeeded']
             );
         $response->assertSuccessful();
-        $response->assertJson(['success' => "The order status changed to succeeded"]);
+        $response->assertJson([
+            'success' => "The order status changed to succeeded",
+            'status' => 'succeeded',
+        ]);
         Notification::assertSentTo(
             [$this->order->user], ScheduleAdmissionTest::class
         );

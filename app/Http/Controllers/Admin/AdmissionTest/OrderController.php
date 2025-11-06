@@ -215,6 +215,9 @@ class OrderController extends BaseController implements HasMiddleware
         }
         DB::commit();
         
-        return ['success' => "The order status changed to $order->status"];
+        return [
+            'success' => "The order status changed to $order->status",
+            'status' => $order->status,
+        ];
     }
 }
