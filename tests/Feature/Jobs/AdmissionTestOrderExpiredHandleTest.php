@@ -30,17 +30,17 @@ class AdmissionTestOrderExpiredHandleTest extends TestCase
 
     public function test_non_pending_and_non_succeeded_order()
     {
-        $status = fake()->randomElement(['cancelled', 'succeeded']);
+        $status = fake()->randomElement(['canceled', 'succeeded']);
         $order = AdmissionTestOrder::factory()
             ->state([
-                'status' => 'cancelled',
+                'status' => 'canceled',
                 'expired_at' => now()->subSecond(),
             ])->create();
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new AdmissionTestOrderExpiredHandle($order->id), 'handle']);
         $this->assertEquals(0, $test->candidates()->count());
-        $this->assertEquals('cancelled', $order->fresh()->status);
+        $this->assertEquals('canceled', $order->fresh()->status);
     }
 
     public function test_succeeded_order()

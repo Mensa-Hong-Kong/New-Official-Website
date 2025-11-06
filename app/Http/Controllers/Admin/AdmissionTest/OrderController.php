@@ -39,7 +39,7 @@ class OrderController extends BaseController implements HasMiddleware
         if (is_array($request->statuses)) {
             $statuses = array_intersect(
                 $request->statuses,
-                ['pending', 'cancelled', 'failed', 'expired', 'succeeded']
+                ['pending', 'canceled', 'failed', 'expired', 'succeeded']
             );
             $orders->whereIn('status', $statuses);
             $append['statuses'] = $statuses;

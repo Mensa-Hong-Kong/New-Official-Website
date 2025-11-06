@@ -116,7 +116,7 @@ class UpdateStatusTest extends TestCase
 
     public function test_order_status_is_not_pending()
     {
-        $status = fake()->randomElement(['cancelled', 'failed', 'expired', 'succeeded']);
+        $status = fake()->randomElement(['canceled', 'failed', 'expired', 'succeeded']);
         $this->order->update(['status' => $status]);
         $response = $this->actingAs($this->user)
             ->putJson(
