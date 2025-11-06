@@ -613,7 +613,7 @@ Laravel 會話存儲。
 
 **列：**
 
--   `status` - ENUM（'pending'、'canceled'、'failed'、'expired'、'succeeded'）
+-   `status` - ENUM（'pending'、'canceled'、'failed'、'expired'、'succeeded', 'partial refunded', 'full refunded'）
 -   `price` - 最小貨幣單位金額
 -   `quota` - 考試嘗試次數（預設：2）
 -   `gateway_type`、`gateway_id` - 多態關係到支付網關
@@ -1008,7 +1008,7 @@ $user = User::factory()
 
 -   `user_has_contacts.type`：`['email', 'mobile']`
 -   `contact_has_verifications.type`：`['email', 'mobile']`
--   `admission_test_orders.status`：`['pending', 'canceled', 'failed', 'expired', 'succeeded']`
+-   `admission_test_orders.status`：`['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']`
 -   `reset_password_logs.contact_type`：`['email', 'mobile']`
 
 ### 5. 唯一約束

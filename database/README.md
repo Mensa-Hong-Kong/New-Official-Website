@@ -611,7 +611,7 @@ Payment orders for admission tests.
 
 **Columns:**
 
--   `status` - ENUM('pending', 'canceled', 'failed', 'expired', 'succeeded')
+-   `status` - ENUM('pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded')
 -   `price` - Amount in smallest currency unit
 -   `quota` - Number of test attempts (default: 2)
 -   `gateway_type`, `gateway_id` - Polymorphic relation to payment gateway
@@ -1006,7 +1006,7 @@ Several tables use ENUM fields. Update carefully:
 
 -   `user_has_contacts.type`: `['email', 'mobile']`
 -   `contact_has_verifications.type`: `['email', 'mobile']`
--   `admission_test_orders.status`: `['pending', 'canceled', 'failed', 'expired', 'succeeded']`
+-   `admission_test_orders.status`: `['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']`
 -   `reset_password_logs.contact_type`: `['email', 'mobile']`
 
 ### 5. Unique Constraints
