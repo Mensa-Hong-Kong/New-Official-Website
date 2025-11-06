@@ -197,11 +197,11 @@ class OrderController extends BaseController implements HasMiddleware
             ['status' => 'required|string|in:canceled,succeeded'],
             ['status.in' => 'The status field does not exist in canceled, succeeded.']
         );
-        if($order->expired_at < now()) {
+        if ($order->expired_at < now()) {
             DB::rollBack();
             abort(410, 'The order has been expected.');
         }
-        if($order->status != 'pending') {
+        if ($order->status != 'pending') {
             DB::rollBack();
             abort(410, "The order has been $order->status, cannot change to succeeded.");
         }
@@ -214,7 +214,7 @@ class OrderController extends BaseController implements HasMiddleware
             $order->user->notify(new ScheduleAdmissionTest($request->test));
         }
         DB::commit();
-        
+
         return [
             'success' => "The order status changed to $order->status",
             'status' => $order->status,

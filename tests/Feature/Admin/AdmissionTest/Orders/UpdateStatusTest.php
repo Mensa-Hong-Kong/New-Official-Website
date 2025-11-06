@@ -60,7 +60,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertForbidden();
     }
-    
+
     public function test_missing_status_field()
     {
         $response = $this->actingAs($this->user)
@@ -72,7 +72,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertInvalid(['status' => 'The status field is required.']);
     }
-    
+
     public function test_status_is_not_string()
     {
         $response = $this->actingAs($this->user)
@@ -85,7 +85,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertInvalid(['status' => 'The status field must be a string.']);
     }
-    
+
     public function test_status_is_invalid()
     {
         $response = $this->actingAs($this->user)
@@ -158,7 +158,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The order status changed to canceled",
+            'success' => 'The order status changed to canceled',
             'status' => 'canceled',
         ]);
     }
@@ -176,7 +176,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The order status changed to succeeded",
+            'success' => 'The order status changed to succeeded',
             'status' => 'succeeded',
         ]);
         Notification::assertNothingSent();
@@ -210,7 +210,7 @@ class UpdateStatusTest extends TestCase
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The order status changed to succeeded",
+            'success' => 'The order status changed to succeeded',
             'status' => 'succeeded',
         ]);
         Notification::assertSentTo(
