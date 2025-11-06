@@ -9,7 +9,7 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
 use App\Models\OtherPaymentGateway;
-use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -39,7 +39,7 @@ class OrderController extends BaseController implements HasMiddleware
         if (is_array($request->statuses)) {
             $statuses = array_intersect(
                 $request->statuses,
-                ['pending', 'cancelled', 'failed', 'expired', 'succeeded']
+                ['pending', 'canceled', 'failed', 'expired', 'succeeded']
             );
             $orders->whereIn('status', $statuses);
             $append['statuses'] = $statuses;
@@ -134,7 +134,7 @@ class OrderController extends BaseController implements HasMiddleware
                 ->where('user_id', $request->user_id)
                 ->update(['order_id' => $order->id]);
             if ($order->status == 'succeeded') {
-                $request->user->notify(new AssignAdmissionTest($request->test));
+                $request->user->notify(new ScheduleAdmissionTest($request->test));
             }
         }
         if ($order->status != 'succeeded') {
@@ -187,5 +187,37 @@ class OrderController extends BaseController implements HasMiddleware
 
         return Inertia::render('Admin/AdmissionTest/Orders/Show')
             ->with('order', $order);
+    }
+
+    public function updateStatus(Request $request, $order)
+    {
+        DB::beginTransaction();
+        $order = AdmissionTestOrder::lockForUpdate()->withCount('tests')->findOrFail($order);
+        $request->validate(
+            ['status' => 'required|string|in:canceled,succeeded'],
+            ['status.in' => 'The status field does not exist in canceled, succeeded.']
+        );
+        if ($order->expired_at < now()) {
+            DB::rollBack();
+            abort(410, 'The order has been expected.');
+        }
+        if ($order->status != 'pending') {
+            DB::rollBack();
+            abort(410, "The order has been $order->status, cannot change to succeeded.");
+        }
+        $order->update(['status' => $request->status]);
+        if ($order->tests_count && $order->status == 'succeeded') {
+            if (! $order->user->defaultEmail && ! $order->user->defaultMobile) {
+                DB::rollBack();
+                abort(409, 'The selected user must at least has one default contact.');
+            }
+            $order->user->notify(new ScheduleAdmissionTest($request->test));
+        }
+        DB::commit();
+
+        return [
+            'success' => "The order status changed to $order->status",
+            'status' => $order->status,
+        ];
     }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('price_name')->nullable();
             $table->unsignedSmallInteger('price');
             $table->unsignedTinyInteger('quota')->default(2);
-            $table->enum('status', ['pending', 'cancelled', 'failed', 'expired', 'succeeded']);
+            $table->enum('status', ['pending', 'canceled', 'failed', 'expired', 'succeeded']);
             $table->dateTime('expired_at')->useCurrent();
             $table->string('gateway_type');
             $table->unsignedBigInteger('gateway_id');

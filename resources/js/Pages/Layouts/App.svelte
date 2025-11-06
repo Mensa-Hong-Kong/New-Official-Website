@@ -439,6 +439,16 @@
                                             {active: route().current('admin.admission-test.orders.create')}
                                         ]}>Create</Link>
                                 </NavItem>
+                                {#if route().current('admin.admission-test.orders.show')}
+                                    <NavItem>
+                                        <Link href={
+                                            route(
+                                                'admin.admission-test.orders.show',
+                                                {order: route().params.order}
+                                            )
+                                        } class="nav-link active">Show</Link>
+                                    </NavItem>
+                                {/if}
                             </ul>
                         </li>
                     {/if}
