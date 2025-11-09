@@ -679,8 +679,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => "The selected user id has admission test record within {$test->type->interval_month} months(count from testing at of this test sub {$test->type->interval_month} months to now)."]);
     }
 
-    // test with invalidity quota (non-attended and with attended but has no retest within validity months)
-
     public function test_happy_case_when_status_is_pending_with_minimum_age_without_maximum_age_and_test_and_quota_validity_months_config_is_null()
     {
         Queue::fake();
