@@ -56,7 +56,7 @@ class StoreRequest extends FormRequest
             'expired_at' => [
                 'required_if:status,pending', 'date',
                 'after_or_equal:'.now()->addMinutes(5)->format('Y-m-d H:i'),
-                'before_or_equal:'.now()->addDay()->format('Y-m-d H:i'),
+                'before_or_equal:'.now()->addHours(2)->format('Y-m-d H:i'),
             ],
             'payment_gateway_id' => ['required', 'integer', $exists],
             'reference_number' => 'nullable|string|max:255',
@@ -90,7 +90,7 @@ class StoreRequest extends FormRequest
             'minimum_age.lt' => 'The minimum age field must be less than maximum age field.',
             'maximum_age.gt' => 'The maximum age field must be greater than minimum age field.',
             'expired_at.after_or_equal' => 'The expired at field must be a date after or equal to 5 minutes.',
-            'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 24 hours.',
+            'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 2 hours.',
             'payment_gateway_id.required' => 'The payment gateway field is required.',
             'payment_gateway_id.exists' => 'The selected payment gateway is invalid.',
         ];

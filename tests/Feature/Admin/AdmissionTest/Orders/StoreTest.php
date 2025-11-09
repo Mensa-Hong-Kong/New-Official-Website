@@ -555,12 +555,12 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $data['status'] = 'pending';
-        $data['expired_at'] = now()->addHours(24)->addMinute()->format('Y-m-d H:i');
+        $data['expired_at'] = now()->addHours(2)->addMinute()->format('Y-m-d H:i');
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['expired_at' => 'The expired at field must be a date before or equal to 24 hours.']);
+        $response->assertInvalid(['expired_at' => 'The expired at field must be a date before or equal to 2 hours.']);
     }
 
     public function test_missing_payment_gateway_id()
