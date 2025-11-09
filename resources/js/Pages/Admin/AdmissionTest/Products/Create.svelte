@@ -188,7 +188,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Name">
                     <Input name="name" placeholder="name"
-                        maxlength="255" required  disabled={creating}
+                        maxlength=255 required  disabled={creating}
                         feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
                         invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
                         bind:inner={inputs.name} />
@@ -197,7 +197,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Option Name">
                     <Input name="option_name" placeholder="option name"
-                        maxlength="255" required disabled={creating}
+                        maxlength=255 required disabled={creating}
                         feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
                         invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
                         bind:inner={inputs.optionName} />
@@ -206,7 +206,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Minimum Age">
                     <Input type="number" name="minimum_age" placeholder="minimum age"
-                        step="1" min="1" max="255" disabled={creating}
+                        step=1 min=1 max=255 disabled={creating}
                         feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
                         invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
                         bind:inner={inputs.minimumAge} />
@@ -215,7 +215,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Maximum Age">
                     <Input type="number" name="maximum_age" placeholder="maximum age"
-                        step="1" min="1" max="255" disabled={creating}
+                        step=1 min=1 max=255 disabled={creating}
                         feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
                         invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
                         bind:inner={inputs.maximumAge} />
@@ -240,7 +240,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Quota">
                     <Input type="number-local" name="quota" placeholder="quota"
-                        step="1" min="1" max="255" required disabled={creating}
+                        step=1 min=1 max=255 required disabled={creating}
                         feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
                         invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
                         bind:inner={inputs.quota} />
@@ -250,7 +250,7 @@
                 <div class="form-floating">
                     <FormGroup floating label="Price Name">
                         <Input name="price_name" placeholder="price name"
-                            maxlength="255" disabled={creating}
+                            maxlength=255 disabled={creating}
                             feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
                             invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
                             bind:inner={inputs.priceName} />
@@ -260,7 +260,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Price">
                     <Input type="number" name="price" placeholder="price"
-                        step="1" min="1" max="65535" required disabled={creating}
+                        step=0.01 min=0.01 max=99999.99 required disabled={creating}
                         feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
                         invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
                         bind:inner={inputs.price} />

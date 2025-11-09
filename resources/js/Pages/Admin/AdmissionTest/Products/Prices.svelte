@@ -218,7 +218,7 @@
         </Col>
         <Col md=2>
             <Input type="number" name="price" placeholder="price"
-                min="1" step="1" max="65535" required
+                min=0.01 step=0.01 max=99999.99 required
                 bind:inner={inputs.price} disabled={creating} />
         </Col>
         <Button color="success" disabled={submitting} class="col-md-2">
