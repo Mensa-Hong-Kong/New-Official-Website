@@ -29,7 +29,7 @@
 
     function updateExpiredTimeRange() {
         minExpiredAt = formatToDatetime((new Date).addMinutes(5)).slice(0, -3);
-        maxExpiredAt = formatToDatetime((new Date).addDay()).slice(0, -3);
+        maxExpiredAt = formatToDatetime((new Date).addHours(2)).slice(0, -3);
         if(expiredAtValue < minExpiredAt) {
             expiredAtValue = minExpiredAt;
         }
@@ -73,6 +73,23 @@
             feedbacks.price = `The price field must be at least ${inputs.price.min}.`;
         } else if(inputs.price.validity.rangeOverflow) {
             feedbacks.price = `The price field must not be greater than ${inputs.price.max}.`;
+        }
+        if(inputs.minimumAge.value) {
+            if(inputs.minimumAge.validity.rangeUnderflow) {
+                feedbacks.minimumAge = `The minimum age field must be at least ${inputs.minimumAge.min}.`;
+            } else if(inputs.minimumAge.validity.rangeOverflow) {
+                feedbacks.minimumAge = `The minimum age field must not be greater than ${inputs.minimumAge.max}.`;
+            }
+        }
+        if(inputs.maximumAge.value) {
+            if(inputs.maximumAge.validity.rangeUnderflow) {
+                feedbacks.maximumAge = `The maximum age field must be at least ${inputs.maximumAge.min}.`;
+            } else if(inputs.maximumAge.validity.rangeOverflow) {
+                feedbacks.maximumAge = `The maximum age field must not be greater than ${inputs.maximumAge.max}.`;
+            } else if(inputs.minimumAge.value >= inputs.maximumAge.value) {
+                feedbacks.minimumAge = `The minimum age field must be less than maximum age.`;
+                feedbacks.maximumAge = `The maximum age field must be greater than minimum age.`;
+            }
         }
         if(inputs.quota.validity.valueMissing) {
             feedbacks.quota = 'The quota field is required.';
@@ -121,6 +138,12 @@
                         break;
                     case 'price':
                         feedbacks.price = message;
+                        break;
+                    case 'minimum_age':
+                        feedbacks.minimumAge = value;
+                        break;
+                    case 'maximum_age':
+                        feedbacks.maximumAge = value;
                         break;
                     case 'quota':
                         feedbacks.quota = message;
@@ -235,6 +258,24 @@
                         feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
                         invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
                         bind:inner={inputs.price} />
+                </FormGroup>
+            </div>
+            <div class="mb-4 form-outline">
+                <FormGroup floating label="Minimum Age">
+                    <Input type="number" name="minimum_age" placeholder="minimum age"
+                        step="1" min="1" max="255" disabled={creating}
+                        feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+                        invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+                        bind:inner={inputs.minimumAge} />
+                </FormGroup>
+            </div>
+            <div class="mb-4 form-outline">
+                <FormGroup floating label="Maximum Age">
+                    <Input type="number" name="maximum_age" placeholder="maximum age"
+                        step="1" min="1" max="255" disabled={creating}
+                        feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+                        invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+                        bind:inner={inputs.maximumAge} />
                 </FormGroup>
             </div>
             <div class="mb-4 form-outline">
