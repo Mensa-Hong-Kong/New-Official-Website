@@ -258,6 +258,8 @@ erDiagram
         string product_name
         string price_name
         smallint price
+        tinyint minimum_age
+        tinyint maximum_age
         tinyint quota
         enum status
         datetime expired_at
