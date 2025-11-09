@@ -22,8 +22,7 @@ class StoreRequest extends FormRequest
         $request = $this;
         $exists = Rule::exists(OtherPaymentGateway::class, 'id')
             ->where('is_active', true);
-
-        return [
+        $return = [
             'user_id' => [
                 'required', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
@@ -50,6 +49,8 @@ class StoreRequest extends FormRequest
             'product_name' => 'nullable|string|max:255',
             'price_name' => 'nullable|string|max:255',
             'price' => 'required|integer|min:1|max:65535',
+            'minimum_age' => 'nullable|integer|min:1|max:255',
+            'maximum_age' => 'nullable|integer|min:1|max:255',
             'quota' => 'required|integer|min:1|max:255',
             'status' => 'required|string|in:pending,succeeded',
             'expired_at' => [
@@ -75,11 +76,19 @@ class StoreRequest extends FormRequest
                 },
             ],
         ];
+        if ($this->minimum_age && $this->maximum_age) {
+            $return['minimum_age'] .= '|lt:maximum_age';
+            $return['maximum_age'] .= '|gt:minimum_age';
+        }
+
+        return $return;
     }
 
     public function messages(): array
     {
         return [
+            'minimum_age.lt' => 'The minimum age field must be less than maximum age field.',
+            'maximum_age.gt' => 'The maximum age field must be greater than minimum age field.',
             'expired_at.after_or_equal' => 'The expired at field must be a date after or equal to 5 minutes.',
             'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 24 hours.',
             'payment_gateway_id.required' => 'The payment gateway field is required.',

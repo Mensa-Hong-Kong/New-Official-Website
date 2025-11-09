@@ -122,6 +122,8 @@ class OrderController extends BaseController implements HasMiddleware
             'product_name' => $request->product_name,
             'price_name' => $request->price_name,
             'price' => $request->price,
+            'minimum_age' => $request->minimum_age,
+            'maximum_age' => $request->maximum_age,
             'quota' => $request->quota,
             'status' => $request->status,
             'expired_at' => $request->status == 'pending' && $request->expired_at ? $request->expired_at : now(),

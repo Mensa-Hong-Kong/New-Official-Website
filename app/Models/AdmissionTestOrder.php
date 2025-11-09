@@ -14,6 +14,8 @@ class AdmissionTestOrder extends Model
         'product_name',
         'price_name',
         'price',
+        'minimum_age',
+        'maximum_age',
         'quota',
         'status',
         'expired_at',
