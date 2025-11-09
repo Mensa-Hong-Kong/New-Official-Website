@@ -287,7 +287,7 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Price">
                     <Input type="number" name="price" placeholder="price"
-                        step=1 min=1 max=65535 required disabled={creating} readonly={productIDValue !== ''}
+                        step=0.01 min=0.01 max=99999.99 required disabled={creating} readonly={productIDValue !== ''}
                         feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
                         invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
                         bind:inner={inputs.price} />

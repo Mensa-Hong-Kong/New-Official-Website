@@ -312,7 +312,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['price' => 'The price field is required.']);
     }
 
-    public function test_price_is_not_integer()
+    public function test_price_is_not_numeric()
     {
         $data = $this->happyCase;
         $data['price'] = 'abc';
@@ -320,10 +320,10 @@ class StoreTest extends TestCase
             route('admin.admission-test.products.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be an integer.']);
+        $response->assertInvalid(['price' => 'The price field must be a number.']);
     }
 
-    public function test_price_less_that_1()
+    public function test_price_less_that_0_point_01()
     {
         $data = $this->happyCase;
         $data['price'] = 0;
@@ -331,18 +331,18 @@ class StoreTest extends TestCase
             route('admin.admission-test.products.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be at least 1.']);
+        $response->assertInvalid(['price' => 'The price field must be at least 0.01.']);
     }
 
-    public function test_price_greater_than_65535()
+    public function test_price_greater_than_99999_point_99()
     {
         $data = $this->happyCase;
-        $data['price'] = 65536;
+        $data['price'] = 100000;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.products.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must not be greater than 65535.']);
+        $response->assertInvalid(['price' => 'The price field must not be greater than 99999.99.']);
     }
 
     public function test_happy_case_without_all_nullable_field()

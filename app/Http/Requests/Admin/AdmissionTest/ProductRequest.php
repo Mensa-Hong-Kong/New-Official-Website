@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\AdmissionTest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ class ProductRequest extends FormRequest
         }
         if ($this->method() == 'POST') {
             $return['price_name'] = 'nullable|string|max:255';
-            $return['price'] = 'required|integer|min:1|max:65535';
+            $return['price'] = ['required', Rule::numeric()->min(0.01)->max(99999.99)->decimal(0, 2)];
         }
 
         return $return;

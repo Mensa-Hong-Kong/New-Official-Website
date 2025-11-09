@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('product_name')->nullable();
             $table->string('price_name')->nullable();
-            $table->unsignedSmallInteger('price');
+            $table->decimal('price', 7, 2)->unsigned();
             $table->unsignedTinyInteger('minimum_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->unsignedTinyInteger('quota')->default(2);
