@@ -8,6 +8,7 @@ use App\Jobs\Orders\AdmissionTestOrderExpiredHandle;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
+use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Illuminate\Http\Request;
@@ -69,6 +70,20 @@ class OrderController extends BaseController implements HasMiddleware
         return Inertia::render(
             'Admin/AdmissionTest/Orders/Create',
             [
+                'products' => function() {
+                    $products = AdmissionTestProduct::select(['id', 'name', 'minimum_age', 'maximum_age', 'quota'])
+                        ->with([
+                            'price' => function($query) {
+                                $query->select(['id', 'product_id', 'name', 'price']);
+                            }
+                        ])->whereInDateRange(now())
+                        ->get();
+                    foreach($products as $product) {
+                        $product->makeHidden(['id', 'product_id']);
+                    }
+
+                    return $products;
+                },
                 'paymentGateways' => function () {
                     return OtherPaymentGateway::where('is_active', true)
                         ->get(['id', 'name'])
