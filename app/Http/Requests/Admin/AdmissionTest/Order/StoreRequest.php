@@ -29,6 +29,10 @@ class StoreRequest extends FormRequest
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
+                    } elseif($request->minimum_age && $request->minimum_age > $request->user->age) {
+                        $fail('The selected user age less than minimum age limit.');
+                    } elseif($request->maximum_age && $request->maximum_age <= $request->user->age) {
+                        $fail('The selected user age greater than maximum age limit.');
                     } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     } elseif ($request->user->isActiveMember) {
