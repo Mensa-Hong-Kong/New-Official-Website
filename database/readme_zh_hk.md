@@ -292,7 +292,7 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        smallint price
+        decimal(7,2) price
         datetime start_at
         string stripe_id
         boolean synced_to_stripe
