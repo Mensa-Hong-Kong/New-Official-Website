@@ -62,18 +62,19 @@ class AdmissionTestProduct extends Model
             ->orderBy('start_at')
             ->orderBy('updated_at');
     }
-    
-    public function scopeWhereInDateRange(Builder $query, Carbon $date) {
+
+    public function scopeWhereInDateRange(Builder $query, Carbon $date)
+    {
         return $query->where(
-                function($query) use ($date) {
-                    $query->whereNull('start_at')
-                        ->orWhere('start_at', '<=', $date);
-                }
-            )->where(
-                function($query) use ($date) {
-                    $query->whereNull('end_at')
-                        ->orWhere('end_at', '>=', $date);
-                }
-            );
+            function ($query) use ($date) {
+                $query->whereNull('start_at')
+                    ->orWhere('start_at', '<=', $date);
+            }
+        )->where(
+            function ($query) use ($date) {
+                $query->whereNull('end_at')
+                    ->orWhere('end_at', '>=', $date);
+            }
+        );
     }
 }
