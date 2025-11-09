@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('product_name')->nullable();
             $table->string('price_name')->nullable();
             $table->unsignedSmallInteger('price');
+            $table->unsignedTinyInteger('minimum_age')->nullable();
+            $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->unsignedTinyInteger('quota')->default(2);
             $table->enum('status', ['pending', 'canceled', 'failed', 'expired', 'succeeded']);
             $table->dateTime('expired_at')->useCurrent();

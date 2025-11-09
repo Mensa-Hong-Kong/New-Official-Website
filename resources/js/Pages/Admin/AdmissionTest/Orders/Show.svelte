@@ -113,6 +113,14 @@
                         <td>{order.price}</td>
                     </tr>
                     <tr>
+                        <th>Minimum Age</th>
+                        <td>{order.minimum_age}</td>
+                    </tr>
+                    <tr>
+                        <th>Maximum Age</th>
+                        <td>{order.maximum_age}</td>
+                    </tr>
+                    <tr>
                         <th>Quota</th>
                         <td>
                             {#if

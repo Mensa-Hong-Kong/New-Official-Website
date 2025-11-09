@@ -5,7 +5,7 @@
     import { router } from '@inertiajs/svelte';
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 
-    let { paymentGateways, tests } = $props();
+    let { products, paymentGateways, tests } = $props();
     let inputs = $state({});
     let feedbacks = $state({
         userID: '',
@@ -13,6 +13,8 @@
         priceName: '',
         price: '',
         quota: '',
+        minimumAge: '',
+        maximumAge: '',
         status: '',
         expiredAt: '',
         paymentGateway: '',
@@ -21,15 +23,29 @@
     });
     let submitting = $state(false);
     let creating = $state(false);
+    let productIDValue = $state();
     let statusValue = $state('');
     let testValue = $state('');
     let minExpiredAt = $state();
     let maxExpiredAt = $state();
     let expiredAtValue = $state('');
 
+    function changedProduct(event) {
+        if (event.target.value !== '') {
+            let product = products[event.target.value];
+            console.log(product);
+            inputs.productName.value = product.name;
+            inputs.priceName.value = product.price.name;
+            inputs.price.value = product.price.price;
+            inputs.quota.value = product.quota;
+            inputs.minimumAge.value = product.minimum_age;
+            inputs.maximumAge.value = product.maximum_age;
+        }
+    }
+
     function updateExpiredTimeRange() {
         minExpiredAt = formatToDatetime((new Date).addMinutes(5)).slice(0, -3);
-        maxExpiredAt = formatToDatetime((new Date).addDay()).slice(0, -3);
+        maxExpiredAt = formatToDatetime((new Date).addHours(2)).slice(0, -3);
         if(expiredAtValue < minExpiredAt) {
             expiredAtValue = minExpiredAt;
         }
@@ -73,6 +89,23 @@
             feedbacks.price = `The price field must be at least ${inputs.price.min}.`;
         } else if(inputs.price.validity.rangeOverflow) {
             feedbacks.price = `The price field must not be greater than ${inputs.price.max}.`;
+        }
+        if(inputs.minimumAge.value) {
+            if(inputs.minimumAge.validity.rangeUnderflow) {
+                feedbacks.minimumAge = `The minimum age field must be at least ${inputs.minimumAge.min}.`;
+            } else if(inputs.minimumAge.validity.rangeOverflow) {
+                feedbacks.minimumAge = `The minimum age field must not be greater than ${inputs.minimumAge.max}.`;
+            }
+        }
+        if(inputs.maximumAge.value) {
+            if(inputs.maximumAge.validity.rangeUnderflow) {
+                feedbacks.maximumAge = `The maximum age field must be at least ${inputs.maximumAge.min}.`;
+            } else if(inputs.maximumAge.validity.rangeOverflow) {
+                feedbacks.maximumAge = `The maximum age field must not be greater than ${inputs.maximumAge.max}.`;
+            } else if(inputs.minimumAge.value >= inputs.maximumAge.value) {
+                feedbacks.minimumAge = `The minimum age field must be less than maximum age.`;
+                feedbacks.maximumAge = `The maximum age field must be greater than minimum age.`;
+            }
         }
         if(inputs.quota.validity.valueMissing) {
             feedbacks.quota = 'The quota field is required.';
@@ -122,6 +155,12 @@
                     case 'price':
                         feedbacks.price = message;
                         break;
+                    case 'minimum_age':
+                        feedbacks.minimumAge = value;
+                        break;
+                    case 'maximum_age':
+                        feedbacks.maximumAge = value;
+                        break;
                     case 'quota':
                         feedbacks.quota = message;
                         break;
@@ -168,6 +207,12 @@
                     if(inputs.priceName.value) {
                         data['price_name'] = inputs.priceName.value;
                     }
+                    if(inputs.minimumAge.value) {
+                        data['minimum_age'] = inputs.minimumAge.value;
+                    }
+                    if(inputs.maximumAge.value) {
+                        data['maximum_age'] = inputs.maximumAge.value;
+                    }
                     if(statusValue == 'pending') {
                         data['expired_at'] = inputs.expiredAt.value;
                     }
@@ -209,9 +254,20 @@
                 </FormGroup>
             </div>
             <div class="mb-4 form-outline">
+                <FormGroup floating label="Product">
+                    <Input type="select" name="product"bind:inner={inputs.product}
+                        onchange={changedProduct} bind:value={productIDValue}>
+                        {#each products as product, index}
+                            <option value="{index}">{product.name}</option>
+                        {/each}
+                        <option value="" selected>Other</option>
+                    </Input>
+                </FormGroup>
+            </div>
+            <div class="mb-4 form-outline">
                 <FormGroup floating label="Product Name">
                     <Input name="product_name" placeholder="product name"
-                        maxlength=255 disabled={creating}
+                        maxlength=255 disabled={creating} readonly={productIDValue !== ''}
                         feedback={feedbacks.productName} valid={feedbacks.productName == 'Looks good!'}
                         invalid={feedbacks.productName != '' && feedbacks.productName != 'Looks good!'}
                         bind:inner={inputs.productName} />
@@ -221,7 +277,7 @@
                 <div class="form-floating">
                     <FormGroup floating label="Price Name">
                         <Input name="price_name" placeholder="price name"
-                            maxlength=255 disabled={creating}
+                            maxlength=255 disabled={creating} readonly={productIDValue !== ''}
                             feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
                             invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
                             bind:inner={inputs.priceName} />
@@ -231,16 +287,34 @@
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Price">
                     <Input type="number" name="price" placeholder="price"
-                        step=1 min=1 max=65535 required disabled={creating}
+                        step=1 min=1 max=65535 required disabled={creating} readonly={productIDValue !== ''}
                         feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
                         invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
                         bind:inner={inputs.price} />
                 </FormGroup>
             </div>
             <div class="mb-4 form-outline">
+                <FormGroup floating label="Minimum Age">
+                    <Input type="number" name="minimum_age" placeholder="minimum age"
+                        step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
+                        feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+                        invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+                        bind:inner={inputs.minimumAge} />
+                </FormGroup>
+            </div>
+            <div class="mb-4 form-outline">
+                <FormGroup floating label="Maximum Age">
+                    <Input type="number" name="maximum_age" placeholder="maximum age"
+                        step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
+                        feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+                        invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+                        bind:inner={inputs.maximumAge} />
+                </FormGroup>
+            </div>
+            <div class="mb-4 form-outline">
                 <FormGroup floating label="Quota">
                     <Input type="number" name="quota" placeholder="quota"
-                        step=1 min=1 max=255 required disabled={creating}
+                        step=1 min=1 max=255 required disabled={creating} readonly={productIDValue !== ''}
                         feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
                         invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
                         bind:inner={inputs.quota} />

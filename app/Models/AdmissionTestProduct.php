@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Library\Stripe\Concerns\Models\HasStripeProduct;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -59,5 +61,20 @@ class AdmissionTestProduct extends Model
             )
             ->orderBy('start_at')
             ->orderBy('updated_at');
+    }
+
+    public function scopeWhereInDateRange(Builder $query, Carbon $date)
+    {
+        return $query->where(
+            function ($query) use ($date) {
+                $query->whereNull('start_at')
+                    ->orWhere('start_at', '<=', $date);
+            }
+        )->where(
+            function ($query) use ($date) {
+                $query->whereNull('end_at')
+                    ->orWhere('end_at', '>=', $date);
+            }
+        );
     }
 }
