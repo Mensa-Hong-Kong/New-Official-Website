@@ -52,7 +52,7 @@ class StoreRequest extends FormRequest
             ],
             'product_name' => 'nullable|string|max:255',
             'price_name' => 'nullable|string|max:255',
-            'price' => 'required|integer|min:1|max:65535',
+            'price' => ['required', Rule::numeric()->min(0.01)->max(99999.99)->decimal(0, 2)],
             'minimum_age' => 'nullable|integer|min:1|max:255',
             'maximum_age' => 'nullable|integer|min:1|max:255',
             'quota' => 'required|integer|min:1|max:255',
