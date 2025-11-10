@@ -35,6 +35,10 @@ php artisan db:seed --class=SuperAdministratorSeeder
 
 1. nav nested node hyperlink not work
 
+### Database
+
+Please read database/README.md for database setup and details.
+
 ### Coding Suggestion
 
 1. SOLID：https://en.wikipedia.org/wiki/SOLID
