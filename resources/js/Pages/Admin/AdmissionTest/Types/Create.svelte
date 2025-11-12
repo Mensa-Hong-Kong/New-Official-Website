@@ -11,6 +11,8 @@
     let feedbacks = $state({
         name: '',
         intervalMonth: '',
+        minimumAge: '',
+        maximumAge: '',
         displayOrder: '',
     });
     let submitting = $state(false);
@@ -34,6 +36,12 @@
                     case 'interval_month':
                         feedbacks.intervalMonth = value;
                         break;
+                    case 'minimum_age':
+                        feedbacks.minimumAge = value;
+                        break;
+                    case 'maximum_age':
+                        feedbacks.maximumAge = value;
+                        break;
                     case 'display_order':
                         feedbacks.displayOrder = value;
                         break;
@@ -55,16 +63,23 @@
             if(submitting == 'create'+submitAt) {
                 if(form.validation()) {
                     creating = true;
+                    let data = {
+                        name: inputs.name.value,
+                        interval_month: inputs.intervalMonth.value,
+                        is_active: inputs.isActive.checked,
+                        display_order: inputs.displayOrder.value,
+                    }
+                    if(inputs.minimumAge.value) {
+                        data['minimum_age'] = inputs.minimumAge.value;
+                    }
+                    if(inputs.maximumAge.value) {
+                        data['maximum_age'] = inputs.maximumAge.value;
+                    }
                     post(
                         route('admin.admission-test.types.store'),
                         successCallback,
                         failCallback,
-                        'post', {
-                            name: inputs.name.value,
-                            interval_month: inputs.intervalMonth.value,
-                            is_active: inputs.isActive.checked,
-                            display_order: inputs.displayOrder.value,
-                        }
+                        'post', data
                     );
                 } else {
                     submitting = false;

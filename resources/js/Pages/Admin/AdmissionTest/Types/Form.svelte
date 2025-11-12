@@ -30,6 +30,23 @@
         } else if(inputs.intervalMonth.validity.range) {
             feedbacks.intervalMonth = `The interval month field must be at least ${inputs.intervalMonth.max}.`;
         }
+        if(inputs.minimumAge.value) {
+            if(inputs.minimumAge.validity.rangeUnderflow) {
+                feedbacks.minimumAge = `The minimum age field must be at least ${inputs.minimumAge.min}.`;
+            } else if(inputs.minimumAge.validity.rangeOverflow) {
+                feedbacks.minimumAge = `The minimum age field must not be greater than ${inputs.minimumAge.max}.`;
+            }
+        }
+        if(inputs.maximumAge.value) {
+            if(inputs.maximumAge.validity.rangeUnderflow) {
+                feedbacks.maximumAge = `The maximum age field must be at least ${inputs.maximumAge.min}.`;
+            } else if(inputs.maximumAge.validity.rangeOverflow) {
+                feedbacks.maximumAge = `The maximum age field must not be greater than ${inputs.maximumAge.max}.`;
+            } else if(inputs.minimumAge.value >= inputs.maximumAge.value) {
+                feedbacks.minimumAge = `The minimum age field must be less than maximum age.`;
+                feedbacks.maximumAge = `The maximum age field must be greater than minimum age.`;
+            }
+        }
         if(inputs.displayOrder.validity.valueMissing) {
             feedbacks.displayOrder = 'The display order field is required.';
         }
@@ -40,7 +57,7 @@
 <div class="mb-4 form-outline">
     <FormGroup floating label="Name">
         <Input name="name" placeholder="name" disabled={submitting}
-            maxlength="255" required
+            maxlength=255 required
             feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
             invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
             bind:inner={inputs.name} value={type.name} />
@@ -49,10 +66,28 @@
 <div class="mb-4 form-outline">
     <FormGroup floating label="Interval Month">
         <Input type="number" name="interval_month" placeholder="interval month"
-            min="0" step="1" max="60" required disabled={submitting}
+            min=0 step=1 max=60 required disabled={submitting}
             feedback={feedbacks.intervalMonth} valid={feedbacks.intervalMonth == 'Looks good!'}
             invalid={feedbacks.intervalMonth != '' && feedbacks.intervalMonth != 'Looks good!'}
             bind:inner={inputs.intervalMonth} value={type.interval_month} />
+    </FormGroup>
+</div>
+<div class="mb-4 form-outline">
+    <FormGroup floating label="Minimum Age">
+        <Input type="number" name="minimum_age" placeholder="minimum age"
+            step=1 min=1 max=255 disabled={creating}
+            feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+            invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+            bind:inner={inputs.minimumAge} />
+    </FormGroup>
+</div>
+<div class="mb-4 form-outline">
+    <FormGroup floating label="Maximum Age">
+        <Input type="number" name="maximum_age" placeholder="maximum age"
+            step=1 min=1 max=255 disabled={creating}
+            feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+            invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+            bind:inner={inputs.maximumAge} />
     </FormGroup>
 </div>
 <div class="mb-4 form-outline">
