@@ -141,6 +141,87 @@ class StoreTest extends TestCase
         $response->assertInvalid(['interval_month' => 'The interval month field must not be greater than 60.']);
     }
 
+    public function test_minimum_age_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['minimum_age' => 'The minimum age field must be an integer.']);
+    }
+
+    public function test_minimum_age_less_than_1()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = -1;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['minimum_age' => 'The minimum age field must be at least 1.']);
+    }
+
+    public function test_minimum_age_greater_than_255()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = 256;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['minimum_age' => 'The minimum age field must not be greater than 255.']);
+    }
+
+    public function test_minimum_age_greater_than_maximum_age()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = 14;
+        $data['maximum_age'] = 13;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid([
+            'minimum_age' => 'The minimum age field must be less than maximum age field.',
+            'maximum_age' => 'The maximum age field must be greater than minimum age field.',
+        ]);
+    }
+
+    public function test_maximum_age_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['maximum_age'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['maximum_age' => 'The maximum age field must be an integer.']);
+    }
+
+    public function test_maximum_age_less_than_1()
+    {
+        $data = $this->happyCase;
+        $data['maximum_age'] = -1;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['maximum_age' => 'The maximum age field must be at least 1.']);
+    }
+
+    public function test_maximum_age_greater_than_255()
+    {
+        $data = $this->happyCase;
+        $data['maximum_age'] = 256;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertInvalid(['maximum_age' => 'The maximum age field must not be greater than 255.']);
+    }
+
     public function test_missing_is_active()
     {
         $data = $this->happyCase;
@@ -219,11 +300,45 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case_without_minimum_and_maximum_age()
     {
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.types.store'),
             $this->happyCase
+        );
+        $response->assertRedirectToRoute('admin.admission-test.types.index');
+    }
+
+    public function test_happy_case_with_minimum_age_and_without_maximum_age()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = 22;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertRedirectToRoute('admin.admission-test.types.index');
+    }
+
+    public function test_happy_case_with_maximum_age_and_without_minimum_age()
+    {
+        $data = $this->happyCase;
+        $data['maximum_age'] = 22;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
+        );
+        $response->assertRedirectToRoute('admin.admission-test.types.index');
+    }
+
+    public function test_happy_case_with_minimum_and_maximum_age()
+    {
+        $data = $this->happyCase;
+        $data['minimum_age'] = 2;
+        $data['maximum_age'] = 22;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.types.store'),
+            $data
         );
         $response->assertRedirectToRoute('admin.admission-test.types.index');
     }

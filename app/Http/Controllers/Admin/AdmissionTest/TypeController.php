@@ -50,6 +50,8 @@ class TypeController extends Controller implements HasMiddleware
         AdmissionTestType::create([
             'name' => $request->name,
             'interval_month' => $request->interval_month,
+            'minimum_age' => $request->minimum_age,
+            'maximum_age' => $request->maximum_age,
             'is_active' => $request->is_active,
             'display_order' => $request->display_order,
         ]);
@@ -106,6 +108,8 @@ class TypeController extends Controller implements HasMiddleware
         $type->update([
             'name' => $request->name,
             'interval_month' => $request->interval_month,
+            'minimum_age' => $request->minimum_age,
+            'maximum_age' => $request->maximum_age,
             'is_active' => $request->is_active,
             'display_order' => $request->display_order,
         ]);
