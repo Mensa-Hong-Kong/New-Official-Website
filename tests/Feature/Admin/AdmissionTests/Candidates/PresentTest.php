@@ -143,6 +143,42 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'Could not access after than expect end time 1 hour.']);
     }
 
+    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
+    {
+        $this->test->type->update(['minimum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)->addDay()]);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => 1]
+        );
+        $response->assertGone();
+        $response->assertJson(['message' => 'The candidate age less than test minimum age limit.']);
+    }
+
+    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
+    {
+        $this->test->type->update(['maximum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)->subDay()]);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => 1]
+        );
+        $response->assertGone();
+        $response->assertJson(['message' => 'The candidate age greater than test maximum age limit.']);
+    }
+
     public function test_candidate_result_exists()
     {
         $this->test->update([
@@ -273,8 +309,77 @@ class PresentTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case_when_type_have_no_age_limit()
     {
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => true]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The candidate of {$this->user->adornedName} changed to be present.",
+            'status' => true,
+        ]);
+    }
+
+    public function test_happy_case_when_type_only_has_minimum_age_limit()
+    {
+        $this->test->type->update(['minimum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => true]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The candidate of {$this->user->adornedName} changed to be present.",
+            'status' => true,
+        ]);
+    }
+
+    public function test_happy_case_when_type_only_has_maximum_age_limit()
+    {
+        $this->test->type->update(['maximum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user = User::find($this->user->id);
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            ),
+            ['status' => true]
+        );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The candidate of {$this->user->adornedName} changed to be present.",
+            'status' => true,
+        ]);
+    }
+
+    public function test_happy_case_when_type_has_minimum_and_maximum_age_limit()
+    {
+        $this->test->type->update([
+            'minimum_age' => 4,
+            'maximum_age' => 20,
+        ]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(

@@ -97,7 +97,11 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
                     $test = $request->route('admission_test');
-                    if (in_array($request->pivot->is_pass, ['0', '1'])) {
+                    if ($test->type->minimum_age && $test->type->minimum_age > $user->age) {
+                        abort(410, 'The candidate age less than test minimum age limit.');
+                    } elseif ($test->type->maximum_age && $test->type->maximum_age < $user->age) {
+                        abort(410, 'The candidate age greater than test maximum age limit.');
+                    } elseif (in_array($request->pivot->is_pass, ['0', '1'])) {
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
@@ -146,7 +150,7 @@ class CandidateController extends Controller implements HasMiddleware
                     'order_id' => $request->user
                         ->hasUnusedQuotaAdmissionTestOrder
                         ->id,
-                ]
+                ]   
             );
         }
         switch ($request->function) {
