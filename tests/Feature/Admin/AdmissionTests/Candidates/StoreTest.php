@@ -220,6 +220,42 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
     }
 
+    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
+    {
+        $this->test->type->update(['minimum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)->addDay()]);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id age less than test minimum age limit.']);
+    }
+
+    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
+    {
+        $this->test->type->update(['maximum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)->subDay()]);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'is_free' => true,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id age greater than test maximum age limit.']);
+    }
+
     public function test_user_id_already_schedule_this_admission_test()
     {
         $this->test->candidates()->attach($this->user->id);
@@ -484,9 +520,11 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The admission test is fulled.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_have_no_order()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_have_no_order_and_type_has_minimum_age_limit_and_have_no_maximum_age_limit()
     {
         Notification::fake();
+        $this->test->type->update(['minimum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -513,9 +551,11 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order_type_and_type_has_maximum_age_limit_and_have_no_minimum_age_limit()
     {
         Notification::fake();
+        $this->test->type->update(['maximum_age' => 20]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
         $this->user = User::find($this->user->id);
         $user = User::factory()
             ->state([
@@ -548,9 +588,14 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_have_no_order()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_have_no_order_and_has_minimum_and_maximum_age_limit()
     {
         Notification::fake();
+        $this->test->type->update([
+            'minimum_age' => 4,
+            'maximum_age' => 20,
+        ]);
+        $this->user->update(['birthday' => now()->subYears(20)]);
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([

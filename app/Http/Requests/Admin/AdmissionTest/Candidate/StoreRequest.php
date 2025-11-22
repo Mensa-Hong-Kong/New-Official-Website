@@ -22,17 +22,18 @@ class StoreRequest extends FormRequest
                 'required', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
                     $request->merge(['user' => User::find($value)]);
+                    $test = $request->route('admission_test');
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
                     } elseif ($request->user->isActiveMember) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
-                    } elseif (
-                        $request->user->admissionTests()
-                            ->where('test_id', $request->route('admission_test')->id)
-                            ->exists()
-                    ) {
+                    } elseif ($test->type->minimum_age && $test->type->minimum_age > $request->user->age) {
+                        $fail('The selected user id age less than test minimum age limit.');
+                    } elseif ($test->type->maximum_age && $test->type->maximum_age < $request->user->age) {
+                        $fail('The selected user id age greater than test maximum age limit.');
+                    } elseif ($request->user->admissionTests()->where('test_id', $test->id)->exists()) {
                         $fail('The selected user id has already schedule this admission test.');
                     } elseif ($request->function == 'schedule' && $request->user->futureAdmissionTest) {
                         $fail('The selected user id has already schedule other admission test.');
