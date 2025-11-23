@@ -121,18 +121,17 @@ class User extends Authenticatable
 
     protected function age(): Attribute
     {
+        $user = $this;
+        
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
-                return Carbon::create($attributes['birthday'])
-                    ->diffInMonths(now()->startOfDay()) / 12;
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->birthday->diffInMonths(now()->startOfDay()) / 12;
             }
         );
     }
 
     public function countAgeForPsychology(Carbon $time): float|int {
-        $diffMonths = floor(
-            $this->birthday->diffInMonths($time->startOfDay())
-        );
+        $diffMonths = floor($this->birthday->diffInMonths($time->startOfDay()));
         $diffDays = $time->format('d') - $this->birthday->format('d');
         if ($diffDays < 0) {
             $diffDays = $diffDays + 30;
