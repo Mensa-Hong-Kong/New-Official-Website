@@ -117,12 +117,12 @@ class StoreRequest extends FormRequest
                             "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
                         );
                     }
-                    if ($this->test->type->minimum_age && $this->test->type->minimum_age > $this->user->age) {
+                    if ($this->test->type->minimum_age && $this->test->type->minimum_age > $this->user->countAgeForPsychology($this->test->testing_at)) {
                         $validator->errors()->add(
                             'test_id',
                             'The selected user age less than test minimum age limit.'
                         );
-                    } elseif ($this->test->type->maximum_age && $this->test->type->maximum_age < $this->user->age) {
+                    } elseif ($this->test->type->maximum_age && $this->test->type->maximum_age < $this->user->countAgeForPsychology($this->test->testing_at)) {
                         $validator->errors()->add(
                             'test_id',
                             'The selected user age greater than test maximum age limit.'

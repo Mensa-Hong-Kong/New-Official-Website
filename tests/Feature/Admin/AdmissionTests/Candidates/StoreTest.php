@@ -223,7 +223,7 @@ class StoreTest extends TestCase
     public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
     {
         $this->test->type->update(['minimum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)->addDay()]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)->addDay()]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -241,7 +241,7 @@ class StoreTest extends TestCase
     public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
     {
         $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)->subDay()]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)->subDay()]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -524,7 +524,7 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         $this->test->type->update(['minimum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -555,7 +555,7 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)]);
         $this->user = User::find($this->user->id);
         $user = User::factory()
             ->state([
@@ -595,7 +595,7 @@ class StoreTest extends TestCase
             'minimum_age' => 4,
             'maximum_age' => 20,
         ]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)]);
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([

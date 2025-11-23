@@ -707,7 +707,7 @@ class StoreTest extends TestCase
     {
         $test = AdmissionTest::factory()->create();
         $test->type->update(['minimum_age' => 22]);
-        $this->user->update(['birthday' => now()->subYears(22)->addDay()]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(22)->addDay()]);
         $this->assertTrue($this->user->age < 22);
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
@@ -722,7 +722,7 @@ class StoreTest extends TestCase
     {
         $test = AdmissionTest::factory()->create();
         $test->type->update(['maximum_age' => 22]);
-        $this->user->update(['birthday' => now()->subYears(22)->subDay()]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(22)->subDay()]);
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
@@ -846,7 +846,7 @@ class StoreTest extends TestCase
         $data = $this->happyCase;
         $test = AdmissionTest::factory()->create();
         $test->type->update(['minimum_age' => 22]);
-        $this->user->update(['birthday' => now()->subYears(22)]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(22)]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -872,7 +872,7 @@ class StoreTest extends TestCase
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
         $test = AdmissionTest::factory()->create();
         $test->type->update(['maximum_age' => 22]);
-        $this->user->update(['birthday' => now()->subYears(22)]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(22)]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -901,9 +901,8 @@ class StoreTest extends TestCase
             'minimum_age' => 2,
             'maximum_age' => 22,
         ]);
-        $this->user->update(['birthday' => now()->subYears(22)]);
         $test->type->update(['maximum_age' => 22]);
-        $this->user->update(['birthday' => now()->subYears(22)]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(22)]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),

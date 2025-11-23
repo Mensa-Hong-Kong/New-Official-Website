@@ -129,6 +129,29 @@ class User extends Authenticatable
         );
     }
 
+    public function countAgeForPsychology(Carbon $time): float|int {
+        $diffMonths = floor(
+            $this->birthday->diffInMonths($time->startOfDay())
+        );
+        $diffDays = $time->format('d') - $this->birthday->format('d');
+        if ($diffDays < 0) {
+            $diffDays = $diffDays + 30;
+            $diffMonths = $diffMonths - 1;
+        }
+        return ($diffMonths + $diffDays / 30) / 12;
+    }
+
+    protected function ageForPsychology(): Attribute
+    {
+        $user = $this;
+        
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->countAgeForPsychology(now());
+            }
+        );
+    }
+
     public function hasOtherSamePassportUserJoinedFutureTest(): Attribute
     {
         return Attribute::make(
