@@ -29,9 +29,9 @@ class StoreRequest extends FormRequest
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
-                    } elseif ($request->minimum_age && $request->minimum_age > $request->user->age) {
+                    } elseif ($request->minimum_age && $request->minimum_age > floor($request->user->age)) {
                         $fail('The selected user age less than minimum age limit.');
-                    } elseif ($request->maximum_age && $request->maximum_age <= $request->user->age) {
+                    } elseif ($request->maximum_age && $request->maximum_age <= floor($request->user->age)) {
                         $fail('The selected user age greater than maximum age limit.');
                     } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
@@ -117,12 +117,12 @@ class StoreRequest extends FormRequest
                             "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
                         );
                     }
-                    if ($this->test->type->minimum_age && $this->test->type->minimum_age > $this->user->countAgeForPsychology($this->test->testing_at)) {
+                    if ($this->test->type->minimum_age && $this->test->type->minimum_age > floor($this->user->countAgeForPsychology($this->test->testing_at))) {
                         $validator->errors()->add(
                             'test_id',
                             'The selected user age less than test minimum age limit.'
                         );
-                    } elseif ($this->test->type->maximum_age && $this->test->type->maximum_age < $this->user->countAgeForPsychology($this->test->testing_at)) {
+                    } elseif ($this->test->type->maximum_age && $this->test->type->maximum_age < floor($this->user->countAgeForPsychology($this->test->testing_at))) {
                         $validator->errors()->add(
                             'test_id',
                             'The selected user age greater than test maximum age limit.'

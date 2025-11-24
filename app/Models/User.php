@@ -135,7 +135,9 @@ class User extends Authenticatable
         $diffDays = $time->format('d') - $this->birthday->format('d');
         if ($diffDays < 0) {
             $diffDays = $diffDays + 30;
-            $diffMonths = $diffMonths - 1;
+            if ($diffDays != 0) {
+                $diffMonths = $diffMonths - 1;
+            }
         }
         return ($diffMonths + $diffDays / 30) / 12;
     }

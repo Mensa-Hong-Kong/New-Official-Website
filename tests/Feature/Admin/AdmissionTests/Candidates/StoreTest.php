@@ -222,8 +222,8 @@ class StoreTest extends TestCase
 
     public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
     {
-        $this->test->type->update(['minimum_age' => 20]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)->addDay()]);
+        $this->test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -240,8 +240,8 @@ class StoreTest extends TestCase
 
     public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
     {
-        $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)->subDay()]);
+        $this->test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -554,8 +554,8 @@ class StoreTest extends TestCase
     public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order_type_and_type_has_maximum_age_limit_and_have_no_minimum_age_limit()
     {
         Notification::fake();
-        $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)]);
+        $this->test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $user = User::factory()
             ->state([
@@ -593,9 +593,9 @@ class StoreTest extends TestCase
         Notification::fake();
         $this->test->type->update([
             'minimum_age' => 4,
-            'maximum_age' => 20,
+            'maximum_age' => 9,
         ]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(20)]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([

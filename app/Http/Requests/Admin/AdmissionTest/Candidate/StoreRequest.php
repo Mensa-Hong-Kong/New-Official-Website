@@ -29,9 +29,9 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
-                    } elseif ($test->type->minimum_age && $test->type->minimum_age > $request->user->countAgeForPsychology($test->testing_at)) {
+                    } elseif ($test->type->minimum_age && $test->type->minimum_age > floor($request->user->countAgeForPsychology($test->testing_at))) {
                         $fail('The selected user id age less than test minimum age limit.');
-                    } elseif ($test->type->maximum_age && $test->type->maximum_age < $request->user->countAgeForPsychology($test->testing_at)) {
+                    } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($request->user->countAgeForPsychology($test->testing_at))) {
                         $fail('The selected user id age greater than test maximum age limit.');
                     } elseif ($request->user->admissionTests()->where('test_id', $test->id)->exists()) {
                         $fail('The selected user id has already schedule this admission test.');

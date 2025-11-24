@@ -145,8 +145,8 @@ class PresentTest extends TestCase
 
     public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
     {
-        $this->test->type->update(['minimum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)->addDay()]);
+        $this->test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -163,8 +163,8 @@ class PresentTest extends TestCase
 
     public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
     {
-        $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)->subDay()]);
+        $this->test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -331,8 +331,8 @@ class PresentTest extends TestCase
 
     public function test_happy_case_when_type_only_has_minimum_age_limit()
     {
-        $this->test->type->update(['minimum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -353,8 +353,8 @@ class PresentTest extends TestCase
 
     public function test_happy_case_when_type_only_has_maximum_age_limit()
     {
-        $this->test->type->update(['maximum_age' => 20]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -377,9 +377,9 @@ class PresentTest extends TestCase
     {
         $this->test->type->update([
             'minimum_age' => 4,
-            'maximum_age' => 20,
+            'maximum_age' => 9,
         ]);
-        $this->user->update(['birthday' => now()->subYears(20)]);
+        $this->user->update(['birthday' => now()->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
