@@ -421,6 +421,50 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.']);
     }
 
+    public function test_user_id_unused_quota_admission_test_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age_limit_when_is_not_free()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'minimum_age' => 18,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $order->created_at->subYears(18)->addDay()]);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id age not less than the last order age limit.']);
+    }
+
+    public function test_user_id_unused_quota_admission_test_order_has_maximum_age_limit_and_user_age_less_than_order_maximum_age_limit_when_is_not_free()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'maximum_age' => 17,
+            'quota' => 1,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $order->created_at->subYears(18)]);
+        $response = $this->actingAs($this->user)->postJson(
+            route(
+                'admin.admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+            [
+                'user_id' => $this->user->id,
+                'function' => 'schedule',
+            ]
+        );
+        $response->assertInvalid(['user_id' => 'The selected user id age not greater than the last order age limit.']);
+    }
+
     public function test_user_id_of_user_have_no_any_default_contact()
     {
         UserHasContact::first()->delete();
@@ -1055,7 +1099,7 @@ class StoreTest extends TestCase
         $this->assertEquals(0, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_have_no_used_record_order()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_have_no_any_age_limit()
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1089,14 +1133,16 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_have_no_used_record_order()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_only_has_minimum_age_limit()
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'quota' => 1,
+            'minimum_age' => 18,
             'status' => 'succeeded',
         ])->create();
         Notification::fake();
+        $this->user->update(['birthday' => $order->created_at->subYears(18)]);
         $this->user = User::find($this->user->id);
         $user = User::factory()
             ->state([
@@ -1129,14 +1175,16 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_have_no_used_record_order()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_only_has_maximum_age_limit()
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'quota' => 1,
+            'maximum_age' => 17,
             'status' => 'succeeded',
         ])->create();
         Notification::fake();
+        $this->user->update(['birthday' => $order->created_at->subYears(18)->addDay()]);
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([
@@ -1176,14 +1224,17 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_have_no_used_record_order()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_has_minimum_and_maximum_age_limit()
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'quota' => 1,
+            'minimum_age' => 4,
+            'maximum_age' => 17,
             'status' => 'succeeded',
         ])->create();
         Notification::fake();
+        $this->user->update(['birthday' => $order->created_at->subYears(18)->addDay()]);
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDay();
         $this->test->update([
