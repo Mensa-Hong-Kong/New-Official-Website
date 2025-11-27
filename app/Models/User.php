@@ -119,13 +119,17 @@ class User extends Authenticatable
         );
     }
 
+    public function countAge(Carbon $time): float|int {
+        return $this->birthday->diffInMonths($time->startOfDay()) / 12;
+    }
+
     protected function age(): Attribute
     {
         $user = $this;
         
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
-                return $user->birthday->diffInMonths(now()->startOfDay()) / 12;
+                return $user->countAge(now());
             }
         );
     }
