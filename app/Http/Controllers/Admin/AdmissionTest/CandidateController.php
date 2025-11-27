@@ -119,6 +119,20 @@ class CandidateController extends Controller implements HasMiddleware
                             )->endOfDay() >= $test->testing_at
                     ) {
                         abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age not less than the last order age limit.');
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age not greater than the last order age limit.');
                     }
 
                     return $next($request);
