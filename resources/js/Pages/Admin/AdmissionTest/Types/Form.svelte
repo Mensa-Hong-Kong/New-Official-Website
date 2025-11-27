@@ -42,7 +42,7 @@
                 feedbacks.maximumAge = `The maximum age field must be at least ${inputs.maximumAge.min}.`;
             } else if(inputs.maximumAge.validity.rangeOverflow) {
                 feedbacks.maximumAge = `The maximum age field must not be greater than ${inputs.maximumAge.max}.`;
-            } else if(inputs.minimumAge.value >= inputs.maximumAge.value) {
+            } else if(inputs.minimumAge.value > inputs.maximumAge.value) {
                 feedbacks.minimumAge = `The minimum age field must be less than maximum age.`;
                 feedbacks.maximumAge = `The maximum age field must be greater than minimum age.`;
             }
@@ -75,7 +75,7 @@
 <div class="mb-4 form-outline">
     <FormGroup floating label="Minimum Age">
         <Input type="number" name="minimum_age" placeholder="minimum age"
-            step=1 min=1 max=255 disabled={creating}
+            step=1 min=1 max=255 disabled={submitting}
             feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
             invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
             bind:inner={inputs.minimumAge} />
@@ -84,7 +84,7 @@
 <div class="mb-4 form-outline">
     <FormGroup floating label="Maximum Age">
         <Input type="number" name="maximum_age" placeholder="maximum age"
-            step=1 min=1 max=255 disabled={creating}
+            step=1 min=1 max=255 disabled={submitting}
             feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
             invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
             bind:inner={inputs.maximumAge} />

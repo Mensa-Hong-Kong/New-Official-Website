@@ -52,7 +52,7 @@ class PageController extends Controller
             ->withCount('candidates')
             ->with(['address.district.area', 'location'])
             ->where('testing_at', '>=', now());
-        if($request->user()) {
+        if($request->user() && $user['has_qualification_of_membership']) {
             $tests = $tests->where(
                 function($query) use ($request) {
                     $query->whereNull('minimum_age')
