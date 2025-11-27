@@ -6,7 +6,7 @@
     import "ckeditor5/ckeditor5.css";
     import { formatToDate, formatToTime } from '@/timeZoneDatetime';
 
-    let { contents, tests, user: initUser } = $props();
+    let { auth, contents, tests, user: initUser } = $props();
     let user = $state(initUser);
 </script>
 
@@ -38,8 +38,11 @@
                         <th scope="col">Time</th>
                         <th scope="col">Location</th>
                         <th scope="col">Candidates</th>
-                        {#if ! user || ! user.has_qualification_of_membership}
+                        {#if auth.user && ! user.has_qualification_of_membership}
                             <th scope="col">Control</th>
+                        {:else}
+                            <th>Minimum Age</th>
+                            <th>Maximum Age</th>
                         {/if}
                     </tr>
                 </thead>
@@ -50,7 +53,7 @@
                             <td>{formatToTime(test.testing_at).slice(0, -3)}</td>
                             <td title="{test.address.address}, {test.address.district.name}, {test.address.district.area.name}">{test.location.name}</td>
                             <td>{test.candidates_count}/{test.maximum_candidates}</td>
-                            {#if ! user || ! user.has_qualification_of_membership}
+                            {#if auth.user && ! user.has_qualification_of_membership}
                                 <td>
                                     {#if user && user.future_admission_test}
                                         {#if user && user.future_admission_test.id == test.id}
@@ -100,6 +103,9 @@
                                         {/if}
                                     {/if}
                                 </td>
+                            {:else}
+                                <td>{test.type.minimum_age ?? 0}</td>
+                                <td>{test.type.maximum_age ?? '∞'}</td>
                             {/if}
                         </tr>
                     {/each}
