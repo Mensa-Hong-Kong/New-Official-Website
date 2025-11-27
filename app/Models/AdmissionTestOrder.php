@@ -47,4 +47,10 @@ class AdmissionTestOrder extends Model
     {
         return $this->tests()->where('is_present', true);
     }
+
+    public function lastTest()
+    {
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'id', 'id', 'test_id')
+            ->latest('testing_at');
+    }
 }
