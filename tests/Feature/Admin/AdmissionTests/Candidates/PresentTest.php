@@ -306,7 +306,7 @@ class PresentTest extends TestCase
             ['status' => 1]
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The candidate age not less than the last order age limit.']);
+        $response->assertJson(['message' => 'The candidate age less than the last order age limit.']);
     }
 
     public function test_test_is_not_free_and_order_has_maximum_age_limit_and_user_age_greater_than_order_maximum_age()
@@ -325,7 +325,7 @@ class PresentTest extends TestCase
             ['status' => 1]
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The candidate age not greater than the last order age limit.']);
+        $response->assertJson(['message' => 'The candidate age greater than the last order age limit.']);
     }
 
     public function test_missing_status()

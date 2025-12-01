@@ -125,14 +125,14 @@ class CandidateController extends Controller implements HasMiddleware
                         $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
                         $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
                     ) {
-                        abort(409, 'The candidate age not less than the last order age limit.');
+                        abort(409, 'The candidate age less than the last order age limit.');
                     } elseif (
                         $user->hasUnusedQuotaAdmissionTestOrder &&
                         $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
                         $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
                         $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
                     ) {
-                        abort(409, 'The candidate age not greater than the last order age limit.');
+                        abort(409, 'The candidate age greater than the last order age limit.');
                     }
 
                     return $next($request);

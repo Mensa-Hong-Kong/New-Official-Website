@@ -61,13 +61,13 @@ class StoreRequest extends FormRequest
                         $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
                     ) {
-                        $fail('The selected user id age not less than the last order age limit.');
+                        $fail('The selected user id age less than the last order age limit.');
                     } elseif (
                         ! $request->is_free &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
                     ) {
-                        $fail('The selected user id age not greater than the last order age limit.');
+                        $fail('The selected user id age greater than the last order age limit.');
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     }

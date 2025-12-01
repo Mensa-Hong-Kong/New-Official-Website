@@ -440,7 +440,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id age not less than the last order age limit.']);
+        $response->assertInvalid(['user_id' => 'The selected user id age less than the last order age limit.']);
     }
 
     public function test_user_id_unused_quota_admission_test_order_has_maximum_age_limit_and_user_age_less_than_order_maximum_age_limit_when_is_not_free()
@@ -462,7 +462,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id age not greater than the last order age limit.']);
+        $response->assertInvalid(['user_id' => 'The selected user id age greater than the last order age limit.']);
     }
 
     public function test_user_id_of_user_have_no_any_default_contact()
