@@ -703,12 +703,41 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => "The selected user id has admission test record within {$test->type->interval_month} months(count from testing at of this test sub {$test->type->interval_month} months to now)."]);
     }
 
+    public function test_user_id_of_user_age_less_than_test_minimum_age()
+    {
+        $test = AdmissionTest::factory()->create();
+        $test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(10)->addDays(2)]);
+        $this->assertTrue($this->user->age < 22);
+        $data = $this->happyCase;
+        $data['test_id'] = $test->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $response->assertInvalid(['test_id' => 'The selected user age less than test minimum age limit.']);
+    }
+
+    public function test_user_id_of_user_age_greater_than_test_maximum_age()
+    {
+        $test = AdmissionTest::factory()->create();
+        $test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(10)]);
+        $data = $this->happyCase;
+        $data['test_id'] = $test->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $response->assertInvalid(['test_id' => 'The selected user age greater than test maximum age limit.']);
+    }
+
     public function test_happy_case_when_status_is_pending_with_minimum_age_without_maximum_age_and_test_and_quota_validity_months_config_is_null()
     {
         Queue::fake();
         config(['app.admissionTestQuotaValidityMonths' => null]);
         $data = $this->happyCase;
-        $this->user->update(['birthday' => now()->subYears(value: 22)]);
+        $this->user->update(['birthday' => now()->subYears(22)]);
         $data['minimum_age'] = 22;
         $data['status'] = 'pending';
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
@@ -789,7 +818,7 @@ class StoreTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_status_is_pending_with_test_and_without_minimum_age_and_maximum_age()
+    public function test_happy_case_when_status_is_pending_with_test_and_without_minimum_age_and_maximum_age_and_test_without_minimum_age_and_maximum_age()
     {
         Queue::fake();
         $data = $this->happyCase;
@@ -810,12 +839,14 @@ class StoreTest extends TestCase
         Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
     }
 
-    public function test_happy_case_when_status_is_succeeded_and_without_expired_at_with_test_and_minimum_age_and_maximum_age()
+    public function test_happy_case_when_status_is_succeeded_and_without_expired_at_with_test_and_minimum_age_and_maximum_age_and_test_with_minimum_age_and_test_without_maximum_age()
     {
         Notification::fake();
         Queue::fake();
         $data = $this->happyCase;
         $test = AdmissionTest::factory()->create();
+        $test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(10)]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -833,13 +864,15 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_status_is_succeeded_with_expired_at_and_test_and_without_minimum_age_and_maximum_age()
+    public function test_happy_case_when_status_is_succeeded_with_expired_at_and_test_and_without_minimum_age_and_maximum_age_and_test_with_maximum_age_and_test_without_minimum_age()
     {
         Notification::fake();
         Queue::fake();
         $data = $this->happyCase;
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');
         $test = AdmissionTest::factory()->create();
+        $test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(10)->addDays(2)]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -851,6 +884,35 @@ class StoreTest extends TestCase
             ['order' => $order]
         );
         $this->assertEquals(now()->format('Y-m-d H:i'), $order->expired_at->format('Y-m-d H:i'));
+        $this->assertEquals(1, $test->candidates()->count());
+        Queue::assertNothingPushed();
+        Notification::assertSentTo(
+            [$this->user], ScheduleAdmissionTest::class
+        );
+    }
+
+    public function test_happy_case_when_status_is_succeeded_with_test_and_without_expired_at_and_minimum_age_and_maximum_age_and_test_with_maximum_and_minimum_age()
+    {
+        Notification::fake();
+        Queue::fake();
+        $data = $this->happyCase;
+        $test = AdmissionTest::factory()->create();
+        $test->type->update([
+            'minimum_age' => 4,
+            'maximum_age' => 9,
+        ]);
+        $test->type->update(['maximum_age' => 22]);
+        $this->user->update(['birthday' => $test->testing_at->subYears(10)->addDays(2)]);
+        $data['test_id'] = $test->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $order = AdmissionTestOrder::first();
+        $response->assertRedirectToRoute(
+            'admin.admission-test.orders.show',
+            ['order' => $order]
+        );
         $this->assertEquals(1, $test->candidates()->count());
         Queue::assertNothingPushed();
         Notification::assertSentTo(

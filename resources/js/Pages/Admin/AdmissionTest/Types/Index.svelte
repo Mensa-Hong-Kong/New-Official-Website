@@ -128,6 +128,8 @@
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">Interval Month</th>
+                        <th scope="col">Minimum Age</th>
+                        <th scope="col">Maximum Age</th>
                         <th scope="col">Status</th>
                         <th scope="col">Edit</th>
                     </tr>
@@ -142,6 +144,8 @@
                             <td>{row.id}</td>
                             <td>{row.name}</td>
                             <td>{row.interval_month}</td>
+                            <td>{row.minimum_age}</td>
+                            <td>{row.maximum_age}</td>
                             <td>{row.is_active ? 'Active' : 'Inactive'}</td>
                             <td>
                                 <Link class="btn btn-primary"

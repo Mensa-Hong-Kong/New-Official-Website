@@ -119,12 +119,43 @@ class User extends Authenticatable
         );
     }
 
+    public function countAge(Carbon $time): float|int
+    {
+        return $this->birthday->diffInMonths($time->startOfDay()) / 12;
+    }
+
     protected function age(): Attribute
     {
+        $user = $this;
+
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
-                return Carbon::create($attributes['birthday'])
-                    ->diffInMonths(now()->startOfDay()) / 12;
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->countAge(now());
+            }
+        );
+    }
+
+    public function countAgeForPsychology(Carbon $time): float|int
+    {
+        $diffMonths = floor($this->birthday->diffInMonths($time->startOfDay()));
+        $diffDays = $time->format('d') - $this->birthday->format('d');
+        if ($diffDays < 0) {
+            $diffDays = $diffDays + 30;
+            if ($diffDays != 0) {
+                $diffMonths = $diffMonths - 1;
+            }
+        }
+
+        return ($diffMonths + $diffDays / 30) / 12;
+    }
+
+    protected function ageForPsychology(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->countAgeForPsychology(now());
             }
         );
     }

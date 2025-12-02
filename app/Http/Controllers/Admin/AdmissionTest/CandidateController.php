@@ -97,7 +97,11 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
                     $test = $request->route('admission_test');
-                    if (in_array($request->pivot->is_pass, ['0', '1'])) {
+                    if ($test->type->minimum_age && $test->type->minimum_age > floor($user->ageForPsychology)) {
+                        abort(410, 'The candidate age less than test minimum age limit.');
+                    } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($user->ageForPsychology)) {
+                        abort(410, 'The candidate age greater than test maximum age limit.');
+                    } elseif (in_array($request->pivot->is_pass, ['0', '1'])) {
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
@@ -115,6 +119,20 @@ class CandidateController extends Controller implements HasMiddleware
                             )->endOfDay() >= $test->testing_at
                     ) {
                         abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age less than the last order age limit.');
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age greater than the last order age limit.');
                     }
 
                     return $next($request);

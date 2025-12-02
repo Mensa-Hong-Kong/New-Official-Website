@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedTinyInteger('interval_month');
+            $table->unsignedTinyInteger('minimum_age')->nullable();
+            $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('display_order')->default(0);
             $table->timestamps();

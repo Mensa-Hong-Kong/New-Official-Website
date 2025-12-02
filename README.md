@@ -43,3 +43,80 @@ php artisan db:seed --class=SuperAdministratorSeeder
 以上只是建議，不是強行要求，比如說Prince Wong傾向：
 1. 單一責任原則在function多過class
 2. fat controller skinny model，除非多過一個地方會用到同一功能
+
+### TOdo
+
+#### stage 1 todo
+
+- Add admin refund for admin admission test orders
+- Add admin store proctor and candidates to admin user show
+- admin user add admission test orders list and create order button
+- Add assign roles function to admin user show
+- Admin team show add show team members and relation role
+- Admission test add is free field
+- Add stripe payment gateway to candidate store when user have no unused quata 
+- add reschedule charges
+- Add third party iq test accept list store
+- Add third party iq test accept list index
+- Add third party iq test accept list update name
+- Add third party iq test accept list update active status
+- Add third party iq test request products create
+- Add third party iq test request products index
+- Add third party iq test request products edit
+- Add third party iq test request products price store
+- Add third party iq test request products price update
+- Add third party iq test request orders create
+- Add third party iq test request orders index
+- Add third party iq test request orders show
+- Add third party iq test request orders update payment status
+- Add admin refund for third party iq test request orders
+- Add stripe payment gateway for third party iq test request on user show
+- Add transfer in and out store and show on admin user show
+- Add transfer in request on user show
+- Add membership products create
+- Add membership products index
+- Add membership products edit
+- Add membership products price store
+- Add membership products price update
+- Add membership orders create
+- Add membership orders index
+- Add membership orders show
+- Add membership orders update payment status
+- Add admin refund for membership orders
+- Add stripe payment gateway for inactive member and add show all membership orders on user show
+- Add subscription headless web hock
+- add user public option on user show
+- Add member index
+- Add member show
+- edit forwarding email
+
+#### stage 2 todo
+
+- subscriptable channel store
+- subscriptable channel index
+- subscriptable channel update
+- subscriptable channel delete
+- Add subscript channel to user show
+- Add admin news create
+- Add admin news index
+- Add admin news edit
+- Add admin news delete
+- Add new index
+- Add new show
+
+#### stage 3 todo
+
+- Add admin event create
+- Add admin event index
+- Add admin event show
+- Add admin event update
+- Add admin event cancel
+- Add admin event products store
+- Add admin event products update
+- Add admin event order create and list on admin event show
+- Add admin event order update payment status
+- Add admin refund for event orders
+- Add stripe payment gateway for event orders
+- Add event index
+- Add event create
+- Add event show

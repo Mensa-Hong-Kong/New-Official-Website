@@ -12,6 +12,8 @@ class AdmissionTestType extends Model
     protected $fillable = [
         'name',
         'interval_month',
+        'minimum_age',
+        'maximum_age',
         'is_active',
         'display_order',
     ];
