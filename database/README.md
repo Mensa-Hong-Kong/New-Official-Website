@@ -227,6 +227,8 @@ erDiagram
         bigint id PK
         string name
         tinyint interval_month
+        tinyint minimum_age
+        tinyint maximum_age
         boolean is_active
         boolean display_order
         timestamp created_at
