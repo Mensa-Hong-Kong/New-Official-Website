@@ -715,7 +715,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['test_id' => "The selected user age less than test minimum age limit."]);
+        $response->assertInvalid(['test_id' => 'The selected user age less than test minimum age limit.']);
     }
 
     public function test_user_id_of_user_age_greater_than_test_maximum_age()
@@ -729,7 +729,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['test_id' => "The selected user age greater than test maximum age limit."]);
+        $response->assertInvalid(['test_id' => 'The selected user age greater than test maximum age limit.']);
     }
 
     public function test_happy_case_when_status_is_pending_with_minimum_age_without_maximum_age_and_test_and_quota_validity_months_config_is_null()

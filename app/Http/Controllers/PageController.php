@@ -52,38 +52,38 @@ class PageController extends Controller
             ->withCount('candidates')
             ->with(['address.district.area', 'location'])
             ->where('testing_at', '>=', now());
-        if($request->user() && $user['has_qualification_of_membership']) {
+        if ($request->user() && $user['has_qualification_of_membership']) {
             $tests = $tests->where(
-                function($query) use ($request) {
+                function ($query) use ($request) {
                     $query->whereNull('minimum_age')
                         ->orWhere('minimum_age', '<=', DB::raw("TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)"));
                 }
             )->where(
-                function($query) use ($request) {
+                function ($query) use ($request) {
                     $query->whereNull('maximum_age')
                         ->orWhere('maximum_age', '>=', DB::raw("TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)"));
                 }
             );
         } else {
             $tests->with([
-                'type' => function($query) {
+                'type' => function ($query) {
                     $query->select(['id', 'minimum_age', 'maximum_age']);
-                }
+                },
             ]);
         }
         $tests = $tests->where(
-                function ($query) use ($request) {
-                    $query->where('is_public', true);
-                    if ($request->user()) {
-                        $query->orWhereHas(
-                            'candidates', function ($query) use ($request) {
-                                $query->where('user_id', $request->user()->id)
-                                    ->where('expect_end_at', '<=', now()->subHour());
-                            }
-                        );
-                    }
+            function ($query) use ($request) {
+                $query->where('is_public', true);
+                if ($request->user()) {
+                    $query->orWhereHas(
+                        'candidates', function ($query) use ($request) {
+                            $query->where('user_id', $request->user()->id)
+                                ->where('expect_end_at', '<=', now()->subHour());
+                        }
+                    );
                 }
-            )->orderBy('testing_at')
+            }
+        )->orderBy('testing_at')
             ->get();
         foreach ($tests as $test) {
             $test->address->district->area
@@ -93,7 +93,7 @@ class PageController extends Controller
             $test->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
             $test->location->makeHidden(['id', 'created_at', 'updated_at']);
             $test->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
-            if(! $request->user()) {
+            if (! $request->user()) {
                 $test->type->makeHidden('id');
             }
         }

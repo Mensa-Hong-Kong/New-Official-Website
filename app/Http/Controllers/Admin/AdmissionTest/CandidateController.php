@@ -164,7 +164,7 @@ class CandidateController extends Controller implements HasMiddleware
                     'order_id' => $request->user
                         ->hasUnusedQuotaAdmissionTestOrder
                         ->id,
-                ]   
+                ]
             );
         }
         switch ($request->function) {

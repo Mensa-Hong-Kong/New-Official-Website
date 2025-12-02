@@ -241,7 +241,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => "Your age less than the last order minimum age limit, please contact us."]);
+        $response->assertSessionHasErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
     }
 
     public function test_user_age_greater_than_last_order_maximum_age_limit()
@@ -258,7 +258,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => "Your age greater than the last order maximum age limit, please contact us."]);
+        $response->assertSessionHasErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
     }
 
     public function test_after_than_deadline()
@@ -301,7 +301,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => "Your age less than test minimum age limit."]);
+        $response->assertSessionHasErrors(['message' => 'Your age less than test minimum age limit.']);
     }
 
     public function test_user_age_greater_than_test_type_order_maximum_age_limit()
@@ -314,7 +314,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => "Your age greater than test maximum age limit."]);
+        $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
     }
 
     public function test_happy_case_when_test_type_and_order_have_no_any_age_limit()

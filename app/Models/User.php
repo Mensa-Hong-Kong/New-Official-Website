@@ -119,14 +119,15 @@ class User extends Authenticatable
         );
     }
 
-    public function countAge(Carbon $time): float|int {
+    public function countAge(Carbon $time): float|int
+    {
         return $this->birthday->diffInMonths($time->startOfDay()) / 12;
     }
 
     protected function age(): Attribute
     {
         $user = $this;
-        
+
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return $user->countAge(now());
@@ -134,7 +135,8 @@ class User extends Authenticatable
         );
     }
 
-    public function countAgeForPsychology(Carbon $time): float|int {
+    public function countAgeForPsychology(Carbon $time): float|int
+    {
         $diffMonths = floor($this->birthday->diffInMonths($time->startOfDay()));
         $diffDays = $time->format('d') - $this->birthday->format('d');
         if ($diffDays < 0) {
@@ -143,13 +145,14 @@ class User extends Authenticatable
                 $diffMonths = $diffMonths - 1;
             }
         }
+
         return ($diffMonths + $diffDays / 30) / 12;
     }
 
     protected function ageForPsychology(): Attribute
     {
         $user = $this;
-        
+
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return $user->countAgeForPsychology(now());

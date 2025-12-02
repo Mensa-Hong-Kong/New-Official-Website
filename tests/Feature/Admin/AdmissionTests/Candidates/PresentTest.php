@@ -315,7 +315,7 @@ class PresentTest extends TestCase
         $this->user->update(['birthday' => $this->order->created_at->subYears(18)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-             
+
                 'admin.admission-tests.candidates.present.update',
                 [
                     'admission_test' => $this->test,
