@@ -3,6 +3,7 @@
 namespace Tests\Feature\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestOrder;
 use App\Models\ContactHasVerification;
 use App\Models\Member;
 use App\Models\User;
@@ -226,6 +227,40 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
+    public function test_user_age_less_than_last_order_minimum_age_limit()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'minimum_age' => 22,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $order->created_at->subYear(22)->addDay()]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSessionHasErrors(['message' => "Your age less than the last order minimum age limit, please contact us."]);
+    }
+
+    public function test_user_age_greater_than_last_order_maximum_age_limit()
+    {
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'maximum_age' => 21,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSessionHasErrors(['message' => "Your age greater than the last order maximum age limit, please contact us."]);
+    }
+
     public function test_after_than_deadline()
     {
         $newTestingAt = now()->addDay();
@@ -256,8 +291,92 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is fulled.']);
     }
 
-    public function test_happy_case()
+    public function test_user_age_less_than_test_type_minimum_age_limit()
     {
+        $this->test->type->update(['minimum_age' => 10]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSessionHasErrors(['message' => "Your age less than test minimum age limit."]);
+    }
+
+    public function test_user_age_greater_than_test_type_order_maximum_age_limit()
+    {
+        $this->test->type->update(['maximum_age' => 9]);
+        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSessionHasErrors(['message' => "Your age greater than test maximum age limit."]);
+    }
+
+    public function test_happy_case_when_test_type_and_order_have_no_any_age_limit()
+    {
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit()
+    {
+        $this->test->type->update(['minimum_age' => 10]);
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'minimum_age' => 22,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit()
+    {
+        $this->test->type->update(['maximum_age' => 9]);
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'maximum_age' => 21,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit()
+    {
+        $this->test->type->update([
+            'minimum_age' => 4,
+            'maximum_age' => 9,
+        ]);
+        $order = AdmissionTestOrder::factory()->state([
+            'user_id' => $this->user->id,
+            'minimum_age' => 4,
+            'maximum_age' => 21,
+            'status' => 'succeeded',
+        ])->create();
+        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',

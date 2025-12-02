@@ -58,11 +58,31 @@ class CandidateController extends Controller implements HasMiddleware
                     ) {
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
+                    if (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        return $errorReturn->withErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
+                    }
+                    if (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        return $errorReturn->withErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
+                    }
                     if ($admissionTest->testing_at <= now()->addDays(2)->endOfDay()) {
                         return $errorReturn->withErrors(['message' => 'Cannot register after than before testing date two days.']);
                     }
                     if ($admissionTest->candidates()->count() >= $admissionTest->maximum_candidates) {
                         return $errorReturn->withErrors(['message' => 'The admission test is fulled.']);
+                    }
+                    if ($admissionTest->type->minimum_age && $admissionTest->type->minimum_age > floor($user->countAgeForPsychology($admissionTest->testing_at))) {
+                        return $errorReturn->withErrors(['message' => 'Your age less than test minimum age limit.']);
+                    }
+                    if ($admissionTest->type->maximum_age && $admissionTest->type->maximum_age < floor($user->countAgeForPsychology($admissionTest->testing_at))) {
+                        return $errorReturn->withErrors(['message' => 'Your age greater than test maximum age limit.']);
                     }
 
                     return $next($request);
