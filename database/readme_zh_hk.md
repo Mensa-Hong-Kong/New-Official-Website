@@ -261,7 +261,7 @@ erDiagram
         bigint user_id FK
         string product_name
         string price_name
-        smallint price
+        decimal(7,2) price
         tinyint minimum_age
         tinyint maximum_age
         tinyint quota
