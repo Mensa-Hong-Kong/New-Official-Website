@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('location_id')->nullable();
             $table->unsignedBigInteger('address_id')->nullable();
             $table->unsignedInteger('maximum_candidates')->nullable();
+            $table->boolean('is_free')->default(false);
             $table->boolean('is_public')->default(false);
             $table->timestamps();
         });
