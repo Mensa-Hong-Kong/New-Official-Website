@@ -19,6 +19,7 @@ class AdmissionTest extends Model
         'location_id',
         'address_id',
         'maximum_candidates',
+        'is_free',
         'is_public',
     ];
 
@@ -30,6 +31,7 @@ class AdmissionTest extends Model
     protected $casts = [
         'testing_at' => 'datetime',
         'expect_end_at' => 'datetime',
+        'is_free' => 'boolean',
         'is_public' => 'boolean',
     ];
 
