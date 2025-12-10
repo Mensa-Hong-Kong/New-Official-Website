@@ -40,7 +40,7 @@ class OtherPaymentGatewayController extends Controller implements HasMiddleware
 
     public function active(StatusRequest $request, OtherPaymentGateway $otherPaymentGateway)
     {
-        $otherPaymentGateway->update(['is_active' => $request->status]);
+        $otherPaymentGateway->update(['is_active' => (bool) $request->status]);
 
         return [
             'success' => "The payment gateway of $otherPaymentGateway->name changed to be ".($otherPaymentGateway->is_active ? 'active.' : 'inactive.'),

@@ -20,7 +20,6 @@ class StoreTest extends TestCase
         'address' => 'abc',
         'location' => 'xyz',
         'maximum_candidates' => 40,
-        'is_public' => true,
     ];
 
     protected function setUp(): void
@@ -279,17 +278,6 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
     }
 
-    public function test_missing_is_public()
-    {
-        $data = $this->happyCase;
-        unset($data['is_public']);
-        $response = $this->actingAs($this->user)->postJson(
-            route('admin.admission-tests.store'),
-            $data
-        );
-        $response->assertInvalid(['is_public' => 'The is public field is required.']);
-    }
-
     public function test_is_public_is_not_boolean()
     {
         $data = $this->happyCase;
@@ -308,6 +296,7 @@ class StoreTest extends TestCase
             $this->happyCase
         );
         $test = AdmissionTest::first();
+        $response->assertRedirect();
         $response->assertRedirectToRoute(
             'admin.admission-tests.show',
             ['admission_test' => $test]

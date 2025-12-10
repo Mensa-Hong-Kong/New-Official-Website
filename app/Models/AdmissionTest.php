@@ -30,6 +30,7 @@ class AdmissionTest extends Model
     protected $casts = [
         'testing_at' => 'datetime',
         'expect_end_at' => 'datetime',
+        'is_public' => 'boolean',
     ];
 
     public function type()

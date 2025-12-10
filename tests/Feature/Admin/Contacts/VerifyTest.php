@@ -28,7 +28,7 @@ class VerifyTest extends TestCase
             route(
                 'admin.contacts.verify',
                 ['contact' => $contact]
-            ), ['status' => true]
+            )
         );
         $response->assertUnauthorized();
     }
@@ -47,22 +47,9 @@ class VerifyTest extends TestCase
             route(
                 'admin.contacts.verify',
                 ['contact' => $contact]
-            ), ['status' => true]
+            )
         );
         $response->assertForbidden();
-    }
-
-    public function test_missing_status()
-    {
-        $contact = UserHasContact::factory()->create();
-        $response = $this->actingAs($this->user)
-            ->putJson(
-                route(
-                    'admin.contacts.verify',
-                    ['contact' => $contact]
-                )
-            );
-        $response->assertInvalid(['status' => 'The status field is required. if you are using our CMS, please contact I.T. officer.']);
     }
 
     public function test_status_is_not_boolean()
@@ -88,7 +75,7 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => false]
+                )
             );
         $response->assertSuccessful();
         $response->assertJson([
@@ -109,7 +96,8 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => true]
+                ),
+                ['status' => true]
             );
         $response->assertSuccessful();
         $response->assertJson([
@@ -132,7 +120,8 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => true]
+                ),
+                ['status' => true]
             );
         $response->assertSuccessful();
         $response->assertJson([
@@ -156,7 +145,8 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => true]
+                ),
+                ['status' => true]
             );
         $response->assertSuccessful();
         $response->assertJson([
@@ -179,7 +169,7 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => false]
+                )
             );
         $response->assertSuccessful();
         $response->assertJson([
@@ -203,7 +193,7 @@ class VerifyTest extends TestCase
                 route(
                     'admin.contacts.verify',
                     ['contact' => $contact]
-                ), ['status' => false]
+                )
             );
         $response->assertSuccessful();
         $response->assertJson([

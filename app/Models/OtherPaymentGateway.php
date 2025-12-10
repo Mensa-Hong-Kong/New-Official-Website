@@ -16,6 +16,10 @@ class OtherPaymentGateway extends Model
         'display_order',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function admissionTestOrders()
     {
         return $this->morphMany(AdmissionTestOrder::class, 'gateway');

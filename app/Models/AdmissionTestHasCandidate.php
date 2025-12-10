@@ -17,6 +17,11 @@ class AdmissionTestHasCandidate extends Pivot
         'is_pass',
     ];
 
+    protected $casts = [
+        'is_present' => 'boolean',
+        'is_pass' => 'boolean',
+    ];
+
     public function test()
     {
         return $this->belongsTo(AdmissionTest::class, 'test_id');

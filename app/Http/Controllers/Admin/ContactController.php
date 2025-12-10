@@ -76,7 +76,7 @@ class ContactController extends Controller implements HasMiddleware
     {
         if ($request->status != $contact->is_default) {
             DB::beginTransaction();
-            $contact->update(['is_default' => $request->status]);
+            $contact->update(['is_default' => (bool) $request->status]);
             if ($request->status && ! $contact->isVerified) {
                 $this->verified($contact);
             }

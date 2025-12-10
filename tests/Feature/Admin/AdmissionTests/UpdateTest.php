@@ -28,7 +28,6 @@ class UpdateTest extends TestCase
         'address' => 'abc',
         'location' => 'xyz',
         'maximum_candidates' => 40,
-        'is_public' => true,
     ];
 
     private $test;
@@ -370,20 +369,6 @@ class UpdateTest extends TestCase
             $data
         );
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
-    }
-
-    public function test_missing_is_public()
-    {
-        $data = $this->happyCase;
-        unset($data['is_public']);
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-tests.update',
-                ['admission_test' => $this->test]
-            ),
-            $data
-        );
-        $response->assertInvalid(['is_public' => 'The is public field is required.']);
     }
 
     public function test_is_public_is_not_boolean()
