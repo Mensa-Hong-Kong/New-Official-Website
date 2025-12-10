@@ -48,14 +48,23 @@ php artisan db:seed --class=SuperAdministratorSeeder
 
 #### stage 1 todo
 
+
+- Admission test add is free field
+- Add stripe payment gateway to candidate store when user have no unused quota
 - Add admin refund for admin admission test orders
+- add reschedule charges create product
+- add reschedule charges create product price
+- add reschedule charges
+- Add other costs table and add relation to admission tests
+- Add admin store proctor and candidates function to admin user show
+- Add proctor and candidate admission test list to admin user show
+- Add transportation_cost column to admission_tests_has_proctor table and add claim function to user profile
+- add transportation cost paid button to admin admission test show page
+- add transportation cost received button to user profile
 - Add admin store proctor and candidates to admin user show
 - admin user add admission test orders list and create order button
 - Add assign roles function to admin user show
-- Admin team show add show team members and relation role
-- Admission test add is free field
-- Add stripe payment gateway to candidate store when user have no unused quata 
-- add reschedule charges
+- Admin team show add show team members and relation role 
 - Add third party iq test accept list store
 - Add third party iq test accept list index
 - Add third party iq test accept list update name
@@ -69,8 +78,8 @@ php artisan db:seed --class=SuperAdministratorSeeder
 - Add third party iq test request orders index
 - Add third party iq test request orders show
 - Add third party iq test request orders update payment status
-- Add admin refund for third party iq test request orders
 - Add stripe payment gateway for third party iq test request on user show
+- Add admin refund for third party iq test request orders
 - Add transfer in and out store and show on admin user show
 - Add transfer in request on user show
 - Add membership products create
@@ -82,13 +91,13 @@ php artisan db:seed --class=SuperAdministratorSeeder
 - Add membership orders index
 - Add membership orders show
 - Add membership orders update payment status
-- Add admin refund for membership orders
 - Add stripe payment gateway for inactive member and add show all membership orders on user show
+- Add admin refund for membership orders
 - Add subscription headless web hock
 - add user public option on user show
 - Add member index
 - Add member show
-- edit forwarding email
+- Add edit forwarding email function
 
 #### stage 2 todo
 
