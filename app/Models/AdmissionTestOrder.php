@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -52,5 +53,40 @@ class AdmissionTestOrder extends Model
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'id', 'id', 'test_id')
             ->latest('testing_at');
+    }
+
+    public function changingLogs()
+    {
+        return $this->morphMany(OrderChangingLog::class, 'order');
+    }
+
+    public function countRefundedAmount()
+    {
+        return $this->changingLogs()
+            ->joinRelationship('refund as refund')
+            ->where('type', 'refund')
+            ->sum('refund.amount');
+    }
+
+    public function refundedAmount(): Attribute
+    {
+        $order = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($order) {
+                return $order->countRefundedAmount();
+            }
+        );
+    }
+
+    public function refundableAmount(): Attribute
+    {
+        $order = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($order) {
+                $this->price - $order->refundedAmount;
+            }
+        );
     }
 }

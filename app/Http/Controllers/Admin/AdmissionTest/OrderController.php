@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller as BaseController;
+use App\Http\Requests\Admin\AdmissionTest\Order\RefundRequest;
 use App\Http\Requests\Admin\AdmissionTest\Order\StoreRequest;
+use App\Http\Requests\Admin\AdmissionTest\Order\UpdateRequest;
 use App\Jobs\Orders\AdmissionTestOrderExpiredHandle;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
@@ -206,6 +208,34 @@ class OrderController extends BaseController implements HasMiddleware
             ->with('order', $order);
     }
 
+    public function update(UpdateRequest $request, $order)
+    {
+        $log = $request->order->changingLogs()->create([
+            'type' => $request->type,
+            'description' => $request->description,
+        ]);
+        $request->order->update($request->update);
+        if ($request->type == 'exchange') {
+            $log->fields()->createMany($request->changingFields);
+            $statement = [
+                'administrative_charge' => $request->administrative_charge ?? 0,
+                'amount' => $request->amount,
+                'reference_number' => $request->reference_number,
+            ];
+            if ($request->payment_gateway_id) {
+                $statement['payment_gateway_type'] = OtherPaymentGateway::class;
+                $statement['payment_gateway_id'] = $request->payment_gateway_id;
+            }
+            $log->statement()->create($statement);
+        }
+        DB::commit();
+
+        return redirect()->route(
+            'admin.admission-test.orders.show',
+            ['order' => $request->order]
+        );
+    }
+
     public function updateStatus(Request $request, $order)
     {
         DB::beginTransaction();
@@ -234,6 +264,47 @@ class OrderController extends BaseController implements HasMiddleware
 
         return [
             'success' => "The order status changed to $order->status",
+            'status' => $order->status,
+        ];
+    }
+
+    public function refund(RefundRequest $request, AdmissionTestOrder $order)
+    {
+        DB::beginTransaction();
+        $log = $order->changingLogs()->create([
+            'type' => $request->type,
+            'description' => $request->description,
+        ]);
+        $log->refund()->create(['amount' => $request->refund_amount]);
+        $refundedAmount = $order->countRefundedAmount();
+        if ($refundedAmount < 0) {
+            DB::rollBack();
+            return response([
+                'errors' => ['refund_amount' => '...'],
+            ], 422);
+        }
+        $statement = [
+            'administrative_charge' => $request->administrative_charge ?? 0,
+            'amount' => $request->amount,
+            'reference_number' => $request->reference_number,
+            'payment_gateway_type' => OtherPaymentGateway::class,
+            'payment_gateway_id' => $request->payment_gateway_id,
+        ];
+        $update['status'] = $order->refundedAmount + $request->refund_amount == $order->price ? 'full refunded' : 'partial refunded';
+        if($request->is_return) {
+            $update['is_returned'] = true;
+        }
+        $order->update($update);
+        $log->statement()->create($statement);
+        $log->fields()->create([
+            'key' => 'is_returned',
+            'origin_value' => false,
+            'new_value' => true,
+        ]);
+        DB::commit();
+
+        return [
+            'success' => "The order refund succeeded",
             'status' => $order->status,
         ];
     }
