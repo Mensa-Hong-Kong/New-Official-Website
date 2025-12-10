@@ -15,7 +15,7 @@ class TestRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $return = [
             'type_id' => 'required|integer|exists:'.AdmissionTestType::class.',id',
             'district_id' => 'required|integer|exists:'.District::class.',id',
             'address' => 'required|string|max:255',
@@ -25,6 +25,11 @@ class TestRequest extends FormRequest
             'maximum_candidates' => 'required|integer|min:1',
             'is_public' => 'nullable|boolean',
         ];
+        if ($this->method() == 'POST') {
+            $return['is_free'] = 'nullable|boolean';
+        }
+
+        return $return;
     }
 
     public function messages(): array

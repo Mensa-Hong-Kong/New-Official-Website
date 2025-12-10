@@ -278,6 +278,17 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
     }
 
+    public function test_is_free_is_not_boolean()
+    {
+        $data = $this->happyCase;
+        $data['is_free'] = 'abc';
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-tests.store'),
+            $data
+        );
+        $response->assertInvalid(['is_free' => 'The is free field must be true or false.']);
+    }
+
     public function test_is_public_is_not_boolean()
     {
         $data = $this->happyCase;
