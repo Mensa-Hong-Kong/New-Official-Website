@@ -48,7 +48,6 @@ php artisan db:seed --class=SuperAdministratorSeeder
 
 #### stage 1 todo
 
-- Admission test add is free field
 - Add stripe payment gateway to candidate store when user have no unused quota
 - Add admin refund for admin admission test orders
 - add reschedule charges create product
