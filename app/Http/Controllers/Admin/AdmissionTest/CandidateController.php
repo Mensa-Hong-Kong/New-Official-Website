@@ -155,7 +155,7 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        if ($request->is_free) {
+        if ($admissionTest->is_free || $request->is_free) {
             $admissionTest->candidates()->attach($request->user->id);
         } else {
             $admissionTest->candidates()->attach(

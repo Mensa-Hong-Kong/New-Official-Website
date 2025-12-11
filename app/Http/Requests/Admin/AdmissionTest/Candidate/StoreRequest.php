@@ -52,17 +52,20 @@ class StoreRequest extends FormRequest
                     ) {
                         $fail("The selected user id has admission test record within {$request->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$request->user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (
+                        ! $test->is_free &&
                         ! $request->is_free &&
                         ! $request->user->hasUnusedQuotaAdmissionTestOrder
                     ) {
                         $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
                     } elseif (
+                        ! $test->is_free &&
                         ! $request->is_free &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
                     ) {
                         $fail('The selected user id age less than the last order age limit.');
                     } elseif (
+                        ! $test->is_free &&
                         ! $request->is_free &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
                         $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
