@@ -220,6 +220,7 @@ erDiagram
         bigint location_id FK
         bigint address_id FK
         int maximum_candidates
+        boolean is_free
         boolean is_public
         timestamp created_at
         timestamp updated_at
