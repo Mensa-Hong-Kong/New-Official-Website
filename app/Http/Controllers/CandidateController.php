@@ -146,7 +146,6 @@ class CandidateController extends Controller implements HasMiddleware
             'future_admission_test' => $request->user()->futureAdmissionTest ? [
                 'id' => $request->user()->futureAdmissionTest->id,
             ] : null,
-            'created_stripe_customer' => (bool) $request->user()->stripe,
             'default_email' => $request->user()->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
@@ -159,7 +158,6 @@ class CandidateController extends Controller implements HasMiddleware
         $admissionTest->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
         $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
         $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
-
         return Inertia::render('AdmissionTests/Confirmation')
             ->with('test', $admissionTest)
             ->with('user', $user);

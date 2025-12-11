@@ -1,6 +1,5 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
-    import StripeCustomerAlert from "@/Pages/Components/StripeAlert/Customer.svelte";
     import { formatToDate, formatToTime } from '@/timeZoneDatetime';
     import { Table, Button } from '@sveltestrap/sveltestrap';
 
@@ -13,7 +12,6 @@
 
 <Layout>
     <section class="container">
-        <StripeCustomerAlert customer={user} type="user" />
         <h3 class="mb-2 fw-bold">
             {user.future_admission_test ? 'Reschedule' : 'Schedule'}
             Admission Tests

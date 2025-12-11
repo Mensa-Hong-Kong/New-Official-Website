@@ -55,8 +55,8 @@
                             <td>{test.candidates_count}/{test.maximum_candidates}</td>
                             {#if auth.user && ! user.has_qualification_of_membership}
                                 <td>
-                                    {#if user && user.future_admission_test}
-                                        {#if user && user.future_admission_test.id == test.id}
+                                    {#if user.future_admission_test}
+                                        {#if user.future_admission_test.id == test.id}
                                             <Link class="btn btn-primary" href={
                                                 route(
                                                     'admission-tests.candidates.show',
@@ -66,7 +66,7 @@
                                         {:else}
                                             {#if
                                                 new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
-                                                    ! user || ! user.last_attended_admission_test ||
+                                                    user.last_attended_admission_test ||
                                                     test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
                                                         .addMonths(user.last_attended_admission_test.type.interval_month)
                                                         .endOfDay()
@@ -86,7 +86,7 @@
                                         {#if
                                             user.created_stripe_customer &&
                                             new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
-                                                ! user || ! user.last_attended_admission_test ||
+                                                ! user.last_attended_admission_test ||
                                                 test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
                                                     .addMonths(user.last_attended_admission_test.type.interval_month)
                                                     .endOfDay()
