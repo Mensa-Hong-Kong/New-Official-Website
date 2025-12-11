@@ -45,8 +45,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertUnauthorized();
     }
@@ -62,8 +61,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertForbidden();
     }
@@ -79,8 +77,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertForbidden();
     }
@@ -94,8 +91,7 @@ class PresentTest extends TestCase
                     'admission_test' => 0,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertNotFound();
     }
@@ -110,8 +106,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertNotFound();
     }
@@ -143,8 +138,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertGone();
         $response->assertJson(['message' => 'Could not access after than expect end time 1 hour.']);
@@ -161,8 +155,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertGone();
         $response->assertJson(['message' => 'The candidate age less than test minimum age limit.']);
@@ -179,8 +172,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertGone();
         $response->assertJson(['message' => 'The candidate age greater than test maximum age limit.']);
@@ -258,8 +250,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertConflict();
         $response->assertJson(['message' => 'The candidate has other same passport user account tested.']);
@@ -280,8 +271,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertConflict();
         $response->assertJson(['message' => "The candidate has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
@@ -302,8 +292,7 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertConflict();
         $response->assertJson(['message' => 'The candidate age less than the last order age limit.']);
@@ -321,25 +310,10 @@ class PresentTest extends TestCase
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
                 ]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertConflict();
         $response->assertJson(['message' => 'The candidate age greater than the last order age limit.']);
-    }
-
-    public function test_missing_status()
-    {
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            )
-        );
-        $response->assertInvalid(['status' => 'The status field is required. if you are using our CMS, please contact I.T. officer.']);
     }
 
     public function test_status_is_not_boolean()

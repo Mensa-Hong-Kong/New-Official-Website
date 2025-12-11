@@ -226,7 +226,7 @@
                         user_id: inputs.user.value,
                         function: event.submitter.value,
                     };
-                    if(inputs.isFree.checked) {
+                    if(! test.isFree && inputs.isFree.checked) {
                         data['is_free'] = true;
                     }
                     post(
@@ -259,7 +259,9 @@
                     auth.user.permissions.includes('View:User') ||
                     auth.user.roles.includes('Super Administrator')
                 }
-                    <th>Is Free</th>
+                    {#if ! test.isFree}
+                        <th>Is Free</th>
+                    {/if}
                     <th>Control</th>
                 {:else}
                     <th>Detail</th>
@@ -303,7 +305,9 @@
                         auth.user.permissions.includes('View:User') ||
                         auth.user.roles.includes('Super Administrator')
                     }
-                        <td>{row.isFree ? 'Free' : 'Fee'}</td>
+                        {#if ! test.isFree}
+                            <td>{row.isFree ? 'Free' : 'Fee'}</td>
+                        {/if}
                         <td class="row">
                             <Button color={row.isPresent ? 'success' : 'danger'}
                                 name="status" value={! row.isPresent}
@@ -366,11 +370,13 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                        <input type="checkbox" class="btn-check" name="is_free" id="isFree"
-                            bind:this={inputs.isFree} disabled={creating} form="createCandidateForm" />
-                        <label class="form-control btn btn-outline-success" for='isFree'>Is Free</label>
-                    </td>
+                    {#if ! test.isFree}
+                        <td>
+                            <input type="checkbox" class="btn-check" name="is_free" id="isFree"
+                                bind:this={inputs.isFree} disabled={creating} form="createCandidateForm" />
+                            <label class="form-control btn btn-outline-success" for='isFree'>Is Free</label>
+                        </td>
+                    {/if}
                     <td class="row">
                         <Button color="success" class="col-md-6" disabled={submitting} hidden={creating}
                             name="function" value="schedule" form="createCandidateForm">Schedule</Button>

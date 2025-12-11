@@ -127,6 +127,7 @@
                             district_id: inputs.district.value,
                             address: inputs.address.value,
                             maximum_candidates: inputs.maximumCandidates.value,
+                            is_free: inputs.isFree.checked,
                             is_public: inputs.isPublic.checked,
                         }
                     );
@@ -219,7 +220,11 @@
                 </FormGroup>
             </div>
             <div class="mb-4 form-outline">
-                <Input type="switch" name="is_public" label="Is Public" id="isPublic"
+                <Input type="switch" name="is_free" label="Is Free"
+                    bind:inner={inputs.isFree} disabled={creating} />
+            </div>
+            <div class="mb-4 form-outline">
+                <Input type="switch" name="is_public" label="Is Public"
                     bind:inner={inputs.isPublic} disabled={creating} />
             </div>
             <Button color="success" class="form-control" disabled={submitting}>

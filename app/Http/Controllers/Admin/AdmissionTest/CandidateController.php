@@ -155,7 +155,7 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        if ($request->is_free) {
+        if ($admissionTest->is_free || $request->is_free) {
             $admissionTest->candidates()->attach($request->user->id);
         } else {
             $admissionTest->candidates()->attach(
@@ -296,7 +296,7 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
-        $request->pivot->update(['is_present' => $request->status]);
+        $request->pivot->update(['is_present' => (bool) $request->status]);
 
         return [
             'success' => "The candidate of $candidate->adornedName changed to be ".($request->pivot->is_present ? 'present.' : 'absent.'),
@@ -307,7 +307,7 @@ class CandidateController extends Controller implements HasMiddleware
     public function result(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
         DB::beginTransaction();
-        $request->pivot->update(['is_pass' => $request->status]);
+        $request->pivot->update(['is_pass' => (bool) $request->status]);
         if ($request->pivot->is_pass) {
             $candidate->notify(new PassAdmissionTest($admissionTest));
         } else {

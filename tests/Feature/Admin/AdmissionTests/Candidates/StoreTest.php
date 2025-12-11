@@ -599,6 +599,7 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         $this->test->type->update(['maximum_age' => 9]);
+        $this->test->update(['is_free' => true]);
         $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $user = User::factory()
@@ -614,7 +615,6 @@ class StoreTest extends TestCase
             ),
             [
                 'user_id' => $this->user->id,
-                'is_free' => true,
                 'function' => 'schedule',
             ]
         );
