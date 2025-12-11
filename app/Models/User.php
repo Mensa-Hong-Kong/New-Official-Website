@@ -396,6 +396,12 @@ class User extends Authenticatable
         return $this->hasMany(AdmissionTestOrder::class);
     }
 
+    public function lastAdmissionTestOrder()
+    {
+        return $this->hasOne(AdmissionTestOrder::class)
+            ->latest('id');
+    }
+
     public function hasUnusedQuotaAdmissionTestOrder()
     {
         $orderTable = (new AdmissionTestOrder)->getTable();
