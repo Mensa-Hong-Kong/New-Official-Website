@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class AdmissionTestProduct extends Model
 {
@@ -74,6 +75,23 @@ class AdmissionTestProduct extends Model
             function ($query) use ($date) {
                 $query->whereNull('end_at')
                     ->orWhere('end_at', '>=', $date);
+            }
+        );
+    }
+
+    public function scopeWhereInAgeRange(Builder $query, int|float $age)
+    {
+        $age = floor($age);
+
+        return $query->where(
+            function ($query) use ($age) {
+                $query->whereNull('minimum_age')
+                    ->orWhere('minimum_age', '<=', $age);
+            }
+        )->where(
+            function ($query) use ($age) {
+                $query->whereNull('maximum_age')
+                    ->orWhere('maximum_age', '>=', $age);
             }
         );
     }
