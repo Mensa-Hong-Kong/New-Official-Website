@@ -21,6 +21,7 @@
         districtID: initTest.address.district_id,
         addressID: initTest.address.id,
         maximumCandidates: initTest.maximum_candidates,
+        isFree: initTest.is_free,
         isPublic: initTest.is_public,
     });
     let inputs = $state({});
@@ -315,6 +316,12 @@
                         <tr>
                             <th>Current Candidates</th>
                             <td>{initTest.candidates.length}</td>
+                        </tr>
+                        <tr>
+                            <th>Is Free</th>
+                            <td>
+                                <span>{test.isFree ? 'Free' : 'Fee'}</span>
+                            </td>
                         </tr>
                         <tr>
                             <th>Is Public</th>
