@@ -56,12 +56,12 @@ class PageController extends Controller
             $tests = $tests->where(
                 function ($query) use ($request) {
                     $query->whereNull('minimum_age')
-                        ->orWhere('minimum_age', '<=', DB::raw("TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)"));
+                        ->orWhere('minimum_age', '<=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
                 }
             )->where(
                 function ($query) use ($request) {
                     $query->whereNull('maximum_age')
-                        ->orWhere('maximum_age', '>=', DB::raw("TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)"));
+                        ->orWhere('maximum_age', '>=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
                 }
             );
         } else {
