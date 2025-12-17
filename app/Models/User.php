@@ -49,6 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
         'birthday' => 'date',
+        'synced_to_stripe' => 'boolean',
     ];
 
     /**
