@@ -63,8 +63,8 @@ class AdmissionTestProduct extends Model
                         ->orWhere('start_at', '<=', now());
                 }
             )
-            ->orderBy('start_at')
-            ->orderBy('updated_at');
+            ->latest('start_at')
+            ->latest('updated_at');
     }
 
     public function scopeWhereInDateRange(Builder $query, Carbon $date)
