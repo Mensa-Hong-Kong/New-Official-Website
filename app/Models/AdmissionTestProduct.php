@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class AdmissionTestProduct extends Model
 {
@@ -24,6 +23,10 @@ class AdmissionTestProduct extends Model
         'quota',
         'stripe_id',
         'synced_to_stripe',
+    ];
+
+    protected $casts = [
+        'synced_to_stripe' => 'boolean',
     ];
 
     /**
