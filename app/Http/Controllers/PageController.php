@@ -42,11 +42,13 @@ class PageController extends Controller
             ] : null,
             'future_admission_test' => $request->user()->futureAdmissionTest ?? false ? [
                 'id' => $request->user()->futureAdmissionTest->id,
+                'is_free' => $request->user()->futureAdmissionTest->is_free,
             ] : null,
             'created_stripe_customer' => $request->user()->stripe ?? null,
             'default_email' => $request->user()->defaultEmail ?? false ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
+            'has_unused_quota_admission_test_order' => $request->user()->hasUnusedQuotaAdmissionTestOrder()->exists(),
         ];
         $tests = AdmissionTest::joinRelation('type as type')
             ->withCount('candidates')

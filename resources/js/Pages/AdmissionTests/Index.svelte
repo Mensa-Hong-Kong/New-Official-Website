@@ -55,52 +55,39 @@
                             <td>{test.candidates_count}/{test.maximum_candidates}</td>
                             {#if auth.user && ! user.has_qualification_of_membership}
                                 <td>
-                                    {#if user.future_admission_test}
-                                        {#if user.future_admission_test.id == test.id}
-                                            <Link class="btn btn-primary" href={
-                                                route(
-                                                    'admission-tests.candidates.show',
-                                                    {admission_test: test.id}
-                                                )
-                                            }>Ticket</Link>
-                                        {:else}
-                                            {#if
-                                                new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
-                                                    user.last_attended_admission_test ||
-                                                    test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
-                                                        .addMonths(user.last_attended_admission_test.type.interval_month)
-                                                        .endOfDay()
-                                                )
-                                            }
-                                                <Link class="btn btn-danger" href={
-                                                    route(
-                                                        'admission-tests.candidates.create',
-                                                        {admission_test: test.id}
-                                                    )
-                                                }>Reschedule</Link>
-                                            {:else}
-                                                <Button color="secondary">Reschedule</Button>
-                                            {/if}
-                                        {/if}
-                                    {:else}
-                                        {#if
-                                            user.created_stripe_customer &&
-                                            new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
-                                                ! user.last_attended_admission_test ||
-                                                test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
-                                                    .addMonths(user.last_attended_admission_test.type.interval_month)
-                                                    .endOfDay()
+                                    {#if user.future_admission_test && user.future_admission_test.id == test.id}
+                                        <Link class="btn btn-primary" href={
+                                            route(
+                                                'admission-tests.candidates.show',
+                                                {admission_test: test.id}
                                             )
-                                        }
-                                            <Link class="btn btn-primary" href={
-                                                route(
-                                                    'admission-tests.candidates.create',
-                                                    {admission_test: test.id}
-                                                )
-                                            }>Schedule</Link>
-                                        {:else}
-                                            <Button color="secondary">Schedule</Button>
-                                        {/if}
+                                        }>Ticket</Link>
+                                    {:else if
+                                        (
+                                            test.is_free || user.created_stripe_customer ||
+                                            user.has_unused_quota_admission_test_order
+                                        ) &&
+                                        new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
+                                            ! user.last_attended_admission_test ||
+                                            test.testing_at >= (new Date(user.last_attended_admission_test.testing_at))
+                                                .addMonths(user.last_attended_admission_test.type.interval_month)
+                                                .endOfDay()
+                                        )
+                                    }
+                                        <Link class={[
+                                            'btn',
+                                            {
+                                                'btn-primary': !  user.future_admission_test,
+                                                'btn-danger': user.future_admission_test
+                                            }
+                                        ]} href={
+                                            route(
+                                                'admission-tests.candidates.create',
+                                                {admission_test: test.id}
+                                            )
+                                        }>{user.future_admission_test ? 'Reschedule' : 'Schedule'}</Link>
+                                    {:else}
+                                        <Button color="secondary">{user.future_admission_test ? 'Reschedule' : 'Schedule'}</Button>
                                     {/if}
                                 </td>
                             {:else}
