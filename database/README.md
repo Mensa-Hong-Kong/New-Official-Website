@@ -344,6 +344,15 @@ erDiagram
     permissions {
         bigint id PK
         string name UK
+        string title
+        bigint display_order
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    module_permissions {
+        bigint id PK
+        string name UK
         bigint module_id FK
         bigint permission_id FK
         string guard_name
@@ -353,7 +362,14 @@ erDiagram
 
     roles {
         bigint id PK
-        string name
+        string name UK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    team_roles {
+        bigint id PK
+        string name UK
         bigint team_id FK
         bigint role_id FK
         bigint display_order
@@ -373,7 +389,7 @@ erDiagram
 
     teams {
         bigint id PK
-        string name
+        string name UK
         bigint type_id FK
         bigint display_order
         timestamp created_at
