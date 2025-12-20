@@ -262,7 +262,7 @@ erDiagram
         bigint user_id FK
         string product_name
         string price_name
-        decimal(7,2) price
+        decimal price
         tinyint minimum_age
         tinyint maximum_age
         tinyint quota
@@ -294,7 +294,7 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        decimal(7,2) price
+        decimal price
         datetime start_at
         string stripe_id
         boolean synced_to_stripe
