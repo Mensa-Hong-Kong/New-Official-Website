@@ -117,17 +117,20 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% 權限系統（Spatie）
-    permissions }o--|| modules : belongs_to
-    permissions }o--|| permissions : parent
-    roles }o--o| teams : belongs_to
-    roles }o--o| roles : parent
-
+    permissions ||--o{ module_permissions : has
+    modules ||--o{ module_permissions : has
+    module_permissions }o--|| permissions : belongs_to
+    module_permissions }o--|| modules : belongs_to
+    roles ||--o{ team_roles : has
+    teams ||--o{ team_roles : has
+    team_roles }o--|| roles : belongs_to
+    team_roles }o--|| roles : belongs_to
     teams }o--|| team_types : has_type
 
     %% 權限樞紐表
-    users }o--o{ permissions : model_has_permissions
-    users }o--o{ roles : model_has_roles
-    roles }o--o{ permissions : role_has_permissions
+    users }o--o{ module_permissions : model_has_module_permissions
+    users }o--o{ team_roles : model_has_team_roles
+    roles }o--o{ module_permissions : team_roles_has_permissions
     teams }o--o{ roles : team_roles
     modules }o--o{ permissions : module_permissions
 
