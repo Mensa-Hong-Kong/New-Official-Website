@@ -115,17 +115,20 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% Permission System (Spatie)
-    permissions }o--|| modules : belongs_to
-    permissions }o--|| permissions : parent
-    roles }o--o| teams : belongs_to
-    roles }o--o| roles : parent
-
+    permissions ||--o{ module_permissions : has
+    modules ||--o{ module_permissions : has
+    module_permissions }o--|| permissions : belongs_to
+    module_permissions }o--|| modules : belongs_to
+    roles ||--o{ team_roles : has
+    teams ||--o{ team_roles : has
+    team_roles }o--|| roles : belongs_to
+    team_roles }o--|| roles : belongs_to
     teams }o--|| team_types : has_type
 
     %% Permission Pivot Tables
-    users }o--o{ permissions : model_has_permissions
-    users }o--o{ roles : model_has_roles
-    roles }o--o{ permissions : role_has_permissions
+    users }o--o{ module_permissions : model_has_module_permissions
+    users }o--o{ team_roles : model_has_team_roles
+    roles }o--o{ module_permissions : team_roles_has_permissions
     teams }o--o{ roles : team_roles
     modules }o--o{ permissions : module_permissions
 
@@ -218,6 +221,7 @@ erDiagram
         bigint location_id FK
         bigint address_id FK
         int maximum_candidates
+        boolean is_free
         boolean is_public
         timestamp created_at
         timestamp updated_at
@@ -227,6 +231,8 @@ erDiagram
         bigint id PK
         string name
         tinyint interval_month
+        tinyint minimum_age
+        tinyint maximum_age
         boolean is_active
         boolean display_order
         timestamp created_at
@@ -257,12 +263,14 @@ erDiagram
         bigint user_id FK
         string product_name
         string price_name
-        smallint price
+        decimal price
+        tinyint minimum_age
+        tinyint maximum_age
         tinyint quota
         enum status
         datetime expired_at
-        string gatewayable_type
-        bigint gatewayable_id
+        string gateway_type
+        bigint gateway_id
         string reference_number
         timestamp created_at
         timestamp updated_at
@@ -287,7 +295,7 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        smallint price
+        decimal price
         datetime start_at
         string stripe_id
         boolean synced_to_stripe
@@ -336,6 +344,15 @@ erDiagram
     permissions {
         bigint id PK
         string name UK
+        string title
+        bigint display_order
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    module_permissions {
+        bigint id PK
+        string name UK
         bigint module_id FK
         bigint permission_id FK
         string guard_name
@@ -345,7 +362,14 @@ erDiagram
 
     roles {
         bigint id PK
-        string name
+        string name UK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    team_roles {
+        bigint id PK
+        string name UK
         bigint team_id FK
         bigint role_id FK
         bigint display_order
@@ -365,7 +389,7 @@ erDiagram
 
     teams {
         bigint id PK
-        string name
+        string name UK
         bigint type_id FK
         bigint display_order
         timestamp created_at
@@ -611,10 +635,10 @@ Payment orders for admission tests.
 
 **Columns:**
 
--   `status` - ENUM('pending', 'cancelled', 'failed', 'expired', 'succeeded')
+-   `status` - ENUM('pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded')
 -   `price` - Amount in smallest currency unit
 -   `quota` - Number of test attempts (default: 2)
--   `gatewayable_type`, `gatewayable_id` - Polymorphic relation to payment gateway
+-   `gateway_type`, `gateway_id` - Polymorphic relation to payment gateway
 -   `reference_number` - External transaction reference
 
 **Polymorphic Relationship:** Can relate to `StripeCustomer` or `OtherPaymentGateway`
@@ -985,8 +1009,8 @@ Two polymorphic implementations:
 
 ```php
 // In admission_test_orders:
-'gatewayable_type' => 'App\Models\StripeCustomer'
-'gatewayable_id' => 123
+'gateway_type' => 'App\Models\StripeCustomer'
+'gateway_id' => 123
 
 // In stripe_customers:
 'customerable_type' => 'App\Models\User'
@@ -1006,7 +1030,7 @@ Several tables use ENUM fields. Update carefully:
 
 -   `user_has_contacts.type`: `['email', 'mobile']`
 -   `contact_has_verifications.type`: `['email', 'mobile']`
--   `admission_test_orders.status`: `['pending', 'cancelled', 'failed', 'expired', 'succeeded']`
+-   `admission_test_orders.status`: `['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']`
 -   `reset_password_logs.contact_type`: `['email', 'mobile']`
 
 ### 5. Unique Constraints
@@ -1197,6 +1221,13 @@ The system uses Spatie's permission package. Key points:
     @endcan
     ```
 
+    ```js
+    // in inertia
+    if (auth.user.permissions.includes('edit articles')) {
+        // ...
+    }
+    ```
+
 -   **Team-scoped permissions:** The system implements team-based permissions through custom pivot tables.
 
 ### 16. Common Queries
@@ -1214,7 +1245,7 @@ $tests = AdmissionTest::with(['type', 'location', 'address'])
     ->get();
 
 // Get user's test orders
-$orders = AdmissionTestOrder::with('gatewayable')
+$orders = AdmissionTestOrder::with('gateway')
     ->where('user_id', $userId)
     ->where('status', 'succeeded')
     ->get();
