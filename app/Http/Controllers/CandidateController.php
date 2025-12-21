@@ -38,9 +38,9 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
                         return redirect()->route(
-                                'admission-tests.candidates.show',
-                                ['admission_test' => $admissionTest]
-                            )->withErrors(['message' => 'You has already schedule this admission test.']);
+                            'admission-tests.candidates.show',
+                            ['admission_test' => $admissionTest]
+                        )->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
                     if ($user->isActiveMember) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
