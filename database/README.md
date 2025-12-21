@@ -120,7 +120,7 @@ erDiagram
     %% Permission Pivot Tables
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_permissions
+    roles }o--o{ module_permissions : team_roles_has_module_permissions
 
     %% CMS & Navigation
     site_pages ||--o{ site_contents : has
@@ -710,9 +710,9 @@ Categories of teams.
 
 #### Pivot Tables:
 
--   `model_has_permissions` - Polymorphic: User/Model → Permissions
--   `model_has_roles` - Polymorphic: User/Model → Roles
--   `role_has_permissions` - Role → Permissions
+-   `model_has_module_permissions` - Polymorphic: User/Model → Module Permissions
+-   `model_has_team_roles` - Polymorphic: User/Model → Team Roles
+-   `team_role_has_module_permissions` - Team Role → Module Permissions
 -   `team_roles` - Team → Roles (custom)
 -   `module_permissions` - Module → Permissions (custom)
 
@@ -848,8 +848,8 @@ TeamRole（團隊角色）
       └─ belongsTo: TeamType（團隊類型）
 
 User（用戶）
-  ├─ hasMany: ModulePermission（模封權限）通過 model_has_permissions
-  └─ hasMany: TeamRole（團隊角色）通過 model_has_roles
+  ├─ hasMany: ModulePermission（模封權限）通過 model_has_module_permissions
+  └─ hasMany: TeamRole（團隊角色）通過 model_has_team_roles
 ```
 
 ---

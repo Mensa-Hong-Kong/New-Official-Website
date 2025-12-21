@@ -68,7 +68,7 @@ return [
          * basic default value but you may easily change it to any table you like.
          */
 
-        'role_has_permissions' => 'team_roles_has_permissions',
+        'role_has_permissions' => 'team_roles_has_module_permissions',
     ],
 
     'column_names' => [

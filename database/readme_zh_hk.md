@@ -124,7 +124,7 @@ erDiagram
     %% 權限樞紐表
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_permission0s
+    roles }o--o{ module_permissions : team_roles_has_module_permissions
 
     %% CMS 與導航
     site_pages ||--o{ site_contents : has
@@ -714,9 +714,9 @@ Stripe 客戶映射的多態表。
 
 #### 樞紐表：
 
--   `model_has_permissions` - 多態：用戶/模型 → 權限
--   `model_has_roles` - 多態：用戶/模型 → 角色
--   `role_has_permissions` - 角色 → 權限
+-   `model_has_module_permissions` - 多態：用戶/模型 → 模塊權限
+-   `model_has_team_roles` - 多態：用戶/模型 → 團隊角色
+-   `team_roles_has_module_permissions` - 團隊角色 → 模塊權限
 -   `team_roles` - 團隊 → 角色（自定義）
 -   `module_permissions` - 模塊 → 權限（自定義）
 
@@ -853,8 +853,8 @@ TeamRole（團隊角色）
       └─ belongsTo: TeamType（團隊類型）
 
 User（用戶）
-  ├─ hasMany: ModulePermission（模封權限）通過 model_has_permissions
-  └─ hasMany: TeamRole（團隊角色）通過 model_has_roles
+  ├─ hasMany: ModulePermission（模封權限）通過 model_has_module_permissions
+  └─ hasMany: TeamRole（團隊角色）通過 model_has_team_roles
 ```
 
 ---
