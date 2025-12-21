@@ -26,7 +26,7 @@ class AdmissionTestOrderFactory extends Factory
             'price_name' => fake()->randomElement([true, false]) ? fake()->word() : null,
             'price' => fake()->numberBetween(1, 65535),
             'quota' => fake()->numberBetween(1, 255),
-            'status' => fake()->randomElement(['pending', 'cancelled', 'succeeded']),
+            'status' => fake()->randomElement(['pending', 'canceled', 'succeeded']),
             'expired_at' => $expiredAt,
             'gateway_type' => OtherPaymentGateway::class,
             'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,

@@ -131,7 +131,8 @@ class Controller extends BaseController implements HasMiddleware
             'location_id' => $location->id,
             'address_id' => $address->id,
             'maximum_candidates' => $request->maximum_candidates,
-            'is_public' => $request->is_public,
+            'is_free' => (bool) $request->is_free,
+            'is_public' => (bool) $request->is_public,
         ]);
         DB::commit();
 

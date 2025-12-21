@@ -97,7 +97,11 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
                     $test = $request->route('admission_test');
-                    if (in_array($request->pivot->is_pass, ['0', '1'])) {
+                    if ($test->type->minimum_age && $test->type->minimum_age > floor($user->ageForPsychology)) {
+                        abort(410, 'The candidate age less than test minimum age limit.');
+                    } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($user->ageForPsychology)) {
+                        abort(410, 'The candidate age greater than test maximum age limit.');
+                    } elseif (in_array($request->pivot->is_pass, ['0', '1'])) {
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
@@ -115,6 +119,20 @@ class CandidateController extends Controller implements HasMiddleware
                             )->endOfDay() >= $test->testing_at
                     ) {
                         abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age less than the last order age limit.');
+                    } elseif (
+                        $user->hasUnusedQuotaAdmissionTestOrder &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
+                        $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                    ) {
+                        abort(409, 'The candidate age greater than the last order age limit.');
                     }
 
                     return $next($request);
@@ -137,7 +155,7 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
-        if ($request->is_free) {
+        if ($admissionTest->is_free || $request->is_free) {
             $admissionTest->candidates()->attach($request->user->id);
         } else {
             $admissionTest->candidates()->attach(
@@ -278,7 +296,7 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
-        $request->pivot->update(['is_present' => $request->status]);
+        $request->pivot->update(['is_present' => (bool) $request->status]);
 
         return [
             'success' => "The candidate of $candidate->adornedName changed to be ".($request->pivot->is_present ? 'present.' : 'absent.'),
@@ -289,7 +307,7 @@ class CandidateController extends Controller implements HasMiddleware
     public function result(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
         DB::beginTransaction();
-        $request->pivot->update(['is_pass' => $request->status]);
+        $request->pivot->update(['is_pass' => (bool) $request->status]);
         if ($request->pivot->is_pass) {
             $candidate->notify(new PassAdmissionTest($admissionTest));
         } else {

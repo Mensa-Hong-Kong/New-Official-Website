@@ -27,9 +27,9 @@
                         <label class="form-control btn btn-outline-primary" for='pending'>Pending</label>
                     </Col>
                     <Col md=2>
-                        <input type="checkbox" class="btn-check" name="statuses[]" value="cancelled" id="cancelled"
-                            checked={append.statuses && append.statuses.includes('cancelled')} />
-                        <label class="form-control btn btn-outline-primary" for='cancelled'>Cancelled</label>
+                        <input type="checkbox" class="btn-check" name="statuses[]" value="canceled" id="canceled"
+                            checked={append.statuses && append.statuses.includes('canceled')} />
+                        <label class="form-control btn btn-outline-primary" for='canceled'>Canceled</label>
                     </Col>
                     <Col md=2>
                         <input type="checkbox" class="btn-check" name="statuses[]" value="failed" id="failed"

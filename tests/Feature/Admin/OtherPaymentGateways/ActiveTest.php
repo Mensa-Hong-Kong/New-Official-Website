@@ -27,8 +27,7 @@ class ActiveTest extends TestCase
             route(
                 'admin.other-payment-gateways.active.update',
                 ['other_payment_gateway' => OtherPaymentGateway::inRandomOrder()->first()]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertUnauthorized();
     }
@@ -46,8 +45,7 @@ class ActiveTest extends TestCase
             route(
                 'admin.other-payment-gateways.active.update',
                 ['other_payment_gateway' => OtherPaymentGateway::inRandomOrder()->first()]
-            ),
-            ['status' => 1]
+            )
         );
         $response->assertForbidden();
     }
@@ -58,21 +56,9 @@ class ActiveTest extends TestCase
             route(
                 'admin.other-payment-gateways.active.update',
                 ['other_payment_gateway' => 0]
-            ),
-            ['status' => 1]
-        );
-        $response->assertNotFound();
-    }
-
-    public function test_missing_status()
-    {
-        $response = $this->actingAs($this->user)->putJson(
-            route(
-                'admin.other-payment-gateways.active.update',
-                ['other_payment_gateway' => OtherPaymentGateway::inRandomOrder()->first()]
             )
         );
-        $response->assertInvalid(['status' => 'The status field is required. if you are using our CMS, please contact I.T. officer.']);
+        $response->assertNotFound();
     }
 
     public function test_status_is_not_boolean()
@@ -95,13 +81,12 @@ class ActiveTest extends TestCase
             route(
                 'admin.other-payment-gateways.active.update',
                 ['other_payment_gateway' => $otherPaymentGateway]
-            ),
-            ['status' => true]
+            )
         );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The payment gateway of $otherPaymentGateway->name changed to be active.",
-            'status' => true,
+            'success' => "The payment gateway of $otherPaymentGateway->name changed to be inactive.",
+            'status' => false,
         ]);
     }
 }

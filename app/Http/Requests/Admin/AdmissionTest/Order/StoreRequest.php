@@ -22,14 +22,17 @@ class StoreRequest extends FormRequest
         $request = $this;
         $exists = Rule::exists(OtherPaymentGateway::class, 'id')
             ->where('is_active', true);
-
-        return [
+        $return = [
             'user_id' => [
                 'required', 'integer',
                 function (string $attribute, mixed $value, Closure $fail) use ($request) {
                     $request->merge(['user' => User::find($value)]);
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
+                    } elseif ($request->minimum_age && $request->minimum_age > floor($request->user->age)) {
+                        $fail('The selected user age less than minimum age limit.');
+                    } elseif ($request->maximum_age && $request->maximum_age <= floor($request->user->age)) {
+                        $fail('The selected user age greater than maximum age limit.');
                     } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     } elseif ($request->user->isActiveMember) {
@@ -49,13 +52,15 @@ class StoreRequest extends FormRequest
             ],
             'product_name' => 'nullable|string|max:255',
             'price_name' => 'nullable|string|max:255',
-            'price' => 'required|integer|min:1|max:65535',
+            'price' => ['required', Rule::numeric()->min(0.01)->max(99999.99)->decimal(0, 2)],
+            'minimum_age' => 'nullable|integer|min:1|max:255',
+            'maximum_age' => 'nullable|integer|min:1|max:255',
             'quota' => 'required|integer|min:1|max:255',
             'status' => 'required|string|in:pending,succeeded',
             'expired_at' => [
                 'required_if:status,pending', 'date',
                 'after_or_equal:'.now()->addMinutes(5)->format('Y-m-d H:i'),
-                'before_or_equal:'.now()->addDay()->format('Y-m-d H:i'),
+                'before_or_equal:'.now()->addHours(2)->format('Y-m-d H:i'),
             ],
             'payment_gateway_id' => ['required', 'integer', $exists],
             'reference_number' => 'nullable|string|max:255',
@@ -75,13 +80,21 @@ class StoreRequest extends FormRequest
                 },
             ],
         ];
+        if ($this->minimum_age && $this->maximum_age) {
+            $return['minimum_age'] .= '|lt:maximum_age';
+            $return['maximum_age'] .= '|gt:minimum_age';
+        }
+
+        return $return;
     }
 
     public function messages(): array
     {
         return [
+            'minimum_age.lt' => 'The minimum age field must be less than maximum age field.',
+            'maximum_age.gt' => 'The maximum age field must be greater than minimum age field.',
             'expired_at.after_or_equal' => 'The expired at field must be a date after or equal to 5 minutes.',
-            'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 24 hours.',
+            'expired_at.before_or_equal' => 'The expired at field must be a date before or equal to 2 hours.',
             'payment_gateway_id.required' => 'The payment gateway field is required.',
             'payment_gateway_id.exists' => 'The selected payment gateway is invalid.',
         ];
@@ -91,18 +104,30 @@ class StoreRequest extends FormRequest
     {
         return [
             function (Validator $validator) {
-                if (
-                    $this->test &&
-                    $this->user->lastAttendedAdmissionTest &&
-                    $this->user->lastAttendedAdmissionTest->testing_at
-                        ->addMonths(
-                            $this->user->lastAttendedAdmissionTest->type->interval_month
-                        )->endOfDay() >= $this->test->testing_at
-                ) {
-                    $validator->errors()->add(
-                        'user_id',
-                        "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
-                    );
+                if ($this->test) {
+                    if (
+                        $this->user->lastAttendedAdmissionTest &&
+                        $this->user->lastAttendedAdmissionTest->testing_at
+                            ->addMonths(
+                                $this->user->lastAttendedAdmissionTest->type->interval_month
+                            )->endOfDay() >= $this->test->testing_at
+                    ) {
+                        $validator->errors()->add(
+                            'user_id',
+                            "The selected user id has admission test record within {$this->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$this->user->lastAttendedAdmissionTest->type->interval_month} months to now)."
+                        );
+                    }
+                    if ($this->test->type->minimum_age && $this->test->type->minimum_age > floor($this->user->countAgeForPsychology($this->test->testing_at))) {
+                        $validator->errors()->add(
+                            'test_id',
+                            'The selected user age less than test minimum age limit.'
+                        );
+                    } elseif ($this->test->type->maximum_age && $this->test->type->maximum_age < floor($this->user->countAgeForPsychology($this->test->testing_at))) {
+                        $validator->errors()->add(
+                            'test_id',
+                            'The selected user age greater than test maximum age limit.'
+                        );
+                    }
                 }
             },
         ];

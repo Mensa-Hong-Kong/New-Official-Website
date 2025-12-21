@@ -14,6 +14,8 @@ class AdmissionTestOrder extends Model
         'product_name',
         'price_name',
         'price',
+        'minimum_age',
+        'maximum_age',
         'quota',
         'status',
         'expired_at',
@@ -44,5 +46,11 @@ class AdmissionTestOrder extends Model
     public function attendedTests()
     {
         return $this->tests()->where('is_present', true);
+    }
+
+    public function lastTest()
+    {
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'id', 'id', 'test_id')
+            ->latest('testing_at');
     }
 }

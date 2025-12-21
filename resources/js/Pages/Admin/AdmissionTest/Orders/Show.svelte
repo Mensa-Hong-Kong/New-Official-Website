@@ -1,10 +1,74 @@
 <script>
     import Layout from '@/Pages/Layouts/App.svelte';
-    import { Table } from '@sveltestrap/sveltestrap';
+    import { Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
+    import { post } from "@/submitForm.svelte";
+	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
-    let { auth, order } = $props();
+    let { auth, order: initOrder } = $props();
+    let order = $state(initOrder);
+    let submitting = $state(false);
+
+    if (order.status == 'pending') {
+        let expiredTime = new Date(formatToDatetime(order.expired_at)) - (new Date);
+        if (expiredTime > 0) {
+            setTimeout(
+                () => {
+                    if (
+                        order.status == 'pending' && ! (
+                            typeof submitting == 'string' &&
+                            submitting.startsWith('updateStatus')
+                        )
+                    ) {
+                        order.status = 'expired';
+                    }
+                }, expiredTime
+            );
+        } else {
+            order.status = 'expired';
+        }
+    }
+
+    function updateStatusSuccessCallback(response) {
+        alert(response.data.success);
+        order.status = response.data.status;
+        submitting = false;
+    }
+
+    function updateStatusFailCallback(error) {
+        if (error.status == 422) {
+            alert(error.response.data.errors.status);
+        }
+        if (new Date(formatToDatetime(order.expired_at)) - (new Date) <= 0) {
+            order.status = 'expired';
+        }
+        submitting = false;
+    }
+
+    function confirmedUpdateStatus(status) {
+        if (! submitting) {
+            let submitAt = Date.now();
+            submitting = 'updateStatus'+submitAt;
+            if(submitting == 'updateStatus'+submitAt) {
+                post(
+                    route(
+                        'admin.admission-test.orders.status.update',
+                        {order: order.id}
+                    ),
+                    updateStatusSuccessCallback,
+                    updateStatusFailCallback,
+                    'put', {status: status}
+                );
+            }
+        }
+    }
+
+    function updateStatus(status) {
+        let message = `Are you sure to update order status to ${status}?`;
+        confirm(message, confirmedUpdateStatus, status);
+    }
 </script>
 
 <svelte:head>
@@ -49,6 +113,14 @@
                         <td>{order.price}</td>
                     </tr>
                     <tr>
+                        <th>Minimum Age</th>
+                        <td>{order.minimum_age}</td>
+                    </tr>
+                    <tr>
+                        <th>Maximum Age</th>
+                        <td>{order.maximum_age}</td>
+                    </tr>
+                    <tr>
                         <th>Quota</th>
                         <td>
                             {#if
@@ -63,7 +135,20 @@
                     </tr>
                     <tr>
                         <th>Status</th>
-                        <td>{order.status.ucfirst()}</td>
+                        <td>
+                            {order.status.ucfirst()}
+                            {#if
+                                order.status == 'pending' && (
+                                    auth.user.roles.includes('Super Administrator') ||
+                                    auth.user.permissions.includes('permission:Edit:Admission Test Order') 
+                                )
+                            }
+                                <Button color="success" disabled={submitting}
+                                    onclick={() => updateStatus("succeeded")}>Succeeded</Button>
+                                <Button color="danger" disabled={submitting}
+                                     onclick={() => updateStatus("canceled")}>Canceled</Button>
+                            {/if}
+                        </td>
                     </tr>
                     <tr>
                         <th>Created At</th>

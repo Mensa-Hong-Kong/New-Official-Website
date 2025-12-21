@@ -23,6 +23,10 @@ class UserHasContact extends Model
         'is_default',
     ];
 
+    protected $casts = [
+        'is_default' => 'boolean',
+    ];
+
     /**
      * The "booted" method of the model.
      */

@@ -8,8 +8,9 @@ use App\Jobs\Orders\AdmissionTestOrderExpiredHandle;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
+use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
-use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -39,7 +40,7 @@ class OrderController extends BaseController implements HasMiddleware
         if (is_array($request->statuses)) {
             $statuses = array_intersect(
                 $request->statuses,
-                ['pending', 'cancelled', 'failed', 'expired', 'succeeded']
+                ['pending', 'canceled', 'failed', 'expired', 'succeeded']
             );
             $orders->whereIn('status', $statuses);
             $append['statuses'] = $statuses;
@@ -69,6 +70,20 @@ class OrderController extends BaseController implements HasMiddleware
         return Inertia::render(
             'Admin/AdmissionTest/Orders/Create',
             [
+                'products' => function () {
+                    $products = AdmissionTestProduct::select(['id', 'name', 'minimum_age', 'maximum_age', 'quota'])
+                        ->with([
+                            'price' => function ($query) {
+                                $query->select(['id', 'product_id', 'name', 'price']);
+                            },
+                        ])->whereInDateRange(now())
+                        ->get();
+                    foreach ($products as $product) {
+                        $product->makeHidden(['id', 'product_id']);
+                    }
+
+                    return $products;
+                },
                 'paymentGateways' => function () {
                     return OtherPaymentGateway::where('is_active', true)
                         ->get(['id', 'name'])
@@ -122,6 +137,8 @@ class OrderController extends BaseController implements HasMiddleware
             'product_name' => $request->product_name,
             'price_name' => $request->price_name,
             'price' => $request->price,
+            'minimum_age' => $request->minimum_age,
+            'maximum_age' => $request->maximum_age,
             'quota' => $request->quota,
             'status' => $request->status,
             'expired_at' => $request->status == 'pending' && $request->expired_at ? $request->expired_at : now(),
@@ -134,7 +151,7 @@ class OrderController extends BaseController implements HasMiddleware
                 ->where('user_id', $request->user_id)
                 ->update(['order_id' => $order->id]);
             if ($order->status == 'succeeded') {
-                $request->user->notify(new AssignAdmissionTest($request->test));
+                $request->user->notify(new ScheduleAdmissionTest($request->test));
             }
         }
         if ($order->status != 'succeeded') {
@@ -187,5 +204,37 @@ class OrderController extends BaseController implements HasMiddleware
 
         return Inertia::render('Admin/AdmissionTest/Orders/Show')
             ->with('order', $order);
+    }
+
+    public function updateStatus(Request $request, $order)
+    {
+        DB::beginTransaction();
+        $order = AdmissionTestOrder::lockForUpdate()->withCount('tests')->findOrFail($order);
+        $request->validate(
+            ['status' => 'required|string|in:canceled,succeeded'],
+            ['status.in' => 'The status field does not exist in canceled, succeeded.']
+        );
+        if ($order->expired_at < now()) {
+            DB::rollBack();
+            abort(410, 'The order has been expected.');
+        }
+        if ($order->status != 'pending') {
+            DB::rollBack();
+            abort(410, "The order has been $order->status, cannot change to succeeded.");
+        }
+        $order->update(['status' => $request->status]);
+        if ($order->tests_count && $order->status == 'succeeded') {
+            if (! $order->user->defaultEmail && ! $order->user->defaultMobile) {
+                DB::rollBack();
+                abort(409, 'The selected user must at least has one default contact.');
+            }
+            $order->user->notify(new ScheduleAdmissionTest($request->test));
+        }
+        DB::commit();
+
+        return [
+            'success' => "The order status changed to $order->status",
+            'status' => $order->status,
+        ];
     }
 }

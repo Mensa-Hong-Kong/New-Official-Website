@@ -11,6 +11,8 @@
     let feedbacks = $state({
         name: '',
         intervalMonth: '',
+        minimumAge: '',
+        maximumAge: '',
         displayOrder: '',
     });
     let submitting = $state(false);
@@ -34,6 +36,12 @@
                     case 'interval_month':
                         feedbacks.intervalMonth = value;
                         break;
+                    case 'minimum_age':
+                        feedbacks.minimumAge = value;
+                        break;
+                    case 'maximum_age':
+                        feedbacks.maximumAge = value;
+                        break;
                     case 'display_order':
                         feedbacks.displayOrder = value;
                         break;
@@ -55,6 +63,18 @@
             if(submitting == 'update'+submitAt) {
                 if(form.validation()) {
                     updating = true;
+                    let data = {
+                        name: inputs.name.value,
+                        interval_month: inputs.intervalMonth.value,
+                        is_active: inputs.isActive.checked,
+                        display_order: inputs.displayOrder.value,
+                    }
+                    if(inputs.minimumAge.value) {
+                        data['minimum_age'] = inputs.minimumAge.value;
+                    }
+                    if(inputs.maximumAge.value) {
+                        data['maximum_age'] = inputs.maximumAge.value;
+                    }
                     post(
                         route(
                             'admin.admission-test.types.update',
@@ -62,12 +82,7 @@
                         ),
                         successCallback,
                         failCallback,
-                        'put', {
-                            name: inputs.name.value,
-                            interval_month: inputs.intervalMonth.value,
-                            is_active: inputs.isActive.checked,
-                            display_order: inputs.displayOrder.value,
-                        }
+                        'put', data
                     );
                 } else {
                     submitting = false;
