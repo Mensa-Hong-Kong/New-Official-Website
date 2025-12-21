@@ -113,8 +113,10 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% Permission System (Spatie)
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
+    team_roles }o--|| teams : has
+    team_roles }o--|| roles : has
+    module_permissions }o--|| modules : has
+    module_permissions }o--|| permissions : has
     teams }o--|| team_types : has_type
 
     %% Permission Pivot Tables

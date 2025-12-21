@@ -112,13 +112,13 @@ erDiagram
     admission_test_products ||--o{ admission_test_prices : has
 
     %% Stripe 集成
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% 權限系統（Spatie）
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
+    team_roles }o--|| teams : has
+    team_roles }o--|| roles : has
+    module_permissions }o--|| modules : has
+    module_permissions }o--|| permissions : has
     teams }o--|| team_types : has_type
 
     %% 權限樞紐表
