@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * This seeder populated the tables, namely roles, teams, team_roles, and team_types with predefined data.
- * 
+ *
  * The 'roles' table will contain:
  * | id  | name               | created_at | updated_at |
  * | --- | ------------------ | ---------- | ---------- |
@@ -22,7 +22,7 @@ use Illuminate\Database\Seeder;
  * | 6   | Member             | ...        | ...        |
  * | 7   | Convenor           | ...        | ...        |
  * | 8   | Deputy Convenor    | ...        | ...        |
- * 
+ *
  * The 'teams' table will contain:
  * | id  | name                                                                  | type_id | display_order | created_at | updated_at |
  * | --- | --------------------------------------------------------------------- | ------- | ------------- | ---------- | ---------- |
@@ -43,7 +43,7 @@ use Illuminate\Database\Seeder;
  * | 15  | Poker SIG 啤牌聚會                                                    | 3       | 9             | ...        | ...        |
  * | 16  | Sofiesta 高明薈                                                       | 3       | 10            | ...        | ...        |
  * | 17  | 🍁Wildlife Go! SIG🐾🏔 行山 SIG                                        | 3       | 11            | ...        | ...        |
- * 
+ *
  * The 'team_roles' table will contain:
  * | id  | name                                                                                                         | team_id | role_id | display_order | guard_name | created_at | updated_at |
  * | --- | ------------------------------------------------------------------------------------------------------------ | ------- | ------- | ------------- | ---------- | ---------- | ---------- |
@@ -85,14 +85,14 @@ use Illuminate\Database\Seeder;
  * | 36  | Special Interest Group:Sofiesta 高明薈:Deputy Convenor                                                       | 16      | 8       | 1             | web        | NULL       | NULL       |
  * | 37  | Special Interest Group:🍁Wildlife Go! SIG🐾🏔 行山 SIG:Convenor                                               | 17      | 7       | 0             | web        | NULL       | NULL       |
  * | 38  | Special Interest Group:🍁Wildlife Go! SIG🐾🏔 行山 SIG:Deputy Convenor                                        | 17      | 8       | 1             | web        | NULL       | NULL       |
- * 
- * The 'team_types' table will contain: 
+ *
+ * The 'team_types' table will contain:
  * | id  | name                   | title | display_order | created_at | updated_at |
  * | --- | ---------------------- | ----- | ------------- | ---------- | ---------- |
  * | 1   | Board                  | NULL  | 0             | ...        | ...        |
  * | 2   | Committee              | NULL  | 1             | ...        | ...        |
  * | 3   | Special Interest Group | NULL  | 2             | ...        | ...        |
-*/
+ */
 class TeamRoleSeeder extends Seeder
 {
     public function run(): void

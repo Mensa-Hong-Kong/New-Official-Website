@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * This seeder populates the other_payment_gateways table with predefined data as follows:
- * 
+ *
  * The 'other_payment_gateways' table will contain:
  * | id  | name                  | is_active | display_order | created_at | updated_at |
  * | --- | --------------------- | --------- | ------------- | ---------- | ---------- |

@@ -8,13 +8,13 @@ use Illuminate\Database\Seeder;
 
 /**
  * This seeder populates the modules table with predefined data as follows. The script update the tables (e.g., modules, permissions, module_permission)
- * 
+ *
  * The 'permissions' table will contain:
  * | id  | name | title | display_order | created_at | updated_at |
  * | --- | ---- | ----- | ------------- | ---------- | ---------- |
  * | 1   | View | NULL  | 0             | ...        | ...        |
  * | 2   | Edit | NULL  | 1             | ...        | ...        |
- * 
+ *
  * The 'modules' table will contain:
  * | id  | name                  | title | display_order | created_at | updated_at |
  * | --- | --------------------- | ----- | ------------- | ---------- | ---------- |
