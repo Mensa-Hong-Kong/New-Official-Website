@@ -1277,9 +1277,10 @@ $candidates = AdmissionTest::find($testId)
 
 1. 遵循 Laravel 命名規範：`YYYY_MM_DD_HHMMSS_create_table_name.php`
 2. 包括 `up()` 和 `down()` 方法
-3. 適當地添加外鍵約束
-4. 使用新表文檔更新此 README
-5. 如果需要測試，創建相應的工廠
+3. 強烈建議使用`php artisan make:migration create_{create table name}_table`指令生成遷移檔案
+4. 適當地添加外鍵約束
+5. 使用新表請更新此文檔(中及英版本)
+6. 如果需要測試，創建相應的工廠
 
 ---
 

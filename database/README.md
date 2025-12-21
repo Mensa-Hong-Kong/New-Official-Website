@@ -1273,9 +1273,10 @@ When adding new migrations:
 
 1. Follow Laravel naming conventions: `YYYY_MM_DD_HHMMSS_create_table_name.php`
 2. Include both `up()` and `down()` methods
-3. Add foreign key constraints where appropriate
-4. Update this README with new table documentation
-5. Create corresponding factory if needed for testing
+3. Strongly recommend using command of `php artisan make:migration create_{create table name}_table` to generate the migration file
+4. Add foreign key constraints where appropriate
+5. Update this README with new table documentation
+6. Create corresponding factory if needed for testing
 
 ---
 
