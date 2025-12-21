@@ -509,7 +509,7 @@ erDiagram
 **關係：**
 
 -   `belongsTo`：性別、護照類型
--   `hasMany`：用戶聯繫方式、用戶登錄日誌、資格試訂單
+-   `hasMany`：用戶聯繫方式、用戶登錄日誌、用戶密碼重置紀錄、資格試訂單
 -   `hasOne`：成員
 -   `belongsToMany`：資格試（通過監考員/考生）、權限、角色
 
@@ -807,6 +807,7 @@ Laravel 遷移跟蹤表。
 User（用戶）
   ├─ hasMany: UserHasContact（用戶聯繫方式）
   ├─ hasMany: UserLoginLog（用戶登錄日誌）
+  ├─ hasMany: ResetPasswordLog（用戶登錄日誌）
   ├─ hasMany: AdmissionTestOrder（資格試訂單）
   ├─ hasOne: Member（成員）
   ├─ belongsTo: Gender（性別）
@@ -841,17 +842,19 @@ Area（區域）
 ### 權限系統
 
 ```
-Module（模塊）
-  └─ hasMany: Permission（權限）
-      └─ belongsToMany: Role（角色）
+ModulePermission（模封權限）
+  ├─ belongsTo: Module（模封）
+  ├─ belongsTo: Permission（權限）
+  └─ belongsToMany: TeamRole（團隊角色）
 
-Team（團隊）
-  ├─ belongsTo: TeamType（團隊類型）
-  └─ belongsToMany: Role（角色）
+TeamRole（團隊角色）
+  ├─ belongsTo: Role（角色）
+  └─ belongsTo: Team（團隊）
+      └─ belongsTo: TeamType（團隊類型）
 
 User（用戶）
-  ├─ hasMany: Permission（權限）通過 model_has_permissions
-  └─ hasMany: Role（角色）通過 model_has_roles
+  ├─ hasMany: ModulePermission（模封權限）通過 model_has_permissions
+  └─ hasMany: TeamRole（團隊角色）通過 model_has_roles
 ```
 
 ---
