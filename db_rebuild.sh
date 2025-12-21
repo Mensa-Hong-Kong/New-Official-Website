@@ -2,8 +2,13 @@
 
 SCRIPT_DIR=$(realpath "$(dirname "$0")")
 
+# Stop and remove old container if exists
 docker kill new-official-website-mysql-1 &> /dev/null
+
 docker container rm new-official-website-mysql-1 &> /dev/null
+
+printf "Removed old container and starting a new one...\n"
+
 docker compose up -d
 
 isRunning=""
