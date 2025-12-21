@@ -225,7 +225,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_user_age_less_than_last_order_minimum_age_limit()
+    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free()
     {
         $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
@@ -244,7 +244,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
     }
 
-    public function test_user_age_greater_than_last_order_maximum_age_limit()
+    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free()
     {
         $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
@@ -326,7 +326,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than test minimum age limit.']);
     }
 
-    public function test_user_age_greater_than_test_type_order_maximum_age_limit()
+    public function test_user_age_greater_than_test_type_maximum_age_limit()
     {
         $this->test->type->update(['maximum_age' => 9]);
         $this->user->update(['birthday' => $this->test->testing_at->subYear(10)]);
@@ -336,8 +336,8 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
         $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
     }
 
     public function test_price_id_is_not_integer_when_test_is_not_free_and_user_have_no_unused_quota_order()
