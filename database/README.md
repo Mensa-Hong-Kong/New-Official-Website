@@ -120,7 +120,7 @@ erDiagram
     %% Permission Pivot Tables
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_module_permissions
+    team_roles }o--o{ module_permissions : team_roles_has_module_permissions
 
     %% CMS & Navigation
     site_pages ||--o{ site_contents : has
