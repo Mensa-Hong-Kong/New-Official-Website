@@ -81,7 +81,6 @@ erDiagram
     users }o--|| passport_types : belongs_to
     users ||--o{ user_login_logs : has
     users ||--o{ admission_test_orders : creates
-    users ||--o{ contact_has_verifications : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
 
@@ -107,7 +106,6 @@ erDiagram
 
     %% Payment & Products
     admission_test_orders }o--|| users : ordered_by
-    admission_test_orders }o--|| stripe_customers : "via (polymorphic)"
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
 
@@ -115,22 +113,14 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% Permission System (Spatie)
-    permissions ||--o{ module_permissions : has
-    modules ||--o{ module_permissions : has
-    module_permissions }o--|| permissions : belongs_to
-    module_permissions }o--|| modules : belongs_to
-    roles ||--o{ team_roles : has
-    teams ||--o{ team_roles : has
-    team_roles }o--|| roles : belongs_to
-    team_roles }o--|| roles : belongs_to
+    teams }o--o{ roles : team_roles
+    modules }o--o{ permissions : module_permissions
     teams }o--|| team_types : has_type
 
     %% Permission Pivot Tables
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
     roles }o--o{ module_permissions : team_roles_has_permissions
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
 
     %% CMS & Navigation
     site_pages ||--o{ site_contents : has

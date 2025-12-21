@@ -76,63 +76,55 @@ mysql:
 
 ```mermaid
 erDiagram
-    %% 核心用戶管理
+    %% 用戶個人資料
     users ||--o{ user_has_contacts : has
     users ||--|| members : "can be"
     users }o--|| genders : belongs_to
     users }o--|| passport_types : belongs_to
     users ||--o{ user_login_logs : has
     users ||--o{ admission_test_orders : creates
-    users ||--o{ contact_has_verifications : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
 
     %% 用戶聯繫方式
     user_has_contacts ||--o{ contact_has_verifications : has
 
-    %% 成員與地址
+    %% 會員個人資料補充
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
 
-    %% 資格試
+    %% 入會試
     admission_tests }o--|| admission_test_types : has_type
     admission_tests }o--o| locations : held_at
     admission_tests }o--o| addresses : held_at
     admission_tests ||--o{ admission_test_has_candidate : has
     admission_tests ||--o{ admission_test_has_proctor : has
 
-    %% 資格試關係
+    %% 入會試關係
     admission_test_has_candidate }o--|| users : candidate
     admission_test_has_candidate }o--o| admission_test_orders : paid_via
     admission_test_has_proctor }o--|| users : proctor
 
-    %% 支付與產品
+    %% 入會試支付與產品
     admission_test_orders }o--|| users : ordered_by
-    admission_test_orders }o--|| stripe_customers : "via (polymorphic)"
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
 
     %% Stripe 集成
+    teams }o--o{ roles : team_roles
+    modules }o--o{ permissions : module_permissions
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% 權限系統（Spatie）
-    permissions ||--o{ module_permissions : has
-    modules ||--o{ module_permissions : has
-    module_permissions }o--|| permissions : belongs_to
-    module_permissions }o--|| modules : belongs_to
-    roles ||--o{ team_roles : has
-    teams ||--o{ team_roles : has
-    team_roles }o--|| roles : belongs_to
-    team_roles }o--|| roles : belongs_to
+    teams }o--o{ roles : team_roles
+    modules }o--o{ permissions : module_permissions
     teams }o--|| team_types : has_type
 
     %% 權限樞紐表
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_permissions
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
+    roles }o--o{ module_permissions : team_roles_has_permission0s
 
     %% CMS 與導航
     site_pages ||--o{ site_contents : has
