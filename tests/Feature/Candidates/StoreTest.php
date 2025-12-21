@@ -27,7 +27,10 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->stripe()->create(['id' => 123]);
-        $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
+        $this->test = AdmissionTest::factory()->state([
+            'is_free' => true,
+            'is_public' => true,
+        ])->create();
         $this->test->type->update(['interval_month' => 6]);
     }
 
@@ -83,9 +86,10 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
     }
 
-    public function test_user_not_exist_stripe_customer()
+    public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order()
     {
         $this->user->stripe->delete();
+        $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user->refresh())->post(
             route(
                 'admission-tests.candidates.store',
@@ -235,8 +239,9 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_user_age_less_than_last_order_minimum_age_limit()
+    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free()
     {
+        $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
@@ -252,8 +257,9 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
     }
 
-    public function test_user_age_greater_than_last_order_maximum_age_limit()
+    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free()
     {
+        $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
@@ -312,7 +318,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than test minimum age limit.']);
     }
 
-    public function test_user_age_greater_than_test_type_order_maximum_age_limit()
+    public function test_user_age_greater_than_test_type_maximum_age_limit()
     {
         $this->test->type->update(['maximum_age' => 9]);
         $this->user->update(['birthday' => $this->test->testing_at->subYear(10)]);
@@ -325,7 +331,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_default_contact_when_test_type_and_order_have_no_any_age_limit()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_default_contact_when_test_type_and_order_have_no_any_age_limit_and_test_is_free()
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -340,9 +346,10 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_have_no_default_contact_when_test_type_and_order_only_has_minimum_age_limit()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_have_no_default_contact_when_test_type_and_order_only_has_minimum_age_limit_and_test_is_not_free()
     {
         $this->test->type->update(['minimum_age' => 10]);
+        $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
@@ -368,9 +375,10 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_default_contact_when_test_type_and_order_only_has_maximum_age_limit()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_default_contact_when_test_type_and_order_only_has_maximum_age_limit_and_test_is_not_free()
     {
         $this->test->type->update(['maximum_age' => 9]);
+        $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
@@ -403,12 +411,13 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_have_no_default_contact_when_test_type_and_order_has_minimum_and_maximum_age_limit()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_have_no_default_contact_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_test_is_not_free()
     {
         $this->test->type->update([
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
+        $this->test->update(['is_free' => false]);
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 4,

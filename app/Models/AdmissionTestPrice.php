@@ -21,6 +21,10 @@ class AdmissionTestPrice extends Model
         'synced_to_stripe',
     ];
 
+    protected $casts = [
+        'synced_to_stripe' => 'boolean',
+    ];
+
     /**
      * The "booted" method of the model.
      */

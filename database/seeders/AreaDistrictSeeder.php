@@ -9,14 +9,14 @@ use Illuminate\Database\Seeder;
 /**
  * This seeder populates the areas and their corresponding districts in Hong Kong. The
  * 'areas' and 'districts' tables are filled with predefined data as follows:
- * 
+ *
  * The 'areas' table will contain:
  * | id  | name            | display_order | created_at | updated_at |
  * | --- | --------------- | ------------- | ---------- | ---------- |
  * | 1   | Hong Kong       | 0             | ...        | ...        |
  * | 2   | Kowloon         | 0             | ...        | ...        |
  * | 3   | New Territories | 0             | ...        | ...        |
- * 
+ *
  * The 'districts' table will contain:
  * | id  | area_id | name                | display_order | created_at | updated_at |
  * | --- | ------- | ------------------- | ------------- | ---------- | ---------- |

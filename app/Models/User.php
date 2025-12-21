@@ -49,6 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
         'birthday' => 'date',
+        'synced_to_stripe' => 'boolean',
     ];
 
     /**
@@ -394,6 +395,12 @@ class User extends Authenticatable
     public function admissionTestOrders()
     {
         return $this->hasMany(AdmissionTestOrder::class);
+    }
+
+    public function lastAdmissionTestOrder()
+    {
+        return $this->hasOne(AdmissionTestOrder::class)
+            ->latest('id');
     }
 
     public function hasUnusedQuotaAdmissionTestOrder()

@@ -8,13 +8,13 @@ use Illuminate\Database\Seeder;
 
 /**
  * This seeder populates the site_contents table and site_pages table with predefined data.
- * 
+ *
  * The 'site_contents' table will contain:
  * | id  | page_id | name   | content | created_at | updated_at |
  * | --- | ------- | ------ | ------- | ---------- | ---------- |
  * | 1   | 1       | Info   | ...     | ...        | ...        |
  * | 2   | 1       | Remind | ...     | ...        | ...        |
- * 
+ *
  * The 'site_pages' table will contain:
  * | id  | name            | created_at | updated_at |
  * | --- | --------------- | ---------- | ---------- |

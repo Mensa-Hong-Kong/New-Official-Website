@@ -25,6 +25,10 @@ class AdmissionTestProduct extends Model
         'synced_to_stripe',
     ];
 
+    protected $casts = [
+        'synced_to_stripe' => 'boolean',
+    ];
+
     /**
      * The "booted" method of the model.
      */
@@ -59,8 +63,8 @@ class AdmissionTestProduct extends Model
                         ->orWhere('start_at', '<=', now());
                 }
             )
-            ->orderBy('start_at')
-            ->orderBy('updated_at');
+            ->latest('start_at')
+            ->latest('updated_at');
     }
 
     public function scopeWhereInDateRange(Builder $query, Carbon $date)
@@ -74,6 +78,23 @@ class AdmissionTestProduct extends Model
             function ($query) use ($date) {
                 $query->whereNull('end_at')
                     ->orWhere('end_at', '>=', $date);
+            }
+        );
+    }
+
+    public function scopeWhereInAgeRange(Builder $query, int|float $age)
+    {
+        $age = floor($age);
+
+        return $query->where(
+            function ($query) use ($age) {
+                $query->whereNull('minimum_age')
+                    ->orWhere('minimum_age', '<=', $age);
+            }
+        )->where(
+            function ($query) use ($age) {
+                $query->whereNull('maximum_age')
+                    ->orWhere('maximum_age', '>=', $age);
             }
         );
     }
