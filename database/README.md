@@ -66,6 +66,10 @@ mysql:
         MYSQL_ROOT_PASSWORD: password
 ```
 
+### Docker Setup Image
+
+Please read laravel sail official document
+
 ---
 
 ## Entity Relationship Diagram (ERD)

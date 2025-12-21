@@ -68,6 +68,10 @@ mysql:
         MYSQL_ROOT_PASSWORD: password
 ```
 
+### Docker 映像建立
+
+Please read laravel sail official document
+
 ---
 
 ## 實體關係圖（ERD）
