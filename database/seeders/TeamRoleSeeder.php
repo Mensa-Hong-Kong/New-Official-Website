@@ -141,8 +141,8 @@ class TeamRoleSeeder extends Seeder
                 ]);
             }
             $roles = [
-                Role::create(['name' => 'Chairperson']),
-                Role::create(['name' => 'Member']),
+                Role::firstOrCreate(['name' => 'Chairperson']),
+                Role::firstOrCreate(['name' => 'Member']),
             ];
             $sync = [];
             foreach ($teams as $teamIndex => $team) {
@@ -176,14 +176,14 @@ class TeamRoleSeeder extends Seeder
                 '🍁Wildlife Go! SIG🐾🏔 行山SIG',
             ];
             foreach ($names as $name) {
-                $teams[] = Team::firstOrCreate([
+                $teams[] = Team::create([
                     'name' => $name,
                     'type_id' => $type->id,
                 ]);
             }
             $roles = [
-                Role::create(['name' => 'Convenor']),
-                Role::create(['name' => 'Deputy Convenor']),
+                Role::firstOrCreate(['name' => 'Convenor']),
+                Role::firstOrCreate(['name' => 'Deputy Convenor']),
             ];
             $sync = [];
             foreach ($teams as $teamIndex => $team) {
