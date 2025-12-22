@@ -18,13 +18,13 @@ class PassportTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        $rows = [
-            ['name' => 'China Identity Card'],
-            ['name' => 'Hong Kong Identity Card'],
-            ['name' => 'Macau Identity Card'],
+        $names = [
+            'China Identity Card',
+            'Hong Kong Identity Card',
+            'Macau Identity Card',
         ];
-        foreach ($rows as $row) {
-            PassportType::firstOrCreate($row);
+        foreach ($names as $name) {
+            PassportType::firstOrCreate(['name' => $name]);
         }
     }
 }
