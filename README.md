@@ -169,3 +169,5 @@ Please read database/README.md for database setup and details.
 - Add admin exchange and refund for shop orders
 
 #### stage 7 analytics (coming soon)
+
+#### stage 8 contest (coming soon)

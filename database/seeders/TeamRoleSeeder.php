@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\Team;
-use App\Models\TeamRole;
 use App\Models\TeamType;
 use Illuminate\Database\Seeder;
 
@@ -26,7 +25,7 @@ use Illuminate\Database\Seeder;
  * The 'teams' table will contain:
  * | id  | name                                                                  | type_id | display_order | created_at | updated_at |
  * | --- | --------------------------------------------------------------------- | ------- | ------------- | ---------- | ---------- |
- * | 1   | Board of Directors                                                    | 1       | 0             | ...        | ...        |
+ * | 1   | Board                                                                 | 1       | 0             | ...        | ...        |
  * | 2   | Event Organizing Committee                                            | 2       | 0             | ...        | ...        |
  * | 3   | Branding and Communication Committee                                  | 2       | 1             | ...        | ...        |
  * | 4   | Internal Publications Committee                                       | 2       | 2             | ...        | ...        |
@@ -34,25 +33,25 @@ use Illuminate\Database\Seeder;
  * | 6   | Chess SIG                                                             | 3       | 0             | ...        | ...        |
  * | 7   | Classical Music SIG                                                   | 3       | 1             | ...        | ...        |
  * | 8   | Dream SIG                                                             | 3       | 2             | ...        | ...        |
- * | 9   | Entrepreneur Development Group SIG 企業家發展學會                     | 3       | 3             | ...        | ...        |
- * | 10  | LARP & TRPG SIG 劇本殺 & 桌上角色扮演遊戲                             | 3       | 4             | ...        | ...        |
+ * | 9   | Entrepreneur Development Group SIG 企業家發展學會                       | 3       | 3             | ...        | ...        |
+ * | 10  | LARP & TRPG SIG 劇本殺 & 桌上角色扮演遊戲                                | 3       | 4             | ...        | ...        |
  * | 11  | MBN Business Networking SIG                                           | 3       | 5             | ...        | ...        |
  * | 12  | Mensa Mind Sports Competition and Strategy Study and Discussion Group | 3       | 6             | ...        | ...        |
  * | 13  | Neurohacking SIG                                                      | 3       | 7             | ...        | ...        |
- * | 14  | 神秘學會 SIG (Mystic SIG)                                             | 3       | 8             | ...        | ...        |
- * | 15  | Poker SIG 啤牌聚會                                                    | 3       | 9             | ...        | ...        |
- * | 16  | Sofiesta 高明薈                                                       | 3       | 10            | ...        | ...        |
- * | 17  | 🍁Wildlife Go! SIG🐾🏔 行山 SIG                                        | 3       | 11            | ...        | ...        |
+ * | 14  | 神秘學會 SIG (Mystic SIG)                                              | 3       | 8             | ...        | ...        |
+ * | 15  | Poker SIG 啤牌聚會                                                     | 3       | 9             | ...        | ...        |
+ * | 16  | Sofiesta 高明薈                                                        | 3       | 10            | ...        | ...        |
+ * | 17  | 🍁Wildlife Go! SIG🐾🏔 行山 SIG                                       | 3       | 11            | ...        | ...        |
  *
  * The 'team_roles' table will contain:
  * | id  | name                                                                                                         | team_id | role_id | display_order | guard_name | created_at | updated_at |
  * | --- | ------------------------------------------------------------------------------------------------------------ | ------- | ------- | ------------- | ---------- | ---------- | ---------- |
  * | 1   | Super Administrator                                                                                          | NULL    | NULL    | 0             | web        | ...        | ...        |
- * | 2   | Board:Board of Directors:Chairperson                                                                         | 1       | 1       | 0             | web        | NULL       | NULL       |
- * | 3   | Board:Board of Directors:Vice-chairperson                                                                    | 1       | 2       | 1             | web        | NULL       | NULL       |
- * | 4   | Board:Board of Directors:Honorary Secretary                                                                  | 1       | 3       | 2             | web        | NULL       | NULL       |
- * | 5   | Board:Board of Directors:Honorary Treasurer                                                                  | 1       | 4       | 3             | web        | NULL       | NULL       |
- * | 6   | Board:Board of Directors:Director                                                                            | 1       | 5       | 4             | web        | NULL       | NULL       |
+ * | 2   | Office:Board:Chairperson                                                                                     | 1       | 1       | 0             | web        | NULL       | NULL       |
+ * | 3   | Office:Board:Vice-chairperson                                                                                | 1       | 2       | 1             | web        | NULL       | NULL       |
+ * | 4   | Office:Board:Honorary Secretary                                                                              | 1       | 3       | 2             | web        | NULL       | NULL       |
+ * | 5   | Office:Board:Honorary Treasurer                                                                              | 1       | 4       | 3             | web        | NULL       | NULL       |
+ * | 6   | Office:Board:Director                                                                                        | 1       | 5       | 4             | web        | NULL       | NULL       |
  * | 7   | Committee:Event Organizing Committee:Chairperson                                                             | 2       | 1       | 0             | web        | NULL       | NULL       |
  * | 8   | Committee:Event Organizing Committee:Member                                                                  | 2       | 6       | 1             | web        | NULL       | NULL       |
  * | 9   | Committee:Branding and Communication Committee:Chairperson                                                   | 3       | 1       | 0             | web        | NULL       | NULL       |
@@ -89,7 +88,7 @@ use Illuminate\Database\Seeder;
  * The 'team_types' table will contain:
  * | id  | name                   | title | display_order | created_at | updated_at |
  * | --- | ---------------------- | ----- | ------------- | ---------- | ---------- |
- * | 1   | Board                  | NULL  | 0             | ...        | ...        |
+ * | 1   | Office                 | NULL  | 0             | ...        | ...        |
  * | 2   | Committee              | NULL  | 1             | ...        | ...        |
  * | 3   | Special Interest Group | NULL  | 2             | ...        | ...        |
  */
@@ -97,127 +96,106 @@ class TeamRoleSeeder extends Seeder
 {
     public function run(): void
     {
-        TeamRole::firstOrCreate(['name' => 'Super Administrator']);
-
         // Board
-        $type = TeamType::firstOrCreate(['name' => 'Board']);
-        $team = Team::firstOrCreate([
-            'name' => 'Board of Directors',
-            'type_id' => $type->id,
-        ]);
-        $roles = [];
-        $roles[] = Role::firstOrCreate(['name' => 'Chairperson']);
-        $roles[] = Role::firstOrCreate(['name' => 'Vice-chairperson']);
-        $roles[] = Role::firstOrCreate(['name' => 'Honorary Secretary']);
-        $roles[] = Role::firstOrCreate(['name' => 'Honorary Treasurer']);
-        $roles[] = Role::firstOrCreate(['name' => 'Director']);
-        $sync = [];
-        foreach ($roles as $index => $role) {
-            $sync[$role->id] = [
-                'name' => "{$type->name}:{$team->name}:{$role->name}",
-                'display_order' => $index,
+        $type = TeamType::firstOrCreate(['name' => 'Office']);
+        if ($type->wasRecentlyCreated) {
+            $team = Team::create([
+                'name' => 'Board',
+                'type_id' => $type->id,
+            ]);
+            $names = [
+                'Chairperson',
+                'Vice-chairperson',
+                'Honorary Secretary',
+                'Honorary Treasurer',
+                'Director',
             ];
+            $roles = [];
+            foreach ($names as $name) {
+                $roles[] = Role::create(['name' => $name]);
+            }
+            $sync = [];
+            foreach ($roles as $index => $role) {
+                $sync[$role->id] = [
+                    'name' => "{$type->name}:{$team->name}:{$role->name}",
+                    'display_order' => $index,
+                ];
+            }
+            $team->roles()->sync($sync);
         }
-        $team->roles()->sync($sync);
 
         // Committees
         $type = TeamType::firstOrCreate(['name' => 'Committee']);
-        $teams = [];
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Event Organizing Committee',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Branding and Communication Committee',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Internal Publications Committee',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Information Technology Committee',
-            'type_id' => $type->id,
-        ]);
-        $roles = [];
-        $roles[] = Role::firstOrCreate(['name' => 'Chairperson']);
-        $roles[] = Role::firstOrCreate(['name' => 'Member']);
-        $sync = [];
-        foreach ($teams as $teamIndex => $team) {
-            $team->update(['display_order' => $teamIndex]);
-            foreach ($roles as $roleIndex => $role) {
-                $sync[$role->id] = [
-                    'name' => "{$type->name}:{$team->name}:{$role->name}",
-                    'display_order' => $roleIndex,
-                ];
+        if ($type->wasRecentlyCreated) {
+            $names = [
+                'Event Organizing Committee',
+                'Branding and Communication Committee',
+                'Internal Publications Committee',
+                'Information Technology Committee',
+            ];
+            $teams = [];
+            foreach ($names as $name) {
+                $teams[] = Team::create([
+                    'name' => $name,
+                    'type_id' => $type->id,
+                ]);
             }
-            $team->roles()->sync($sync);
+            $roles = [
+                Role::firstOrCreate(['name' => 'Chairperson']),
+                Role::firstOrCreate(['name' => 'Member']),
+            ];
+            $sync = [];
+            foreach ($teams as $teamIndex => $team) {
+                $team->update(['display_order' => $teamIndex]);
+                foreach ($roles as $roleIndex => $role) {
+                    $sync[$role->id] = [
+                        'name' => "{$type->name}:{$team->name}:{$role->name}",
+                        'display_order' => $roleIndex,
+                    ];
+                }
+                $team->roles()->sync($sync);
+            }
         }
 
         // Special Interest Groups
-        $teams = [];
         $type = TeamType::firstOrCreate(['name' => 'Special Interest Group']);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Chess SIG',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Classical Music SIG',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Dream SIG',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Entrepreneur Development Group SIG 企業家發展學會',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'LARP & TRPG SIG 劇本殺 & 桌上角色扮演遊戲',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'MBN Business Networking SIG',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Mensa Mind Sports Competition and Strategy Study and Discussion Group',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Neurohacking SIG',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => '神秘學會 SIG (Mystic SIG)',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Poker SIG 啤牌聚會',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => 'Sofiesta 高明薈',
-            'type_id' => $type->id,
-        ]);
-        $teams[] = Team::firstOrCreate([
-            'name' => '🍁Wildlife Go! SIG🐾🏔 行山SIG',
-            'type_id' => $type->id,
-        ]);
-        $roles = [];
-        $roles[] = Role::firstOrCreate(['name' => 'Convenor']);
-        $roles[] = Role::firstOrCreate(['name' => 'Deputy Convenor']);
-        $sync = [];
-        foreach ($teams as $teamIndex => $team) {
-            $team->update(['display_order' => $teamIndex]);
-            foreach ($roles as $roleIndex => $role) {
-                $sync[$role->id] = [
-                    'name' => "{$type->name}:{$team->name}:{$role->name}",
-                    'display_order' => $roleIndex,
-                ];
+        if ($type->wasRecentlyCreated) {
+            $teams = [];
+            $names = [
+                'Chess SIG',
+                'Classical Music SIG',
+                'Dream SIG',
+                'Entrepreneur Development Group SIG 企業家發展學會',
+                'LARP & TRPG SIG 劇本殺 & 桌上角色扮演遊戲',
+                'MBN Business Networking SIG',
+                'Mensa Mind Sports Competition and Strategy Study and Discussion Group',
+                'Neurohacking SIG',
+                '神秘學會 SIG (Mystic SIG)',
+                'Poker SIG 啤牌聚會',
+                'Sofiesta 高明薈',
+                '🍁Wildlife Go! SIG🐾🏔 行山SIG',
+            ];
+            foreach ($names as $name) {
+                $teams[] = Team::create([
+                    'name' => $name,
+                    'type_id' => $type->id,
+                ]);
             }
-            $team->roles()->sync($sync);
+            $roles = [
+                Role::firstOrCreate(['name' => 'Convenor']),
+                Role::firstOrCreate(['name' => 'Deputy Convenor']),
+            ];
+            $sync = [];
+            foreach ($teams as $teamIndex => $team) {
+                $team->update(['display_order' => $teamIndex]);
+                foreach ($roles as $roleIndex => $role) {
+                    $sync[$role->id] = [
+                        'name' => "{$type->name}:{$team->name}:{$role->name}",
+                        'display_order' => $roleIndex,
+                    ];
+                }
+                $team->roles()->sync($sync);
+            }
         }
     }
 }

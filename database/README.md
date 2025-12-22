@@ -66,6 +66,10 @@ mysql:
         MYSQL_ROOT_PASSWORD: password
 ```
 
+### Docker Setup Image
+
+Please read laravel sail official document
+
 ---
 
 ## Entity Relationship Diagram (ERD)
@@ -81,7 +85,6 @@ erDiagram
     users }o--|| passport_types : belongs_to
     users ||--o{ user_login_logs : has
     users ||--o{ admission_test_orders : creates
-    users ||--o{ contact_has_verifications : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
 
@@ -107,7 +110,6 @@ erDiagram
 
     %% Payment & Products
     admission_test_orders }o--|| users : ordered_by
-    admission_test_orders }o--|| stripe_customers : "via (polymorphic)"
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
 
@@ -115,22 +117,16 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% Permission System (Spatie)
-    permissions ||--o{ module_permissions : has
-    modules ||--o{ module_permissions : has
-    module_permissions }o--|| permissions : belongs_to
-    module_permissions }o--|| modules : belongs_to
-    roles ||--o{ team_roles : has
-    teams ||--o{ team_roles : has
-    team_roles }o--|| roles : belongs_to
-    team_roles }o--|| roles : belongs_to
+    team_roles }o--|| teams : has
+    team_roles }o--|| roles : has
+    module_permissions }o--|| modules : has
+    module_permissions }o--|| permissions : has
     teams }o--|| team_types : has_type
 
     %% Permission Pivot Tables
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_permissions
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
+    team_roles }o--o{ module_permissions : team_roles_has_module_permissions
 
     %% CMS & Navigation
     site_pages ||--o{ site_contents : has
@@ -505,7 +501,7 @@ Primary user table storing user account information.
 -   `id` - Primary key
 -   `username` - Unique username (max 320 chars)
 -   `password` - Hashed password
--   `family_name`, `middle_name`, `given_name` - User's full name
+-   `family_name`, `middle_name`, `given_name` - User's adorned name
 -   `gender_id` - Foreign key to `genders` table
 -   `passport_type_id` - Foreign key to `passport_types` table
 -   `passport_number` - User's identification number
@@ -515,9 +511,9 @@ Primary user table storing user account information.
 **Relationships:**
 
 -   `belongsTo`: Gender, PassportType
--   `hasMany`: UserHasContact, UserLoginLog, AdmissionTestOrder
+-   `hasMany`: UserLoginLog, UserHasContact, ResetPasswordLog, AdmissionTestOrder
 -   `hasOne`: Member
--   `belongsToMany`: AdmissionTest (via proctors/candidates), Permissions, Roles
+-   `belongsToMany`: AdmissionTest (via proctors/candidates), ModulePermission, TeamRole
 
 #### `members`
 
@@ -720,9 +716,9 @@ Categories of teams.
 
 #### Pivot Tables:
 
--   `model_has_permissions` - Polymorphic: User/Model → Permissions
--   `model_has_roles` - Polymorphic: User/Model → Roles
--   `role_has_permissions` - Role → Permissions
+-   `model_has_module_permissions` - Polymorphic: User/Model → Module Permissions
+-   `model_has_team_roles` - Polymorphic: User/Model → Team Roles
+-   `team_role_has_module_permissions` - Team Role → Module Permissions
 -   `team_roles` - Team → Roles (custom)
 -   `module_permissions` - Module → Permissions (custom)
 
@@ -847,17 +843,19 @@ Area
 ### Permission System
 
 ```
-Module
-  └─ hasMany: Permission
-      └─ belongsToMany: Role
+ModulePermission（模封權限）
+  ├─ belongsTo: Module（模封）
+  ├─ belongsTo: Permission（權限）
+  └─ belongsToMany: TeamRole（團隊角色）
 
-Team
-  ├─ belongsTo: TeamType
-  └─ belongsToMany: Role
+TeamRole（團隊角色）
+  ├─ belongsTo: Role（角色）
+  └─ belongsTo: Team（團隊）
+      └─ belongsTo: TeamType（團隊類型）
 
-User
-  ├─ hasMany: Permission (via model_has_permissions)
-  └─ hasMany: Role (via model_has_roles)
+User（用戶）
+  ├─ hasMany: ModulePermission（模封權限）通過 model_has_module_permissions
+  └─ hasMany: TeamRole（團隊角色）通過 model_has_team_roles
 ```
 
 ---
@@ -1283,9 +1281,10 @@ When adding new migrations:
 
 1. Follow Laravel naming conventions: `YYYY_MM_DD_HHMMSS_create_table_name.php`
 2. Include both `up()` and `down()` methods
-3. Add foreign key constraints where appropriate
-4. Update this README with new table documentation
-5. Create corresponding factory if needed for testing
+3. Strongly recommend using command of `php artisan make:migration create_{create table name}_table` to generate the migration file
+4. Add foreign key constraints where appropriate
+5. Update this README with new table documentation
+6. Create corresponding factory if needed for testing
 
 ---
 

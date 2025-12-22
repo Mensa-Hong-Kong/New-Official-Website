@@ -68,6 +68,10 @@ mysql:
         MYSQL_ROOT_PASSWORD: password
 ```
 
+### Docker 映像建立
+
+Please read laravel sail official document
+
 ---
 
 ## 實體關係圖（ERD）
@@ -76,40 +80,38 @@ mysql:
 
 ```mermaid
 erDiagram
-    %% 核心用戶管理
+    %% 用戶個人資料
     users ||--o{ user_has_contacts : has
     users ||--|| members : "can be"
     users }o--|| genders : belongs_to
     users }o--|| passport_types : belongs_to
     users ||--o{ user_login_logs : has
     users ||--o{ admission_test_orders : creates
-    users ||--o{ contact_has_verifications : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
 
     %% 用戶聯繫方式
     user_has_contacts ||--o{ contact_has_verifications : has
 
-    %% 成員與地址
+    %% 會員個人資料補充
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
 
-    %% 資格試
+    %% 入會試
     admission_tests }o--|| admission_test_types : has_type
     admission_tests }o--o| locations : held_at
     admission_tests }o--o| addresses : held_at
     admission_tests ||--o{ admission_test_has_candidate : has
     admission_tests ||--o{ admission_test_has_proctor : has
 
-    %% 資格試關係
+    %% 入會試關係
     admission_test_has_candidate }o--|| users : candidate
     admission_test_has_candidate }o--o| admission_test_orders : paid_via
     admission_test_has_proctor }o--|| users : proctor
 
-    %% 支付與產品
+    %% 入會試支付與產品
     admission_test_orders }o--|| users : ordered_by
-    admission_test_orders }o--|| stripe_customers : "via (polymorphic)"
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
 
@@ -117,22 +119,16 @@ erDiagram
     stripe_customers }o--|| users : "for (polymorphic)"
 
     %% 權限系統（Spatie）
-    permissions ||--o{ module_permissions : has
-    modules ||--o{ module_permissions : has
-    module_permissions }o--|| permissions : belongs_to
-    module_permissions }o--|| modules : belongs_to
-    roles ||--o{ team_roles : has
-    teams ||--o{ team_roles : has
-    team_roles }o--|| roles : belongs_to
-    team_roles }o--|| roles : belongs_to
+    team_roles }o--|| teams : has
+    team_roles }o--|| roles : has
+    module_permissions }o--|| modules : has
+    module_permissions }o--|| permissions : has
     teams }o--|| team_types : has_type
 
     %% 權限樞紐表
     users }o--o{ module_permissions : model_has_module_permissions
     users }o--o{ team_roles : model_has_team_roles
-    roles }o--o{ module_permissions : team_roles_has_permissions
-    teams }o--o{ roles : team_roles
-    modules }o--o{ permissions : module_permissions
+    team_roles }o--o{ module_permissions : team_roles_has_module_permissions
 
     %% CMS 與導航
     site_pages ||--o{ site_contents : has
@@ -517,7 +513,7 @@ erDiagram
 **關係：**
 
 -   `belongsTo`：性別、護照類型
--   `hasMany`：用戶聯繫方式、用戶登錄日誌、資格試訂單
+-   `hasMany`：用戶聯繫方式、用戶登錄日誌、用戶密碼重置紀錄、資格試訂單
 -   `hasOne`：成員
 -   `belongsToMany`：資格試（通過監考員/考生）、權限、角色
 
@@ -722,9 +718,9 @@ Stripe 客戶映射的多態表。
 
 #### 樞紐表：
 
--   `model_has_permissions` - 多態：用戶/模型 → 權限
--   `model_has_roles` - 多態：用戶/模型 → 角色
--   `role_has_permissions` - 角色 → 權限
+-   `model_has_module_permissions` - 多態：用戶/模型 → 模塊權限
+-   `model_has_team_roles` - 多態：用戶/模型 → 團隊角色
+-   `team_roles_has_module_permissions` - 團隊角色 → 模塊權限
 -   `team_roles` - 團隊 → 角色（自定義）
 -   `module_permissions` - 模塊 → 權限（自定義）
 
@@ -815,6 +811,7 @@ Laravel 遷移跟蹤表。
 User（用戶）
   ├─ hasMany: UserHasContact（用戶聯繫方式）
   ├─ hasMany: UserLoginLog（用戶登錄日誌）
+  ├─ hasMany: ResetPasswordLog（用戶登錄日誌）
   ├─ hasMany: AdmissionTestOrder（資格試訂單）
   ├─ hasOne: Member（成員）
   ├─ belongsTo: Gender（性別）
@@ -849,17 +846,19 @@ Area（區域）
 ### 權限系統
 
 ```
-Module（模塊）
-  └─ hasMany: Permission（權限）
-      └─ belongsToMany: Role（角色）
+ModulePermission（模封權限）
+  ├─ belongsTo: Module（模封）
+  ├─ belongsTo: Permission（權限）
+  └─ belongsToMany: TeamRole（團隊角色）
 
-Team（團隊）
-  ├─ belongsTo: TeamType（團隊類型）
-  └─ belongsToMany: Role（角色）
+TeamRole（團隊角色）
+  ├─ belongsTo: Role（角色）
+  └─ belongsTo: Team（團隊）
+      └─ belongsTo: TeamType（團隊類型）
 
 User（用戶）
-  ├─ hasMany: Permission（權限）通過 model_has_permissions
-  └─ hasMany: Role（角色）通過 model_has_roles
+  ├─ hasMany: ModulePermission（模封權限）通過 model_has_module_permissions
+  └─ hasMany: TeamRole（團隊角色）通過 model_has_team_roles
 ```
 
 ---
@@ -1285,9 +1284,10 @@ $candidates = AdmissionTest::find($testId)
 
 1. 遵循 Laravel 命名規範：`YYYY_MM_DD_HHMMSS_create_table_name.php`
 2. 包括 `up()` 和 `down()` 方法
-3. 適當地添加外鍵約束
-4. 使用新表文檔更新此 README
-5. 如果需要測試，創建相應的工廠
+3. 強烈建議使用`php artisan make:migration create_{create table name}_table`指令生成遷移檔案
+4. 適當地添加外鍵約束
+5. 使用新表請更新此文檔(中及英版本)
+6. 如果需要測試，創建相應的工廠
 
 ---
 
