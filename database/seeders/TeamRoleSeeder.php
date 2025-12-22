@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\Team;
-use App\Models\TeamRole;
 use App\Models\TeamType;
 use Illuminate\Database\Seeder;
 
@@ -112,7 +111,7 @@ class TeamRoleSeeder extends Seeder
                 'Director',
             ];
             $roles = [];
-            foreach($names as $name) {
+            foreach ($names as $name) {
                 $roles[] = Role::create(['name' => $name]);
             }
             $sync = [];
