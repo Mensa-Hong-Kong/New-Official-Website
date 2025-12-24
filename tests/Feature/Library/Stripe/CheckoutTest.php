@@ -117,7 +117,7 @@ class CheckoutTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/checkouts/sessions';
             }
         );
@@ -135,7 +135,7 @@ class CheckoutTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
             }
         );
@@ -303,7 +303,7 @@ class CheckoutTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
             }
         );
@@ -390,7 +390,7 @@ class CheckoutTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u/expire';
             }
         );
