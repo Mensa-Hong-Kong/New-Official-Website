@@ -15,7 +15,7 @@ class Base
     public function __construct()
     {
         $this->http = Http::baseUrl('https://api.stripe.com/v1')
-            ->withToken(config('service.stripe.keys.secret'))
+            ->withToken(config('stripe.keys.secret'))
             ->withHeader('Stripe-Version', static::STRIPE_VERSION.'.basil');
     }
 

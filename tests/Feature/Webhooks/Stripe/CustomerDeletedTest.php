@@ -17,7 +17,7 @@ class CustomerDeletedTest extends TestCase
         return hash_hmac(
             'sha256',
             "$timestamp.$payload",
-            config('services.stripe.keys.webhook')
+            config('stripe.keys.webhook')
         );
     }
 
