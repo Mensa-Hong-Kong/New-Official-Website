@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Webhocks\Stripe;
+namespace App\Library\Stripe\Http\Middleware\Webhocks;
 
 use Closure;
 use Illuminate\Http\Request;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Webhooks\Stripe;
+namespace Tests\Feature\Library\Stripe\Webhooks;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

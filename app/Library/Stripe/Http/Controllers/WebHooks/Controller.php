@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\WebHooks;
+namespace App\Library\Stripe\Http\Controllers\WebHooks;
 
-use App\Http\Controllers\Controller;
-use App\Http\Middleware\Webhocks\Stripe\VerifySignature;
+use App\Library\Stripe\Http\Middleware\Webhocks\VerifySignature;
 use App\Library\Stripe\Models\StripeCustomer;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\DB;
 
-class StripeController extends Controller implements HasMiddleware
+class Controller implements HasMiddleware
 {
     public static function middleware(): array
     {

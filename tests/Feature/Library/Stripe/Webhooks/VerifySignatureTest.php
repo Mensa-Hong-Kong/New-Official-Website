@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Webhooks\Stripe;
+namespace Tests\Feature\Library\Stripe\Webhooks;
 
-use App\Http\Middleware\Webhocks\Stripe\VerifySignature;
+use App\Library\Stripe\Http\Middleware\Webhocks\VerifySignature;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
