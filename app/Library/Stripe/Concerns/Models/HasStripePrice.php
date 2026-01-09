@@ -51,7 +51,7 @@ trait HasStripePrice
             $this->stripe = Client::prices()->create([
                 'product' => $this->product->stripe_id,
                 'nickname' => $this->name,
-                'currency' => 'HKD',
+                'currency' => config('stripe.currency', 'hkd'),
                 'unit_amount' => $this->price,
                 'metadata' => [
                     'type' => __CLASS__,
