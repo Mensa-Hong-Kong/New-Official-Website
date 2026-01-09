@@ -1,5 +1,6 @@
 <?php
 
+use App\Library\Stripe\Amount;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,11 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admission_test_prices', function (Blueprint $table) {
+        $priceDigits = Amount::getMaximumDigits();
+        $priceDecimal = Amount::getActualDecimal();
+        Schema::create('admission_test_prices', function (Blueprint $table) use ($priceDigits, $priceDecimal) {
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->string('name')->nullable();
-            $table->decimal('price', 7, 2)->unsigned();
+            $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
             $table->dateTime('start_at')->nullable();
             $table->string('stripe_id')->nullable();
             $table->boolean('synced_to_stripe')->default(false);
