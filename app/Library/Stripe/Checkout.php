@@ -4,7 +4,7 @@ namespace App\Library\Stripe;
 
 class Checkout extends Base
 {
-    protected $prefix = 'checkouts/sessions';
+    protected $prefix = 'checkout/sessions';
 
     public function expire(string $id)
     {
