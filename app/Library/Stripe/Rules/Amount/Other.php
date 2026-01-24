@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace App\Library\Stripe\Rules\Amount;
 
 use App\Library\Stripe\Amount;

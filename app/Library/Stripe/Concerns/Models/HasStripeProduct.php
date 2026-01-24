@@ -66,8 +66,7 @@ trait HasStripeProduct
             $this->stripe_id,
             ['name' => $this->name]
         );
-        var_dump($this->stripe);
-        $this->update(['synced_to_stripe' => ($this->name == $this->stripeData['name'])]);
+        $this->update(['synced_to_stripe' => $this->name == $this->stripeData['name']]);
 
         return $this->stripeData;
     }

@@ -76,7 +76,7 @@ trait HasStripePrice
             $this->stripe_id,
             ['nickname' => $this->name],
         );
-        $this->update(['synced_to_stripe' => ($this->name == $this->stripeData['nickname'])]);
+        $this->update(['synced_to_stripe' => $this->name == $this->stripeData['nickname']]);
 
         return $this->stripeData;
     }

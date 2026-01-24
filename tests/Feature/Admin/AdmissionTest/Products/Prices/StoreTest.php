@@ -143,7 +143,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $minimum = config('stripe.minimum_amount', 4);
-        $data['price'] = $minimum - 1 * 10**(-Amount::getActualDecimal());
+        $data['price'] = $minimum - 1 * 10 ** (-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-test.products.prices.store',
@@ -158,7 +158,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $maximum = Amount::getMaximumValidation();
-        $data['price'] = $maximum + 1 * 10**(-Amount::getActualDecimal());
+        $data['price'] = $maximum + 1 * 10 ** (-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-test.products.prices.store',

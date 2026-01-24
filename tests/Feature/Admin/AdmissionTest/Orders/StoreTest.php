@@ -36,7 +36,7 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test Order']);
         $this->happyCase['user_id'] = $this->user->id;
-        $this->happyCase['price'] = 1 * 10**(-Amount::getValidationDecimal());
+        $this->happyCase['price'] = 1 * 10 ** (-Amount::getValidationDecimal());
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -368,7 +368,7 @@ class StoreTest extends TestCase
     public function test_price_less_that_minimum_limit()
     {
         $data = $this->happyCase;
-        $minimum = 1 * 10**(-Amount::getValidationDecimal());
+        $minimum = 1 * 10 ** (-Amount::getValidationDecimal());
         $data['price'] = 0;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -381,7 +381,7 @@ class StoreTest extends TestCase
     {
         $data = $this->happyCase;
         $maximum = Amount::getMaximumValidation();
-        $data['price'] = $maximum + 1 * 10**(-Amount::getActualDecimal());
+        $data['price'] = $maximum + 1 * 10 ** (-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data

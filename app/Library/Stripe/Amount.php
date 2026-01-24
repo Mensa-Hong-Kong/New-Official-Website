@@ -66,7 +66,7 @@ class Amount
     private static function getCurrency()
     {
         $currency = strtoupper(config('stripe.currency', 'hkd'));
-        if(in_array($currency, self::$eurSubCurrencies)) {
+        if (in_array($currency, self::$eurSubCurrencies)) {
             $currency = 'EUR';
         }
 
@@ -115,7 +115,7 @@ class Amount
         $digits -= self::getActualDecimal();
         $decimal = self::getValidationDecimal();
         if ($decimal > 0) {
-            return (float) (str_repeat('9', $digits) . '.' . str_repeat('9', $decimal));
+            return (float) (str_repeat('9', $digits).'.'.str_repeat('9', $decimal));
         } else {
             return (int) str_repeat('9', $digits);
         }
