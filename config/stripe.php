@@ -11,5 +11,10 @@ return [
         'webhook' => env('STRIPE_WEBHOOK_LIFETIME', 300),
     ],
     'currency' => 'hkd',
-    'minimum_amount' => 4, // 4 is hkd minimum amount because Stripe's not support all currency settlement yet
+    /*
+     * 4 is hkd minimum amount
+     * because Stripe's not support all currency settlement yet,
+     * so, need to define minimum amount here.
+     */
+    'minimum_amount' => 4,
 ];

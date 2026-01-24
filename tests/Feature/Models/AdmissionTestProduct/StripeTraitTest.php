@@ -42,7 +42,7 @@ class StripeTraitTest extends TestCase
             ]),
         ]);
         $result = $this->product->getStripe();
-        $this->assertNull($this->product->stripe);
+        $this->assertNull($this->product->stripeData);
         $this->assertNull($result);
     }
 
@@ -76,7 +76,7 @@ class StripeTraitTest extends TestCase
             ]),
         ]);
         $result = $this->product->getStripe();
-        $this->assertEquals($data, $this->product->stripe);
+        $this->assertEquals($data, $this->product->stripeData);
         $this->assertEquals($data, $result);
         $this->assertEquals($data['id'], $this->product->stripe_id);
     }
@@ -107,7 +107,7 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
         $result = $this->product->getStripe();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
     }
 
@@ -149,7 +149,7 @@ class StripeTraitTest extends TestCase
             ]),
         ]);
         $result = $this->product->stripeCreate();
-        $this->assertEquals($data, $this->product->stripe);
+        $this->assertEquals($data, $this->product->stripeData);
         $this->assertEquals($data, $result);
         $this->assertEquals($data['id'], $this->product->stripe_id);
     }
@@ -202,7 +202,7 @@ class StripeTraitTest extends TestCase
                 ])->push($response),
         ]);
         $result = $this->product->stripeCreate();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
         $this->assertEquals($response['id'], $this->product->stripe_id);
         $this->assertTrue($this->product->synced_to_stripe);
@@ -255,7 +255,7 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/products/*' => Http::response($response),
         ]);
         $result = $this->product->stripeUpdate();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
         $this->assertTrue($this->product->synced_to_stripe);
     }
@@ -293,7 +293,7 @@ class StripeTraitTest extends TestCase
                 ])->push($response),
         ]);
         $result = $this->product->stripeUpdateOrCreate();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
         $this->assertEquals($response['id'], $this->product->stripe_id);
         $this->assertTrue($this->product->synced_to_stripe);
@@ -329,7 +329,7 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/products/*' => Http::response($response),
         ]);
         $result = $this->product->stripeUpdate();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
         $this->assertTrue($this->product->synced_to_stripe);
     }
@@ -364,7 +364,7 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
         $result = $this->product->stripeUpdateOrCreate();
-        $this->assertEquals($response, $this->product->stripe);
+        $this->assertEquals($response, $this->product->stripeData);
         $this->assertEquals($response, $result);
         $this->assertTrue($this->product->synced_to_stripe);
     }

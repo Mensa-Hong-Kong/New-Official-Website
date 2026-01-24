@@ -12,26 +12,26 @@ trait HasStripeProduct
 
     public function getStripe(): ?array
     {
-        if (! $this->stripe) {
+        if (! $this->stripeData) {
             if ($this->stripe_id) {
-                $this->stripe = Client::products()->find($this->stripe_id);
+                $this->stripeData = Client::products()->find($this->stripe_id);
             } else {
-                $this->stripe = Client::products()->first([
+                $this->stripeData = Client::products()->first([
                     'metadata' => [
                         'type' => __CLASS__,
                         'id' => $this->id,
                     ],
                 ]);
-                if ($this->stripe) {
+                if ($this->stripeData) {
                     $this->update([
-                        'stripe_id' => $this->stripe['id'],
-                        'synced_to_stripe' => $this->name == $this->stripe['name'],
+                        'stripe_id' => $this->stripeData['id'],
+                        'synced_to_stripe' => $this->name == $this->stripeData['name'],
                     ]);
                 }
             }
         }
 
-        return $this->stripe;
+        return $this->stripeData;
     }
 
     public function stripeCreate(): array
@@ -40,8 +40,8 @@ trait HasStripeProduct
             throw new AlreadyCreated($this, 'product');
         }
         $this->getStripe();
-        if (! $this->stripe) {
-            $this->stripe = Client::products()->create([
+        if (! $this->stripeData) {
+            $this->stripeData = Client::products()->create([
                 'name' => $this->name,
                 'metadata' => [
                     'type' => __CLASS__,
@@ -49,12 +49,12 @@ trait HasStripeProduct
                 ],
             ]);
             $this->update([
-                'stripe_id' => $this->stripe['id'],
-                'synced_to_stripe' => $this->name == $this->stripe['name'],
+                'stripe_id' => $this->stripeData['id'],
+                'synced_to_stripe' => $this->name == $this->stripeData['name'],
             ]);
         }
 
-        return $this->stripe;
+        return $this->stripeData;
     }
 
     public function stripeUpdate(): array
@@ -62,12 +62,13 @@ trait HasStripeProduct
         if (! $this->stripe_id) {
             throw new NotYetCreated($this, 'product');
         }
-        $this->stripe = Client::products()->update(
+        $this->stripeData = Client::products()->update(
             $this->stripe_id,
             ['name' => $this->name]
         );
-        $this->update(['synced_to_stripe' => $this->name == $this->stripe['name']]);
+        var_dump($this->stripe);
+        $this->update(['synced_to_stripe' => ($this->name == $this->stripeData['name'])]);
 
-        return $this->stripe;
+        return $this->stripeData;
     }
 }

@@ -13,7 +13,7 @@ class CheckoutTest extends TestCase
     public function test_create_checkout_but_stripe_under_maintenance()
     {
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/*' => Http::response(status: 503),
+            'https://api.stripe.com/v1/checkout/sessions/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
         Client::checkouts()->create([
@@ -101,7 +101,7 @@ class CheckoutTest extends TestCase
             'url' => 'https://checkout.stripe.com/c/pay/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u#fidkdWxOYHwnPyd1blpxYHZxWjA0SDdPUW5JbmFMck1wMmx9N2BLZjFEfGRUNWhqTmJ%2FM2F8bUA2SDRySkFdUV81T1BSV0YxcWJcTUJcYW5rSzN3dzBLPUE0TzRKTTxzNFBjPWZEX1NKSkxpNTVjRjN8VHE0YicpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl',
         ];
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/*' => Http::response($response),
+            'https://api.stripe.com/v1/checkout/sessions' => Http::response($response),
         ]);
         $result = Client::checkouts()->create([
             'success_url' => 'https://example.com/success',
@@ -118,7 +118,7 @@ class CheckoutTest extends TestCase
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
-                    $request->url() == 'https://api.stripe.com/v1/checkouts/sessions';
+                    $request->url() == 'https://api.stripe.com/v1/checkout/sessions';
             }
         );
         $this->assertEquals($response, $result);
@@ -127,7 +127,7 @@ class CheckoutTest extends TestCase
     public function test_find_checkout_have_no_result()
     {
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/*' => Http::response(status: 404),
+            'https://api.stripe.com/v1/checkout/sessions/*' => Http::response(status: 404),
         ]);
         $result = Client::checkouts()->find('cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u');
         $this->assertNull($result);
@@ -136,7 +136,7 @@ class CheckoutTest extends TestCase
                 return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
-                    $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
+                    $request->url() == 'https://api.stripe.com/v1/checkout/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
             }
         );
     }
@@ -214,7 +214,7 @@ class CheckoutTest extends TestCase
             'url' => 'https://checkout.stripe.com/c/pay/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u#fidkdWxOYHwnPyd1blpxYHZxWjA0SDdPUW5JbmFMck1wMmx9N2BLZjFEfGRUNWhqTmJ%2FM2F8bUA2SDRySkFdUV81T1BSV0YxcWJcTUJcYW5rSzN3dzBLPUE0TzRKTTxzNFBjPWZEX1NKSkxpNTVjRjN8VHE0YicpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl',
         ];
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/*' => Http::response($response),
+            'https://api.stripe.com/v1/checkout/sessions/*' => Http::response($response),
         ]);
         $result = Client::checkouts()->find('cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u');
         $this->assertEquals($response, $result);
@@ -293,7 +293,7 @@ class CheckoutTest extends TestCase
             'url' => 'https://checkout.stripe.com/c/pay/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u#fidkdWxOYHwnPyd1blpxYHZxWjA0SDdPUW5JbmFMck1wMmx9N2BLZjFEfGRUNWhqTmJ%2FM2F8bUA2SDRySkFdUV81T1BSV0YxcWJcTUJcYW5rSzN3dzBLPUE0TzRKTTxzNFBjPWZEX1NKSkxpNTVjRjN8VHE0YicpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl',
         ];
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/sessions/*' => Http::response($response),
+            'https://api.stripe.com/v1/checkout/sessions/*' => Http::response($response),
         ]);
         $result = Client::checkouts()->update(
             'cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u',
@@ -304,7 +304,7 @@ class CheckoutTest extends TestCase
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
-                    $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
+                    $request->url() == 'https://api.stripe.com/v1/checkout/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u';
             }
         );
         $this->assertEquals($response, $result);
@@ -383,7 +383,7 @@ class CheckoutTest extends TestCase
             'url' => 'https://checkout.stripe.com/c/pay/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u#fidkdWxOYHwnPyd1blpxYHZxWjA0SDdPUW5JbmFMck1wMmx9N2BLZjFEfGRUNWhqTmJ%2FM2F8bUA2SDRySkFdUV81T1BSV0YxcWJcTUJcYW5rSzN3dzBLPUE0TzRKTTxzNFBjPWZEX1NKSkxpNTVjRjN8VHE0YicpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl',
         ];
         Http::fake([
-            'https://api.stripe.com/v1/checkouts/sessions/*' => Http::response($response),
+            'https://api.stripe.com/v1/checkout/sessions/*' => Http::response($response),
         ]);
         $result = Client::checkouts()->expire('cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u');
         Http::assertSent(
@@ -391,7 +391,7 @@ class CheckoutTest extends TestCase
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
                     $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
-                    $request->url() == 'https://api.stripe.com/v1/checkouts/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u/expire';
+                    $request->url() == 'https://api.stripe.com/v1/checkout/sessions/cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u/expire';
             }
         );
         $this->assertEquals($response, $result);

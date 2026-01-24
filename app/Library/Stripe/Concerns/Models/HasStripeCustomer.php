@@ -4,10 +4,13 @@ namespace App\Library\Stripe\Concerns\Models;
 
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
+use App\Library\Stripe\Exceptions\NotYetCreated;
 use App\Library\Stripe\Models\StripeCustomer;
 
 trait HasStripeCustomer
 {
+    use CreatableBase;
+
     public function stripe()
     {
         return $this->morphOne(StripeCustomer::class, 'customerable');
@@ -25,8 +28,12 @@ trait HasStripeCustomer
 
     public function getStripe(): ?array
     {
-        if ($this->stripe) {
-            return $this->stripe->getStripe();
+        if ($this->stripeData) {
+            return $this->stripeData;
+        } elseif ($this->stripe) {
+            $this->stripeData = Client::customers()->find($this->stripe->id);
+
+            return $this->stripeData;
         } else {
             $result = Client::customers()->first([
                 'metadata' => [
@@ -40,7 +47,7 @@ trait HasStripeCustomer
                         $this->stripeEmail() == $result['email'],
                 ]);
                 $this->stripe = $this->stripe()->create(['id' => $result['id']]);
-                $this->stripe->data = $result;
+                $this->stripeData = $result;
             }
 
             return $result;
@@ -52,9 +59,9 @@ trait HasStripeCustomer
         if ($this->stripe) {
             throw new AlreadyCreatedCustomer($this);
         }
-        $result = $this->getStripe();
-        if (! $result) {
-            $result = Client::customers()->create([
+        $this->stripeData = $this->getStripe();
+        if (! $this->stripeData) {
+            $this->stripeData = Client::customers()->create([
                 'name' => $this->stripeName(),
                 'email' => $this->stripeEmail(),
                 'metadata' => [
@@ -63,13 +70,12 @@ trait HasStripeCustomer
                 ],
             ]);
             $this->update([
-                'synced_to_stripe' => $this->stripeName() == $result['name'] &&
-                    $this->stripeEmail() == $result['email'],
+                'synced_to_stripe' => $this->stripeName() == $this->stripeData['name'] &&
+                    $this->stripeEmail() == $this->stripeData['email'],
             ]);
-            $this->stripe = $this->stripe()->create(['id' => $result['id']]);
+            $this->stripe = $this->stripe()->create(['id' => $this->stripeData['id']]);
         }
-        $this->stripe->data = $result;
 
-        return $result;
+        return $this->stripeData;
     }
 }

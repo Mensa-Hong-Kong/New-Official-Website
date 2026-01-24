@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTest\Orders;
 
 use App\Jobs\Orders\AdmissionTestOrderExpiredHandle;
+use App\Library\Stripe\Amount;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestType;
@@ -24,7 +25,6 @@ class StoreTest extends TestCase
     private $user;
 
     private $happyCase = [
-        'price' => 400,
         'quota' => 1,
         'status' => 'succeeded',
         'payment_gateway_id' => 1,
@@ -36,6 +36,7 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test Order']);
         $this->happyCase['user_id'] = $this->user->id;
+        $this->happyCase['price'] = 1 * 10**(-Amount::getValidationDecimal());
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -357,29 +358,35 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be a number.']);
+        if (Amount::getActualDecimal() > 0) {
+            $response->assertInvalid(['price' => 'The price field must be a number.']);
+        } else {
+            $response->assertInvalid(['price' => 'The price field must be an integer.']);
+        }
     }
 
-    public function test_price_less_that_0_point_01()
+    public function test_price_less_that_minimum_limit()
     {
         $data = $this->happyCase;
+        $minimum = 1 * 10**(-Amount::getValidationDecimal());
         $data['price'] = 0;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be at least 0.01.']);
+        $response->assertInvalid(['price' => "The price field must be at least $minimum."]);
     }
 
-    public function test_price_greater_than_99999_point_99()
+    public function test_price_greater_than_maximum_limit()
     {
         $data = $this->happyCase;
-        $data['price'] = 100000;
+        $maximum = Amount::getMaximumValidation();
+        $data['price'] = $maximum + 1 * 10**(-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must not be greater than 99999.99.']);
+        $response->assertInvalid(['price' => "The price field must not be greater than $maximum."]);
     }
 
     public function test_minimum_age_is_not_integer()

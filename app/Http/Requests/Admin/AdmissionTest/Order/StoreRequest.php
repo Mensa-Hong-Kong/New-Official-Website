@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\AdmissionTest\Order;
 
+use App\Library\Stripe\Rules\Amount\Other;
 use App\Models\AdmissionTest;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
@@ -52,7 +53,7 @@ class StoreRequest extends FormRequest
             ],
             'product_name' => 'nullable|string|max:255',
             'price_name' => 'nullable|string|max:255',
-            'price' => ['required', Rule::numeric()->min(0.01)->max(99999.99)->decimal(0, 2)],
+            'price' => ['required', new Other],
             'minimum_age' => 'nullable|integer|min:1|max:255',
             'maximum_age' => 'nullable|integer|min:1|max:255',
             'quota' => 'required|integer|min:1|max:255',
