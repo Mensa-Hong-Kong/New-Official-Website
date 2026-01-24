@@ -48,11 +48,20 @@ Please read database/README.md for database setup and details.
 1. 單一責任原則在function多過class
 2. fat controller skinny model，除非多過一個地方會用到同一功能
 
-### TOdo
+### Payment cards for Stripe UAT
+https://docs.stripe.com/testing
+
+### Todo
 
 #### stage 1 permission system, nav, custom web page and admission test
 
+- change admission_test_prices table stripe_id and synced_to_stripe columns to stripe_one_time_type_id and synced_one_time_type_to_stripe
+- change (*)_prices.price to (*)_prices.value and addresses.address to addresses.value
+- change members table to members and member_orders tables
 - update candidate store method to support select product and contact stripe
+- add stripe checkout web hock handle
+- change quota validity months to inside product and order table
+- add details, candidate and result module under admission test and change permission from admission test module to details, candidate and result
 - Add admin exchange and refund for admin admission test orders
 - add reschedule charges create product
 - add reschedule charges create product price
@@ -67,6 +76,7 @@ Please read database/README.md for database setup and details.
 - admin user add admission test orders list and create order button
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
+- change whatsapp from twilio to whatsapp cloud api (coming soon)
 
 #### stage 2 third party iq test result
 
@@ -153,6 +163,7 @@ Please read database/README.md for database setup and details.
 - Add admin shop products update
 - Add admin shop product options store
 - Add admin shop product options update
+- Add admin shop product options price store
 - Add admin shop orders create
 - Add admin shop orders index
 - Add admin shop order store status
@@ -171,3 +182,7 @@ Please read database/README.md for database setup and details.
 #### stage 7 analytics (coming soon)
 
 #### stage 8 contest (coming soon)
+
+#### unimportant
+
+- takeout Strip Library from app folder to make a standalone composer package on standalone repo. 
