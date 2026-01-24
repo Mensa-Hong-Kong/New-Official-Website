@@ -17,4 +17,10 @@ return [
      * so, need to define minimum amount here.
      */
     'minimum_amount' => 4,
+    'locale' => 'auto',
+    'paymentMethodTypes' => [
+        'card',
+        'alipay',
+        'wechat_pay',
+    ],
 ];

@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
         ->except(['edit', 'update'])
         ->whereNumber('admission_test')
         ->names('admission-tests.candidates');
+    Route::get('admission-test/orders/{order}/cancel', [CandidateController::class, 'cancel'])
+        ->name('admission-test.orders.cancel');
 
     Route::prefix('admin')->name('admin.')
         ->group(function () {

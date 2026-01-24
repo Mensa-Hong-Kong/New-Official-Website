@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCandidateRequest;
+use App\Library\Stripe\Exceptions\AlreadyCompleteCheckout;
 use App\Models\AdmissionTest;
+use App\Models\AdmissionTestHasCandidate;
+use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
+use App\Models\SystemPaymentGateway;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -13,6 +18,7 @@ use chillerlan\QRCode\Output\QRMarkupHTML;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -244,22 +250,87 @@ class CandidateController extends Controller implements HasMiddleware
         return $return;
     }
 
-    public function store(Request $request, AdmissionTest $admissionTest)
+    public function store(StoreCandidateRequest $request, AdmissionTest $admissionTest)
     {
         $user = $request->user();
         $redirect = redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest]);
         DB::beginTransaction();
-        $admissionTest->candidates()->attach($user->id);
         if ($user->futureAdmissionTest) {
-            $oldTest = clone $user->futureAdmissionTest;
-            $oldTest->delete();
-            $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
+            AdmissionTestHasCandidate::where('user_id', $user->id)
+                ->where('test_id', $user->futureAdmissionTest)
+                ->delete();
             $success = 'Your reschedule request successfully, ';
         } else {
-            $user->notify(new ScheduleAdmissionTest($admissionTest));
             $success = 'Your schedule request successfully, ';
         }
+        if ($admissionTest->is_free) {
+            $admissionTest->candidates()->attach($user->id);
+        } else {
+            if ($user->hasUnusedQuotaAdmissionTestOrder) {
+                $admissionTest->candidates()->attach(
+                    $user->id,
+                    ['order_id' => $user->hasUnusedQuotaAdmissionTestOrder->id]
+                );
+            } else {
+                try {
+                    if (
+                        $user->lastAdmissionTestOrder->expired_at > now() &&
+                        in_array($user->lastAdmissionTestOrder->status, ['pending', 'canceled', 'failed'])
+                    ) {
+                        $user->lastAdmissionTestOrder->stripeExpire();
+                    }
+                    $order = AdmissionTestOrder::create([
+                        'user_id' => $user->id,
+                        'product_name' => $request->product->name,
+                        'price_name' => $request->product->price->name,
+                        'price' => $request->product->price->price,
+                        'minimum_age' => $request->product->minimum_age,
+                        'maximum_age' => $request->product->maximum_age,
+                        'quota' => $request->product->quota,
+                        'status' => 'pending',
+                        'expired_at' => now()->addMinutes(30),
+                        'gateway_type' => SystemPaymentGateway::class,
+                        'gateway_id' => 1,
+                    ]);
+                    $order->load([
+                        'user.defaultEmail' => function($query) {
+                            $query->lockForUpdate();
+                        }
+                    ]);
+                    $admissionTest->candidates()->attach(
+                        $user->id,
+                        ['order_id' => $order->id]
+                    );
+                    $response = $order->stripeCreate(
+                        'payment',
+                        [$request->product->price->stripe_id => 1],
+                        [
+                            'success_url' => route(
+                                'admission-tests.candidates.show',
+                                ['admission_test' => $admissionTest]
+                            ),
+                            'cancel_url' => route('admission-test.orders.cancel'),
+                        ]
+                    );
+                    DB::commit();
+    
+                    return redirect($response['url']);
+                } catch (AlreadyCompleteCheckout $exception) {
+                    $admissionTest->candidates()->attach(
+                        $user->id,
+                        ['order_id' => $user->lastAdmissionTestOrder->id]
+                    );
+                } catch (Exception $exception) {
+                    throw $exception;
+                }
+            }
+        }
         if ($user->defaultEmail || $user->defaultMobile) {
+            if ($user->futureAdmissionTest) {
+                $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
+            } else {
+                $user->notify(new ScheduleAdmissionTest($admissionTest));
+            }
             $success .= 'the new ticket will be to your default contact(s), you also can cap screen to save your ticket.';
         } else {
             $success .= 'because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.';
@@ -267,6 +338,14 @@ class CandidateController extends Controller implements HasMiddleware
         DB::commit();
 
         return $redirect->with('success', $success);
+    }
+
+    public function cancel(Request $request, $order)
+    {
+        $order = AdmissionTestOrder::findOrFail($order);
+        $order->update(['status' => DB::raw("(CASE status WHEN status = 'pending' THEN 'canceled' ELSE status END)")]);
+
+        return redirect()->route('admission-tests.index');
     }
 
     private function qrCode($test, $user)

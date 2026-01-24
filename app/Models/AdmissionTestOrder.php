@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Library\Stripe\Concerns\Models\HasStripeCheckout;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AdmissionTestOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, HasStripeCheckout;
 
     protected $fillable = [
         'user_id',
@@ -31,6 +32,11 @@ class AdmissionTestOrder extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->user;
     }
 
     public function gateway()
