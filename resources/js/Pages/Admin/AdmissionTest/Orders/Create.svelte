@@ -33,7 +33,6 @@
     function changedProduct(event) {
         if (event.target.value !== '') {
             let product = products[event.target.value];
-            console.log(product);
             inputs.productName.value = product.name;
             inputs.priceName.value = product.price.name;
             inputs.price.value = product.price.price;

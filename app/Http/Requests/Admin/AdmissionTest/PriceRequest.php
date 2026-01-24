@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin\AdmissionTest;
 
+use App\Library\Stripe\Rules\Amount\Stripe;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class PriceRequest extends FormRequest
 {
@@ -19,7 +19,7 @@ class PriceRequest extends FormRequest
             'start_at' => 'nullable|date',
         ];
         if ($this->method() == 'POST') {
-            $return['price'] = ['required', Rule::numeric()->min(0.01)->max(99999.99)->decimal(0, 2)];
+            $return['price'] = ['required', new Stripe];
         }
 
         return $return;

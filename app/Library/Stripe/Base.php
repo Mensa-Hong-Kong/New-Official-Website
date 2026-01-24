@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class Base
 {
-    const STRIPE_VERSION = '2025-04-30';
+    const STRIPE_VERSION = '2025-04-30.basil';
 
     protected $http;
 
@@ -15,8 +15,8 @@ class Base
     public function __construct()
     {
         $this->http = Http::baseUrl('https://api.stripe.com/v1')
-            ->withToken(config('service.stripe.keys.secret'))
-            ->withHeader('Stripe-Version', static::STRIPE_VERSION.'.basil');
+            ->withToken(config('stripe.keys.secret'))
+            ->withHeader('Stripe-Version', static::STRIPE_VERSION);
     }
 
     public function find(string $id): ?array

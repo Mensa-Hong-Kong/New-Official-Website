@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Webhocks\Stripe;
+namespace App\Library\Stripe\Http\Middleware\Webhocks;
 
 use Closure;
 use Illuminate\Http\Request;
@@ -16,8 +16,8 @@ class VerifySignature
             WebhookSignature::verifyHeader(
                 $request->getContent(),
                 $request->header('Stripe-Signature'),
-                config('services.stripe.keys.webhook'),
-                config('services.stripe.lifetime.webhook')
+                config('stripe.keys.webhook'),
+                config('stripe.lifetime.webhook')
             );
         } catch (SignatureVerificationException $exception) {
             throw new AccessDeniedHttpException($exception->getMessage(), $exception);

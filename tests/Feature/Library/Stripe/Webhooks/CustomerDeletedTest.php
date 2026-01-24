@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Webhooks\Stripe;
+namespace Tests\Feature\Library\Stripe\Webhooks;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +17,7 @@ class CustomerDeletedTest extends TestCase
         return hash_hmac(
             'sha256',
             "$timestamp.$payload",
-            config('services.stripe.keys.webhook')
+            config('stripe.keys.webhook')
         );
     }
 

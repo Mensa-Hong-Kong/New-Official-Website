@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTest\Products\Prices;
 
 use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
+use App\Library\Stripe\Amount;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\ModulePermission;
@@ -27,6 +28,7 @@ class StoreTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
+        $this->happyCase['price'] = config('stripe.amount.minimum', 4);
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test']);
         Queue::fake();
@@ -130,13 +132,18 @@ class StoreTest extends TestCase
             ),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be a number.']);
+        if (Amount::getActualDecimal() > 0) {
+            $response->assertInvalid(['price' => 'The price field must be a number.']);
+        } else {
+            $response->assertInvalid(['price' => 'The price field must be an integer.']);
+        }
     }
 
-    public function test_price_less_than_0_point_01()
+    public function test_price_less_than_minimum_limit()
     {
         $data = $this->happyCase;
-        $data['price'] = 0;
+        $minimum = config('stripe.minimum_amount', 4);
+        $data['price'] = $minimum - 1 * 10 ** (-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-test.products.prices.store',
@@ -144,13 +151,14 @@ class StoreTest extends TestCase
             ),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must be at least 0.01.']);
+        $response->assertInvalid(['price' => "The price field must be at least $minimum."]);
     }
 
-    public function test_price_greater_than_99999_point_99()
+    public function test_price_greater_than_maximum_limit()
     {
         $data = $this->happyCase;
-        $data['price'] = 100000;
+        $maximum = Amount::getMaximumValidation();
+        $data['price'] = $maximum + 1 * 10 ** (-Amount::getActualDecimal());
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-test.products.prices.store',
@@ -158,7 +166,7 @@ class StoreTest extends TestCase
             ),
             $data
         );
-        $response->assertInvalid(['price' => 'The price field must not be greater than 99999.99.']);
+        $response->assertInvalid(['price' => "The price field must not be greater than $maximum."]);
     }
 
     public function test_start_at_is_not_date()

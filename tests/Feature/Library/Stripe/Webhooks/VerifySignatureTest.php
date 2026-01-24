@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Webhooks\Stripe;
+namespace Tests\Feature\Library\Stripe\Webhooks;
 
-use App\Http\Middleware\Webhocks\Stripe\VerifySignature;
+use App\Library\Stripe\Http\Middleware\Webhocks\VerifySignature;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -18,7 +18,7 @@ class VerifySignatureTest extends TestCase
     {
         parent::setUp();
 
-        config(['services.stripe.keys.webhook' => 'secret']);
+        config(['stripe.keys.webhook' => 'secret']);
 
         $this->request = new Request(content: 'Signed Body');
     }
@@ -54,8 +54,6 @@ class VerifySignatureTest extends TestCase
     {
         $this->withTimestamp(time());
         $this->withSignedSignature('secret');
-
-        var_dump($this->request->header('Stripe-Signature'));
 
         $response = (new VerifySignature)
             ->handle(

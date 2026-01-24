@@ -63,7 +63,7 @@ class ProductTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == Uri::of('https://api.stripe.com/v1/products/search')
                         ->withQuery(['query' => "active:'true' AND metadata['order_id']:'6735'"])
                         ->__toString();
@@ -154,7 +154,7 @@ class ProductTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products';
             }
         );
@@ -172,7 +172,7 @@ class ProductTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'GET' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
             }
         );
@@ -240,7 +240,7 @@ class ProductTest extends TestCase
             function (Request $request) {
                 return $request->method() == 'POST' &&
                     $request->hasHeader('Stripe-Version', '2025-04-30.basil') &&
-                    $request->hasHeader('Authorization', config('service.stripe.keys.secret')) &&
+                    $request->hasHeader('Authorization', 'Bearer '.config('stripe.keys.secret')) &&
                     $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
             }
         );
