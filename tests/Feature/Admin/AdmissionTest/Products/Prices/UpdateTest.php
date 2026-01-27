@@ -35,7 +35,7 @@ class UpdateTest extends TestCase
         $this->price = AdmissionTestPrice::factory()
             ->state([
                 'product_id' => $this->product->id,
-                'synced_to_stripe' => true,
+                'synced_one_time_type_to_stripe' => true,
             ])
             ->create();
         Queue::fake();
@@ -171,11 +171,11 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test product price update success.';
         $data['start_at'] = null;
-        $test = AdmissionTestPrice::find($this->price->id);
-        $data['updated_at'] = $test->updated_at->toISOString();
+        $price = AdmissionTestPrice::find($this->price->id);
+        $data['updated_at'] = $price->updated_at->toISOString();
         $response->assertSuccessful();
         $response->assertJson($data);
-        $this->assertTrue((bool) $test->synced_to_stripe);
+        $this->assertTrue((bool) $price->synced_one_time_type_to_stripe);
         Queue::assertNothingPushed();
     }
 
@@ -194,11 +194,11 @@ class UpdateTest extends TestCase
         );
         $data['success'] = 'The admission test product price update success.';
         $data['start_at'] = null;
-        $test = AdmissionTestPrice::find($this->price->id);
-        $data['updated_at'] = $test->updated_at->toISOString();
+        $price = AdmissionTestPrice::find($this->price->id);
+        $data['updated_at'] = $price->updated_at->toISOString();
         $response->assertSuccessful();
         $response->assertJson($data);
-        $this->assertFalse((bool) $test->synced_to_stripe);
+        $this->assertFalse((bool) $price->synced_one_time_type_to_stripe);
         Queue::assertPushed(SyncPrice::class);
     }
 }

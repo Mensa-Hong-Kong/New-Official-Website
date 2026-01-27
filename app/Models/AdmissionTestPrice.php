@@ -17,8 +17,8 @@ class AdmissionTestPrice extends Model
         'name',
         'price',
         'start_at',
-        'stripe_id',
-        'synced_to_stripe',
+        'stripe_one_time_type_id',
+        'synced_one_time_type_to_stripe',
     ];
 
     protected $casts = [
@@ -38,7 +38,7 @@ class AdmissionTestPrice extends Model
         static::updating(
             function (AdmissionTestPrice $price) {
                 if ($price->isDirty('name')) {
-                    $price->synced_to_stripe = false;
+                    $price->synced_one_time_type_to_stripe = false;
                     SyncPrice::dispatch($price->id);
                 }
             }

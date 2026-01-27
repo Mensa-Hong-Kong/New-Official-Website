@@ -14,8 +14,27 @@ abstract class SyncPriceToStripe extends Base
         if (! $model->product->stripe_id) {
             DB::rollBack();
             $this->release(60);
-        } elseif (! $model->synced_to_stripe) {
-            $model->stripeUpdateOrCreate();
+        } elseif (
+            (
+                in_array('stripe_one_time_type_id', $model->getFillable()) &&
+                ! $model->synced_one_time_type_to_stripe
+            ) || (
+                in_array('stripe_recurring_type_id', $model->getFillable()) &&
+                ! $model->synced_recurring_type_to_stripe
+            )
+        ) {
+            if (
+                in_array('stripe_one_time_type_id', $model->getFillable()) &&
+                ! $model->synced_one_time_type_to_stripe
+            ) {
+                $model->stripeUpdateOrCreate('one_time');
+            }
+            if (
+                in_array('stripe_recurring_type_id', $model->getFillable()) &&
+                ! $model->synced_recurring_type_to_stripe
+            ) {
+                $model->stripeUpdateOrCreate('recurring');
+            }
             DB::commit();
         } else {
             DB::rollBack();

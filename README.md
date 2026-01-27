@@ -55,7 +55,6 @@ https://docs.stripe.com/testing
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- change admission_test_prices table stripe_id and synced_to_stripe columns to stripe_one_time_type_id and synced_one_time_type_to_stripe
 - change (*)_prices.price to (*)_prices.value and addresses.address to addresses.value
 - change members table to members and member_orders tables
 - update candidate store method to support select product and contact stripe

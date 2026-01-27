@@ -42,6 +42,7 @@ trait HasStripeCustomer
             ]);
             if ($result) {
                 $this->update([
+                    'stripe_id' => $result['id'],
                     'synced_to_stripe' => $this->stripeName() == $result['name'] &&
                         $this->stripeEmail() == $result['email'],
                 ]);

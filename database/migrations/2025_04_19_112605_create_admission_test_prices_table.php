@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
             $table->dateTime('start_at')->nullable();
-            $table->string('stripe_id')->nullable();
-            $table->boolean('synced_to_stripe')->default(false);
+            $table->string('stripe_one_time_type_id')->nullable();
+            $table->boolean('synced_one_time_type_to_stripe')->default(false);
             $table->timestamps();
         });
     }

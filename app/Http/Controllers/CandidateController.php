@@ -128,7 +128,7 @@ class CandidateController extends Controller implements HasMiddleware
                                 } elseif ($price->product->maximum_age && $price->product->maximum_age < floor($request->user()->age)) {
                                     $request->merge(['error' => 'Your age greater than product maximum age limit.']);
                                 } else {
-                                    $price->makeHidden(['product_id', 'name', 'start_at', 'stripe_id', 'synced_to_stripe']);
+                                    $price->makeHidden(['product_id', 'name', 'start_at', 'stripe_one_time_type_id', 'synced_one_time_type_to_stripe']);
                                     $price->product->makeHidden(['id', 'name', 'option_name', 'minimum_age', 'maximum_age', 'start_at', 'end_at', 'stripe_id', 'synced_to_stripe', 'created_at', 'updated_at', 'price']);
                                     $request->merge(['price' => $price]);
                                 }
@@ -144,7 +144,7 @@ class CandidateController extends Controller implements HasMiddleware
                             ]);
                             foreach ($request->products as $product) {
                                 $product->makeHidden(['id']);
-                                $product->price->makeHidden(['product_id', 'name', 'stripe_id', 'synced_to_stripe', 'created_at', 'updated_at']);
+                                $product->price->makeHidden(['product_id', 'name', 'stripe_one_time_type_id', 'synced_one_time_type_to_stripe', 'created_at', 'updated_at']);
                             }
                             if (! $request->products->count()) {
                                 return redirect()->route('admission-tests.index')

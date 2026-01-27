@@ -293,8 +293,8 @@ erDiagram
         string name
         decimal price
         datetime start_at
-        string stripe_id
-        boolean synced_to_stripe
+        string stripe_one_time_type_id
+        boolean synced_one_time_type_to_stripe
         timestamp created_at
         timestamp updated_at
     }
@@ -660,7 +660,7 @@ Pricing tiers for products (time-based pricing).
 -   `product_id` - Foreign key to products
 -   `price` - Price in smallest currency unit
 -   `start_at` - When this price becomes active
--   `stripe_id` - Stripe price ID
+-   `stripe_one_time_type_id` - Stripe one time type price ID
 
 #### `stripe_customers`
 
@@ -1068,7 +1068,7 @@ Tables with Stripe integration fields:
 
 -   `users.synced_to_stripe`
 -   `admission_test_products.stripe_id` & `synced_to_stripe`
--   `admission_test_prices.stripe_id` & `synced_to_stripe`
+-   `admission_test_prices.stripe_one_time_type_id` & `synced_one_time_type_to_stripe`
 -   `stripe_customers` (dedicated table)
 
 **Always check sync status before making Stripe API calls.**

@@ -295,8 +295,8 @@ erDiagram
         string name
         decimal price
         datetime start_at
-        string stripe_id
-        boolean synced_to_stripe
+        string stripe_one_time_type_id
+        boolean synced_one_time_type_to_stripe
         timestamp created_at
         timestamp updated_at
     }
@@ -662,7 +662,7 @@ Laravel 會話存儲。
 -   `product_id` - 指向產品的外鍵
 -   `price` - 最小貨幣單位價格
 -   `start_at` - 此價格變為活躍的時間
--   `stripe_id` - Stripe 價格 ID
+-   `stripe_one_time_type_id` - Stripe 價格 ID
 
 #### `stripe_customers`
 
@@ -1071,7 +1071,7 @@ protected static function booted(): void
 
 -   `users.synced_to_stripe`
 -   `admission_test_products.stripe_id` 和 `synced_to_stripe`
--   `admission_test_prices.stripe_id` 和 `synced_to_stripe`
+-   `admission_test_prices.stripe_one_time_type_id` 和 `synced_one_time_type_to_stripe`
 -   `stripe_customers`（專用表）
 
 **在進行 Stripe API 調用之前，始終檢查同步狀態。**

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Models\AdmissionTestPrice;
 
-use App\Library\Stripe\Exceptions\AlreadyCreated;
+use App\Library\Stripe\Exceptions\AlreadyCreatedPrice;
 use App\Library\Stripe\Exceptions\NotYetCreated;
 use App\Library\Stripe\Exceptions\NotYetCreatedProduct;
 use App\Models\AdmissionTestPrice;
@@ -20,7 +20,7 @@ class StripeTraitTest extends TestCase
     protected function setUp(): void
     {
         parent::setup();
-        $this->price = AdmissionTestPrice::factory()->create();
+        $this->price = AdmissionTestPrice::find(AdmissionTestPrice::factory()->create()->id);
     }
 
     public function test_get_stripe_data_but_stripe_under_maintenance()
@@ -29,7 +29,7 @@ class StripeTraitTest extends TestCase
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        $this->price->getStripe();
+        $this->price->getStripe('one_time');
     }
 
     public function test_get_stripe_data_happy_case_when_user_have_no_stripe_id_and_no_result()
@@ -42,8 +42,8 @@ class StripeTraitTest extends TestCase
                 'data' => [],
             ]),
         ]);
-        $result = $this->price->getStripe();
-        $this->assertNull($this->price->stripeData);
+        $result = $this->price->getStripe('one_time');
+        $this->assertNull($this->price->stripeData['one_time']);
         $this->assertNull($result);
     }
 
@@ -62,12 +62,7 @@ class StripeTraitTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -83,15 +78,15 @@ class StripeTraitTest extends TestCase
                 'data' => [$data],
             ]),
         ]);
-        $result = $this->price->getStripe();
-        $this->assertEquals($data, $this->price->stripeData);
+        $result = $this->price->getStripe('one_time');
+        $this->assertEquals($data, $this->price->stripeData['one_time']);
         $this->assertEquals($data, $result);
-        $this->assertEquals($data['id'], $this->price->stripe_id);
+        $this->assertEquals($data['id'], $this->price->stripe_one_time_type_id);
     }
 
     public function test_get_stripe_data_happy_case_when_user_has_stripe_id()
     {
-        $this->price->update(['stripe_id' => 'cus_NeGfPRiPKxeBi1']);
+        $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
             'object' => 'price',
@@ -105,12 +100,7 @@ class StripeTraitTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -121,17 +111,17 @@ class StripeTraitTest extends TestCase
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
-        $result = $this->price->getStripe();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->getStripe('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
     }
 
     public function test_create_stripe_price_but_stripe_id_already()
     {
-        $this->price->update(['stripe_id' => 'abc']);
-        $this->expectException(AlreadyCreated::class);
-        $this->expectExceptionMessage('AdmissionTestPrice is already a Stripe price with ID abc.');
-        $this->price->stripeCreate();
+        $this->price->update(['stripe_one_time_type_id' => 'abc']);
+        $this->expectException(AlreadyCreatedPrice::class);
+        $this->expectExceptionMessage('AdmissionTestPrice is already a Stripe one time type price with ID abc.');
+        $this->price->stripeCreate('one_time');
     }
 
     public function test_create_exists_stripe_price_just_missing_save_stripe_id()
@@ -149,12 +139,7 @@ class StripeTraitTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -170,10 +155,10 @@ class StripeTraitTest extends TestCase
                 'data' => [$data],
             ]),
         ]);
-        $result = $this->price->stripeCreate();
-        $this->assertEquals($data, $this->price->stripeData);
+        $result = $this->price->stripeCreate('one_time');
+        $this->assertEquals($data, $this->price->stripeData['one_time']);
         $this->assertEquals($data, $result);
-        $this->assertEquals($data['id'], $this->price->stripe_id);
+        $this->assertEquals($data['id'], $this->price->stripe_one_time_type_id);
     }
 
     public function test_get_stripe_price_not_found_and_product_stripe_not_yet_created()
@@ -188,7 +173,7 @@ class StripeTraitTest extends TestCase
                 ])->pushStatus(503),
         ]);
         $this->expectException(NotYetCreatedProduct::class);
-        $this->price->stripeCreate();
+        $this->price->stripeCreate('one_time');
         $this->expectExceptionMessage('Product of AdmissionTestPrice is not a Stripe product yet. See the stripeCreate method.');
     }
 
@@ -205,7 +190,7 @@ class StripeTraitTest extends TestCase
                 ])->pushStatus(503),
         ]);
         $this->expectException(RequestException::class);
-        $this->price->stripeCreate();
+        $this->price->stripeCreate('one_time');
     }
 
     public function test_create_stripe_price_happy_case()
@@ -223,12 +208,7 @@ class StripeTraitTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -247,28 +227,28 @@ class StripeTraitTest extends TestCase
                     'data' => [],
                 ])->push($response),
         ]);
-        $result = $this->price->stripeCreate();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->stripeCreate('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
-        $this->assertEquals($response['id'], $this->price->stripe_id);
-        $this->assertTrue($this->price->synced_to_stripe);
+        $this->assertEquals($response['id'], $this->price->stripe_one_time_type_id);
+        $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_update_stripe_price_but_have_no_stripe_id()
     {
         $this->expectException(NotYetCreated::class);
         $this->expectExceptionMessage('AdmissionTestPrice is not a Stripe price yet. See the stripeUpdate method.');
-        $this->price->stripeUpdate();
+        $this->price->stripeUpdate('one_time');
     }
 
     public function test_update_stripe_price_but_stripe_under_maintenance()
     {
-        $this->price->update(['stripe_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
+        $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        $this->price->stripeUpdate();
+        $this->price->stripeUpdate('one_time');
     }
 
     public function test_update_stripe_price_happy_case()
@@ -286,12 +266,7 @@ class StripeTraitTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -300,16 +275,16 @@ class StripeTraitTest extends TestCase
             'unit_amount_decimal' => '1000',
         ];
         $this->price->update([
-            'stripe_id' => $response['id'],
+            'stripe_one_time_type_id' => $response['id'],
             'name' => $response['nickname'],
         ]);
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response($response),
         ]);
-        $result = $this->price->stripeUpdate();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->stripeUpdate('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
-        $this->assertTrue($this->price->synced_to_stripe);
+        $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_update_or_create_price_when_have_no_stripe_id()
@@ -327,12 +302,7 @@ class StripeTraitTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -351,11 +321,11 @@ class StripeTraitTest extends TestCase
                     'data' => [],
                 ])->push($response),
         ]);
-        $result = $this->price->stripeUpdateOrCreate();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->stripeUpdateOrCreate('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
-        $this->assertEquals($response['id'], $this->price->stripe_id);
-        $this->assertTrue($this->price->synced_to_stripe);
+        $this->assertEquals($response['id'], $this->price->stripe_one_time_type_id);
+        $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_update_or_create_price_when_has_stripe_id_and_not_synced_to_stripe()
@@ -373,12 +343,7 @@ class StripeTraitTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -387,16 +352,16 @@ class StripeTraitTest extends TestCase
             'unit_amount_decimal' => '1000',
         ];
         $this->price->update([
-            'stripe_id' => $response['id'],
+            'stripe_one_time_type_id' => $response['id'],
             'name' => $response['nickname'],
         ]);
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response($response),
         ]);
-        $result = $this->price->stripeUpdate();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->stripeUpdate('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
-        $this->assertTrue($this->price->synced_to_stripe);
+        $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_update_or_create_price_when_has_stripe_id_and_synced_to_stripe()
@@ -414,12 +379,7 @@ class StripeTraitTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -428,16 +388,16 @@ class StripeTraitTest extends TestCase
             'unit_amount_decimal' => '1000',
         ];
         $this->price->update([
-            'stripe_id' => $response['id'],
+            'stripe_one_time_type_id' => $response['id'],
             'name' => $response['nickname'],
-            'synced_to_stripe' => true,
+            'synced_one_time_type_to_stripe' => true,
         ]);
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response($response),
         ]);
-        $result = $this->price->stripeUpdateOrCreate();
-        $this->assertEquals($response, $this->price->stripeData);
+        $result = $this->price->stripeUpdateOrCreate('one_time');
+        $this->assertEquals($response, $this->price->stripeData['one_time']);
         $this->assertEquals($response, $result);
-        $this->assertTrue($this->price->synced_to_stripe);
+        $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 }

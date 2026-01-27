@@ -3,81 +3,112 @@
 namespace App\Library\Stripe\Concerns\Models;
 
 use App\Library\Stripe\Client;
-use App\Library\Stripe\Exceptions\AlreadyCreated;
+use App\Library\Stripe\Exceptions\AlreadyCreatedPrice;
 use App\Library\Stripe\Exceptions\NotYetCreated;
 use App\Library\Stripe\Exceptions\NotYetCreatedProduct;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasStripePrice
 {
-    use UpdatableBase;
+    public array $stripeData = [
+        'one_time' => null,
+        'recurring' => null,
+    ];
+
+    protected string $interval; // day, week, month or year
+
+    protected int $intervalCount; // number of intervals
 
     abstract public function product(): BelongsTo;
 
-    public function getStripe(): ?array
+    public function getStripe(string $type): ?array
     {
-        if (! $this->stripeData) {
-            if ($this->stripe_id) {
-                $this->stripeData = Client::prices()->find($this->stripe_id);
+        if (! $this->stripeData[$type]) {
+            if ($this->{"stripe_{$type}_type_id"}) {
+                $this->stripeData[$type] = Client::prices()->find($this->{"stripe_{$type}_type_id"});
             } else {
-                $this->stripeData = Client::prices()->first([
+                $this->stripeData[$type] = Client::prices()->first([
+                    'type' => $type,
                     'metadata' => [
                         'type' => __CLASS__,
                         'id' => $this->id,
                     ],
                 ]);
-                if ($this->stripeData) {
+                if ($this->stripeData[$type]) {
                     $this->update([
-                        'stripe_id' => $this->stripeData['id'],
-                        'synced_to_stripe' => $this->name == $this->stripeData['nickname'],
+                        "stripe_{$type}_type_id" => $this->stripeData[$type]['id'],
+                        "synced_{$type}_type_to_stripe" => $this->name == $this->stripeData[$type]['nickname'],
                     ]);
                 }
             }
         }
 
-        return $this->stripeData;
+        return $this->stripeData[$type];
     }
 
-    public function stripeCreate(): array
+    public function stripeCreate($type): array
     {
-        if ($this->stripe_id) {
-            throw new AlreadyCreated($this, 'price');
+        if ($this->{"stripe_{$type}_type_id"}) {
+            throw new AlreadyCreatedPrice($this, $type);
         }
-        $this->getStripe();
-        if (! $this->stripeData) {
+        $this->getStripe($type);
+        if (! $this->stripeData[$type]) {
             if (! $this->product->stripe_id) {
                 throw new NotYetCreatedProduct($this);
             }
-            $this->stripeData = Client::prices()->create([
+            $data = [
                 'product' => $this->product->stripe_id,
                 'nickname' => $this->name,
+                'type' => $type,
                 'currency' => config('stripe.currency', 'hkd'),
                 'unit_amount' => $this->price,
                 'metadata' => [
                     'type' => __CLASS__,
                     'id' => $this->id,
                 ],
-            ]);
+            ];
+            if ($type == 'recurring') {
+                $data['recurring'] = [
+                    'interval' => $this->interval,
+                    'interval_count' => $this->intervalCount,
+                ];
+            }
+            $this->stripeData[$type] = Client::prices()->create($data);
             $this->update([
-                'stripe_id' => $this->stripeData['id'],
-                'synced_to_stripe' => $this->name == $this->stripeData['nickname'],
+                "stripe_{$type}_type_id" => $this->stripeData[$type]['id'],
+                "synced_{$type}_type_to_stripe" => $this->name == $this->stripeData[$type]['nickname'],
             ]);
         }
 
-        return $this->stripeData;
+        return $this->stripeData[$type];
     }
 
-    public function stripeUpdate(): array
+    public function stripeUpdate($type): array
     {
-        if (! $this->stripe_id) {
+        if (! $this->{"stripe_{$type}_type_id"}) {
             throw new NotYetCreated($this, 'price');
         }
-        $this->stripeData = Client::prices()->update(
-            $this->stripe_id,
+        $this->stripeData[$type] = Client::prices()->update(
+            $this->{"stripe_{$type}_type_id"},
             ['nickname' => $this->name],
         );
-        $this->update(['synced_to_stripe' => $this->name == $this->stripeData['nickname']]);
+        $this->update(["synced_{$type}_type_to_stripe" => $this->name == $this->stripeData[$type]['nickname']]);
 
-        return $this->stripeData;
+        return $this->stripeData[$type];
+    }
+
+    public function stripeUpdateOrCreate($type): array
+    {
+        if (! $this->{"stripe_{$type}_type_id"}) {
+            $this->stripeCreate($type);
+        }
+        if (! $this->{"synced_{$type}_type_to_stripe"}) {
+            $this->stripeUpdate($type);
+        }
+        if (! $this->stripeData[$type]) {
+            $this->getStripe($type);
+        }
+
+        return $this->stripeData[$type];
     }
 }
