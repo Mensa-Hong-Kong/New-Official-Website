@@ -291,7 +291,7 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        decimal price
+        decimal value
         datetime start_at
         string stripe_one_time_type_id
         boolean synced_one_time_type_to_stripe
@@ -658,7 +658,7 @@ Pricing tiers for products (time-based pricing).
 **Columns:**
 
 -   `product_id` - Foreign key to products
--   `price` - Price in smallest currency unit
+-   `value` - Price in smallest currency unit
 -   `start_at` - When this price becomes active
 -   `stripe_one_time_type_id` - Stripe one time type price ID
 

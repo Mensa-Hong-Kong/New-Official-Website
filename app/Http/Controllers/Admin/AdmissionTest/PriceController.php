@@ -35,7 +35,7 @@ class PriceController extends Controller implements HasMiddleware
         $price = AdmissionTestPrice::create([
             'product_id' => $product->id,
             'name' => $request->name,
-            'price' => $request->price,
+            'value' => $request->price,
             'start_at' => $request->start_at,
         ]);
 
@@ -43,7 +43,7 @@ class PriceController extends Controller implements HasMiddleware
             'success' => 'The admission test product price create success.',
             'id' => $price->id,
             'name' => $price->name,
-            'price' => $price->price,
+            'price' => $price->value,
             'start_at' => $price->start_at,
             'updated_at' => $price->updated_at,
         ];

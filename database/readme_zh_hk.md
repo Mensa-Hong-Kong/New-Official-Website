@@ -293,7 +293,7 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        decimal price
+        decimal value
         datetime start_at
         string stripe_one_time_type_id
         boolean synced_one_time_type_to_stripe
@@ -660,7 +660,7 @@ Laravel 會話存儲。
 **列：**
 
 -   `product_id` - 指向產品的外鍵
--   `price` - 最小貨幣單位價格
+-   `value` - 最小貨幣單位價格
 -   `start_at` - 此價格變為活躍的時間
 -   `stripe_one_time_type_id` - Stripe 價格 ID
 

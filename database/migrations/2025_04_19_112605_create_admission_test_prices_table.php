@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->string('name')->nullable();
-            $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
+            $table->decimal('value', $priceDigits, $priceDecimal)->unsigned();
             $table->dateTime('start_at')->nullable();
             $table->string('stripe_one_time_type_id')->nullable();
             $table->boolean('synced_one_time_type_to_stripe')->default(false);

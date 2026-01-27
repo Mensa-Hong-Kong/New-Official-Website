@@ -408,10 +408,10 @@ class CreateTest extends TestCase
             'minimum_age' => null,
             'maximum_age' => null,
         ])->create();
-        $price = AdmissionTestPrice::factory()->state(['price' => 200])->create();
+        $price = AdmissionTestPrice::factory()->state(['value' => 200])->create();
         AdmissionTestPrice::factory()->state([
             'product_id' => $price->product->id,
-            'price' => 300,
+            'value' => 300,
             'start_at' => now(),
         ])->create();
         $this->test->update(['is_free' => false]);

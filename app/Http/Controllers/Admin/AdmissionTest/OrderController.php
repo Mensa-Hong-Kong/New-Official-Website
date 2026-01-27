@@ -74,7 +74,7 @@ class OrderController extends BaseController implements HasMiddleware
                     $products = AdmissionTestProduct::select(['id', 'name', 'minimum_age', 'maximum_age', 'quota'])
                         ->with([
                             'price' => function ($query) {
-                                $query->select(['id', 'product_id', 'name', 'price']);
+                                $query->select(['id', 'product_id', 'name', 'value']);
                             },
                         ])->whereInDateRange(now())
                         ->get();

@@ -15,7 +15,7 @@ class AdmissionTestPriceFactory extends Factory
         return [
             'product_id' => AdmissionTestProduct::inRandomOrder()->first()->id ?? AdmissionTestProduct::factory()->create()->id,
             'name' => fake()->randomElement([true, false]) ? fake()->word() : null,
-            'price' => fake()->numberBetween(1, 65535),
+            'value' => fake()->numberBetween(1, 65535),
         ];
     }
 }

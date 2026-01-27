@@ -61,7 +61,7 @@ trait HasStripePrice
                 'nickname' => $this->name,
                 'type' => $type,
                 'currency' => config('stripe.currency', 'hkd'),
-                'unit_amount' => $this->price,
+                'unit_amount' => $this->value,
                 'metadata' => [
                     'type' => __CLASS__,
                     'id' => $this->id,

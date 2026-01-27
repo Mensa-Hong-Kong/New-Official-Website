@@ -15,7 +15,7 @@ class AdmissionTestPrice extends Model
     protected $fillable = [
         'product_id',
         'name',
-        'price',
+        'value',
         'start_at',
         'stripe_one_time_type_id',
         'synced_one_time_type_to_stripe',

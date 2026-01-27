@@ -46,7 +46,7 @@
                 {/if}
                 <tr>
                     <th>Price</th>
-                    <td>{price.price}</td>
+                    <td>{price.value}</td>
                 </tr>
             {/if}
         </Table>
@@ -65,7 +65,7 @@
                             <label class="p-4 radio-card card h-100" for="price{index}">
                                 <div class="p-0 card-body">
                                     <h5 class="card-title">{product.option_name}</h5>
-                                    <h2 class="mb-3 card-text">${product.price.price}</h2>
+                                    <h2 class="mb-3 card-text">${product.price.value}</h2>
                                     {#if product.quota > 1}
                                         <ul class="list-unstyled">
                                             <li class="mb-2">✓ Retake {product.quota - 1} time when fail</li>

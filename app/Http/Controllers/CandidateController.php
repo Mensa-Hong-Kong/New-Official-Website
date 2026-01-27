@@ -117,7 +117,7 @@ class CandidateController extends Controller implements HasMiddleware
                                     ->find($request->price_id);
                                 if (! $price) {
                                     $request->merge(['error' => 'The selected product is invalid.']);
-                                } elseif ($price->price != $price->product->price->price) {
+                                } elseif ($price->value != $price->product->price->value) {
                                     $request->merge(['error' => 'The price of selected product is not up to date, please try again on this up to date version.']);
                                 } elseif ($price->product->start_at && $price->product->start_at > now()) {
                                     $request->merge(['error' => 'The selected product is not yet released, please try again later or select other product.']);
