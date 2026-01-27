@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('district_id');
-            $table->string('address');
-            $table->unique(['district_id', 'address']);
+            $table->string('value');
+            $table->unique(['district_id', 'value']);
             $table->timestamps();
         });
     }

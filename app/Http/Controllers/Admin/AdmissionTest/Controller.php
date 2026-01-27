@@ -108,8 +108,8 @@ class Controller extends BaseController implements HasMiddleware
             )->with('districts', $districts)
             ->with(
                 'addresses', Address::distinct()
-                    ->get('address')
-                    ->pluck('address')
+                    ->get('value')
+                    ->pluck('value')
                     ->toArray()
             );
     }
@@ -122,7 +122,7 @@ class Controller extends BaseController implements HasMiddleware
         ]);
         $address = Address::firstOrCreate([
             'district_id' => $request->district_id,
-            'address' => $request->address,
+            'value' => $request->address,
         ]);
         $test = AdmissionTest::create([
             'type_id' => $request->type_id,
@@ -219,22 +219,22 @@ class Controller extends BaseController implements HasMiddleware
             ->with(
                 'addresses', Address::distinct()
                     ->has('admissionTests')
-                    ->get(['id', 'address'])
-                    ->pluck('address', 'id')
+                    ->get(['id', 'value'])
+                    ->pluck('value', 'id')
                     ->toArray()
             );
     }
 
-    private function updateAddress(Address $address, string $newAddress, int $newDistrictID)
+    private function updateAddress(Address $address, string $newAddress, int $newDistrictID): Address
     {
         $addressModel = $address;
         if (
-            $newAddress != $address->address ||
+            $newAddress != $address->value ||
             $newDistrictID != $address->district_id
         ) {
             $addressModel = Address::firstWhere([
                 'district_id' => $newDistrictID,
-                'address' => $newAddress,
+                'value' => $newAddress,
             ]);
             if ($address->admissionTests()->count() == 1) {
                 if ($addressModel) {
@@ -242,7 +242,7 @@ class Controller extends BaseController implements HasMiddleware
                 } else {
                     $address->update([
                         'district_id' => $newDistrictID,
-                        'address' => $newAddress,
+                        'value' => $newAddress,
                     ]);
                     $addressModel = $address;
                 }
@@ -250,7 +250,7 @@ class Controller extends BaseController implements HasMiddleware
             if (! $addressModel) {
                 $addressModel = Address::create([
                     'district_id' => $newDistrictID,
-                    'address' => $newAddress,
+                    'value' => $newAddress,
                 ]);
             }
         }
@@ -258,7 +258,7 @@ class Controller extends BaseController implements HasMiddleware
         return $addressModel;
     }
 
-    private function updateLocation(Location $location, string $newLocationName)
+    private function updateLocation(Location $location, string $newLocationName): Location
     {
         $newLocation = $location;
         if ($location->name != $newLocationName) {
@@ -293,7 +293,7 @@ class Controller extends BaseController implements HasMiddleware
             'testing_time' => $admissionTest->testing_at->format('H:i:s'),
             'expect_end_time' => $admissionTest->expect_end_at->format('H:i:s'),
             'location' => $admissionTest->location->name,
-            'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
+            'address' => "{$admissionTest->address->value}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
         $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);
         $location = $this->updateLocation($admissionTest->location, $request->location);
@@ -312,7 +312,7 @@ class Controller extends BaseController implements HasMiddleware
             'testing_time' => $admissionTest->testing_at->format('H:i:s'),
             'expect_end_time' => $admissionTest->expect_end_at->format('H:i:s'),
             'location' => $admissionTest->location->name,
-            'address' => "{$admissionTest->address->address}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
+            'address' => "{$admissionTest->address->value}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
         if (
             $from['testing_date'] != $to['testing_date'] ||
@@ -336,7 +336,7 @@ class Controller extends BaseController implements HasMiddleware
             'location' => $admissionTest->location->name,
             'district_id' => $admissionTest->address->district_id,
             'address_id' => $admissionTest->address_id,
-            'address' => $admissionTest->address->address,
+            'address' => $admissionTest->address->value,
             'maximum_candidates' => $admissionTest->maximum_candidates,
             'is_public' => $admissionTest->is_public,
         ];

@@ -189,7 +189,7 @@ erDiagram
     addresses {
         bigint id PK
         bigint district_id FK
-        string address
+        string value
         timestamp created_at
         timestamp updated_at
     }
@@ -571,7 +571,7 @@ Laravel 會話存儲。
 
 與地區相關的具體地址。
 
-**唯一約束：**（`district_id`、`address`）
+**唯一約束：**（`district_id`、`value`）
 
 #### `locations`
 
@@ -1038,7 +1038,7 @@ $user = User::factory()
 
 **複合唯一約束：**
 
--   `addresses`：（`district_id`、`address`）
+-   `addresses`：（`district_id`、`value`）
 -   `districts`：（`area_id`、`name`）
 -   `teams`：（`name`、`type_id`）
 

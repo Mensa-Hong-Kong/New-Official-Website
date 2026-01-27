@@ -51,7 +51,7 @@
                         <tr>
                             <td>{formatToDate(test.testing_at)}</td>
                             <td>{formatToTime(test.testing_at).slice(0, -3)}</td>
-                            <td title="{test.address.address}, {test.address.district.name}, {test.address.district.area.name}">{test.location.name}</td>
+                            <td title="{test.address.value}, {test.address.district.name}, {test.address.district.area.name}">{test.location.name}</td>
                             <td>{test.candidates_count}/{test.maximum_candidates}</td>
                             {#if auth.user && ! user.has_qualification_of_membership}
                                 <td>

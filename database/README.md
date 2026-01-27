@@ -187,7 +187,7 @@ erDiagram
     addresses {
         bigint id PK
         bigint district_id FK
-        string address
+        string value
         timestamp created_at
         timestamp updated_at
     }
@@ -569,7 +569,7 @@ Districts within areas.
 
 Specific addresses linked to districts.
 
-**Unique Constraint:** (`district_id`, `address`)
+**Unique Constraint:** (`district_id`, `value`)
 
 #### `locations`
 
@@ -1035,7 +1035,7 @@ Several tables use ENUM fields. Update carefully:
 
 **Composite Unique Constraints:**
 
--   `addresses`: (`district_id`, `address`)
+-   `addresses`: (`district_id`, `value`)
 -   `districts`: (`area_id`, `name`)
 -   `teams`: (`name`, `type_id`)
 

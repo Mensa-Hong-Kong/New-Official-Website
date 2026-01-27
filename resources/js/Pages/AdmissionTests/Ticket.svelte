@@ -29,7 +29,7 @@
             <tr>
                 <th>Address</th>
                 <td>
-                    {test.address.address},
+                    {test.address.value},
                     {test.address.district.name},
                     {test.address.district.area.name}
                 </td>
