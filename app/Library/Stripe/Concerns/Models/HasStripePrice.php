@@ -15,10 +15,6 @@ trait HasStripePrice
         'recurring' => null,
     ];
 
-    protected string $interval; // day, week, month or year
-
-    protected int $intervalCount; // number of intervals
-
     abstract public function product(): BelongsTo;
 
     public function getStripe(string $type): ?array
@@ -69,8 +65,8 @@ trait HasStripePrice
             ];
             if ($type == 'recurring') {
                 $data['recurring'] = [
-                    'interval' => $this->interval,
-                    'interval_count' => $this->intervalCount,
+                    'interval' => $this->product->interval,
+                    'interval_count' => $this->product->intervalCount,
                 ];
             }
             $this->stripeData[$type] = Client::prices()->create($data);
