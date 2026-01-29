@@ -95,6 +95,8 @@ erDiagram
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
+    members }o--|| membership_orders : creates
+    membership_orders }o--|| members : ordered_by
 
     %% Admission Tests
     admission_tests }o--|| admission_test_types : has_type
@@ -162,14 +164,27 @@ erDiagram
     members {
         bigint id PK
         bigint user_id FK
-        boolean is_active
-        date expired_on
-        date actual_expired_on
         string prefix_name
         string nickname
         string suffix_name
         string address_id FK
-        string forward_email UK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    membership_orders {
+        bigint id PK
+        bigint member_id FK
+        string product_name
+        string price_name
+        decimal price
+        enum status
+        dateTime expired_at
+        tinyInteger from_year
+        tinyInteger to_year
+        string gateway_type
+        bigint gateway_id
+        string reference_number
         timestamp created_at
         timestamp updated_at
     }
@@ -530,6 +545,18 @@ Extended profile for active MENSA members.
 -   `actual_expired_on` - Actual expiration considering extensions
 -   `forward_email` - Unique forwarding email address
 
+#### `membership_orders`
+
+MENSA membership order
+
+**Columns:**
+
+-   `member_id` - Foreign key to members
+-   `status` - ENUM('pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded')
+-   `price` - Amount in smallest currency unit
+-   `gateway_type`, `gateway_id` - Polymorphic relation to payment gateway
+-   `reference_number` - External transaction reference
+
 #### `user_has_contacts`
 
 Stores multiple contact methods (email/mobile) for users.
@@ -810,10 +837,11 @@ User
   ├─ hasMany: UserHasContact
   ├─ hasMany: UserLoginLog
   ├─ hasMany: AdmissionTestOrder
-  ├─ hasOne: Member
   ├─ belongsTo: Gender
   ├─ belongsTo: PassportType
-  └─ belongsToMany: AdmissionTest (as candidate/proctor)
+  ├─ belongsToMany: AdmissionTest (as candidate/proctor)
+  └─ hasOne: Member
+      └─ hasMany: MembershipOrder
 ```
 
 ### Admission Test Ecosystem

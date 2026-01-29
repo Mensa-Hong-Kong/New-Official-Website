@@ -97,6 +97,8 @@ erDiagram
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
+    members }o--|| membership_orders : creates
+    membership_orders }o--|| members : ordered_by
 
     %% 入會試
     admission_tests }o--|| admission_test_types : has_type
@@ -164,14 +166,27 @@ erDiagram
     members {
         bigint id PK
         bigint user_id FK
-        boolean is_active
-        date expired_on
-        date actual_expired_on
         string prefix_name
         string nickname
         string suffix_name
         string address_id FK
-        string forward_email UK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    membership_orders {
+        bigint id PK
+        bigint member_id FK
+        string product_name
+        string price_name
+        decimal price
+        enum status
+        dateTime expired_at
+        tinyInteger from_year
+        tinyInteger to_year
+        string gateway_type
+        bigint gateway_id
+        string reference_number
         timestamp created_at
         timestamp updated_at
     }
@@ -519,7 +534,7 @@ erDiagram
 
 #### `members`
 
-MENSA 活躍成員的擴展檔案。
+MENSA 成員的擴展檔案。
 
 **特別說明：** 使用自定義 ID 生成，在創建時使用 `DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM members temp)')`。
 
@@ -527,10 +542,19 @@ MENSA 活躍成員的擴展檔案。
 
 -   `id` - 主鍵（非自增，自定義生成）
 -   `user_id` - 指向用戶的外鍵
--   `is_active` - 會員身份
--   `expired_on` - 會員到期日期
--   `actual_expired_on` - 考慮延期後的實際到期日期
--   `forward_email` - 唯一轉發電郵地址
+
+#### `membership_orders`
+
+MENSA 會員會費訂單紀錄
+
+**列：**
+
+-   `member_id` - 指向會員的外鍵
+-   `status` - ENUM（'pending'、'canceled'、'failed'、'expired'、'succeeded', 'partial refunded', 'full refunded'）
+-   `price` - 最小貨幣單位金額
+-   `gateway_type`、`gateway_id` - 多態關係到支付網關
+-   `reference_number` - 外部交易參考
+
 
 #### `user_has_contacts`
 
@@ -813,10 +837,11 @@ User（用戶）
   ├─ hasMany: UserLoginLog（用戶登錄日誌）
   ├─ hasMany: ResetPasswordLog（用戶登錄日誌）
   ├─ hasMany: AdmissionTestOrder（資格試訂單）
-  ├─ hasOne: Member（成員）
   ├─ belongsTo: Gender（性別）
   ├─ belongsTo: PassportType（護照類型）
   └─ belongsToMany: AdmissionTest（資格試）（作為考生/監考員）
+  └─ hasOne: Member（成員）
+      └─ hasMany: MembershipOrder
 ```
 
 ### 資格試生態系統

@@ -217,17 +217,6 @@ class User extends Authenticatable
         );
     }
 
-    public function isActiveMember(): Attribute
-    {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return (bool) $user->member && $user->member->is_active;
-            }
-        );
-    }
-
     public function hasPassedAdmissionTest(): Attribute
     {
         $user = $this;

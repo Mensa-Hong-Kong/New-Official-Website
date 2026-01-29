@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -15,19 +16,10 @@ class Member extends Model
     protected $fillable = [
         'id',
         'user_id',
-        'is_active',
-        'expired_on',
-        'actual_expired_on',
         'prefix_name',
         'nickname',
         'suffix_name',
         'address_id',
-        'forward_email',
-    ];
-
-    protected $casts = [
-        'expired_on' => 'date',
-        'actual_expired_on' => 'date',
     ];
 
     /**
@@ -42,8 +34,46 @@ class Member extends Model
         );
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function address()
     {
         return $this->belongsTo(Address::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(MembershipOrder::class);
+    }
+
+    public function latestOrder()
+    {
+        return $this->hasOne(MembershipOrder::class)->latestOfMany('id');
+    }
+
+    public function latestSucceededOrder()
+    {
+        return $this->latestOrder()->where('status', 'succeeded');
+    }
+
+    protected function isActive(): Attribute
+    {
+        $member = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($member) {
+                $thisYear = now()->year;
+
+                return $member->latestSucceededOrder &&
+                    $member->latestSucceededOrder->from_year <= $thisYear &&
+                    (
+                        ! $member->latestSucceededOrder->to_year ||
+                        $member->latestSucceededOrder->to_year > -$thisYear
+                    );
+            }
+        );
     }
 }

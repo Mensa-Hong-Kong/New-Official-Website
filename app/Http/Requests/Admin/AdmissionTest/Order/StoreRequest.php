@@ -36,7 +36,7 @@ class StoreRequest extends FormRequest
                         $fail('The selected user age greater than maximum age limit.');
                     } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
-                    } elseif ($request->user->isActiveMember) {
+                    } elseif ($request->user->member?->is_active) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');

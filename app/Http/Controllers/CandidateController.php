@@ -42,7 +42,7 @@ class CandidateController extends Controller implements HasMiddleware
                             ['admission_test' => $admissionTest]
                         )->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
-                    if ($user->isActiveMember) {
+                    if ($user->member?->is_active) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
                     }
                     if ($user->hasQualificationOfMembership) {
@@ -167,7 +167,7 @@ class CandidateController extends Controller implements HasMiddleware
                             if (! $admissionTest->is_public) {
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and this test is private, please register other admission test.']);
                             }
-                            if ($user->isActiveMember) {
+                            if ($user->member?->is_active) {
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been member.']);
                             }
                             if ($user->hasQualificationOfMembership) {

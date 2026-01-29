@@ -55,7 +55,6 @@ https://docs.stripe.com/testing
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- change members table to members and member_orders tables
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table

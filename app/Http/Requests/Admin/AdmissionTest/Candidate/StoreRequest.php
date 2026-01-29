@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
                     $test = $request->route('admission_test');
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
-                    } elseif ($request->user->isActiveMember) {
+                    } elseif ($request->user->member?->is_active) {
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');

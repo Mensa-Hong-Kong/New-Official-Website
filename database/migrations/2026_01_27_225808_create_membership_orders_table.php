@@ -14,17 +14,16 @@ return new class extends Migration
     {
         $priceDigits = Amount::getMaximumDigits();
         $priceDecimal = Amount::getActualDecimal();
-        Schema::create('admission_test_orders', function (Blueprint $table) use ($priceDigits, $priceDecimal) {
+        Schema::create('membership_orders', function (Blueprint $table) use ($priceDigits, $priceDecimal) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('member_id');
             $table->string('product_name')->nullable();
             $table->string('price_name')->nullable();
             $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
-            $table->unsignedTinyInteger('minimum_age')->nullable();
-            $table->unsignedTinyInteger('maximum_age')->nullable();
-            $table->unsignedTinyInteger('quota')->default(2);
             $table->enum('status', ['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']);
             $table->dateTime('expired_at')->useCurrent();
+            $table->unsignedTinyInteger('from_year')->nullable();
+            $table->unsignedTinyInteger('to_year')->nullable();
             $table->string('gateway_type');
             $table->unsignedBigInteger('gateway_id');
             $table->string('reference_number')->nullable();
@@ -37,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admission_test_orders');
+        Schema::dropIfExists('membership_orders');
     }
 };
