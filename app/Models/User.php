@@ -228,17 +228,6 @@ class User extends Authenticatable
         );
     }
 
-    public function hasQualificationOfMembership(): Attribute
-    {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return $user->member || $user->hasPassedAdmissionTest;
-            }
-        );
-    }
-
     protected function stripeName(): string
     {
         return $this->preferredName;
@@ -422,5 +411,28 @@ class User extends Authenticatable
         }
 
         return $return;
+    }
+
+    public function memberTransfers()
+    {
+        return $this->hasMany(MembershipTransfer::class);
+    }
+
+    public function memberVerifiedTransfers()
+    {
+        return $this->memberTransfers()
+            ->whereNotNull('verified_at');
+    }
+
+    public function hasQualificationOfMembership(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->member || $user->hasPassedAdmissionTest ||
+                    $user->memberVerifiedTransfers()->count();
+            }
+        );
     }
 }
