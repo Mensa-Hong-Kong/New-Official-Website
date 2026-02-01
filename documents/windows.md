@@ -97,8 +97,8 @@ git clone https://github.com/php-build/php-build $(phpenv root)/plugins/php-buil
 #### Install PHP
 
 ```shell
-PHP_BUILD_CONFIGURE_OPTS="--with-pgsql=/usr/include/postgresql --with-pdo-pgsql=/usr/include/postgresql --with-freetype" phpenv install 8.3.14
-phpenv global 8.3.14
+PHP_BUILD_CONFIGURE_OPTS="--with-pgsql=/usr/include/postgresql --with-pdo-pgsql=/usr/include/postgresql --with-freetype" phpenv install 8.4.13
+phpenv global 8.4.13
 ```
 
 #### PHP Composer

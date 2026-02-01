@@ -22,4 +22,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+boost.json
+/.github/copilot-instructions.md
 

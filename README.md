@@ -51,6 +51,18 @@ Please read database/README.md for database setup and details.
 ### Payment cards for Stripe UAT
 https://docs.stripe.com/testing
 
+
+### A.I. Helper
+
+This installed laravel prompts mcp and boost
+
+Please read laravel official documents:
+
+- Laravel Prompts: https://laravel.com/docs/11.x/prompts
+- Laravel MCP: https://laravel.com/docs/11.x/mcp#main-content
+- Laravel Boost: https://laravel.com/docs/11.x/installation#installing-laravel-boost
+
+
 ### Todo
 
 #### stage 1 permission system, nav, custom web page and admission test

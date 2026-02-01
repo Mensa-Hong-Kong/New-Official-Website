@@ -82,8 +82,8 @@ pyenv global 3.11.4
 1. First time install:
 
 ```shell
-brew install php@8.2
-brew link php@8.2
+brew install php@8.4
+brew link php@8.4
 ```
 
 2. If you have installed php 8.1 before, you need to unlink it first and change new php version:

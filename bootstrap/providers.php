@@ -7,4 +7,5 @@ return [
     Tighten\Ziggy\ZiggyServiceProvider::class,
     Inertia\ServiceProvider::class,
     Reedware\LaravelRelationJoins\LaravelRelationJoinServiceProvider::class,
+    Laravel\Boost\BoostServiceProvider::class,
 ];
