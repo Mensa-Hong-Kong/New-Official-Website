@@ -21,6 +21,7 @@ class MembershipOrder extends Model
         'gateway_type',
         'gateway_id',
         'reference_number',
+        'gateway_payment_fee',
     ];
 
     public function member()
