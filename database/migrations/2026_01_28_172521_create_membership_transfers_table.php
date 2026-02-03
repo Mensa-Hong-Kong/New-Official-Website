@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('membership_number')->nullable();
             $table->integer('membership_ended_in')->nullable();
             $table->string('remark')->nullable();
-            $table->dateTime('verified_at')->nullable();
+            $table->boolean('is_accepted')->nullable();
             $table->timestamps();
         });
     }

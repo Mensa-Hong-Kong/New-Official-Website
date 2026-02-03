@@ -16,11 +16,7 @@ class MembershipTransfer extends Model
         'membership_number',
         'membership_ended_in',
         'remark',
-        'verified_at',
-    ];
-
-    protected $casts = [
-        'verified_at' => 'datetime',
+        'is_accepted',
     ];
 
     public function user()

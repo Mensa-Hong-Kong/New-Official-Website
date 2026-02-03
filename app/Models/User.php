@@ -418,12 +418,6 @@ class User extends Authenticatable
         return $this->hasMany(MembershipTransfer::class);
     }
 
-    public function memberVerifiedTransfers()
-    {
-        return $this->memberTransfers()
-            ->whereNotNull('verified_at');
-    }
-
     public function hasQualificationOfMembership(): Attribute
     {
         $user = $this;
@@ -431,7 +425,9 @@ class User extends Authenticatable
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return $user->member || $user->hasPassedAdmissionTest ||
-                    $user->memberVerifiedTransfers()->count();
+                    $user->memberTransfers()
+                        ->where('is_accepted', true)
+                        ->exists();
             }
         );
     }
