@@ -8,7 +8,7 @@ return new class extends Migration
     public function up(): void
     {
         Artisan::call('db:seed', [
-            '--class' => 'ModuleSeeder',
+            '--class' => 'ModulePermissionSeeder',
             '--force' => true,
         ]);
     }
