@@ -177,26 +177,6 @@ class User extends Authenticatable
         );
     }
 
-    public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
-    {
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) {
-                return User::where('passport_type_id', $attributes['passport_type_id'])
-                    ->where('passport_number', $attributes['passport_number'])
-                    ->where(
-                        function ($query) {
-                            $query->has('member')
-                                ->orWhereHas(
-                                    'admissionTests', function ($query) {
-                                        $query->where('is_pass', true);
-                                    }
-                                );
-                        }
-                    )->exists();
-            }
-        );
-    }
-
     public function lastAttendedAdmissionTestOfOtherSamePassportUser(): Attribute
     {
         $table = $this->getTable();
@@ -217,15 +197,10 @@ class User extends Authenticatable
         );
     }
 
-    public function hasPassedAdmissionTest(): Attribute
+    public function passedAdmissionTest()
     {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return $user->admissionTests()->where('is_pass', true)->exists();
-            }
-        );
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
+            ->where('is_pass', true);
     }
 
     protected function stripeName(): string
@@ -435,10 +410,32 @@ class User extends Authenticatable
 
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
-                return $user->member || $user->hasPassedAdmissionTest ||
+                return $user->member || $user->passedAdmissionTest ||
                     $user->passedPriorEvidence || $user->memberTransfers()
                         ->where('is_accepted', true)
                         ->exists();
+            }
+        );
+    }
+
+    public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return User::where('passport_type_id', $attributes['passport_type_id'])
+                    ->where('passport_number', $attributes['passport_number'])
+                    ->where(
+                        function ($query) {
+                            $query->has('member')
+                                ->orHas('passedAdmissionTest')
+                                ->orHas('passedPriorEvidence')
+                                ->orWhereHas(
+                                    'memberTransfers', function($query) {
+                                        $query->where('is_accepted', true);
+                                    }
+                                );
+                        }
+                    )->exists();
             }
         );
     }
