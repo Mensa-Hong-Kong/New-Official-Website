@@ -186,7 +186,7 @@ class StoreTest extends TestCase
         ]);
         $thisYear = now()->year;
         MembershipOrder::create([
-            'member_id' => $this->user->member->id,
+            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => $thisYear,

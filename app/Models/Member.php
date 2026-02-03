@@ -11,11 +11,13 @@ class Member extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'user_id';
+
     public $incrementing = false;
 
     protected $fillable = [
-        'id',
         'user_id',
+        'number',
         'prefix_name',
         'nickname',
         'suffix_name',
@@ -29,7 +31,7 @@ class Member extends Model
     {
         static::creating(
             function (Member $member) {
-                $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM '.(new self)->getTable().' temp)');
+                $member->number = DB::raw('(SELECT IFNULL(MAX(number), 0)+1 FROM '.(new self)->getTable().' temp)');
             }
         );
     }
@@ -46,28 +48,12 @@ class Member extends Model
 
     public function orders()
     {
-        return $this->hasMany(MembershipOrder::class);
+        return $this->hasMany(MembershipOrder::class, 'user_id', 'user_id');
     }
 
-    public function latestOrder()
+    public function transfers()
     {
-        return $this->hasOne(MembershipOrder::class)->latestOfMany('id');
-    }
-
-    public function latestSucceededOrder()
-    {
-        return $this->latestOrder()->where('status', 'succeeded');
-    }
-
-    public function memberTransfers()
-    {
-        return $this->hasManyThrough(MembershipTransfer::class, User::class, 'id', 'user_id', 'user_id', 'id');
-    }
-
-    public function verifiedMemberTransfers()
-    {
-        return $this->memberTransfers()
-            ->whereNotNull('verified_at');
+        return $this->hasMany(MembershipTransfer::class, 'user_id', 'user_id');
     }
 
     protected function isActive(): Attribute
@@ -78,23 +64,22 @@ class Member extends Model
             get: function (mixed $value, array $attributes) use ($member) {
                 $thisYear = now()->year;
 
-                return (
-                    $member->latestSucceededOrder &&
-                    $member->latestSucceededOrder->from_year <= $thisYear &&
-                    (
-                        ! $member->latestSucceededOrder->to_year ||
-                        $member->latestSucceededOrder->to_year > $thisYear
-                    )
-                ) || (
-                    $this->verifiedMemberTransfers()
+                return $member->orders()
+                    ->where('status', 'succeeded')
+                    ->where(
+                        function($query) use ($thisYear) {
+                            $query->whereNull('to_year')
+                                ->orWhere('to_year', '>', $thisYear);
+                        }
+                    )->exists() || $this->transfers()
+                        ->where('is_accepted', true)
                         ->whereIn('type', ['in', 'guest'])
                         ->where(
                             function($query) use($thisYear) {
                                 $query->whereNull('membership_ended_in')
                                     ->where('membership_ended_in', '>=', $thisYear);
                             }
-                        )->exists()
-                );
+                        )->exists();
             }
         );
     }

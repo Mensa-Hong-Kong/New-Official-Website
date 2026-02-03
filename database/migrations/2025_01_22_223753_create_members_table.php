@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('members', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
-            $table->unsignedBigInteger('user_id')->unique();
+            $table->unsignedBigInteger('user_id')->primary();
+            $table->unsignedBigInteger('number');
             $table->string('prefix_name')->nullable();
             $table->string('nickname')->nullable();
             $table->string('suffix_name')->nullable();
-            $table->string('address_id')->nullable();
+            $table->unsignedBigInteger('address_id')->nullable();
             $table->timestamps();
         });
     }

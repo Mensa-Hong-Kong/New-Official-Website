@@ -175,8 +175,8 @@ erDiagram
     }
 
     membership_orders {
-        bigint id PK
-        bigint member_id FK
+        bigint user_id PK
+        bigint number
         string product_name
         string price_name
         decimal price
@@ -549,7 +549,7 @@ MENSA 會員會費訂單紀錄
 
 **列：**
 
--   `member_id` - 指向會員的外鍵
+-   `user_id` - 指向會員的外鍵
 -   `status` - ENUM（'pending'、'canceled'、'failed'、'expired'、'succeeded', 'partial refunded', 'full refunded'）
 -   `price` - 最小貨幣單位金額
 -   `gateway_type`、`gateway_id` - 多態關係到支付網關
@@ -1075,7 +1075,7 @@ $user = User::factory()
 -   `locations.name`
 -   `custom_web_pages.pathname`
 
-### 6. 自定義 ID 生成
+### 6. 自定義 number 生成
 
 `members` 表使用自定義 ID 生成：
 
@@ -1083,7 +1083,7 @@ $user = User::factory()
 protected static function booted(): void
 {
     static::creating(function (Member $member) {
-        $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM members temp)');
+        $member->number = DB::raw('(SELECT IFNULL(MAX(number), 0)+1 FROM members temp)');
     });
 }
 ```

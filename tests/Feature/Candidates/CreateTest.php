@@ -105,7 +105,7 @@ class CreateTest extends TestCase
         ]);
         $thisYear = now()->year;
         MembershipOrder::create([
-            'member_id' => $this->user->member->id,
+            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => $thisYear,
@@ -449,7 +449,7 @@ class CreateTest extends TestCase
     public function test_price_id_of_product_is_not_yet_released_when_test_is_not_free_and_user_have_no_unused_quota_order()
     {
         $product = AdmissionTestProduct::factory()->state([
-            'start_at' => now()->addSeconds(2),
+            'start_at' => now()->addSeconds(5),
             'minimum_age' => null,
             'maximum_age' => null,
         ])->create();

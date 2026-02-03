@@ -173,8 +173,8 @@ erDiagram
     }
 
     membership_orders {
-        bigint id PK
-        bigint member_id FK
+        bigint user_id PK
+        bigint number
         string product_name
         string price_name
         decimal price
@@ -551,7 +551,7 @@ MENSA membership order
 
 **Columns:**
 
--   `member_id` - Foreign key to members
+-   `user_id` - Foreign key to users
 -   `status` - ENUM('pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded')
 -   `price` - Amount in smallest currency unit
 -   `gateway_type`, `gateway_id` - Polymorphic relation to payment gateway
@@ -1077,13 +1077,13 @@ Several tables use ENUM fields. Update carefully:
 
 ### 6. Custom ID Generation
 
-The `members` table uses custom ID generation:
+The `members` table uses custom number generation:
 
 ```php
 protected static function booted(): void
 {
     static::creating(function (Member $member) {
-        $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM members temp)');
+        $member->number = DB::raw('(SELECT IFNULL(MAX(number), 0)+1 FROM members temp)');
     });
 }
 ```

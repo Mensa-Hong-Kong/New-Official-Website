@@ -10,7 +10,7 @@ class MembershipOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'member_id',
+        'user_id',
         'product_name',
         'price_name',
         'price',
@@ -26,12 +26,12 @@ class MembershipOrder extends Model
 
     public function member()
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(Member::class, 'user_id', 'user_id');
     }
 
     public function user()
     {
-        return $this->hasOneThrough(User::class, Member::class, 'id', 'id', 'member_id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function gateway()

@@ -16,7 +16,7 @@ return new class extends Migration
         $priceDecimal = Amount::getActualDecimal();
         Schema::create('membership_orders', function (Blueprint $table) use ($priceDigits, $priceDecimal) {
             $table->id();
-            $table->unsignedBigInteger('member_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('product_name')->nullable();
             $table->string('price_name')->nullable();
             $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
