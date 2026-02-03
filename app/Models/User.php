@@ -430,7 +430,7 @@ class User extends Authenticatable
                                 ->orHas('passedAdmissionTest')
                                 ->orHas('passedPriorEvidence')
                                 ->orWhereHas(
-                                    'memberTransfers', function($query) {
+                                    'memberTransfers', function ($query) {
                                         $query->where('is_accepted', true);
                                     }
                                 );

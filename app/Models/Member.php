@@ -67,18 +67,18 @@ class Member extends Model
                 return $member->orders()
                     ->where('status', 'succeeded')
                     ->where(
-                        function($query) use ($thisYear) {
+                        function ($query) use ($thisYear) {
                             $query->whereNull('to_year')
                                 ->orWhere('to_year', '>', $thisYear);
                         }
                     )->exists() || $this->transfers()
-                        ->where('is_accepted', true)
-                        ->where(
-                            function($query) use($thisYear) {
-                                $query->whereNull('membership_ended_in')
-                                    ->where('membership_ended_in', '>=', $thisYear);
-                            }
-                        )->exists();
+                    ->where('is_accepted', true)
+                    ->where(
+                        function ($query) use ($thisYear) {
+                            $query->whereNull('membership_ended_in')
+                                ->where('membership_ended_in', '>=', $thisYear);
+                        }
+                    )->exists();
             }
         );
     }

@@ -119,11 +119,11 @@ class PageController extends Controller
         return Inertia::render(
             'Pages/OtherMensaWebsites',
             [
-                'nations' => function() {
+                'nations' => function () {
                     return NationalMensa::orderBy('name')
                         ->where('is_active', true)
                         ->get(['id', 'type', 'name', 'url']);
-                }
+                },
             ]
         );
     }
