@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('national_mensas', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['country', 'regional']);
             $table->string('name');
             $table->string('url', 1855);
             $table->boolean('is_active');
