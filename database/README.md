@@ -1260,9 +1260,29 @@ The system uses Spatie's permission package. Key points:
 
 ```php
 // Get active members with addresses
+$thisYear = now()->year;
 $members = Member::with('address.district.area')
-    ->where('is_active', true)
-    ->get();
+    ->whereHas(
+        'orders', function ($query) use ($thisYear) {
+            $query->where('status', 'succeeded')
+                ->where(
+                    function ($query) use ($thisYear) {
+                        $query->whereNull('to_year')
+                            ->orWhere('to_year', $thisYear);
+                    }
+                );
+        }
+    )->orWhereHas(
+        'transfers', function ($query) use ($thisYear) {
+            $query->where('is_accepted', true)
+                ->where(
+                    function ($query) use ($thisYear) {
+                        $query->whereNull('membership_ended_in')
+                            ->orWhere('membership_ended_in', '>=', $thisYear);
+                    }
+                );
+        }
+    )->get();
 
 // Get upcoming admission tests
 $tests = AdmissionTest::with(['type', 'location', 'address'])

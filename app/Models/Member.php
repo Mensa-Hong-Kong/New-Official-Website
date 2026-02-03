@@ -73,7 +73,6 @@ class Member extends Model
                         }
                     )->exists() || $this->transfers()
                         ->where('is_accepted', true)
-                        ->whereIn('type', ['in', 'guest'])
                         ->where(
                             function($query) use($thisYear) {
                                 $query->whereNull('membership_ended_in')
