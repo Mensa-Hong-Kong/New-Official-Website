@@ -89,6 +89,9 @@ erDiagram
     users ||--o{ admission_test_orders : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
+    users ||--o{ prior_evidence_orders : creates
+    users ||--o{ membership_transfers : creates
+    users ||--o{ membership_order : creates
 
     %% 用戶聯繫方式
     user_has_contacts ||--o{ contact_has_verifications : has
@@ -97,8 +100,12 @@ erDiagram
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
-    members }o--|| membership_orders : creates
+    members ||--o{ membership_orders : creates
     membership_orders }o--|| members : ordered_by
+    members ||--o{ membership_transfers : creates
+    membership_transfers }o--|| members : belongs_to
+    national_mensas ||--o{ membership_transfers : has
+    membership_transfers }o--|| national_mensas : belongs_to
 
     %% 入會試
     admission_tests }o--|| admission_test_types : has_type
@@ -112,10 +119,18 @@ erDiagram
     admission_test_has_candidate }o--o| admission_test_orders : paid_via
     admission_test_has_proctor }o--|| users : proctor
 
-    %% 入會試支付與產品
+    %% 過去證明
+    prior_evidence_orders ||--o| prior_evidence_results : result
+    prior_evidence_results }o--|| qualifying_tests : test
+    qualifying_tests ||--|{ qualifying_test_details : details
+
+    %% 支付與產品
     admission_test_orders }o--|| users : ordered_by
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
+    admission_test_products ||--o{ admission_test_prices : has
+    prior_evidence_orders }o--|| users : ordered_by
+    prior_evidence_orders }o--|| other_payment_gateways : "via (polymorphic)"
 
     %% Stripe 集成
     stripe_customers }o--|| users : "for (polymorphic)"
@@ -163,9 +178,75 @@ erDiagram
         timestamp updated_at
     }
 
-    members {
+    national_mensas {
+        bigint id PK
+        string name
+        string url
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    membership_transfers {
         bigint id PK
         bigint user_id FK
+        enum type
+        bigint national_mensa_id
+        bigint membership_number
+        tinyint membership_ended_in
+        string remark
+        boolean is_accepted
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    qualifying_tests {
+        bigint id PK
+        string name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    qualifying_test_details {
+        bigint id PK
+        bigint test_id FK
+        date taken_from
+        date taken_to
+        string score
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prior_evidence_orders {
+        bigint id PK
+        bigint user_id FK
+        string product_name
+        string price_name
+        decimal price
+        enum status
+        datetime expired_at
+        string gateway_type
+        bigint gateway_id
+        string reference_number
+        decimal gateway_payment_fee
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prior_evidence_results {
+        bigint order_id PK, FK
+        bigint test_id FK
+        date token_on
+        string score
+        decimal percent_of_group
+        boolean is_pass
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    members {
+        bigint user_id PK, FK
+        bigint number
         string prefix_name
         string nickname
         string suffix_name
