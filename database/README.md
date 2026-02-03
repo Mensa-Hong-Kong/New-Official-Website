@@ -167,7 +167,7 @@ erDiagram
         string prefix_name
         string nickname
         string suffix_name
-        string address_id FK
+        bigint address_id FK
         timestamp created_at
         timestamp updated_at
     }
