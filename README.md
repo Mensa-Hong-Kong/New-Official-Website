@@ -71,10 +71,6 @@ Please read laravel official documents:
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
 - change SEO from page to layout export props title, desc. and ogImage and change ogImage from public to storage
-- add admin nation index
-- add admin nation store
-- add admin nation update
-- add admin nation update status
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table
@@ -97,6 +93,10 @@ Please read laravel official documents:
 
 #### stage 2 third party iq test result
 
+- add admin nation index
+- add admin nation store
+- add admin nation update
+- add admin nation update status
 - Add admin third party iq test accept list store
 - Add admin third party iq test accept list index
 - Add admin third party iq test accept list update name
