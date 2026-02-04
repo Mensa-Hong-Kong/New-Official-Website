@@ -101,7 +101,7 @@ class MembershipQualificationTest extends TestCase
             'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $priorEvidenceOrder->result()->create([
-            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()]),
+            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
             'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
@@ -119,7 +119,7 @@ class MembershipQualificationTest extends TestCase
             'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $priorEvidenceOrder->result()->create([
-            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()]),
+            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
             'taken_on' => fake()->date(),
             'score' => 100,
             'percent_of_group' => 50,
@@ -138,7 +138,7 @@ class MembershipQualificationTest extends TestCase
             'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $priorEvidenceOrder->result()->create([
-            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()]),
+            'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
             'taken_on' => fake()->date(),
             'score' => 131,
             'percent_of_group' => 2,
