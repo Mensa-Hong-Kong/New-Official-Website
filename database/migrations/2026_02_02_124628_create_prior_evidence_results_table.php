@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id');
             $table->date('taken_on');
             $table->string('score');
-            $table->decimal('percent_of_group', 2, 2)->nullable();
+            $table->decimal('percent_of_group', 4, 2)->nullable();
             $table->boolean('is_pass')->nullable();
             $table->timestamps();
         });
