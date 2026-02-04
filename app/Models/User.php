@@ -177,26 +177,6 @@ class User extends Authenticatable
         );
     }
 
-    public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
-    {
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) {
-                return User::where('passport_type_id', $attributes['passport_type_id'])
-                    ->where('passport_number', $attributes['passport_number'])
-                    ->where(
-                        function ($query) {
-                            $query->has('member')
-                                ->orWhereHas(
-                                    'admissionTests', function ($query) {
-                                        $query->where('is_pass', true);
-                                    }
-                                );
-                        }
-                    )->exists();
-            }
-        );
-    }
-
     public function lastAttendedAdmissionTestOfOtherSamePassportUser(): Attribute
     {
         $table = $this->getTable();
@@ -217,37 +197,10 @@ class User extends Authenticatable
         );
     }
 
-    public function isActiveMember(): Attribute
+    public function passedAdmissionTest()
     {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return (bool) $user->member && $user->member->is_active;
-            }
-        );
-    }
-
-    public function hasPassedAdmissionTest(): Attribute
-    {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return $user->admissionTests()->where('is_pass', true)->exists();
-            }
-        );
-    }
-
-    public function hasQualificationOfMembership(): Attribute
-    {
-        $user = $this;
-
-        return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
-                return $user->member || $user->hasPassedAdmissionTest;
-            }
-        );
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
+            ->where('is_pass', true);
     }
 
     protected function stripeName(): string
@@ -433,5 +386,57 @@ class User extends Authenticatable
         }
 
         return $return;
+    }
+
+    public function memberTransfers()
+    {
+        return $this->hasMany(MembershipTransfer::class);
+    }
+
+    public function priorEvidenceOrders()
+    {
+        return $this->hasMany(PriorEvidenceOrder::class);
+    }
+
+    public function passedPriorEvidence()
+    {
+        return $this->hasOneThrough(PriorEvidenceResult::class, PriorEvidenceOrder::class, 'user_id', 'order_id', 'id', 'id')
+            ->where('is_pass', true);
+    }
+
+    public function hasQualificationOfMembership(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return $user->member || $user->passedAdmissionTest ||
+                    $user->passedPriorEvidence || $user->memberTransfers()
+                        ->where('is_accepted', true)
+                        ->exists();
+            }
+        );
+    }
+
+    public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                return User::where('passport_type_id', $attributes['passport_type_id'])
+                    ->where('passport_number', $attributes['passport_number'])
+                    ->where(
+                        function ($query) {
+                            $query->has('member')
+                                ->orHas('passedAdmissionTest')
+                                ->orHas('passedPriorEvidence')
+                                ->orWhereHas(
+                                    'memberTransfers', function ($query) {
+                                        $query->where('is_accepted', true);
+                                    }
+                                );
+                        }
+                    )->exists();
+            }
+        );
     }
 }

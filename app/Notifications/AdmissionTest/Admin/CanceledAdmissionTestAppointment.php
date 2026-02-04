@@ -45,7 +45,7 @@ class CanceledAdmissionTestAppointment extends Notification
             ->line('Date: '.$this->test->testing_at->format('Y-m-d'))
             ->line('Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'))
             ->line('Location: '.$this->test->location->name)
-            ->line("Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}");
+            ->line("Address: {$this->test->address->value}, {$this->test->address->district->name}, {$this->test->address->district->area->name}");
     }
 
     public function toWhatsApp(object $notifiable)
@@ -59,7 +59,7 @@ class CanceledAdmissionTestAppointment extends Notification
                         'Date: '.$this->test->testing_at->format('Y-m-d'),
                         'Time: '.$this->test->testing_at->format('H:i').' - '.$this->test->expect_end_at->format('H:i'),
                         'Location: '.$this->test->location->name,
-                        "Address: {$this->test->address->address}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
+                        "Address: {$this->test->address->value}, {$this->test->address->district->name}, {$this->test->address->district->area->name}",
                     ]
                 ),
             );

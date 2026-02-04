@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:8.0.31
+        image: mysql:8.4
         env:
           MYSQL_ROOT_PASSWORD: "password"
           MYSQL_DATABASE: "mensa"
@@ -26,6 +26,12 @@ jobs:
           --health-timeout=5s
           --health-retries=3
     steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4' # Specify your desired PHP version
+          coverage: none
+
       - uses: actions/checkout@v4
 
       - uses: actions/cache@v4
@@ -69,6 +75,12 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4' # Specify your desired PHP version
+          coverage: none
+
       - uses: actions/checkout@v4
 
       - uses: actions/cache@v4

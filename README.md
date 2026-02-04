@@ -51,13 +51,30 @@ Please read database/README.md for database setup and details.
 ### Payment cards for Stripe UAT
 https://docs.stripe.com/testing
 
+
+### A.I. Helper
+
+This installed laravel prompts mcp and boost
+
+Please read laravel official documents:
+
+- Laravel Prompts: https://laravel.com/docs/11.x/prompts
+- Laravel MCP: https://laravel.com/docs/11.x/mcp#main-content
+- Laravel Boost: https://laravel.com/docs/11.x/installation#installing-laravel-boost
+
+
 ### Todo
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- change admission_test_prices table stripe_id and synced_to_stripe columns to stripe_one_time_type_id and synced_one_time_type_to_stripe
-- change (*)_prices.price to (*)_prices.value and addresses.address to addresses.value
-- change members table to members and member_orders tables
+- change address_id from members table to users table
+- change module to support submodule
+- add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
+- change SEO from page to layout export props title, desc. and ogImage and change ogImage from public to storage
+- add admin nation index
+- add admin nation store
+- add admin nation update
+- add admin nation update status
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table

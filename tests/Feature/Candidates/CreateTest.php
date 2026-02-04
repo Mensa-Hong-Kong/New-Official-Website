@@ -7,6 +7,8 @@ use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\Member;
+use App\Models\MembershipOrder;
+use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -98,11 +100,17 @@ class CreateTest extends TestCase
 
     public function test_user_already_member()
     {
-        Member::create([
+        $member = Member::create([
             'user_id' => $this->user->id,
-            'is_active' => true,
-            'expired_on' => now()->endOfYear(),
-            'actual_expired_on' => now()->addYear()->startOfYear()->addDays(21),
+        ]);
+        $thisYear = now()->year;
+        MembershipOrder::create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => $thisYear,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -408,10 +416,10 @@ class CreateTest extends TestCase
             'minimum_age' => null,
             'maximum_age' => null,
         ])->create();
-        $price = AdmissionTestPrice::factory()->state(['price' => 200])->create();
+        $price = AdmissionTestPrice::factory()->state(['value' => 200])->create();
         AdmissionTestPrice::factory()->state([
             'product_id' => $price->product->id,
-            'price' => 300,
+            'value' => 300,
             'start_at' => now(),
         ])->create();
         $this->test->update(['is_free' => false]);
@@ -441,7 +449,7 @@ class CreateTest extends TestCase
     public function test_price_id_of_product_is_not_yet_released_when_test_is_not_free_and_user_have_no_unused_quota_order()
     {
         $product = AdmissionTestProduct::factory()->state([
-            'start_at' => now()->addSeconds(2),
+            'start_at' => now()->addSeconds(5),
             'minimum_age' => null,
             'maximum_age' => null,
         ])->create();

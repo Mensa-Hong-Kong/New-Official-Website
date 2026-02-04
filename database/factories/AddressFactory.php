@@ -14,7 +14,7 @@ class AddressFactory extends Factory
     {
         return [
             'district_id' => District::inRandomOrder()->first()->id,
-            'address' => fake()->streetAddress(),
+            'value' => fake()->streetAddress(),
         ];
     }
 }

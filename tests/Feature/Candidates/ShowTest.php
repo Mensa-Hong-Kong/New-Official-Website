@@ -4,6 +4,8 @@ namespace Tests\Feature\Candidates;
 
 use App\Models\AdmissionTest;
 use App\Models\Member;
+use App\Models\MembershipOrder;
+use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -60,11 +62,17 @@ class ShowTest extends TestCase
 
     public function test_user_already_member()
     {
-        Member::create([
+        $member = Member::create([
             'user_id' => $this->user->id,
-            'is_active' => true,
-            'expired_on' => now()->endOfYear(),
-            'actual_expired_on' => now()->addYear()->startOfYear()->addDays(21),
+        ]);
+        $thisYear = now()->year;
+        MembershipOrder::create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => $thisYear,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $response = $this->actingAs($this->user)->get(
             route(

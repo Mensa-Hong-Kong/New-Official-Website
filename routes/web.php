@@ -50,6 +50,8 @@ Route::middleware('guest')->group(function () {
 
 Route::get('admission-tests', [PageController::class, 'admissionTests'])
     ->name('admission-tests.index');
+Route::get('other-mensa-websites', [PageController::class, 'otherMensaWebsites'])
+    ->name('other-mensa-websites');
 
 Route::any('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {

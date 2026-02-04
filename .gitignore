@@ -1,5 +1,8 @@
+*.log
+.DS_Store
 /.phpunit.cache
 /node_modules
+/bootstrap/ssr
 /public/build
 /public/hot
 /public/storage
@@ -13,7 +16,8 @@
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
-auth.json
+Thumbs.db
+/auth.json
 npm-debug.log
 yarn-error.log
 /.fleet
@@ -21,3 +25,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+boost.json
+/.github/copilot-instructions.md
+

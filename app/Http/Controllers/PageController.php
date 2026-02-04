@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdmissionTest;
 use App\Models\CustomWebPage;
+use App\Models\NationalMensa;
 use App\Models\SiteContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,23 +33,23 @@ class PageController extends Controller
     public function admissionTests(Request $request)
     {
         $user = [
-            'has_qualification_of_membership' => $request->user()->hasQualificationOfMembership ?? null,
-            'last_attended_admission_test' => $request->user()->lastAttendedAdmissionTest ?? false ? [
-                'id' => $request->user()->hasQualificationOfMembership->id,
-                'testing_at' => $request->user()->hasQualificationOfMembership->testing_at,
+            'has_qualification_of_membership' => $request->user()?->hasQualificationOfMembership,
+            'last_attended_admission_test' => $request->user()?->lastAttendedAdmissionTest ? [
+                'id' => $request->user()->lastAttendedAdmissionTest->id,
+                'testing_at' => $request->user()->lastAttendedAdmissionTest->testing_at,
                 'type' => [
-                    'interval_month' => $request->user()->hasQualificationOfMembership->type->interval_month,
+                    'interval_month' => $request->user()->lastAttendedAdmissionTest->type->interval_month,
                 ],
             ] : null,
-            'future_admission_test' => $request->user()->futureAdmissionTest ?? false ? [
+            'future_admission_test' => $request->user()?->futureAdmissionTest ? [
                 'id' => $request->user()->futureAdmissionTest->id,
                 'is_free' => $request->user()->futureAdmissionTest->is_free,
             ] : null,
             'created_stripe_customer' => $request->user()->stripe ?? null,
-            'default_email' => $request->user()->defaultEmail ?? false ? [
+            'default_email' => $request->user()?->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
-            'has_unused_quota_admission_test_order' => (bool) $request->user()?->hasUnusedQuotaAdmissionTestOrder()->exists(),
+            'has_unused_quota_admission_test_order' => $request->user()?->hasUnusedQuotaAdmissionTestOrder()->exists(),
         ];
         $tests = AdmissionTest::joinRelation('type as type')
             ->withCount('candidates')
@@ -111,5 +112,19 @@ class PageController extends Controller
                     ->pluck('content', 'name')
                     ->toArray()
             )->with('tests', $tests);
+    }
+
+    public function otherMensaWebsites()
+    {
+        return Inertia::render(
+            'Pages/OtherMensaWebsites',
+            [
+                'nations' => function () {
+                    return NationalMensa::orderBy('name')
+                        ->where('is_active', true)
+                        ->get(['id', 'type', 'name', 'url']);
+                },
+            ]
+        );
     }
 }

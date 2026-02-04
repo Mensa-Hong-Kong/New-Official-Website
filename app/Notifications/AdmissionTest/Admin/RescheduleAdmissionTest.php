@@ -81,13 +81,13 @@ class RescheduleAdmissionTest extends Notification
             ->line('Date: '.$this->oldTest->testing_at->format('Y-m-d'))
             ->line('Time: '.$this->oldTest->testing_at->format('H:i').' - '.$this->oldTest->expect_end_at->format('H:i'))
             ->line('Location: '.$this->oldTest->location->name)
-            ->line("Address: {$this->oldTest->address->address}, {$this->oldTest->address->district->name}, {$this->oldTest->address->district->area->name}")
+            ->line("Address: {$this->oldTest->address->value}, {$this->oldTest->address->district->name}, {$this->oldTest->address->district->area->name}")
             ->line('')
             ->line('To')
             ->line('Date: '.$this->newTest->testing_at->format('Y-m-d'))
             ->line('Time: '.$this->newTest->testing_at->format('H:i').' - '.$this->newTest->expect_end_at->format('H:i'))
             ->line('Location: '.$this->newTest->location->name)
-            ->line("Address: {$this->newTest->address->address}, {$this->newTest->address->district->name}, {$this->newTest->address->district->area->name}")
+            ->line("Address: {$this->newTest->address->value}, {$this->newTest->address->district->name}, {$this->newTest->address->district->area->name}")
             ->line('')
             ->line('New Ticket:')
             ->line(new HtmlString('<img src="'.$this->qrCode($notifiable).'">'))
@@ -112,13 +112,13 @@ class RescheduleAdmissionTest extends Notification
                         'Date: '.$this->oldTest->testing_at->format('Y-m-d'),
                         'Time: '.$this->oldTest->testing_at->format('H:i').' - '.$this->oldTest->expect_end_at->format('H:i'),
                         'Location: '.$this->oldTest->location->name,
-                        "Address: {$this->oldTest->address->address}, {$this->oldTest->address->district->name}, {$this->oldTest->address->district->area->name}",
+                        "Address: {$this->oldTest->address->value}, {$this->oldTest->address->district->name}, {$this->oldTest->address->district->area->name}",
                         '',
                         'To',
                         'Date: '.$this->newTest->testing_at->format('Y-m-d'),
                         'Time: '.$this->newTest->testing_at->format('H:i').' - '.$this->newTest->expect_end_at->format('H:i'),
                         'Location: '.$this->newTest->location->name,
-                        "Address: {$this->newTest->address->address}, {$this->newTest->address->district->name}, {$this->newTest->address->district->area->name}",
+                        "Address: {$this->newTest->address->value}, {$this->newTest->address->district->name}, {$this->newTest->address->district->area->name}",
                         '',
                         'Remember:',
                         '1. Please bring your own pencil.',

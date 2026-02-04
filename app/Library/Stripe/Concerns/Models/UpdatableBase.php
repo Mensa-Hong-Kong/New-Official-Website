@@ -11,10 +11,10 @@ trait UpdatableBase
     public function stripeUpdateOrCreate(): array
     {
         if (! $this->stripe_id) {
-            $this->stripeData = $this->stripeCreate();
+            $this->stripeCreate();
         }
         if (! $this->synced_to_stripe) {
-            $this->stripeData = $this->stripeUpdate();
+            $this->stripeUpdate();
         }
         if (! $this->stripeData) {
             $this->getStripe();

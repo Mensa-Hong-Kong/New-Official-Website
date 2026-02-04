@@ -44,19 +44,14 @@ class SyncAdmissionTestPriceTest extends TestCase
             'active' => true,
             'billing_scheme' => 'per_unit',
             'created' => 1679431181,
-            'currency' => 'usd',
+            'currency' => 'hkd',
             'custom_unit_amount' => null,
             'livemode' => false,
             'lookup_key' => null,
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -68,8 +63,8 @@ class SyncAdmissionTestPriceTest extends TestCase
             'https://api.stripe.com/v1/prices/*' => Http::response($data),
         ]);
         $this->price->update([
-            'stripe_id' => $data['id'],
-            'synced_to_stripe' => true,
+            'stripe_one_time_type_id' => $data['id'],
+            'synced_one_time_type_to_stripe' => true,
         ]);
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
         Http::assertNothingSent();
@@ -99,12 +94,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -123,7 +113,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         $this->price->update(['name' => $data['nickname']]);
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
         $getProductUrl = Uri::of('https://api.stripe.com/v1/prices/search')
-            ->withQuery(['query' => "metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
+            ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
             ->__toString();
         Http::assertSent(
             function (Request $request) use ($getProductUrl) {
@@ -136,8 +126,8 @@ class SyncAdmissionTestPriceTest extends TestCase
             }
         );
         $this->price = AdmissionTestPrice::find($this->price->id);
-        $this->assertEquals($data['id'], $this->price->stripe_id);
-        $this->assertTrue((bool) $this->price->synced_to_stripe);
+        $this->assertEquals($data['id'], $this->price->stripe_one_time_type_id);
+        $this->assertTrue((bool) $this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
@@ -145,7 +135,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
         ]);
-        $this->price->update(['stripe_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
+        $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         $this->expectException(RequestException::class);
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
     }
@@ -165,12 +155,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -182,7 +167,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'https://api.stripe.com/v1/prices/*' => Http::response($response),
         ]);
         $this->price->update([
-            'stripe_id' => $response['id'],
+            'stripe_one_time_type_id' => $response['id'],
             'name' => $response['nickname'],
         ]);
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
@@ -197,7 +182,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             }
         );
         $this->price = AdmissionTestPrice::find($this->price->id);
-        $this->assertTrue((bool) $this->price->refresh()->synced_to_stripe);
+        $this->assertTrue((bool) $this->price->refresh()->synced_one_time_type_to_stripe);
     }
 
     public function test_stripe_first_not_found_and_create_stripe_price_but_stripe_under_maintenance()
@@ -230,12 +215,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'metadata' => [],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -256,7 +236,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
         $urls = [
             Uri::of('https://api.stripe.com/v1/prices/search')
-                ->withQuery(['query' => "metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
+                ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
                 ->__toString(),
             'https://api.stripe.com/v1/prices',
         ];
@@ -271,7 +251,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             }
         );
         $this->price = AdmissionTestPrice::find($this->price->id);
-        $this->assertTrue((bool) $this->price->synced_to_stripe);
+        $this->assertTrue((bool) $this->price->synced_one_time_type_to_stripe);
     }
 
     public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
@@ -296,12 +276,7 @@ class SyncAdmissionTestPriceTest extends TestCase
                             'metadata' => ['order_id' => '6735'],
                             'nickname' => 'Old Name',
                             'product' => 'prod_NZKdYqrwEYx6iK',
-                            'recurring' => [
-                                'interval' => 'month',
-                                'interval_count' => 1,
-                                'trial_period_days' => null,
-                                'usage_type' => 'licensed',
-                            ],
+                            'recurring' => null,
                             'tax_behavior' => 'unspecified',
                             'tiers_mode' => null,
                             'transform_quantity' => null,
@@ -332,12 +307,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => null,
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -358,12 +328,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'metadata' => ['order_id' => '6735'],
             'nickname' => 'Old Name',
             'product' => 'prod_NZKdYqrwEYx6iK',
-            'recurring' => [
-                'interval' => 'month',
-                'interval_count' => 1,
-                'trial_period_days' => null,
-                'usage_type' => 'licensed',
-            ],
+            'recurring' => null,
             'tax_behavior' => 'unspecified',
             'tiers_mode' => null,
             'transform_quantity' => null,
@@ -384,7 +349,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
         $urls = [
             Uri::of('https://api.stripe.com/v1/prices/search')
-                ->withQuery(['query' => "metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
+                ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
                 ->__toString(),
             "https://api.stripe.com/v1/prices/{$data['id']}",
         ];
@@ -398,6 +363,6 @@ class SyncAdmissionTestPriceTest extends TestCase
                 return ! in_array($request->url(), $urls);
             }
         );
-        $this->assertTrue((bool) $this->price->refresh()->synced_to_stripe);
+        $this->assertTrue((bool) $this->price->refresh()->synced_one_time_type_to_stripe);
     }
 }

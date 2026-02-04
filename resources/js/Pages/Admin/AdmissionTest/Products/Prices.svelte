@@ -11,14 +11,14 @@
         prices: [],
     });
 
-    for (const data of initPrices) {
+    for (const price of initPrices) {
         inputs.prices.push({});
         prices.push({
-            id: data.id,
-            startAt: data.start_at,
-            name: data.name,
-            price: data.price,
-            updatedAt: data.updated_at,
+            id: price.id,
+            startAt: price.start_at,
+            name: price.name,
+            value: price.value,
+            updatedAt: price.updated_at,
             editing: false,
             updating: false,
         });
@@ -59,12 +59,12 @@
         if(prices[index]['updatedAt'] == response.data.updated_at) {
             close(index);
         } else if(prices.length) {
-            let data = prices.splice(index, 1)[0];
-            data['startAt'] = response.data.start_at ?? '';
-            data['name'] = response.data.name ?? '';
-            data['editing'] = false;
-            data['updating'] = false;
-            prices.splice(getIndexByStartAt(data['startAt']), 0, data);
+            let price = prices.splice(index, 1)[0];
+            price['startAt'] = response.data.start_at ?? '';
+            price['name'] = response.data.name ?? '';
+            price['editing'] = false;
+            price['updating'] = false;
+            prices.splice(getIndexByStartAt(price['startAt']), 0, price);
         } else {
             prices[index]['startAt'] = response.data.start_at ?? '';
             prices[index]['name'] = response.data.name;
@@ -146,20 +146,20 @@
 
     function createSuccessCallback(response) {
         alert(response.data.success);
-        let data = {
+        let price = {
             id: response.data.id,
             startAt: response.data.start_at ?? '',
             name: response.data.name ?? '',
-            price: response.data.price,
+            value: response.data.price,
             editing: false,
             updating: false,
             updatedAt: response.data.updated_at,
         };
         inputs.prices.push({});
         if(prices.length) {
-            prices.splice(getIndexByStartAt(data.startAt), 0, data);
+            prices.splice(getIndexByStartAt(price.startAt), 0, price);
         } else {
-            prices.push(data);
+            prices.push(price);
         }
         creating = false;
         submitting = false;
@@ -249,7 +249,7 @@
                     hidden={! price.editing} disabled={price.updating} value={price.name}
                     bind:inner={inputs['prices'][index]['name']} />
             </Col>
-            <Col md=2>{price.price}</Col>
+            <Col md=2>{price.z}</Col>
             <Button color="primary" class="col-md-2"
                 hidden={price.editing || price.updating}
                 onclick={(event) => edit(event, index)}>Edit</Button>

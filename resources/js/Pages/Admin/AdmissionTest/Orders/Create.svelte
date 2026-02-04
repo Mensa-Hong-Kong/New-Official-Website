@@ -35,7 +35,7 @@
             let product = products[event.target.value];
             inputs.productName.value = product.name;
             inputs.priceName.value = product.price.name;
-            inputs.price.value = product.price.price;
+            inputs.price.value = product.price.value;
             inputs.quota.value = product.quota;
             inputs.minimumAge.value = product.minimum_age;
             inputs.maximumAge.value = product.maximum_age;

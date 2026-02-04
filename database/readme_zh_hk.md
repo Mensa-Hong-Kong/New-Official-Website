@@ -89,6 +89,9 @@ erDiagram
     users ||--o{ admission_test_orders : creates
     users ||--o{ reset_password_logs : has
     users ||--o{ sessions : has
+    users ||--o{ prior_evidence_orders : creates
+    users ||--o{ membership_transfers : creates
+    users ||--o{ membership_order : creates
 
     %% 用戶聯繫方式
     user_has_contacts ||--o{ contact_has_verifications : has
@@ -97,6 +100,12 @@ erDiagram
     members }o--|| addresses : has
     addresses }o--|| districts : located_in
     districts }o--|| areas : belongs_to
+    members ||--o{ membership_orders : creates
+    membership_orders }o--|| members : ordered_by
+    members ||--o{ membership_transfers : creates
+    membership_transfers }o--|| members : belongs_to
+    national_mensas ||--o{ membership_transfers : has
+    membership_transfers }o--|| national_mensas : belongs_to
 
     %% 入會試
     admission_tests }o--|| admission_test_types : has_type
@@ -110,10 +119,18 @@ erDiagram
     admission_test_has_candidate }o--o| admission_test_orders : paid_via
     admission_test_has_proctor }o--|| users : proctor
 
-    %% 入會試支付與產品
+    %% 過去證明
+    prior_evidence_orders ||--o| prior_evidence_results : result
+    prior_evidence_results }o--|| qualifying_tests : test
+    qualifying_tests ||--|{ qualifying_test_details : details
+
+    %% 支付與產品
     admission_test_orders }o--|| users : ordered_by
     admission_test_orders }o--|| other_payment_gateways : "via (polymorphic)"
     admission_test_products ||--o{ admission_test_prices : has
+    admission_test_products ||--o{ admission_test_prices : has
+    prior_evidence_orders }o--|| users : ordered_by
+    prior_evidence_orders }o--|| other_payment_gateways : "via (polymorphic)"
 
     %% Stripe 集成
     stripe_customers }o--|| users : "for (polymorphic)"
@@ -161,17 +178,96 @@ erDiagram
         timestamp updated_at
     }
 
-    members {
+    national_mensas {
+        bigint id PK
+        string name
+        string url
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    membership_transfers {
         bigint id PK
         bigint user_id FK
-        boolean is_active
-        date expired_on
-        date actual_expired_on
+        enum type
+        bigint national_mensa_id
+        bigint membership_number
+        smallint membership_ended_in
+        string remark
+        boolean is_accepted
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    qualifying_tests {
+        bigint id PK
+        string name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    qualifying_test_details {
+        bigint id PK
+        bigint test_id FK
+        date taken_from
+        date taken_to
+        string score
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prior_evidence_orders {
+        bigint id PK
+        bigint user_id FK
+        string product_name
+        string price_name
+        decimal price
+        enum status
+        datetime expired_at
+        string gateway_type
+        bigint gateway_id
+        string reference_number
+        decimal gateway_payment_fee
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prior_evidence_results {
+        bigint order_id PK, FK
+        bigint test_id FK
+        date token_on
+        string score
+        decimal percent_of_group
+        boolean is_pass
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    members {
+        bigint user_id PK, FK
+        bigint number
         string prefix_name
         string nickname
         string suffix_name
-        string address_id FK
-        string forward_email UK
+        bigint address_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    membership_orders {
+        bigint user_id PK
+        bigint number
+        string product_name
+        string price_name
+        decimal price
+        enum status
+        dateTime expired_at
+        smallint from_year
+        smallint to_year
+        string gateway_type
+        bigint gateway_id
+        string reference_number
         timestamp created_at
         timestamp updated_at
     }
@@ -189,7 +285,7 @@ erDiagram
     addresses {
         bigint id PK
         bigint district_id FK
-        string address
+        string value
         timestamp created_at
         timestamp updated_at
     }
@@ -293,10 +389,10 @@ erDiagram
         bigint id PK
         bigint product_id FK
         string name
-        decimal price
+        decimal value
         datetime start_at
-        string stripe_id
-        boolean synced_to_stripe
+        string stripe_one_time_type_id
+        boolean synced_one_time_type_to_stripe
         timestamp created_at
         timestamp updated_at
     }
@@ -519,7 +615,7 @@ erDiagram
 
 #### `members`
 
-MENSA 活躍成員的擴展檔案。
+MENSA 成員的擴展檔案。
 
 **特別說明：** 使用自定義 ID 生成，在創建時使用 `DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM members temp)')`。
 
@@ -527,10 +623,19 @@ MENSA 活躍成員的擴展檔案。
 
 -   `id` - 主鍵（非自增，自定義生成）
 -   `user_id` - 指向用戶的外鍵
--   `is_active` - 會員身份
--   `expired_on` - 會員到期日期
--   `actual_expired_on` - 考慮延期後的實際到期日期
--   `forward_email` - 唯一轉發電郵地址
+
+#### `membership_orders`
+
+MENSA 會員會費訂單紀錄
+
+**列：**
+
+-   `user_id` - 指向會員的外鍵
+-   `status` - ENUM（'pending'、'canceled'、'failed'、'expired'、'succeeded', 'partial refunded', 'full refunded'）
+-   `price` - 最小貨幣單位金額
+-   `gateway_type`、`gateway_id` - 多態關係到支付網關
+-   `reference_number` - 外部交易參考
+
 
 #### `user_has_contacts`
 
@@ -571,7 +676,7 @@ Laravel 會話存儲。
 
 與地區相關的具體地址。
 
-**唯一約束：**（`district_id`、`address`）
+**唯一約束：**（`district_id`、`value`）
 
 #### `locations`
 
@@ -660,9 +765,9 @@ Laravel 會話存儲。
 **列：**
 
 -   `product_id` - 指向產品的外鍵
--   `price` - 最小貨幣單位價格
+-   `value` - 最小貨幣單位價格
 -   `start_at` - 此價格變為活躍的時間
--   `stripe_id` - Stripe 價格 ID
+-   `stripe_one_time_type_id` - Stripe 價格 ID
 
 #### `stripe_customers`
 
@@ -813,10 +918,11 @@ User（用戶）
   ├─ hasMany: UserLoginLog（用戶登錄日誌）
   ├─ hasMany: ResetPasswordLog（用戶登錄日誌）
   ├─ hasMany: AdmissionTestOrder（資格試訂單）
-  ├─ hasOne: Member（成員）
   ├─ belongsTo: Gender（性別）
   ├─ belongsTo: PassportType（護照類型）
   └─ belongsToMany: AdmissionTest（資格試）（作為考生/監考員）
+  └─ hasOne: Member（成員）
+      └─ hasMany: MembershipOrder
 ```
 
 ### 資格試生態系統
@@ -1038,7 +1144,7 @@ $user = User::factory()
 
 **複合唯一約束：**
 
--   `addresses`：（`district_id`、`address`）
+-   `addresses`：（`district_id`、`value`）
 -   `districts`：（`area_id`、`name`）
 -   `teams`：（`name`、`type_id`）
 
@@ -1050,7 +1156,7 @@ $user = User::factory()
 -   `locations.name`
 -   `custom_web_pages.pathname`
 
-### 6. 自定義 ID 生成
+### 6. 自定義 number 生成
 
 `members` 表使用自定義 ID 生成：
 
@@ -1058,7 +1164,7 @@ $user = User::factory()
 protected static function booted(): void
 {
     static::creating(function (Member $member) {
-        $member->id = DB::raw('(SELECT IFNULL(MAX(id), 0)+1 FROM members temp)');
+        $member->number = DB::raw('(SELECT IFNULL(MAX(number), 0)+1 FROM members temp)');
     });
 }
 ```
@@ -1071,7 +1177,7 @@ protected static function booted(): void
 
 -   `users.synced_to_stripe`
 -   `admission_test_products.stripe_id` 和 `synced_to_stripe`
--   `admission_test_prices.stripe_id` 和 `synced_to_stripe`
+-   `admission_test_prices.stripe_one_time_type_id` 和 `synced_one_time_type_to_stripe`
 -   `stripe_customers`（專用表）
 
 **在進行 Stripe API 調用之前，始終檢查同步狀態。**
@@ -1235,9 +1341,29 @@ DB::select("SELECT * FROM users WHERE email = '$email'");
 
 ```php
 // 獲取活躍成員和地址
+$thisYear = now()->year;
 $members = Member::with('address.district.area')
-    ->where('is_active', true)
-    ->get();
+    ->whereHas(
+        'orders', function ($query) use ($thisYear) {
+            $query->where('status', 'succeeded')
+                ->where(
+                    function ($query) use ($thisYear) {
+                        $query->whereNull('to_year')
+                            ->orWhere('to_year', $thisYear);
+                    }
+                );
+        }
+    )->orWhereHas(
+        'transfers', function ($query) use ($thisYear) {
+            $query->where('is_accepted', true)
+                ->where(
+                    function ($query) use ($thisYear) {
+                        $query->whereNull('membership_ended_in')
+                            ->orWhere('membership_ended_in', '>=', $thisYear);
+                    }
+                );
+        }
+    )->get();
 
 // 獲取即將進行的資格試
 $tests = AdmissionTest::with(['type', 'location', 'address'])

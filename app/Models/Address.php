@@ -11,7 +11,7 @@ class Address extends Model
 
     protected $fillable = [
         'district_id',
-        'address',
+        'value',
     ];
 
     public function district()

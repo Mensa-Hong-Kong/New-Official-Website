@@ -9,7 +9,9 @@ use App\Models\AdmissionTestOrder;
 use App\Models\AdmissionTestType;
 use App\Models\ContactHasVerification;
 use App\Models\Member;
+use App\Models\MembershipOrder;
 use App\Models\ModulePermission;
+use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
@@ -149,11 +151,17 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_already_member()
     {
-        Member::create([
+        $member = Member::create([
             'user_id' => $this->user->id,
-            'is_active' => true,
-            'expired_on' => now()->endOfYear(),
-            'actual_expired_on' => now()->addYear()->startOfYear()->addDays(21),
+        ]);
+        $thisYear = now()->year;
+        MembershipOrder::create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => $thisYear,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),

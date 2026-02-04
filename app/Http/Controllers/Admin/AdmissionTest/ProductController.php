@@ -48,7 +48,7 @@ class ProductController extends Controller implements HasMiddleware
         AdmissionTestPrice::create([
             'product_id' => $product->id,
             'name' => $request->price_name,
-            'price' => $request->price,
+            'value' => $request->price,
         ]);
         DB::commit();
 
@@ -62,13 +62,8 @@ class ProductController extends Controller implements HasMiddleware
     {
         $product->load([
             'prices' => function ($query) {
-                $query->select([
-                    'id',
-                    'product_id',
-                    'name',
-                    'price',
-                    'start_at',
-                ])->orderByDesc('start_at')
+                $query->select(['id', 'product_id', 'name', 'value', 'start_at'])
+                    ->orderByDesc('start_at')
                     ->orderByDesc('updated_at');
             },
         ])->makeHidden([

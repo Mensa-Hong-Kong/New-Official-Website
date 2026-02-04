@@ -42,7 +42,7 @@ class CandidateController extends Controller implements HasMiddleware
                             ['admission_test' => $admissionTest]
                         )->withErrors(['message' => 'You has already schedule this admission test.']);
                     }
-                    if ($user->isActiveMember) {
+                    if ($user->member?->is_active) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
                     }
                     if ($user->hasQualificationOfMembership) {
@@ -117,7 +117,7 @@ class CandidateController extends Controller implements HasMiddleware
                                     ->find($request->price_id);
                                 if (! $price) {
                                     $request->merge(['error' => 'The selected product is invalid.']);
-                                } elseif ($price->price != $price->product->price->price) {
+                                } elseif ($price->value != $price->product->price->value) {
                                     $request->merge(['error' => 'The price of selected product is not up to date, please try again on this up to date version.']);
                                 } elseif ($price->product->start_at && $price->product->start_at > now()) {
                                     $request->merge(['error' => 'The selected product is not yet released, please try again later or select other product.']);
@@ -128,7 +128,7 @@ class CandidateController extends Controller implements HasMiddleware
                                 } elseif ($price->product->maximum_age && $price->product->maximum_age < floor($request->user()->age)) {
                                     $request->merge(['error' => 'Your age greater than product maximum age limit.']);
                                 } else {
-                                    $price->makeHidden(['product_id', 'name', 'start_at', 'stripe_id', 'synced_to_stripe']);
+                                    $price->makeHidden(['product_id', 'name', 'start_at', 'stripe_one_time_type_id', 'synced_one_time_type_to_stripe']);
                                     $price->product->makeHidden(['id', 'name', 'option_name', 'minimum_age', 'maximum_age', 'start_at', 'end_at', 'stripe_id', 'synced_to_stripe', 'created_at', 'updated_at', 'price']);
                                     $request->merge(['price' => $price]);
                                 }
@@ -144,7 +144,7 @@ class CandidateController extends Controller implements HasMiddleware
                             ]);
                             foreach ($request->products as $product) {
                                 $product->makeHidden(['id']);
-                                $product->price->makeHidden(['product_id', 'name', 'stripe_id', 'synced_to_stripe', 'created_at', 'updated_at']);
+                                $product->price->makeHidden(['product_id', 'name', 'stripe_one_time_type_id', 'synced_one_time_type_to_stripe', 'created_at', 'updated_at']);
                             }
                             if (! $request->products->count()) {
                                 return redirect()->route('admission-tests.index')
@@ -167,7 +167,7 @@ class CandidateController extends Controller implements HasMiddleware
                             if (! $admissionTest->is_public) {
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and this test is private, please register other admission test.']);
                             }
-                            if ($user->isActiveMember) {
+                            if ($user->member?->is_active) {
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been member.']);
                             }
                             if ($user->hasQualificationOfMembership) {

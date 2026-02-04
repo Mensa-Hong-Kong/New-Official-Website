@@ -41,7 +41,7 @@ use Illuminate\Database\Seeder;
  * | 9   | Edit:Navigation Item       | 7         | 2             | web        | ...        | ...        |
  * | 10  | Edit:Other Payment Gateway | 8         | 2             | web        | ...        | ...        |
  */
-class ModuleSeeder extends Seeder
+class ModulePermissionSeeder extends Seeder
 {
     public function run(): void
     {
