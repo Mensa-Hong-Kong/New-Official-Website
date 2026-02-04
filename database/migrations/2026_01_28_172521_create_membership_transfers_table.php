@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('type', ['in', 'guest', 'out']);
             $table->unsignedBigInteger('national_mensa_id')->default(0);
             $table->unsignedBigInteger('membership_number')->nullable();
-            $table->unsignedTinyInteger('membership_ended_in')->nullable();
+            $table->unsignedSmallInteger('membership_ended_in')->nullable();
             $table->string('remark')->nullable();
             $table->boolean('is_accepted')->nullable();
             $table->timestamps();

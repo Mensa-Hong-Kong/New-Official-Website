@@ -193,7 +193,7 @@ erDiagram
         enum type
         bigint national_mensa_id
         bigint membership_number
-        tinyint membership_ended_in
+        smallint membership_ended_in
         string remark
         boolean is_accepted
         timestamp created_at
@@ -263,8 +263,8 @@ erDiagram
         decimal price
         enum status
         dateTime expired_at
-        tinyInteger from_year
-        tinyInteger to_year
+        smallint from_year
+        smallint to_year
         string gateway_type
         bigint gateway_id
         string reference_number

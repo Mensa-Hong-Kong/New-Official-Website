@@ -22,8 +22,8 @@ return new class extends Migration
             $table->decimal('price', $priceDigits, $priceDecimal)->unsigned();
             $table->enum('status', ['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']);
             $table->dateTime('expired_at')->useCurrent();
-            $table->unsignedTinyInteger('from_year')->nullable();
-            $table->unsignedTinyInteger('to_year')->nullable();
+            $table->unsignedSmallInteger('from_year')->nullable();
+            $table->unsignedSmallInteger('to_year')->nullable();
             $table->string('gateway_type');
             $table->unsignedBigInteger('gateway_id');
             $table->string('reference_number')->nullable();
