@@ -31,6 +31,7 @@ jobs:
         with:
           php-version: '8.4' # Specify your desired PHP version
           coverage: none
+
       - uses: actions/checkout@v4
 
       - uses: actions/cache@v4
@@ -74,6 +75,12 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4' # Specify your desired PHP version
+          coverage: none
+
       - uses: actions/checkout@v4
 
       - uses: actions/cache@v4
