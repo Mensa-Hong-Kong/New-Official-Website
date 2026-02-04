@@ -1,3 +1,5 @@
+*.log
+.DS_Store
 /.phpunit.cache
 /node_modules
 /bootstrap/ssr
@@ -14,7 +16,8 @@
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
-auth.json
+Thumbs.db
+/auth.json
 npm-debug.log
 yarn-error.log
 /.fleet
