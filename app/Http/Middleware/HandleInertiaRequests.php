@@ -37,7 +37,6 @@ class HandleInertiaRequests extends Middleware
 
                 return null;
             },
-            'ziggy' => new Ziggy,
             'navigationItems' => $navigationItems,
             'navigationNodes' => $navigationNodes,
             'flash' => [
