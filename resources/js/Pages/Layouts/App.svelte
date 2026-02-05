@@ -1,13 +1,28 @@
 <script>
     import { page, Link } from "@inertiajs/svelte";
-    import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavLink, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
+    import { useColorMode, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, Input, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
 	import { setCsrfToken } from '@/submitForm.svelte';
 
     let { children } = $props();
-    let isOpenNav = $state(false);
+    let isOpenNav = $state(true);
+
+    let theme = $state(
+        localStorage.getItem('theme') !== null ?
+            localStorage.getItem('theme') :
+            import.meta.env.VITE_APP_ENV != 'production' ? 'light' :
+                window.matchMedia('(prefers-color-scheme: dark)').matches ?
+                    'dark' : 'light'
+    );
+    useColorMode(theme);
+
+    function handleThemeUpdate(event) {
+        localStorage.setItem('theme', theme === 'dark' ? 'light' : 'dark');
+        theme = localStorage.getItem('theme');
+        useColorMode(theme);
+    }
 
     function handleNavUpdate(event) {
         isOpenNav = event.detail.isOpenNav;
@@ -28,13 +43,17 @@
 </script>
 
 <header>
-    <Navbar color="dark" theme="dark" expand="lg" container="xxl" sticky="top" pills fixed="wrap">
-        <button class="navbar-toggler" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-label="Toggle admin navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <NavbarBrand href={route('index')} class="me-auto">Mensa</NavbarBrand>
+    <Navbar color="black" theme="dark" expand="lg" container="xxl" sticky="top" pills fixed="wrap">
+        {#if route().current().startsWith('admin.')}
+            <button class="navbar-toggler" data-bs-toggle="offcanvas" data-bs-target="#bdSidebar" aria-label="Toggle admin navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        {/if}
+        <Link class="navbar-brand me-auto" href={route('index')}>
+            Mensa
+        </Link>
         <NavbarToggler on:click={navToggle} />
-        <Collapse {isOpenNav} navbar expand="md" on:update={handleNavUpdate}>
+        <Collapse isOpen={isOpenNav} navbar expand="md" on:update={handleNavUpdate}>
             <Nav class="me-auto" navbar>
                 {#each $page.props.navigationNodes.root as itemID}
                     {#if $page.props.navigationNodes[itemID].length}
@@ -44,37 +63,49 @@
                                 items={$page.props.navigationItems} id={itemID} />
                         </Dropdown>
                     {:else}
-                        <NavLink href={$page.props.navigationItems[itemID]['url'] ?? '#'}>
-                            {$page.props.navigationItems[itemID]['name']}
-                        </NavLink>
+                        <NavItem>
+                            <Link class="nav-link" href={$page.props.navigationItems[itemID]['url'] ?? '#'}>
+                                {$page.props.navigationItems[itemID]['name']}
+                            </Link>
+                            <Link href={route('logout')} class="nav-link">Logout</Link>
+                        </NavItem>
                     {/if}
                 {/each}
             </Nav>
             <hr class="d-lg-none text-white-50">
             <Nav class="ms-auto" navbar>
+                <NavItem>
+                    <button class="nav-link" onclick={handleThemeUpdate} aria-label="Toggle {theme === 'dark' ? 'light' : 'dark'} mode" >
+                        Theme: {theme === 'dark' ? 'Dark' : 'Light'}
+                    </button>
+                </NavItem>
                 {#if $page.props.auth.user}
                     {#if
                         $page.props.auth.user.hasProctorTests ||
                         $page.props.auth.user.permissions.length ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        <Link href={
-                            $page.props.auth.user.permissions.length ||
-                            $page.props.auth.user.roles.includes('Super Administrator') ?
-                            route('admin.index') :
-                            route('admin.admission-tests.index')
-                        } class={[
-                            'nav-link',
-                            {active: route().current().startsWith('admin.')}
-                        ]}>Admin</Link>
+                        <NavItem>
+                            <Link href={
+                                $page.props.auth.user.permissions.length ||
+                                $page.props.auth.user.roles.includes('Super Administrator') ?
+                                route('admin.index') :
+                                route('admin.admission-tests.index')
+                            } class={[
+                                'nav-link',
+                                {active: route().current().startsWith('admin.')}
+                            ]}>Admin</Link>
+                        </NavItem>
                         <hr class="d-lg-none text-white-50">
                     {/if}
-                    <NavLink href={route('profile.show')}
-                        class={[
-                            'nav-link',
-                            {active: route().current('profile.show')}
-                        ]}>Profile</NavLink>
-                    <Link href={route('logout')} class="nav-link">Logout</Link>
+                    <NavItem>
+                        <Link href={route('profile.show')}
+                            class={[
+                                'nav-link',
+                                {active: route().current('profile.show')}
+                            ]}>Profile</Link>
+                        <Link href={route('logout')} class="nav-link">Logout</Link>
+                    </NavItem>
                 {:else}
                     <Link href={route('login')}
                         class={[

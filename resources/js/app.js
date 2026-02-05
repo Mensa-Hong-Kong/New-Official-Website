@@ -1,6 +1,5 @@
 import './bootstrap';
 import bootstrap from 'bootstrap/js/index.umd';
-import { Styles } from '@sveltestrap/sveltestrap';
 
 // add ucfirst php function to js
 Object.defineProperty(String.prototype, 'ucfirst', {
@@ -173,11 +172,13 @@ Date.prototype.endOfMinute = function() {
 
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
+// import Layout from "@/Pages/Layouts/App.svelte";
 
 createInertiaApp({
 	resolve: (name) => {
 		const pages = import.meta.glob("./Pages/**/*.svelte", { eager: true });
 		let page = pages[`./Pages/${name}.svelte`];
+		// return { default: page.default, layout: Layout };
 		return { default: page.default };
 	},
 	setup({ el, App, props }) {
