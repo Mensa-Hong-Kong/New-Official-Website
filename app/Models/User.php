@@ -33,6 +33,7 @@ class User extends Authenticatable
         'passport_number',
         'birthday',
         'synced_to_stripe',
+        'address_id',
     ];
 
     public $sortable = [
@@ -438,5 +439,10 @@ class User extends Authenticatable
                     )->exists();
             }
         );
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 }

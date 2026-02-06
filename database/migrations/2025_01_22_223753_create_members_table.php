@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('prefix_name')->nullable();
             $table->string('nickname')->nullable();
             $table->string('suffix_name')->nullable();
-            $table->unsignedBigInteger('address_id')->nullable();
             $table->timestamps();
         });
     }

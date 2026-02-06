@@ -21,7 +21,6 @@ class Member extends Model
         'prefix_name',
         'nickname',
         'suffix_name',
-        'address_id',
     ];
 
     /**
@@ -39,11 +38,6 @@ class Member extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function address()
-    {
-        return $this->belongsTo(Address::class);
     }
 
     public function orders()
