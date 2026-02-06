@@ -3,6 +3,8 @@
 namespace Tests\Feature\User;
 
 use App\Jobs\Stripe\Customers\CreateUser;
+use App\Models\Address;
+use App\Models\District;
 use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -325,7 +327,42 @@ class RegisterTest extends TestCase
         $response->assertInvalid(['mobile' => 'The mobile field must not have more than 15 digits.']);
     }
 
-    public function test_without_middle_name_and_mobile_and_email_happy_case()
+    public function test_district_id_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 'abc';
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertInvalid(['district_id' => 'The district field must be an integer.']);
+    }
+
+    public function test_district_id_not_exist()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 0;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
+    }
+
+    public function test_address_required_with_district_id()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $response = $this->post(route('register'), $data);
+        $response->assertInvalid(['address' => 'The address field is required when district is present.']);
+    }
+
+    public function test_address_not_string()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = ['123 Street'];
+        $response = $this->post(route('register'), $data);
+        $response->assertInvalid(['address' => 'The address field must be a string.']);
+    }
+
+    public function test_without_middle_name_and_mobile_and_email_and_address_happy_case()
     {
         $data = $this->happyCase;
         $response = $this->post(route('register'), $data);
@@ -334,7 +371,7 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_without_mobile_and_email_and_with_middle_name_happy_case()
+    public function test_without_mobile_and_email_and_address_and_with_middle_name_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
@@ -344,7 +381,7 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_without_middle_name_and_email_and_with_mobile_happy_case()
+    public function test_without_middle_name_and_email_and_address_and_with_mobile_happy_case()
     {
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
@@ -359,7 +396,7 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_without_middle_name_and_mobile_and_with_email_happy_case()
+    public function test_without_middle_name_and_mobile_and_address_and_with_email_happy_case()
     {
         $data = $this->happyCase;
         $data['email'] = 'example@gamil.com';
@@ -374,7 +411,23 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_with_middle_name_and_mobile_and_without_email_happy_case()
+    public function test_without_middle_name_and_mobile_and_email_and_with_address_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_middle_name_and_mobile_and_without_email_and_address_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
@@ -390,7 +443,7 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_with_middle_name_and_email_and_without_mobile_happy_case()
+    public function test_with_middle_name_and_email_and_without_mobile_and_address_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
@@ -406,7 +459,24 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_with_email_and_mobile_and_without_middle_name_happy_case()
+    public function test_with_middle_name_and_address_and_without_mobile_and_email_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['middle_name'] = 'Tai Man';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_email_and_mobile_and_without_middle_name_and_address_happy_case()
     {
         $data = $this->happyCase;
         $data['mobile'] = 12345678;
@@ -427,7 +497,58 @@ class RegisterTest extends TestCase
         Queue::assertPushed(CreateUser::class);
     }
 
-    public function test_with_middle_and_email_and_mobile_name_happy_case()
+    public function test_with_email_and_address_and_without_middle_name_and_mobile_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['email'] = 'example@gamil.com';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_email_and_mobile_and_address_and_without_middle_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['mobile'] = 12345678;
+        $data['email'] = 'example@gamil.com';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_middle_name_and_email_and_mobile_and_without_address_happy_case()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'Tai Man';
@@ -444,6 +565,81 @@ class RegisterTest extends TestCase
         $this->assertTrue(
             UserHasContact::where('type', 'email')
                 ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_middle_name_and_email_and_address_and_without_mobile_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['middle_name'] = 'Tai Man';
+        $data['email'] = 'example@gamil.com';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_middle_name_and_mobile_and_address_name_and_without_email_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['middle_name'] = 'Tai Man';
+        $data['mobile'] = 12345678;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        Queue::assertPushed(CreateUser::class);
+    }
+
+    public function test_with_middle_name_and_email_and_mobile_and_address_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['middle_name'] = 'Tai Man';
+        $data['mobile'] = 12345678;
+        $data['email'] = 'example@gamil.com';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->post(route('register'), $data);
+        $response->assertValid();
+        $response->assertRedirectToRoute('profile.show');
+        $this->assertTrue(
+            UserHasContact::where('type', 'mobile')
+                ->where('contact', 12345678)
+                ->exists()
+        );
+        $this->assertTrue(
+            UserHasContact::where('type', 'email')
+                ->where('contact', 'example@gamil.com')
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
                 ->exists()
         );
         Queue::assertPushed(CreateUser::class);
