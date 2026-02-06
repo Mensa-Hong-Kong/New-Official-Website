@@ -6,6 +6,8 @@ use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
 use App\Http\Requests\User\UpdateRequest;
+use App\Models\Address;
+use App\Models\Area;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\ResetPasswordLog;
@@ -58,7 +60,26 @@ class UserController extends Controller implements HasMiddleware
             )->with(
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
-            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
+            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'))
+            ->with(
+                'districts', function() {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
+            );
     }
 
     public function store(RegisterRequest $request)
