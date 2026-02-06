@@ -68,6 +68,7 @@ Please read laravel official documents:
 #### stage 1 permission system, nav, custom web page and admission test
 
 - change address_id from members table to users table
+- add can_join_admission_test column to passport_types table
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
 - change SEO from page to layout export props title, desc. and ogImage and change ogImage from public to storage
