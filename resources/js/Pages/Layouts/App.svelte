@@ -7,7 +7,7 @@
 	import { setCsrfToken } from '@/submitForm.svelte';
 
     let { children } = $props();
-    let isOpenNav = $state(true);
+    let isOpenNav = $state(false);
 
     let theme = $state(
         localStorage.getItem('theme') !== null ?
@@ -25,7 +25,7 @@
     }
 
     function handleNavUpdate(event) {
-        isOpenNav = event.detail.isOpenNav;
+        isOpenNav = event.detail;
     }
 
     function navToggle() {
@@ -104,19 +104,25 @@
                                 'nav-link',
                                 {active: route().current('profile.show')}
                             ]}>Profile</Link>
+                    </NavItem>
+                    <NavItem>
                         <Link href={route('logout')} class="nav-link">Logout</Link>
                     </NavItem>
                 {:else}
-                    <Link href={route('login')}
-                        class={[
-                            'nav-link',
-                            {active: route().current('login')}
-                        ]}>Login</Link>
-                    <Link href={route('register')}
-                        class={[
-                            'nav-link',
-                            {active: route().current('register')}
-                        ]}>Register</Link>
+                    <NavItem>
+                        <Link href={route('login')}
+                            class={[
+                                'nav-link',
+                                {active: route().current('login')}
+                            ]}>Login</Link>
+                    </NavItem>
+                    <NavItem>
+                        <Link href={route('register')}
+                            class={[
+                                'nav-link',
+                                {active: route().current('register')}
+                            ]}>Register</Link>
+                    </NavItem>
                 {/if}
             </Nav>
         </Collapse>
