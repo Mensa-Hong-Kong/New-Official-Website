@@ -8,8 +8,9 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
 
-	let { genders, passportTypes, maxBirthday } = $props();
+	let { genders, passportTypes, maxBirthday, districts } = $props();
     let inputs = $state({});
+    let districtValue = $state('');
     let submitting = $state(false);
     let creating = $state(false);
 
@@ -33,6 +34,8 @@
         birthday: '',
         email: '',
         mobile: '',
+        district: '',
+        address: '',
     });
 
     function hasError() {
@@ -113,6 +116,13 @@
                 feedbacks.mobile = `The email must be a valid email address.`;
             }
         }
+        if(inputs.district.value) {
+            if(inputs.address.validity.valueMissing) {
+                feedbacks.address = 'The address field is required when district is present.';
+            } else if(inputs.address.validity.tooLong) {
+                feedbacks.mobile = `The address must not be greater than ${inputs.address.maxLength} characters.`;
+            }
+        }
 
         return ! hasError();
     }
@@ -161,6 +171,12 @@
                     case 'mobile':
                         feedbacks.mobile = value;
                         break;
+                    case 'district_id':
+                        feedbacks.district = value;
+                        break;
+                    case 'address':
+                        feedbacks.address = value;
+                        break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
                         break;
@@ -191,6 +207,10 @@
                     birthday: inputs.birthday.value,
                     email: inputs.email.value,
                     mobile: inputs.mobile.value,
+                }
+                if (inputs.district.value) {
+                    data['district_id'] = inputs.district.value;
+                    data['address'] = inputs.address.value;
                 }
                 post(
                     route('register'),
@@ -318,17 +338,42 @@
                 <Label>Email</Label>
                 <Input name="email" type="email" disabled={creating}
                     maxlength=320 required placeholder="dammy@example.com"
-                    feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
-                    invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                    feedback={feedbacks.email} valid={feedbacks.email == 'Looks good!'}
+                    invalid={feedbacks.email != '' && feedbacks.email != 'Looks good!'}
                     bind:inner={inputs.email} />
             </Col>
             <Col md=4>
-                <Label>Email</Label>
+                <Label>Mobile</Label>
                 <Input name="mobile" type="tel" disabled={creating}
                     minlength=5 maxlength=15 required placeholder=85298765432
-                    feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
-                    invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                    feedback={feedbacks.mobile} valid={feedbacks.mobile == 'Looks good!'}
+                    invalid={feedbacks.mobile != '' && feedbacks.mobile != 'Looks good!'}
                     bind:inner={inputs.mobile} />
+            </Col>
+            <Col md=4 />
+            <Col md=4>
+                <Label>District</Label>
+                <Input type="select" name="district_id" disabled={creating}
+                    feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                    invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
+                    bind:inner={inputs.district} bind:value={districtValue}>
+                    <option value="" selected>Please select district</option>
+                    {#each Object.entries(districts) as [area, object]}
+                        <optgroup label={area}>
+                            {#each Object.entries(object) as [key, value]}
+                                <option value={key}>{value}</option>
+                            {/each}
+                        </optgroup>
+                    {/each}
+                </Input>
+            </Col>
+            <Col md=8>
+                <Label>Address</Label>
+                <Input name="address" disabled={! districtValue || creating}
+                    maxlength=255 required placeholder="Room 123, 12/F, ABC building, XYZ road"
+                    feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                    invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
+                    bind:inner={inputs.address} />
             </Col>
             <Button color="primary" disabled={submitting} class="form-control">
                 {#if submitting}
