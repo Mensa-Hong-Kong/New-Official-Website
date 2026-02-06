@@ -86,7 +86,7 @@ class UserController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
-        $user = User::create([
+        $data = [
             'username' => $request->username,
             'password' => $request->password,
             'family_name' => $request->family_name,
@@ -96,7 +96,15 @@ class UserController extends Controller implements HasMiddleware
             'passport_number' => $request->passport_number,
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
-        ]);
+        ];
+        if($request->district_id) {
+            $address = Address::firstOrCreate([
+                'district_id' => $request->district_id,
+                'value' => $request->address,
+            ]);
+            $data['address_id'] = $address->id;
+        }
+        $user = User::create($data);
         if ($request->email) {
             UserHasContact::create([
                 'user_id' => $user->id,
