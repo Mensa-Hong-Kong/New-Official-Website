@@ -345,7 +345,7 @@ class RegisterTest extends TestCase
         $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
     }
 
-    public function test_address_required_with_district_id()
+    public function test_missing_address_when_district_id_present()
     {
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
@@ -360,6 +360,15 @@ class RegisterTest extends TestCase
         $data['address'] = ['123 Street'];
         $response = $this->post(route('register'), $data);
         $response->assertInvalid(['address' => 'The address field must be a string.']);
+    }
+
+    public function test_address_too_long()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
     public function test_without_middle_name_and_mobile_and_email_and_address_happy_case()
