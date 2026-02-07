@@ -230,7 +230,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_without_change_username_and_new_password_address_happy_case()
+    public function test_without_change_username_and_new_password_and_address_happy_case()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
@@ -268,7 +268,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_change_address_when_before_user_has_no_address_and_without_change_username_and_new_password_happy_case()
+    public function test_with_change_address_when_before_user_have_no_address_and_without_change_username_and_new_password_happy_case()
     {
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
@@ -312,9 +312,10 @@ class UpdateTest extends TestCase
                 ->where('value', $address->value)
                 ->exists()
         );
+        $this->assertEquals(1,Address::count());
     }
 
-    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_ithout_change_username_and_new_password_happy_case()
+    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_happy_case()
     {
         $data = $this->happyCase;
         $address = Address::create([
@@ -330,12 +331,8 @@ class UpdateTest extends TestCase
         $expect['district_id'] = null;
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
-        $this->assertFalse(
-            Address::where('district_id', $address->district_id)
-                ->where('value', $address->value)
-                ->exists()
-        );
         $this->assertNull($this->user->fresh()->address_id);
+        $this->assertEquals(0,Address::count());
     }
 
     public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_happy_case()
@@ -366,6 +363,7 @@ class UpdateTest extends TestCase
                 ->exists()
         );
         $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
+        $this->assertEquals(2,Address::count());
     }
 
     public function test_with_change_username_and_new_password_and_without_address_happy_case()
