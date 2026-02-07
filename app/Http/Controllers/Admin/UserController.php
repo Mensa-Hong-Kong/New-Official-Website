@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\ResetPasswordRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
+use App\Models\Address;
+use App\Models\Area;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\ResetPasswordLog;
@@ -124,16 +126,18 @@ class UserController extends Controller implements HasMiddleware
     public function show(User $user)
     {
         $user->load([
-            'emails.lastVerification' => function ($query) {
+            'member', 'emails.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            },
+            }, 'address'
         ]);
+        $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
         $user->emails->append('is_verified');
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->mobiles->append('is_verified');
         $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
+        $user->address?->makeHidden(['id', 'created_at', 'updated_at']);
 
         return Inertia::render('Admin/Users/Show')
             ->with('user', $user)
@@ -149,6 +153,24 @@ class UserController extends Controller implements HasMiddleware
                 'maxBirthday', now()
                     ->subYears(2)
                     ->format('Y-m-d')
+            )->with(
+                'districts', function() {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
             );
     }
 
@@ -167,7 +189,6 @@ class UserController extends Controller implements HasMiddleware
             'birthday' => $request->birthday,
         ];
         $user->update($return);
-        unset($return['gender_id']);
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
         DB::commit();

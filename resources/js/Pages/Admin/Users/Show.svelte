@@ -7,10 +7,14 @@
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
 
-    let {auth, user: initUser, passportTypes, genders, maxBirthday} = $props();
+    let {auth, user: initUser, passportTypes, genders, maxBirthday, districts: areaDistricts} = $props();
     let user = $state({
         id: initUser.id,
+        memberNumber: initUser.member?.number,
         username: initUser.username,
+        prefixName: initUser.member?.prefix_name,
+        nickname: initUser.member?.nickname,
+        suffixName: initUser.member?.suffix_name,
         familyName: initUser.family_name,
         middleName: initUser.middle_name,
         givenName: initUser.given_name,
@@ -18,6 +22,8 @@
         passportNumber: initUser.passport_number,
         genderID: initUser.gender_id,
         birthday: formatToDate(initUser.birthday),
+        districtID: initUser.address?.district_id ,
+        address: initUser.address?.value,
         defaultEmail: null,
         defaultMobile: null
     });
@@ -48,7 +54,17 @@
         passportNumber: '',
         gender: '',
         birthday: '',
+        district: '',
+        address: '',
     });
+
+    let districtValue = $state(`${user.districtID ?? ''}`);
+    let districts = {};
+    for(let [area, object] of Object.entries(areaDistricts)) {
+        for(let [key, value] of Object.entries(object)) {
+            districts[key] = value;
+        }
+    }
 
     function resetInputValues() {
         inputs.username.value = user.username;
@@ -59,6 +75,8 @@
         inputs.passportNumber.value = user.passportNumber;
         inputs.gender.value = genders[user.genderID];
         inputs.birthday.value = user.birthday;
+        inputs.district.value = user.districtID;
+        inputs.address.value = user.address;
         for(let key in feedbacks) {
             feedbacks[key] = '';
         }
@@ -117,6 +135,14 @@
         } else if(inputs.birthday.validity.rangeOverflow) {
             feedbacks.birthday = `The birthday field must be a date before or equal to ${inputs.birthday.max}.`;
         }
+        if(inputs.district.value) {
+            if(inputs.address.validity.valueMissing) {
+                feedbacks.address = 'The address field is required when district is present.';
+            } else if(inputs.address.validity.tooLong) {
+                feedbacks.mobile = `The address must not be greater than ${inputs.address.maxLength} characters.`;
+            }
+        }
+
         return ! hasError();
     }
 
@@ -131,6 +157,8 @@
         user.passportNumber = response.data.passport_number;
         user.genderID = response.data.gender_id;
         user.birthday = response.data.birthday;
+        user.districtID = response.data.district_id;
+        user.address = response.data.address;
         editing = false;
         resetInputValues();
         submitting = false;
@@ -141,8 +169,6 @@
         if(error.status == 422) {
             for(let key in error.response.data.errors) {
                 let value = error.response.data.errors[key];
-                let feedback;
-                let input;
                 switch(key) {
                     case 'username':
                         feedbacks.username = value;;
@@ -168,6 +194,12 @@
                     case 'birthday':
                         feedbacks.birthday = value;
                         break;
+                    case 'district_id':
+                        feedbacks.district = value;
+                        break;
+                    case 'address':
+                        feedbacks.address = value;
+                        break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
                         break;
@@ -186,6 +218,20 @@
             if(submitting == 'update'+submitAt) {
                 if(validation()) {
                     updating = true;
+                    let data = {
+                        username: inputs.username.value,
+                        family_name: inputs.familyName.value,
+                        middle_name: inputs.middleName.value,
+                        given_name: inputs.givenName.value,
+                        passport_type_id: inputs.passportType.value,
+                        passport_number: inputs.passportNumber.value,
+                        gender: inputs.gender.value,
+                        birthday: inputs.birthday.value,
+                    }
+                    if (inputs.district.value) {
+                        data['district_id'] = inputs.district.value;
+                        data['address'] = inputs.address.value;
+                    }
                     post(
                         route(
                             'admin.users.update',
@@ -193,16 +239,7 @@
                         ),
                         updateSuccessCallback,
                         updateFailCallback,
-                        'put', {
-                            username: inputs.username.value,
-                            family_name: inputs.familyName.value,
-                            middle_name: inputs.middleName.value,
-                            given_name: inputs.givenName.value,
-                            passport_type_id: inputs.passportType.value,
-                            passport_number: inputs.passportNumber.value,
-                            gender: inputs.gender.value,
-                            birthday: inputs.birthday.value,
-                        }
+                        'put', data
                     );
                 } else {
                     submitting = false;
@@ -278,6 +315,15 @@
                         <Button color="danger" onclick={cancel} hidden={!editing || updating}>Cancel</Button>
                     {/if}
                 </h3>
+                <Col md=4>
+                    <div class="form-label">User ID:</div>
+                    <div>{user.id}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Member Number:</div>
+                    <div>{user.memberNumber}</div>
+                </Col>
+                <Col md=4 />
                 <Col md="4">
                     <Label for="username">Username:</Label>
                     <Input name="username" minlength="8" maxlength="16" required
@@ -313,6 +359,20 @@
                     </Row>
                 </Col>
                 <Col md="3"></Col>
+                {#if user.memberNumber}
+                    <Col md=4>
+                        <div class="form-label">Prefix Name:</div>
+                        <div>{user.prefixName ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <div class="form-label">Nickname:</div>
+                        <div>{user.nickname ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <div class="form-label">Suffix Name:</div>
+                        <div>{user.suffixName ?? "\u00A0"}</div>
+                    </Col>
+                {/if}
                 <Col md="4">
                     <Label for="family_name">Family Name:</Label>
                     <Input name="family_name" maxlength="255" required
@@ -387,6 +447,33 @@
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!' }
                         feedback={feedbacks.birthday} bind:inner={inputs.birthday} />
                     <div hidden="{editing}">{user.birthday}</div>
+                </Col>
+                <Col md=4 />
+                <Col md=4>
+                    <Label for="district_id">District:</Label>
+                    <Input type="select" name="district_id" hidden={! editing} disabled={updating}
+                        feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                        invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
+                        bind:inner={inputs.district} bind:value={districtValue}>
+                        <option value="">Please select district</option>
+                        {#each Object.entries(areaDistricts) as [area, object]}
+                            <optgroup label={area}>
+                                {#each Object.entries(object) as [key, value]}
+                                    <option value={key}>{value}</option>
+                                {/each}
+                            </optgroup>
+                        {/each}
+                    </Input>
+                    <div hidden={editing}>{districts[user.districtID] ?? "\u00A0"}</div>
+                </Col>
+                <Col md=8>
+                    <Label for="address">Address:</Label>
+                    <Input name="address" hidden={! editing} disabled={! districtValue || updating}
+                        maxlength=255 required placeholder="Room 123, 12/F, ABC building, XYZ road"
+                        feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                        invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
+                        bind:inner={inputs.address} value={user.address} />
+                    <div hidden={editing}>{user.address ?? "\u00A0"}</div>
                 </Col>
             </form>
         </article>
