@@ -129,18 +129,20 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = $request->user();
         $user->load([
-            'admissionTests', 'emails.lastVerification' => function ($query) {
+            'member', 'admissionTests',
+            'emails.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            },
+            }, 'address'
         ]);
-        $user->emails->append('is_verified');
-        $user->mobiles->append('is_verified');
         $user->makeHidden([
             'roles', 'permissions', 'synced_to_stripe',
-            'created_at', 'updated_at', 'member',
+            'created_at', 'updated_at', 'address_id',
         ]);
+        $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
+        $user->emails->append('is_verified');
+        $user->mobiles->append('is_verified');
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->admissionTests->makeHidden([
@@ -150,6 +152,7 @@ class UserController extends Controller implements HasMiddleware
         foreach ($user->admissionTests as $test) {
             $test->pivot->makeHidden('user_id', 'test_id');
         }
+        $user->address?->makeHidden(['id', 'created_at', 'updated_at']);
 
         return Inertia::render('User/Profile')
             ->with('user', $user)
@@ -165,6 +168,24 @@ class UserController extends Controller implements HasMiddleware
                 'maxBirthday', now()
                     ->subYears(2)
                     ->format('Y-m-d')
+            )->with(
+                'districts', function() {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
             );
     }
 

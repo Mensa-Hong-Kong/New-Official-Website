@@ -8,9 +8,14 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
 
-    let { user: initUser, genders, passportTypes, maxBirthday } = $props();
+    let { user: initUser, genders, passportTypes, maxBirthday, districts: areaDistricts } = $props();
     let user = $state({
+        id: initUser.id,
+        memberNumber: initUser.member?.number,
         username: initUser.username,
+        prefixName: initUser.member?.prefix_name,
+        nickname: initUser.member?.nickname,
+        suffixName: initUser.member?.suffix_name,
         familyName: initUser.family_name,
         middleName: initUser.middle_name,
         givenName: initUser.given_name,
@@ -18,6 +23,8 @@
         passportNumber: initUser.passport_number,
         genderID: initUser.gender_id,
         birthday: formatToDate(initUser.birthday),
+        districtID: initUser.address?.district_id ,
+        address: initUser.address?.value,
     });
     let inputs = $state({});
     let editing = $state(false);
@@ -29,7 +36,21 @@
         newPassword: '',
         gender: '',
         birthday: '',
+        district: '',
+        address: '',
     });
+
+    let usernameValue = $state(user.username);
+    let newPasswordValue = $state('');
+    let confirmNewPasswordValue = $state('');
+    let showPassportNumber = $state(false);
+    let districtValue = $state(`${user.districtID}`);
+    let districts = {};
+    for(let [area, object] of Object.entries(areaDistricts)) {
+        for(let [key, value] of Object.entries(object)) {
+            districts[key] = value;
+        }
+    }
 
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
@@ -80,6 +101,14 @@
         } else if(inputs.birthday.validity.rangeOverflow) {
             feedbacks.birthday = `The birthday not be greater than ${birthday.max} characters.`;
         }
+        if(inputs.district.value) {
+            if(inputs.address.validity.valueMissing) {
+                feedbacks.address = 'The address field is required when district is present.';
+            } else if(inputs.address.validity.tooLong) {
+                feedbacks.mobile = `The address must not be greater than ${inputs.address.maxLength} characters.`;
+            }
+        }
+
         return !hasError();
     }
 
@@ -88,8 +117,13 @@
         inputs.password.value = '';
         inputs.newPassword.value = '';
         inputs.confirmNewPassword.value = '';
-        inputs.gender.value = user.gender;
+        inputs.gender.value = genders[user.genderID];
         inputs.birthday.value = user.birthday;
+        inputs.district.value = user.districtID;
+        inputs.address.value = user.address;
+        for(let key in feedbacks) {
+            feedbacks[key] = '';
+        }
     }
 
     function successCallback(response) {
@@ -98,6 +132,8 @@
         user.username = response.data.username;
         user.genderID = response.data.gender_id;
         user.birthday = formatToDate(response.data.birthday);
+        user.districtID = response.data.district_id;
+        user.address = response.data.address;
         editing = false;
         resetInputValues();
         submitting = false;
@@ -108,8 +144,6 @@
         if(error.status == 422) {
             for(let key in error.response.data.errors) {
                 let value = error.response.data.errors[key];
-                let feedback;
-                let input;
                 switch(key) {
                     case 'username':
                         feedbacks.username = value;
@@ -125,6 +159,12 @@
                         break;
                     case 'birthday':
                         feedbacks.birthday = value;
+                        break;
+                    case 'district_id':
+                        feedbacks.district = value;
+                        break;
+                    case 'address':
+                        feedbacks.address = value;
                         break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
@@ -159,6 +199,10 @@
                         data['new_password'] = inputs.newPassword.value;
                         data['new_password_confirmation'] = inputs.confirmNewPassword.value;
                     }
+                    if (inputs.district.value) {
+                        data['district_id'] = inputs.district.value;
+                        data['address'] = inputs.address.value;
+                    }
                     post(
                         route('profile.update'),
                         successCallback,
@@ -174,6 +218,7 @@
 
     function cancel(event) {
         event.preventDefault();
+        resetInputValues();
         editing = false;
     }
 
@@ -190,7 +235,7 @@
 <Layout>
     <section class="container">
         <article>
-            <form class="row g-3" novalidate onsubmit="{update}">
+            <form class="row g-3" novalidate onsubmit={update}>
                 <h2 class="mb-2 fw-bold">
                     Profile
                     <Button color="primary" disabled={updating} hidden={! editing} outline={! updating}>
@@ -212,79 +257,138 @@
                     </ol>
                 </Alert>
                 <Col md=4>
-                    <Label>Username</Label>
-                    <div hidden={editing}>{user.username}</div>
-                    <Input name="username" type="text" hidden={! editing} disabled={updating}
-                        minlength=8 maxlength=16 required value={user.username} placeholder="username"
-                        feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
-                        invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
-                        bind:inner={inputs.username} />
+                    <div class="form-label">User ID:</div>
+                    <div>{user.id}</div>
                 </Col>
                 <Col md=4>
-                    <Label>Password</Label>
-                    <div hidden="{editing}">********</div>
+                    <div class="form-label">Member Number:</div>
+                    <div>{user.memberNumber}</div>
+                </Col>
+                <Col md=4 />
+                <Col md=4>
+                    <Label for="username">Username:</Label>
+                    <Input name="username" type="text" hidden={! editing} disabled={updating}
+                        minlength=8 maxlength=16 required placeholder="username"
+                        feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
+                        invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
+                        bind:inner={inputs.username} bind:value={usernameValue} />
+                    <div hidden={editing}>{user.username}</div>
+                </Col>
+                <Col md=4>
+                    <Label for="password">Password:</Label>
                     <Input name="password" type="password" disabled={updating} hidden={! editing}
-                        minlength=8 maxlength=16 required placeholder="password"
+                        required={usernameValue != user.username || newPasswordValue != ''}
+                        minlength=8 maxlength=16 placeholder="password"
                         feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
                         invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
-                        bind:inner="{inputs.password}" />
+                        bind:inner={inputs.password} />
+                    <div hidden={editing}>********</div>
                 </Col>
                 <Col md=4 />
                 <Col md=4 hidden={! editing}>
-                    <Label>New Password</Label>
+                    <Label for="new_password">New Password:</Label>
                     <Input name="new_password" type="password" disabled={updating}
                         minlength=8 maxlength=16 placeholder="New password"
                         feedback={feedbacks.newPassword} valid={feedbacks.newPassword == 'Looks good!'}
                         invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
-                        bind:inner={inputs.newPassword} />
+                        bind:inner={inputs.newPassword} bind:value={newPasswordValue} />
                 </Col>
                 <Col md=4 hidden={! editing}>
-                    <Label>Confirm New Password</Label>
-                    <Input name="new_password_confirmation" type="password" disabled={updating}
-                        minlength=8 maxlength=16 placeholder="confirm new password"
+                    <Label for="new_password_confirmation">Confirm New Password:</Label>
+                    <Input name="new_password_confirmation" type="password" disabled={updating || newPasswordValue == ''}
+                        required minlength=8 maxlength=16 placeholder="confirm new password"
+                        feedback={feedbacks.newPassword} valid={feedbacks.newPassword == 'Looks good!'}
                         invalid={feedbacks.newPassword != '' && feedbacks.newPassword != 'Looks good!'}
-                        valid={feedbacks.newPassword == 'Looks good!'} bind:inner={inputs.confirmNewPassword} />
+                        bind:inner={inputs.confirmNewPassword} bind:value={confirmNewPasswordValue} />
                 </Col>
-                <Col md=4 hidden={! editing}></Col>
+                <Col md=4 hidden={! editing} />
+                {#if user.memberNumber}
+                    <Col md=4>
+                        <div class="form-label">Prefix Name:</div>
+                        <div>{user.prefixName ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <div class="form-label">Nickname:</div>
+                        <div>{user.nickname ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <div class="form-label">Suffix Name:</div>
+                        <div>{user.suffixName ?? "\u00A0"}</div>
+                    </Col>
+                {/if}
                 <Col md=4>
-                    <div class="form-label">Family Name</div>
+                    <div class="form-label">Family Name:</div>
                     <div>{user.familyName}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Middle Name</div>
-                    <div>{user.middleName}</div>
+                    <div class="form-label">Middle Name:</div>
+                    <div>{user.middleName ?? "\u00A0"}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Given Name</div>
+                    <div class="form-label">Given Name:</div>
                     <div>{user.givenName}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Passport Type</div>
+                    <div class="form-label">Passport Type:</div>
                     <div>{passportTypes[user.passportTypeID]}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Passport Number</div>
-                    <div>{user.passportNumber}</div>
+                    <div class="form-label">Passport Number:</div>
+                    <div>
+                        {showPassportNumber ? user.passportNumber : '********'}
+                        <button type="button" style="border: none; background-color: transparent;"
+                            aria-label="{showPassportNumber ? 'Show' : 'Hide'} passport number"
+                            onclick={() => showPassportNumber = !showPassportNumber}>
+                            <i class={['bi', showPassportNumber ? 'bi-eye' : 'bi-eye-slash']}></i>
+                        </button>
+                    </div>
                 </Col>
                 <Col md=4 />
                 <Col md=4>
-                    <Label>Gender</Label>
-                    <div hidden="{editing}">{genders[user.genderID]}</div>
+                    <Label for="gender">Gender:</Label>
                     <Input name="gender" type="text" list="genders" hidden={! editing} disabled={updating}
                         maxlength="255" required value={genders[user.genderID]} placeholder="gender"
                         feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
                         invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
                         bind:inner={inputs.gender} />
+                    <div hidden={editing}>{genders[user.genderID]}</div>
                 </Col>
-                <Datalist id="genders" data={genders} />
+                <Datalist id="genders" data={Object.values(genders)} />
                 <Col md=4>
-                    <Label>Date of Birth</Label>
-                    <div hidden="{editing}">{user.birthday}</div>
+                    <Label for="birthday">Date of Birth:</Label>
                     <Input name="birthday" type="date" hidden={! editing} disabled={updating}
                         max={maxBirthday} required value={user.birthday}
                         feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
                         bind:inner={inputs.birthday} />
+                    <div hidden={editing}>{user.birthday}</div>
+                </Col>
+                <Col md=4 />
+                <Col md=4>
+                    <Label for="district_id">District:</Label>
+                    <Input type="select" name="district_id" hidden={! editing} disabled={updating}
+                        feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                        invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
+                        bind:inner={inputs.district} bind:value={districtValue}>
+                        <option value="">Please select district</option>
+                        {#each Object.entries(areaDistricts) as [area, object]}
+                            <optgroup label={area}>
+                                {#each Object.entries(object) as [key, value]}
+                                    <option value={key}>{value}</option>
+                                {/each}
+                            </optgroup>
+                        {/each}
+                    </Input>
+                    <div hidden={editing}>{districts[user.districtID] ?? "\u00A0"}</div>
+                </Col>
+                <Col md=8>
+                    <Label for="address">Address:</Label>
+                    <Input name="address" hidden={! editing} disabled={! districtValue || updating}
+                        maxlength=255 required placeholder="Room 123, 12/F, ABC building, XYZ road"
+                        feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                        invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
+                        bind:inner={inputs.address} value={user.address} />
+                    <div hidden={editing}>{user.address ?? "\u00A0"}</div>
                 </Col>
             </form>
         </article>
