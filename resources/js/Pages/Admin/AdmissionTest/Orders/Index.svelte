@@ -48,11 +48,11 @@
                     </Col>
                 </Row>
                 <Row class="g-3">
-                    <Col md=1><Label>From:</Label></Col>
+                    <Col md=1><Label for="from">From:</Label></Col>
                     <Col md=3>
                         <Input type="datetime-local" name="from" value={append.from} step=1 />
                     </Col>
-                    <Col md=1><Label>To:</Label></Col>
+                    <Col md=1><Label for="to">To:</Label></Col>
                     <Col md=3>
                         <Input type="datetime-local" name="to" value={append.to} step=1 />
                     </Col>

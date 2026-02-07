@@ -57,7 +57,7 @@
         },
         (new Date).addMinute().startOfMinute() - (new Date)
     );
-    
+
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
             if(feedback != 'Looks good!') {
@@ -184,7 +184,7 @@
         creating = false;
         submitting = false;
     }
-    
+
     function create(event) {
         event.preventDefault();
         if(! submitting) {
@@ -367,9 +367,9 @@
                     <Label>Test</Label>
                     <Row class="g-4">
                         <Col md=3>
-                            <input type="radio" name="test_id" id="test"
+                            <input type="radio" name="test_id" id="skipTest"
                                 value="" class="radio-input d-none" bind:group={testValue} />
-                            <label class="p-4 d-flex justify-content-center align-items-center radio-card card h-100" for="test">
+                            <label class="p-4 d-flex justify-content-center align-items-center radio-card card h-100" for="skipTest">
                                 <div class="text-center">
                                     <h5 class="card-title">Skip</h5>
                                 </div>
@@ -412,11 +412,11 @@
         border: 2px solid #dee2e6;
         transition: all 0.3s ease;
     }
-    
+
     .radio-card:hover {
         border-color: #0d6efd;
     }
-    
+
     .radio-input:checked + .radio-card {
         border-color: #0d6efd;
         background-color: #f8f9ff;

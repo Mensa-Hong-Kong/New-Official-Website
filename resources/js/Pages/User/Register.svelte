@@ -251,28 +251,28 @@
         <form class="row g-3" onsubmit="{register}" novalidate>
             <h2 class="mb-2 fw-bold text-uppercase">Register</h2>
             <Col md=4>
-                <Label>Username</Label>
+                <Label for="username">Username</Label>
                 <Input name="username" placeholder="username" disabled={creating}
                     minlength=8 maxlength=16 required bind:inner={inputs.username}
                     feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
                     invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'} />
             </Col>
             <Col md=4>
-                <Label>Password</Label>
+                <Label for="password">Password</Label>
                 <Input name="password" type="password" placeholder="password" disabled={creating}
                     minlength=8 maxlength=16 required bind:inner={inputs.password}
                     feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
                     invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'} />
             </Col>
             <Col md=4>
-                <Label>Confirm Password</Label>
+                <Label for="password_confirmation">Confirm Password</Label>
                 <Input name="password_confirmation" type="password" disabled={creating}
                     minlength=8 maxlength=16 required placeholder="confirm password"
                     invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
                     valid={feedbacks.password == 'Looks good!'} bind:inner={inputs.confirmPassword} />
             </Col>
             <Col md=4>
-                <Label>Family Name</Label>
+                <Label for="family_name">Family Name</Label>
                 <Input name="family_name" disabled={creating}
                     maxlength=255 required placeholder="family name"
                     feedback={feedbacks.familyName} valid={feedbacks.familyName == 'Looks good!'}
@@ -280,7 +280,7 @@
                     bind:inner="{inputs.familyName}" />
             </Col>
             <Col md=4>
-                <Label>Middle Name</Label>
+                <Label for="middle_name">Middle Name</Label>
                 <Input name="middle_name" disabled={creating}
                     maxlength="255" placeholder="middle name"
                     feedback={feedbacks.middleName} valid={feedbacks.middleName == 'Looks good!'}
@@ -288,7 +288,7 @@
                     bind:inner="{inputs.middleName}" />
             </Col>
             <Col md=4>
-                <Label>Given Name</Label>
+                <Label for="given_name">Given Name</Label>
                 <Input name="given_name" type="text" disabled={creating}
                     maxlength=255 required placeholder="given name"
                     feedback={feedbacks.givenName} valid={feedbacks.givenName == 'Looks good!'}
@@ -296,7 +296,7 @@
                     bind:inner="{inputs.givenName}" />
             </Col>
             <Col md=4>
-                <Label>Passport Type</Label>
+                <Label for="passport_type_id">Passport Type</Label>
                 <Input type="select" name="passport_type_id" required disabled={creating}
                     feedback={feedbacks.passportType} valid={feedbacks.passportType == 'Looks good!'}
                     invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
@@ -308,7 +308,7 @@
                 </Input>
             </Col>
             <Col md=4>
-                <Label>Passport Type</Label>
+                <Label for="passport_number">Passport Number</Label>
                 <Input name="passport_number" disabled={creating}
                     minlength=8 maxlength=18 required placeholder="passport number"
                     feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
@@ -317,7 +317,7 @@
             </Col>
             <Col md=4 />
             <Col md=4>
-                <Label>Passport Type</Label>
+                <Label for="gender">Gender</Label>
                 <Input name="gender" disabled={creating}
                     maxlength="255" list="genders" required placeholder="gender"
                     feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
@@ -326,7 +326,7 @@
             </Col>
             <Datalist id="genders" data={genders} />
             <Col md=4>
-                <Label>Date of Birth</Label>
+                <Label for="birthday">Date of Birth</Label>
                 <Input name="birthday" type="date" disabled={creating}
                     max={maxBirthday} required placeholder="birthday"
                     feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
@@ -335,24 +335,24 @@
             </Col>
             <Col md=4 />
             <Col md=4>
-                <Label>Email</Label>
+                <Label for="email">Email</Label>
                 <Input name="email" type="email" disabled={creating}
-                    maxlength=320 required placeholder="dammy@example.com"
+                    maxlength=320 placeholder="dammy@example.com"
                     feedback={feedbacks.email} valid={feedbacks.email == 'Looks good!'}
                     invalid={feedbacks.email != '' && feedbacks.email != 'Looks good!'}
                     bind:inner={inputs.email} />
             </Col>
             <Col md=4>
-                <Label>Mobile</Label>
+                <Label for="mobile">Mobile</Label>
                 <Input name="mobile" type="tel" disabled={creating}
-                    minlength=5 maxlength=15 required placeholder=85298765432
+                    minlength=5 maxlength=15 placeholder=85298765432
                     feedback={feedbacks.mobile} valid={feedbacks.mobile == 'Looks good!'}
                     invalid={feedbacks.mobile != '' && feedbacks.mobile != 'Looks good!'}
                     bind:inner={inputs.mobile} />
             </Col>
             <Col md=4 />
             <Col md=4>
-                <Label>District</Label>
+                <Label for="district_id">District</Label>
                 <Input type="select" name="district_id" disabled={creating}
                     feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
                     invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
@@ -368,7 +368,7 @@
                 </Input>
             </Col>
             <Col md=8>
-                <Label>Address</Label>
+                <Label for="address">Address</Label>
                 <Input name="address" disabled={! districtValue || creating}
                     maxlength=255 required placeholder="Room 123, 12/F, ABC building, XYZ road"
                     feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}

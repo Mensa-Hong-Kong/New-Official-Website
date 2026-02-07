@@ -27,7 +27,7 @@
             user.defaultEmail = row.id;
         }
     }
-    
+
     for(let row of initUser.mobiles) {
         if(row.is_default) {
             user.defaultMobile = row.id;
@@ -57,7 +57,7 @@
         inputs.givenName.value = user.givenName;
         inputs.passportType.value = user.passportTypeID;
         inputs.passportNumber.value = user.passportNumber;
-        inputs.gender.value = user.genderID;
+        inputs.gender.value = genders[user.genderID];
         inputs.birthday.value = user.birthday;
         for(let key in feedbacks) {
             feedbacks[key] = '';
@@ -177,7 +177,7 @@
         submitting = false;
         updating = false;
     }
-    
+
     function update(event) {
         event.preventDefault();
         if(submitting == '') {
@@ -265,7 +265,7 @@
             <form method="POST" class="row g-3" novalidate onsubmit="{update}">
                 <h3 class="mb-2 fw-bold">
                     Info
-                    {#if 
+                    {#if
                         auth.user.permissions.includes('Edit:User') ||
                         auth.user.roles.includes('Super Administrator')
                     }
@@ -279,20 +279,20 @@
                     {/if}
                 </h3>
                 <Col md="4">
-                    <Label for="username">Username</Label>
-                    <div hidden="{editing}">{user.username}</div>
+                    <Label for="username">Username:</Label>
                     <Input name="username" minlength="8" maxlength="16" required
                         hidden={! editing} disabled={updating}
                         value={user.username} placeholder="username"
                         valid={feedbacks.username == 'Looks good!'}
                         invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!' }
                         feedback={feedbacks.username} bind:inner={inputs.username} />
+                    <div hidden="{editing}">{user.username}</div>
                 </Col>
                 <Col md="5">
-                    <Label>Password</Label>
+                    <Label>Password:</Label>
                     <Row>
                         <Col md="2">********</Col>
-                        {#if 
+                        {#if
                             auth.user.permissions.includes('Edit:User') ||
                             auth.user.roles.includes('Super Administrator')
                         }
@@ -314,38 +314,37 @@
                 </Col>
                 <Col md="3"></Col>
                 <Col md="4">
-                    <Label for="family_name">Family Name</Label>
-                    <div hidden="{editing}">{user.familyName}</div>
+                    <Label for="family_name">Family Name:</Label>
                     <Input name="family_name" maxlength="255" required
                         hidden={! editing} disabled={updating}
                         value={user.familyName} placeholder="family name"
                         valid={feedbacks.familyName == 'Looks good!'}
                         invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!' }
                         feedback={feedbacks.familyName} bind:inner={inputs.familyName} />
+                    <div hidden="{editing}">{user.familyName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="middle_name">Middle Name</Label>
-                    <div hidden="{editing}">{user.middleName}</div>
+                    <Label for="middle_name">Middle Name:</Label>
                     <Input name="middle_name" maxlength="255"
                         hidden={! editing} disabled={updating}
                         value={user.middleName} placeholder="middle name"
                         valid={feedbacks.middleName == 'Looks good!'}
                         invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!' }
                         feedback={feedbacks.middleName} bind:inner={inputs.middleName} />
+                    <div hidden="{editing}">{user.middleName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="given_name">Given Name</Label>
-                    <div hidden="{editing}">{user.givenName}</div>
+                    <Label for="given_name">Given Name:</Label>
                     <Input name="given_name" maxlength="255" required
                         hidden={! editing} disabled={updating}
                         value={user.givenName} placeholder="given name"
                         valid={feedbacks.givenName == 'Looks good!'}
                         invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!' }
                         feedback={feedbacks.givenName} bind:inner={inputs.givenName} />
+                    <div hidden="{editing}">{user.givenName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="passport_type_id">Passport Type</Label>
-                    <div hidden="{editing}">{passportTypes[user.passportTypeID]}</div>
+                    <Label for="passport_type_id">Passport Type:</Label>
                     <Input name="passport_type_id" type="select" required
                         hidden={! editing} disabled={updating}
                         valid={feedbacks.passportType == 'Looks good!'}
@@ -355,38 +354,39 @@
                             <option value="{key}" selected={key == user.passportTypeID}>{value}</option>
                         {/each}
                     </Input>
+                    <div hidden="{editing}">{passportTypes[user.passportTypeID]}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="passport_number">Passport Number</Label>
-                    <div hidden="{editing}">{user.passportNumber}</div>
+                    <Label for="passport_number">Passport Number:</Label>
                     <Input name="passport_number" minlength="8" maxlength="18" required
                         hidden={! editing} disabled={updating}
                         value={user.passportNumber} placeholder="passport number"
                         valid={feedbacks.passportNumber == 'Looks good!'}
                         invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!' }
                         feedback={feedbacks.passportNumber} bind:inner={inputs.passportNumber} />
+                    <div hidden="{editing}">{user.passportNumber}</div>
                 </Col>
                 <Col md="4"></Col>
                 <Col md="4">
-                    <Label for="gender">Gender</Label>
-                    <div hidden="{editing}">{genders[user.genderID]}</div>
+                    <Label for="gender">Gender:</Label>
                     <Input name="gender" maxlength=255 required
                         hidden={! editing} disabled={updating} list="genders"
                         value={genders[user.genderID]} placeholder="gender"
                         valid={feedbacks.gender == 'Looks good!'}
                         invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!' }
                         feedback={feedbacks.gender} bind:inner={inputs.gender} />
+                    <div hidden="{editing}">{genders[user.genderID]}</div>
                 </Col>
-                <Datalist id="genders" data={genders} />
+                <Datalist id="genders" data={Object.values(genders)} />
                 <Col md="4">
-                    <Label for="birthday">Date of Birth</Label>
-                    <div hidden="{editing}">{user.birthday}</div>
+                    <Label for="birthday">Date of Birth:</Label>
                     <Input type="date" name="birthday" max={maxBirthday} required
                         hidden={! editing} disabled={updating}
                         value={user.birthday} placeholder="birthday"
                         valid={feedbacks.birthday == 'Looks good!'}
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!' }
                         feedback={feedbacks.birthday} bind:inner={inputs.birthday} />
+                    <div hidden="{editing}">{user.birthday}</div>
                 </Col>
             </form>
         </article>
