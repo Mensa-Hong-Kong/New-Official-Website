@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('national_mensas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('url', 1855);
             $table->boolean('is_active');
             $table->timestamps();
