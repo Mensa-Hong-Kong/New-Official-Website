@@ -207,10 +207,26 @@ class UserController extends Controller implements HasMiddleware
         if ($request->new_password) {
             $update['password'] = $request->new_password;
         }
+        if ($user->address) {
+            if ($request->district_id) {
+                $update['address_id'] = $user->address->updateAddress($request->district_id, $request->address)->id;
+            } else {
+                $user->address->delete();
+                $update['address_id'] = null;
+            }
+        } elseif ($request->district_id) {
+            $address = Address::firstOrCreate([
+                'district_id' => $request->district_id,
+                'value' => $request->address,
+            ]);
+            $update['address_id'] = $address->id;
+        }
         $user->update($update);
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'address_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
         $return['gender'] = $request->gender;
+        $return['district_id'] = $request->district_id;
+        $return['address'] = $request->address;
         $return['success'] = 'The profile update success!';
         DB::commit();
 
