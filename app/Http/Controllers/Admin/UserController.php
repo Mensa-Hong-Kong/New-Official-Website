@@ -188,7 +188,24 @@ class UserController extends Controller implements HasMiddleware
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
         ];
+        if ($user->address) {
+            if ($request->district_id) {
+                $return['address_id'] = $user->address->updateAddress($request->district_id, $request->address)->id;
+            } else {
+                $user->address->delete();
+                $return['address_id'] = null;
+            }
+        } elseif ($request->district_id) {
+            $address = Address::firstOrCreate([
+                'district_id' => $request->district_id,
+                'value' => $request->address,
+            ]);
+            $return['address_id'] = $address->id;
+        }
         $user->update($return);
+        unset($return['address_id']);
+        $return['district_id'] = $request->district_id;
+        $return['address'] = $request->address;
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
         DB::commit();
