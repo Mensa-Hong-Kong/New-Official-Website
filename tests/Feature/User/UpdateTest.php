@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\User;
 
+use App\Models\Address;
+use App\Models\District;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -61,7 +63,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['username' => 'The username field must not be greater than 16 characters.']);
     }
 
-    public function test_with_change_username_missing_password()
+    public function test_missing_password_when_username_present()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -69,7 +71,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field is required when you change the username or password.']);
     }
 
-    public function test_with_change_password_missing_password()
+    public function test_missing_password_when_new_password_present()
     {
         $data = $this->happyCase;
         $data['new_password'] = '98765432';
@@ -184,7 +186,51 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function test_without_change_username_and_new_password_happy_case()
+    public function test_district_id_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 'abc';
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['district_id' => 'The district field must be an integer.']);
+    }
+
+    public function test_district_id_not_exists()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 0;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
+    }
+
+    public function test_address_required_when_district_id_present()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field is required when district is present.']);
+    }
+
+    public function test_address_not_string()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = ['123 Street'];
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field must be a string.']);
+    }
+
+    public function test_address_too_long()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
+    }
+
+    public function test_without_change_username_and_new_password_address_happy_case()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
@@ -195,7 +241,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_change_username_without_new_password_happy_case()
+    public function test_with_change_username_without_new_password_and_address_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -208,7 +254,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_new_password_without_change_username_happy_case()
+    public function test_with_new_password_without_change_username_and_address_happy_case()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -222,7 +268,107 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_change_username_and_new_password_happy_case()
+    public function test_with_change_address_when_before_user_has_no_address_and_without_change_username_and_new_password_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+    }
+
+    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        $this->assertFalse(
+            Address::where('district_id', $address->district_id)
+                ->where('value', $address->value)
+                ->exists()
+        );
+    }
+
+    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_ithout_change_username_and_new_password_happy_case()
+    {
+        $data = $this->happyCase;
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['address'] = null;
+        $expect['district_id'] = null;
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertFalse(
+            Address::where('district_id', $address->district_id)
+                ->where('value', $address->value)
+                ->exists()
+        );
+        $this->assertNull($this->user->fresh()->address_id);
+    }
+
+    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_happy_case()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        User::factory()->state(['address_id' => $address->id])->create();
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $address->district_id)
+                ->where('value', $address->value)
+                ->exists()
+        );
+        $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
+    }
+
+    public function test_with_change_username_and_new_password_and_without_address_happy_case()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
