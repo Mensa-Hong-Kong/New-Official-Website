@@ -44,7 +44,7 @@
     let newPasswordValue = $state('');
     let confirmNewPasswordValue = $state('');
     let showPassportNumber = $state(false);
-    let districtValue = $state(`${user.districtID}`);
+    let districtValue = $state(`${user.districtID ?? ''}`);
     let districts = {};
     for(let [area, object] of Object.entries(areaDistricts)) {
         for(let [key, value] of Object.entries(object)) {
