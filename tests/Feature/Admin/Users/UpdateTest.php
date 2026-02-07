@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin\Users;
 
+use App\Models\Address;
+use App\Models\District;
 use App\Models\Gender;
 use App\Models\ModulePermission;
 use App\Models\User;
@@ -435,7 +437,66 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function test_happy_case_without_middle_name()
+    public function test_district_id_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 'abc';
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['district_id' => 'The district field must be an integer.']);
+    }
+
+    public function test_district_id_is_not_exist()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = 0;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
+    }
+
+    public function test_address_required_when_district_id_present()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['address' => 'The address field is required when district is present.']);
+    }
+
+    public function test_address_too_long()
+    {
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
+    }
+
+    public function test_happy_case_without_middle_name_and_address()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)
@@ -460,7 +521,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
     }
 
-    public function test_happy_case_with_middle_name()
+    public function test_happy_case_with_middle_name_and_without_address()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'intelligent';
@@ -484,5 +545,129 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_number'], $user->passport_number);
         $this->assertEquals($data['gender'], $user->gender->name);
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+    }
+
+    public function test_with_change_address_when_before_user_have_no_address_and_without_middle_name_happy_case()
+    {
+        $data = $this->happyCase;
+        unset($data['middle_name']);
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The user data update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+    }
+
+    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_happy_case()
+    {
+        $data = $this->happyCase;
+        unset($data['middle_name']);
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The user data update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        $this->assertFalse(
+            Address::where('district_id', $address->district_id)
+                ->where('value', $address->value)
+                ->exists()
+        );
+        $this->assertEquals(1,Address::count());
+    }
+
+    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_happy_case()
+    {
+        $data = $this->happyCase;
+        unset($data['middle_name']);
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The user data update success!';
+        $response->assertJson($expect);
+        $this->assertNull($this->user->fresh()->address_id);
+        $this->assertEquals(0,Address::count());
+    }
+
+    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_other_object_using_and_without_middle_name_happy_case()
+    {
+        $data = $this->happyCase;
+        unset($data['middle_name']);
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => District::inRandomOrder()->first()->id,
+            'value' => '456 Street',
+        ]);
+        User::factory()->state(['address_id' => $address->id])->create();
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The user data update success!';
+        $response->assertJson($expect);
+        $this->assertTrue(
+            Address::where('district_id', $data['district_id'])
+                ->where('value', $data['address'])
+                ->exists()
+        );
+        $this->assertTrue(
+            Address::where('district_id', $address->district_id)
+                ->where('value', $address->value)
+                ->exists()
+        );
+        $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
+        $this->assertEquals(2,Address::count());
     }
 }
