@@ -133,6 +133,7 @@ class UserController extends Controller implements HasMiddleware
             }, 'address'
         ]);
         $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
+        $user->member?->append('is_active');
         $user->emails->append('is_verified');
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->mobiles->append('is_verified');

@@ -18,6 +18,15 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->route('user');
+        $districtUtility = 'nullable';
+        $addressUtility = 'required_with:district_id';
+        if(
+            $this->user()->member?->isActive ||
+            $this->user()->member?->orders()->where('expired_at', '>', now())->exists()
+        ) {
+            $districtUtility = 'required';
+            $addressUtility = 'required';
+        }
 
         return [
             'username' => [
@@ -32,8 +41,8 @@ class UpdateRequest extends FormRequest
             'passport_number' => 'required|regex:/^[A-Z0-9]+$/|min:8|max:18',
             'gender' => 'required|string|max:255',
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
-            'district_id' => 'nullable|integer|exists:'.District::class.',id',
-            'address' => 'required_with:district_id|string|max:255',
+            'district_id' => $districtUtility.'|integer|exists:'.District::class.',id',
+            'address' => $addressUtility.'|string|max:255',
         ];
     }
 
@@ -42,9 +51,11 @@ class UpdateRequest extends FormRequest
         return [
             'passport_type_id.required' => 'The passport type field is required.',
             'passport_type_id.exists' => 'The selected passport type is invalid.',
+            'district_id.required' => 'The district field is required when user is an active member or has membership order in progress.',
             'district_id.integer' => 'The district field must be an integer.',
             'district_id.exists' => 'The selected district is invalid.',
             'address.required_with' => 'The address field is required when district is present.',
+            'address.required' => 'The address field is required when user is an active member or has membership order in progress.',
         ];
     }
 }

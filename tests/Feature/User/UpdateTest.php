@@ -4,6 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Models\Address;
 use App\Models\District;
+use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -186,6 +187,41 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
+    public function test_missing_district_id_when_user_is_active_member()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
+    }
+
+    public function test_missing_district_id_when_user_has_membership_order_in_progress()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'pending',
+            'from_year' => now()->year,
+            'expired_at' => now()->addMinutes(30),
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['address'] = '123 Street';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
+    }
+
     public function test_district_id_is_not_integer()
     {
         $data = $this->happyCase;
@@ -202,6 +238,41 @@ class UpdateTest extends TestCase
         $data['address'] = '123 Street';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
+    }
+
+    public function test_missing_address_when_user_is_active_member()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field is required when you are an active member or have membership order in progress.']);
+    }
+
+    public function test_missing_address_when_user_has_membership_order_in_progress()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'pending',
+            'from_year' => now()->year,
+            'expired_at' => now()->addMinutes(30),
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['address' => 'The address field is required when you are an active member or have membership order in progress.']);
     }
 
     public function test_address_required_when_district_id_present()

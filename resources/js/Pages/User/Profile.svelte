@@ -12,6 +12,7 @@
     let user = $state({
         id: initUser.id,
         memberNumber: initUser.member?.number,
+        isActiveMember: initUser.member?.is_active,
         username: initUser.username,
         prefixName: initUser.member?.prefix_name,
         nickname: initUser.member?.nickname,
@@ -44,7 +45,7 @@
     let newPasswordValue = $state('');
     let confirmNewPasswordValue = $state('');
     let showPassportNumber = $state(false);
-    let districtValue = $state(`${user.districtID ?? ''}`);
+    let districtValue = $state(user.districtID ?? '');
     let districts = {};
     for(let [area, object] of Object.entries(areaDistricts)) {
         for(let [key, value] of Object.entries(object)) {
@@ -101,11 +102,16 @@
         } else if(inputs.birthday.validity.rangeOverflow) {
             feedbacks.birthday = `The birthday not be greater than ${birthday.max} characters.`;
         }
-        if(inputs.district.value) {
+        if(user.isActiveMember || inputs.district.value) {
+            if (inputs.district.validity.valueMissing) {
+                feedbacks.district = 'The district field is required when you are an active member.';
+            }
             if(inputs.address.validity.valueMissing) {
-                feedbacks.address = 'The address field is required when district is present.';
+                feedbacks.address = user.isActiveMember ?
+                    'The address field is required when you are an active member.' :
+                    'The address field is required when district is present.';
             } else if(inputs.address.validity.tooLong) {
-                feedbacks.mobile = `The address must not be greater than ${inputs.address.maxLength} characters.`;
+                feedbacks.address = `The address must not be greater than ${inputs.address.maxLength} characters.`;
             }
         }
 
@@ -128,11 +134,11 @@
 
     function successCallback(response) {
         alert(response.data.success);
-        genders[response.data.gender_id] = response.data.gender
+        genders[response.data.gender_id] = response.data.gender;
         user.username = response.data.username;
         user.genderID = response.data.gender_id;
         user.birthday = formatToDate(response.data.birthday);
-        user.districtID = response.data.district_id;
+        user.districtID = response.data.district_id ?? '';
         user.address = response.data.address;
         editing = false;
         resetInputValues();
@@ -366,7 +372,8 @@
                 <Col md=4 />
                 <Col md=4>
                     <Label for="district_id">District:</Label>
-                    <Input type="select" name="district_id" hidden={! editing} disabled={updating}
+                    <Input type="select" name="district_id" hidden={! editing}
+                        disabled={updating} required={user.isActiveMember}
                         feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
                         invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
                         bind:inner={inputs.district} bind:value={districtValue}>
@@ -383,8 +390,9 @@
                 </Col>
                 <Col md=8>
                     <Label for="address">Address:</Label>
-                    <Input name="address" hidden={! editing} disabled={! districtValue || updating}
-                        maxlength=255 required placeholder="Room 123, 12/F, ABC building, XYZ road"
+                    <Input name="address" hidden={! editing}
+                        disabled={(! districtValue && ! user.isActiveMember) || updating}
+                        required maxlength=255 placeholder="Room 123, 12/F, ABC building, XYZ road"
                         feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
                         invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
                         bind:inner={inputs.address} value={user.address} />
