@@ -33,8 +33,8 @@ class UpdateRequest extends FormRequest
                     ->ignore($this->user()),
             ],
             'password' => [
-                Rule::requiredIf($this->username != $this->user()->username || $this->new_password),
-                'string', 'min:8', 'max:16',
+                'bail', Rule::requiredIf($this->username != $this->user()->username || $this->new_password),
+                'string', 'min:8', 'max:16', 'current_password:web',
             ],
             'new_password' => 'nullable|string|min:8|max:16|confirmed',
             'gender' => 'required|string|max:255',
@@ -48,6 +48,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'password.required' => 'The password field is required when you change the username or password.',
+            'password.current_password' => 'The provided password is incorrect.',
             'district_id.required' => 'The district field is required when you are an active member or have membership order in progress.',
             'district_id.integer' => 'The district field must be an integer.',
             'district_id.exists' => 'The selected district is invalid.',

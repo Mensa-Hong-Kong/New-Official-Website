@@ -106,6 +106,14 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['password' => 'The password field must not be greater than 16 characters.']);
     }
 
+    public function test_password_incorrect()
+    {
+        $data = $this->happyCase;
+        $data['password'] = 'wrong_password';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['password' => 'The provided password is incorrect.']);
+    }
+
     public function test_new_password_is_not_string()
     {
         $data = $this->happyCase;

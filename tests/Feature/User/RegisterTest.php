@@ -367,7 +367,7 @@ class RegisterTest extends TestCase
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = str_repeat('a', 256);
-        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response = $this->post(route('register'), $data);
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 

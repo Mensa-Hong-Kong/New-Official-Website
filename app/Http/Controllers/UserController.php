@@ -193,11 +193,6 @@ class UserController extends Controller implements HasMiddleware
     public function update(UpdateRequest $request)
     {
         $user = $request->user();
-        if ($request->password != '' && ! $user->checkPassword($request->password)) {
-            return response([
-                'errors' => ['password' => 'The provided password is incorrect.'],
-            ], 422);
-        }
         DB::beginTransaction();
         $gender = $user->gender->updateName($request->gender);
         $update = [
@@ -244,35 +239,13 @@ class UserController extends Controller implements HasMiddleware
 
     public function login(LoginRequest $request)
     {
-        $user = User::with([
-            'loginLogs' => function ($query) {
-                $query->where('status', false)
-                    ->where('created_at', '>=', now()->subDay());
-            },
-        ])->firstWhere('username', $request->username);
-        if ($user) {
-            if ($user->loginLogs->count() >= 10) {
-                $firstInRangeLoginFailedTime = $user->loginLogs[0]['created_at'];
+        $request->user->loginLogs()
+            ->where('status', false)
+            ->delete();
+        $request->user->loginLogs()->create(['status' => true]);
+        Auth::login($request->user, $request->remember_me);
 
-                abort(429, "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.");
-            }
-            $log = ['user_id' => $user->id];
-            if ($user->checkPassword($request->password)) {
-                $log['status'] = true;
-                UserLoginLog::create($log);
-                $user->loginLogs()
-                    ->where('status', false)
-                    ->delete();
-                Auth::login($user, $request->remember_me);
-
-                return redirect()->intended(route('profile.show'));
-            }
-            UserLoginLog::create($log);
-        }
-
-        return response([
-            'errors' => ['failed' => 'The provided username or password is incorrect.'],
-        ], 422);
+        return redirect()->intended(route('profile.show'));
     }
 
     public function forgetPassword()
