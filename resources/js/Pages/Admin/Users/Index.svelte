@@ -89,7 +89,7 @@
             <AccordionItem header="Search" active={isSearch}>
                 <form class="row g-3" novalidate onsubmit="{search}">
                     <Col md="4">
-                        <Label>Family Name</Label>
+                        <Label for="family_name">Family Name</Label>
                         <Input name="family_name" maxlength="255"
                             value={append.family_name} placeholder="family name"
                             valid={feedbacks.familyName == 'Looks good!'}
@@ -97,7 +97,7 @@
                             feedback={feedbacks.familyName} bind:inner={inputs.familyName} />
                     </Col>
                     <Col md="4">
-                        <Label>Middle Name</Label>
+                        <Label for="middle_name">Middle Name</Label>
                         <Input name="middle_name" maxlength="255"
                             value={append.middle_name} placeholder="middle name"
                             valid={feedbacks.middleName == 'Looks good!'}
@@ -105,7 +105,7 @@
                             feedback={feedbacks.middleName} bind:inner={inputs.middleName} />
                     </Col>
                     <Col md="4">
-                        <Label>Given Name</Label>
+                        <Label for="given_name">Given Name</Label>
                         <Input name="given_name" maxlength="255"
                             value={append.given_name} placeholder="given name"
                             valid={feedbacks.givenName == 'Looks good!'}
@@ -113,7 +113,7 @@
                             feedback={feedbacks.givenName} bind:inner={inputs.givenName} />
                     </Col>
                     <Col md="4">
-                        <Label>Passport Type</Label>
+                        <Label for="passport_type_id">Passport Type</Label>
                         <Input name="passport_type_id" type="select"
                             valid={feedbacks.passportType == 'Looks good!'}
                             invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!' }
@@ -127,7 +127,7 @@
                         </Input>
                     </Col>
                     <Col md="4">
-                        <Label>Passport Number</Label>
+                        <Label for="passport_number">Passport Number</Label>
                         <Input name="passport_number" minlength="8" maxlength="18"
                             value={append.passport_number} placeholder="passport number"
                             valid={feedbacks.passportNumber == 'Looks good!'}
@@ -136,7 +136,7 @@
                     </Col>
                     <Col md="4"></Col>
                     <Col md="4">
-                        <Label>Gender</Label>
+                        <Label for="gender_id">Gender</Label>
                         <Input name="gender_id" type="select"
                             valid={feedbacks.gender == 'Looks good!'}
                             invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!' }
@@ -150,7 +150,7 @@
                         </Input>
                     </Col>
                     <Col md="4">
-                        <Label>Birthday</Label>
+                        <Label for="birthday">Birthday</Label>
                         <Input name="birthday" type="date" max={maxBirthday}
                             value={append.birthday} placeholder="birthday"
                             valid={feedbacks.birthday == 'Looks good!'}
@@ -159,7 +159,7 @@
                     </Col>
                     <Col md="4"></Col>
                     <Col md="4">
-                        <Label>Email</Label>
+                        <Label for="email">Email</Label>
                         <Input name="email" type="email"
                             value={append.email} placeholder="ab@c.d"
                             valid={feedbacks.email == 'Looks good!'}
@@ -167,7 +167,7 @@
                             feedback={feedbacks.email} bind:inner={inputs.email} />
                     </Col>
                     <Col md="4">
-                        <Label>Mobile</Label>
+                        <Label for="mobile">Mobile</Label>
                         <Input name="mobile" type="tel"
                             minlength="5" maxlength="15"
                             value={append.mobile} placeholder="85298765432"
@@ -227,7 +227,7 @@
                             </td>
                             <td>
                                 <Link href={route('admin.users.show', {user: row.id})}
-                                   class="btn btn-primary">Show</Link>
+                                    class="btn btn-primary">Show</Link>
                             </td>
                         </tr>
                     {/each}
