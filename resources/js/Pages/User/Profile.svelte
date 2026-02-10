@@ -349,7 +349,7 @@
                             feedback={feedbacks.prefixName} valid={feedbacks.prefixName == 'Looks good!'}
                             invalid={feedbacks.prefixName != '' && feedbacks.prefixName != 'Looks good!'}
                             bind:inner={inputs.prefixName} />
-                        <div>{user.prefixName ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.prefixName ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
                         <Label for="nickname">Nickname:</Label>
@@ -358,7 +358,7 @@
                             feedback={feedbacks.nickname} valid={feedbacks.nickname == 'Looks good!'}
                             invalid={feedbacks.nickname != '' && feedbacks.nickname != 'Looks good!'}
                             bind:inner={inputs.nickname} />
-                        <div>{user.nickname ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.nickname ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
                         <Label for="suffix_name">Suffix Name:</Label>
@@ -367,7 +367,7 @@
                             feedback={feedbacks.suffixName} valid={feedbacks.suffixName == 'Looks good!'}
                             invalid={feedbacks.suffixName != '' && feedbacks.suffixName != 'Looks good!'}
                             bind:inner={inputs.suffixName} />
-                        <div>{user.suffixName ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.suffixName ?? "\u00A0"}</div>
                     </Col>
                 {/if}
                 <Col md=4>

@@ -341,7 +341,7 @@
 <Layout>
     <section class="container">
         <article>
-            <form method="POST" class="row g-3" novalidate onsubmit="{update}">
+            <form method="POST" class="row g-3" novalidate onsubmit={update}>
                 <h3 class="mb-2 fw-bold">
                     Info
                     {#if
@@ -374,7 +374,7 @@
                         valid={feedbacks.username == 'Looks good!'}
                         invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!' }
                         feedback={feedbacks.username} bind:inner={inputs.username} />
-                    <div hidden="{editing}">{user.username}</div>
+                    <div hidden={editing}>{user.username}</div>
                 </Col>
                 <Col md="5">
                     <Label>Password:</Label>
@@ -409,7 +409,7 @@
                             valid={feedbacks.prefixName == 'Looks good!'}
                             invalid={feedbacks.prefixName != '' && feedbacks.prefixName != 'Looks good!' }
                             feedback={feedbacks.prefixName} bind:inner={inputs.prefixName} />
-                        <div>{user.prefixName ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.prefixName ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
                         <Label for="family_name">Nickname:</Label>
@@ -418,7 +418,7 @@
                             valid={feedbacks.nickname == 'Looks good!'}
                             invalid={feedbacks.nickname != '' && feedbacks.nickname != 'Looks good!' }
                             feedback={feedbacks.nickname} bind:inner={inputs.nickname} />
-                        <div>{user.nickname ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.nickname ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
                         <Label for="family_name">Suffix Name:</Label>
@@ -427,7 +427,7 @@
                             valid={feedbacks.suffixName == 'Looks good!'}
                             invalid={feedbacks.suffixName != '' && feedbacks.suffixName != 'Looks good!' }
                             feedback={feedbacks.suffixName} bind:inner={inputs.suffixName} />
-                        <div>{user.suffixName ?? "\u00A0"}</div>
+                        <div hidden={editing}>{user.suffixName ?? "\u00A0"}</div>
                     </Col>
                 {/if}
                 <Col md="4">
@@ -438,7 +438,7 @@
                         valid={feedbacks.familyName == 'Looks good!'}
                         invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!' }
                         feedback={feedbacks.familyName} bind:inner={inputs.familyName} />
-                    <div hidden="{editing}">{user.familyName}</div>
+                    <div hidden={editing}>{user.familyName}</div>
                 </Col>
                 <Col md="4">
                     <Label for="middle_name">Middle Name:</Label>
@@ -448,7 +448,7 @@
                         valid={feedbacks.middleName == 'Looks good!'}
                         invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!' }
                         feedback={feedbacks.middleName} bind:inner={inputs.middleName} />
-                    <div hidden="{editing}">{user.middleName}</div>
+                    <div hidden={editing}>{user.middleName}</div>
                 </Col>
                 <Col md="4">
                     <Label for="given_name">Given Name:</Label>
@@ -458,7 +458,7 @@
                         valid={feedbacks.givenName == 'Looks good!'}
                         invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!' }
                         feedback={feedbacks.givenName} bind:inner={inputs.givenName} />
-                    <div hidden="{editing}">{user.givenName}</div>
+                    <div hidden={editing}>{user.givenName}</div>
                 </Col>
                 <Col md="4">
                     <Label for="passport_type_id">Passport Type:</Label>
@@ -468,10 +468,10 @@
                         invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!' }
                         feedback={feedbacks.passportType} bind:inner={inputs.passportType}>
                         {#each Object.entries(passportTypes) as [key, value]}
-                            <option value="{key}" selected={key == user.passportTypeID}>{value}</option>
+                            <option value={key} selected={key == user.passportTypeID}>{value}</option>
                         {/each}
                     </Input>
-                    <div hidden="{editing}">{passportTypes[user.passportTypeID]}</div>
+                    <div hidden={editing}>{passportTypes[user.passportTypeID]}</div>
                 </Col>
                 <Col md="4">
                     <Label for="passport_number">Passport Number:</Label>
@@ -481,7 +481,7 @@
                         valid={feedbacks.passportNumber == 'Looks good!'}
                         invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!' }
                         feedback={feedbacks.passportNumber} bind:inner={inputs.passportNumber} />
-                    <div hidden="{editing}">{user.passportNumber}</div>
+                    <div hidden={editing}>{user.passportNumber}</div>
                 </Col>
                 <Col md="4"></Col>
                 <Col md="4">
@@ -492,7 +492,7 @@
                         valid={feedbacks.gender == 'Looks good!'}
                         invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!' }
                         feedback={feedbacks.gender} bind:inner={inputs.gender} />
-                    <div hidden="{editing}">{genders[user.genderID]}</div>
+                    <div hidden={editing}>{genders[user.genderID]}</div>
                 </Col>
                 <Datalist id="genders" data={Object.values(genders)} />
                 <Col md="4">
@@ -503,7 +503,7 @@
                         valid={feedbacks.birthday == 'Looks good!'}
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!' }
                         feedback={feedbacks.birthday} bind:inner={inputs.birthday} />
-                    <div hidden="{editing}">{user.birthday}</div>
+                    <div hidden={editing}>{user.birthday}</div>
                 </Col>
                 <Col md=4 />
                 <Col md=4>
