@@ -48,6 +48,9 @@
     let resettingPassword = $state(false);
     let feedbacks = $state({
         username: '',
+        prefixName: '',
+        nickname: '',
+        suffixName: '',
         familyName: '',
         middleName: '',
         givenName: '',
@@ -69,6 +72,9 @@
 
     function resetInputValues() {
         inputs.username.value = user.username;
+        inputs.prefixName.value = user.prefixName;
+        inputs.nickname.value = user.nickname;
+        inputs.suffixName.value = user.suffixName;
         inputs.familyName.value = user.familyName;
         inputs.middleName.value = user.middleName;
         inputs.givenName.value = user.givenName;
@@ -102,6 +108,17 @@
             feedbacks.username = `The username field must be at least ${inputs.username.minLength} characters.`;
         } else if(inputs.username.validity.tooLong) {
             feedbacks.username = `The username field must not be greater than ${inputs.username.maxLength} characters.`;
+        }
+        if (user.memberNumber) {
+            if(inputs.prefixName.validity.tooLong) {
+                feedbacks.prefixName = `The prefix name must not be greater than ${inputs.prefixName.maxLength} characters.`;
+            }
+            if(inputs.nickname.validity.tooLong) {
+                feedbacks.nickname = `The nickname must not be greater than ${inputs.nickname.maxLength} characters.`;
+            }
+            if(inputs.suffixName.validity.tooLong) {
+                feedbacks.suffixName = `The suffix name must not be greater than ${inputs.suffixName.maxLength} characters.`;
+            }
         }
         if(inputs.familyName.validity.valueMissing) {
             feedbacks.familyName = 'The family name field is required.';
@@ -156,6 +173,11 @@
         alert(response.data.success);
         genders[response.data.gender_id] = response.data.gender;
         user.username = response.data.username;
+        if (user.memberNumber) {
+            user.prefixName = response.data.prefix_name;
+            user.nickname = response.data.nickname;
+            user.suffixName = response.data.suffix_name;
+        }
         user.familyName = response.data.family_name;
         user.middleName = response.data.middle_name;
         user.givenName = response.data.given_name;
@@ -178,6 +200,15 @@
                 switch(key) {
                     case 'username':
                         feedbacks.username = value;;
+                        break;
+                    case 'prefix_name':
+                        feedbacks.prefixName = value;
+                        break;
+                    case 'nickname':
+                        feedbacks.nickname = value;
+                        break;
+                    case 'suffix_name':
+                        feedbacks.suffixName = value;
                         break;
                     case 'family_name':
                         feedbacks.familyName = value;
@@ -233,6 +264,11 @@
                         passport_number: inputs.passportNumber.value,
                         gender: inputs.gender.value,
                         birthday: inputs.birthday.value,
+                    }
+                    if (user.memberNumber) {
+                        data['prefix_name'] = inputs.prefixName.value;
+                        data['nickname'] = inputs.nickname.value;
+                        data['suffix_name'] = inputs.suffixName.value;
                     }
                     if (inputs.district.value) {
                         data['district_id'] = inputs.district.value;
@@ -367,15 +403,30 @@
                 <Col md="3"></Col>
                 {#if user.memberNumber}
                     <Col md=4>
-                        <div class="form-label">Prefix Name:</div>
+                        <Label for="family_name">Prefix Name:</Label>
+                        <Input name="prefix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.prefixName} placeholder="prefix name"
+                            valid={feedbacks.prefixName == 'Looks good!'}
+                            invalid={feedbacks.prefixName != '' && feedbacks.prefixName != 'Looks good!' }
+                            feedback={feedbacks.prefixName} bind:inner={inputs.prefixName} />
                         <div>{user.prefixName ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
-                        <div class="form-label">Nickname:</div>
+                        <Label for="family_name">Nickname:</Label>
+                        <Input name="nickname" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.nickname} placeholder="nickname"
+                            valid={feedbacks.nickname == 'Looks good!'}
+                            invalid={feedbacks.nickname != '' && feedbacks.nickname != 'Looks good!' }
+                            feedback={feedbacks.nickname} bind:inner={inputs.nickname} />
                         <div>{user.nickname ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
-                        <div class="form-label">Suffix Name:</div>
+                        <Label for="family_name">Suffix Name:</Label>
+                        <Input name="suffix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.suffixName} placeholder="suffix name"
+                            valid={feedbacks.suffixName == 'Looks good!'}
+                            invalid={feedbacks.suffixName != '' && feedbacks.suffixName != 'Looks good!' }
+                            feedback={feedbacks.suffixName} bind:inner={inputs.suffixName} />
                         <div>{user.suffixName ?? "\u00A0"}</div>
                     </Col>
                 {/if}

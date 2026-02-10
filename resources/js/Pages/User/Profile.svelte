@@ -35,6 +35,9 @@
         username: '',
         password: '',
         newPassword: '',
+        prefixName: '',
+        nickname: '',
+        suffixName: '',
         gender: '',
         birthday: '',
         district: '',
@@ -50,6 +53,20 @@
     for(let [area, object] of Object.entries(areaDistricts)) {
         for(let [key, value] of Object.entries(object)) {
             districts[key] = value;
+        }
+    }
+
+    function resetInputValues() {
+        inputs.username.value = user.username;
+        inputs.password.value = '';
+        inputs.newPassword.value = '';
+        inputs.confirmNewPassword.value = '';
+        inputs.gender.value = genders[user.genderID];
+        inputs.birthday.value = user.birthday;
+        inputs.district.value = user.districtID;
+        inputs.address.value = user.address;
+        for(let key in feedbacks) {
+            feedbacks[key] = '';
         }
     }
 
@@ -92,6 +109,17 @@
                 feedbacks.newPassword = 'The new password confirmation does not match.';
             }
         }
+        if (user.memberNumber) {
+            if(inputs.prefixName.validity.tooLong) {
+                feedbacks.prefixName = `The prefix name must not be greater than ${inputs.prefixName.maxLength} characters.`;
+            }
+            if(inputs.nickname.validity.tooLong) {
+                feedbacks.nickname = `The nickname must not be greater than ${inputs.nickname.maxLength} characters.`;
+            }
+            if(inputs.suffixName.validity.tooLong) {
+                feedbacks.suffixName = `The suffix name must not be greater than ${inputs.suffixName.maxLength} characters.`;
+            }
+        }
         if(inputs.gender.validity.valueMissing) {
             feedbacks.gender = 'The gender field is required.';
         } else if(inputs.gender.validity.tooLong) {
@@ -118,24 +146,15 @@
         return !hasError();
     }
 
-    function resetInputValues() {
-        inputs.username.value = user.username;
-        inputs.password.value = '';
-        inputs.newPassword.value = '';
-        inputs.confirmNewPassword.value = '';
-        inputs.gender.value = genders[user.genderID];
-        inputs.birthday.value = user.birthday;
-        inputs.district.value = user.districtID;
-        inputs.address.value = user.address;
-        for(let key in feedbacks) {
-            feedbacks[key] = '';
-        }
-    }
-
     function successCallback(response) {
         alert(response.data.success);
         genders[response.data.gender_id] = response.data.gender;
         user.username = response.data.username;
+        if (user.memberNumber) {
+            user.prefixName = response.data.prefix_name;
+            user.nickname = response.data.nickname;
+            user.suffixName = response.data.suffix_name;
+        }
         user.genderID = response.data.gender_id;
         user.birthday = formatToDate(response.data.birthday);
         user.districtID = response.data.district_id ?? '';
@@ -156,6 +175,15 @@
                         break;
                     case 'password':
                         feedbacks.password = value;
+                        break;
+                    case 'prefix_name':
+                        feedbacks.prefixName = value;
+                        break;
+                    case 'nickname':
+                        feedbacks.nickname = value;
+                        break;
+                    case 'suffix_name':
+                        feedbacks.suffixName = value;
                         break;
                     case 'new_password':
                         feedbacks.newPassword = value;
@@ -204,6 +232,11 @@
                     if(inputs.newPassword.value) {
                         data['new_password'] = inputs.newPassword.value;
                         data['new_password_confirmation'] = inputs.confirmNewPassword.value;
+                    }
+                    if (user.memberNumber) {
+                        data['prefix_name'] = inputs.prefixName.value;
+                        data['nickname'] = inputs.nickname.value;
+                        data['suffix_name'] = inputs.suffixName.value;
                     }
                     if (inputs.district.value) {
                         data['district_id'] = inputs.district.value;
@@ -310,15 +343,30 @@
                 <Col md=4 hidden={! editing} />
                 {#if user.memberNumber}
                     <Col md=4>
-                        <div class="form-label">Prefix Name:</div>
+                        <Label for="prefix_name">Prefix Name:</Label>
+                        <Input name="prefix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.prefixName} placeholder="prefix name"
+                            feedback={feedbacks.prefixName} valid={feedbacks.prefixName == 'Looks good!'}
+                            invalid={feedbacks.prefixName != '' && feedbacks.prefixName != 'Looks good!'}
+                            bind:inner={inputs.prefixName} />
                         <div>{user.prefixName ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
-                        <div class="form-label">Nickname:</div>
+                        <Label for="nickname">Nickname:</Label>
+                        <Input name="nickname" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.nickname} placeholder="nickname"
+                            feedback={feedbacks.nickname} valid={feedbacks.nickname == 'Looks good!'}
+                            invalid={feedbacks.nickname != '' && feedbacks.nickname != 'Looks good!'}
+                            bind:inner={inputs.nickname} />
                         <div>{user.nickname ?? "\u00A0"}</div>
                     </Col>
                     <Col md=4>
-                        <div class="form-label">Suffix Name:</div>
+                        <Label for="suffix_name">Suffix Name:</Label>
+                        <Input name="suffix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.suffixName} placeholder="suffix name"
+                            feedback={feedbacks.suffixName} valid={feedbacks.suffixName == 'Looks good!'}
+                            invalid={feedbacks.suffixName != '' && feedbacks.suffixName != 'Looks good!'}
+                            bind:inner={inputs.suffixName} />
                         <div>{user.suffixName ?? "\u00A0"}</div>
                     </Col>
                 {/if}

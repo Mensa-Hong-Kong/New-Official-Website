@@ -224,6 +224,16 @@ class UserController extends Controller implements HasMiddleware
         $return['district_id'] = $request->district_id;
         $return['address'] = $request->address;
         $return['success'] = 'The profile update success!';
+        if ($user->member) {
+            $user->member->update([
+                'prefix_name' => $request->prefix_name,
+                'nickname' => $request->nickname,
+                'suffix_name' => $request->suffix_name,
+            ]);
+            $return['prefix_name'] = $user->member->prefix_name;
+            $return['nickname'] = $user->member->nickname;
+            $return['suffix_name'] = $user->member->suffix_name;
+        }
         DB::commit();
 
         return $return;

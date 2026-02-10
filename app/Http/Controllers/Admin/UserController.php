@@ -191,17 +191,19 @@ class UserController extends Controller implements HasMiddleware
         ];
         if ($user->address) {
             if ($request->district_id) {
-                $return['address_id'] = $user->address->updateAddress($request->district_id, $request->address)->id;
+                $return['address_id'] = $user->address->updateAddress(
+                    $request->district_id,
+                    $request->address
+                )->id;
             } else {
                 $user->address->delete();
                 $return['address_id'] = null;
             }
         } elseif ($request->district_id) {
-            $address = Address::firstOrCreate([
+            $return['address_id'] = Address::firstOrCreate([
                 'district_id' => $request->district_id,
                 'value' => $request->address,
-            ]);
-            $return['address_id'] = $address->id;
+            ])->id;
         }
         $user->update($return);
         unset($return['address_id']);
@@ -209,6 +211,16 @@ class UserController extends Controller implements HasMiddleware
         $return['address'] = $request->address;
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
+        if($user->member) {
+            $user->member->update([
+                'prefix_name' => $request->prefix_name,
+                'nickname' => $request->nickname,
+                'suffix_name' => $request->suffix_name,
+            ]);
+            $return['prefix_name'] = $user->member->prefix_name;
+            $return['nickname'] = $user->member->nickname;
+            $return['suffix_name'] = $user->member->suffix_name;
+        }
         DB::commit();
 
         return $return;

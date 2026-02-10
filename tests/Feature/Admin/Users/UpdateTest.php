@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\Users;
 use App\Models\Address;
 use App\Models\District;
 use App\Models\Gender;
+use App\Models\Member;
 use App\Models\ModulePermission;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
@@ -155,6 +156,96 @@ class UpdateTest extends TestCase
                 ), $data
             );
         $response->assertInvalid(['username' => 'The username has already been taken.']);
+    }
+
+    public function test_prefix_name_is_not_string_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['prefix_name'] = ['Mr.'];
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['prefix_name' => 'The prefix name field must be a string.']);
+    }
+
+    public function test_prefix_name_too_long_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['prefix_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['prefix_name' => 'The prefix name field must not be greater than 255 characters.']);
+    }
+
+    public function test_nickname_is_not_string_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['nickname'] = ['Diamond'];
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['nickname' => 'The nickname field must be a string.']);
+    }
+
+    public function test_nickname_too_long_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['nickname'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['nickname' => 'The nickname field must not be greater than 255 characters.']);
+    }
+
+    public function test_suffix_name_is_not_string_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['suffix_name'] = ['Jr.'];
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['suffix_name' => 'The suffix name field must be a string.']);
+    }
+
+    public function test_suffix_name_too_long_when_user_is_member()
+    {
+        $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['suffix_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['suffix_name' => 'The suffix name field must not be greater than 255 characters.']);
     }
 
     public function test_missing_family_name()
@@ -568,7 +659,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_happy_case_without_middle_name_and_address()
+    public function test_happy_case_without_middle_name_and_address_when_user_is_not_member()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)
@@ -593,7 +684,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
     }
 
-    public function test_happy_case_with_middle_name_and_without_address()
+    public function test_happy_case_with_middle_name_and_without_address_when_user_is_not_member()
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'intelligent';
@@ -619,7 +710,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
     }
 
-    public function test_with_change_address_when_before_user_have_no_address_and_without_middle_name_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_have_no_address_and_without_middle_name()
     {
         $data = $this->happyCase;
         unset($data['middle_name']);
@@ -644,7 +735,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name()
     {
         $data = $this->happyCase;
         unset($data['middle_name']);
@@ -680,7 +771,7 @@ class UpdateTest extends TestCase
         $this->assertEquals(1,Address::count());
     }
 
-    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_happy_case()
+    public function test_happy_case_without_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name()
     {
         $data = $this->happyCase;
         unset($data['middle_name']);
@@ -705,7 +796,7 @@ class UpdateTest extends TestCase
         $this->assertEquals(0,Address::count());
     }
 
-    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_other_object_using_and_without_middle_name_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_other_object_using_and_without_middle_name()
     {
         $data = $this->happyCase;
         unset($data['middle_name']);
@@ -741,5 +832,132 @@ class UpdateTest extends TestCase
         );
         $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
         $this->assertEquals(2,Address::count());
+    }
+
+    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_null()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'expired_at' => now()->addYear(),
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $data['middle_name'] = null;
+        $data['prefix_name'] = null;
+        $data['nickname'] = null;
+        $data['suffix_name'] = null;
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $member = Member::firstWhere('user_id', $this->user->id);
+        $this->assertNull($user->fresh()->middle_name);
+        $this->assertNull($member->prefix_name);
+        $this->assertNull($member->nickname);
+        $this->assertNull($member->suffix_name);
+    }
+
+    public function test_happy_case_with_change_member_data_and_without_change_middle_name_and_address_when_user_is_active_member_and_before_member_data_is_null()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'expired_at' => now()->addYear(),
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['prefix_name'] = 'Mr.';
+        $data['nickname'] = 'Diamond';
+        $data['suffix_name'] = 'Jr.';
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $member = Member::firstWhere('user_id', $this->user->id);
+        $this->assertEquals($data['prefix_name'], $member->prefix_name);
+        $this->assertEquals($data['nickname'], $member->nickname);
+        $this->assertEquals($data['suffix_name'], $member->suffix_name);
+    }
+
+    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_not_null()
+    {
+        $member = $this->user->member()->create([
+            'prefix_name' => 'Mr.',
+            'nickname' => 'Diamond',
+            'suffix_name' => 'Jr.',
+        ]);
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'expired_at' => now()->addYear(),
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $data['middle_name'] = null;
+        $data['prefix_name'] = null;
+        $data['nickname'] = null;
+        $data['suffix_name'] = null;
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $member = Member::firstWhere('user_id', $this->user->id);
+        $this->assertNull($user->fresh()->middle_name);
+        $this->assertNull($member->prefix_name);
+        $this->assertNull($member->nickname);
+        $this->assertNull($member->suffix_name);
     }
 }

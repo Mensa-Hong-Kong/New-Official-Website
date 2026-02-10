@@ -18,15 +18,23 @@ class UpdateRequest extends FormRequest
     {
         $districtUtility = 'nullable';
         $addressUtility = 'required_with:district_id';
-        if(
-            $this->user()->member?->isActive ||
-            $this->user()->member?->orders()->where('expired_at', '>', now())->exists()
-        ) {
-            $districtUtility = 'required';
-            $addressUtility = 'required';
+        $return = [];
+        if ($this->user()->member) {
+            $return = array_merge($return, [
+                'prefix_name' => 'nullable|string|max:255',
+                'nickname' => 'nullable|string|max:255',
+                'suffix_name' => 'nullable|string|max:255',
+            ]);
+            if(
+                $this->user()->member->isActive ||
+                $this->user()->member->orders()->where('expired_at', '>', now())->exists()
+            ) {
+                $districtUtility = 'required';
+                $addressUtility = 'required';
+            }
         }
 
-        return [
+        return array_merge($return,[
             'username' => [
                 'required', 'string', 'min:8', 'max:16',
                 Rule::unique(User::class, 'username')
@@ -41,7 +49,7 @@ class UpdateRequest extends FormRequest
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
             'district_id' => $districtUtility.'|integer|exists:'.District::class.',id',
             'address' => $addressUtility.'|string|max:255',
-        ];
+        ]);
     }
 
     public function messages(): array

@@ -4,6 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Models\Address;
 use App\Models\District;
+use App\Models\Member;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -152,6 +153,60 @@ class UpdateTest extends TestCase
         $data['new_password_confirmation'] = '87654321';
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
         $response->assertInvalid(['new_password' => 'The new password field confirmation does not match.']);
+    }
+
+    public function test_prefix_name_is_not_string()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['prefix_name'] = ['Mr.'];
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['prefix_name' => 'The prefix name field must be a string.']);
+    }
+
+    public function test_prefix_name_too_long()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['prefix_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['prefix_name' => 'The prefix name field must not be greater than 255 characters.']);
+    }
+
+    public function test_nickname_is_not_string()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['nickname'] = ['Tester'];
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['nickname' => 'The nickname field must be a string.']);
+    }
+
+    public function test_nickname_too_long()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['nickname'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['nickname' => 'The nickname field must not be greater than 255 characters.']);
+    }
+
+    public function test_suffix_name_is_not_string()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['suffix_name'] = ['Jr.'];
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['suffix_name' => 'The suffix name field must be a string.']);
+    }
+
+    public function test_suffix_name_too_long()
+    {
+        $member = $this->user->member()->create();
+        $data = $this->happyCase;
+        $data['suffix_name'] = str_repeat('a', 256);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertInvalid(['suffix_name' => 'The suffix name field must not be greater than 255 characters.']);
     }
 
     public function test_missing_gender()
@@ -309,7 +364,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_without_change_username_and_new_password_and_address_happy_case()
+    public function test_happy_case_without_change_username_and_new_password_and_address_when_user_is_not_active_member()
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
@@ -320,7 +375,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_change_username_without_new_password_and_address_happy_case()
+    public function test_happy_case_with_change_username_without_new_password_and_address_when_user_is_not_active_member()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -333,7 +388,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_new_password_without_change_username_and_address_happy_case()
+    public function test_happy_case_with_new_password_without_change_username_and_address_when_user_is_not_active_member()
     {
         $data = $this->happyCase;
         $data['password'] = '12345678';
@@ -347,7 +402,7 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
     }
 
-    public function test_with_change_address_when_before_user_have_no_address_and_without_change_username_and_new_password_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_active_member_and_before_have_no_address_and_without_change_username_and_new_password()
     {
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
@@ -365,7 +420,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_active_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password()
     {
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
@@ -394,7 +449,7 @@ class UpdateTest extends TestCase
         $this->assertEquals(1,Address::count());
     }
 
-    public function test_without_address_when_before_user_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_happy_case()
+    public function test_happy_case_without_address_when_user_is_not_active_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password()
     {
         $data = $this->happyCase;
         $address = Address::create([
@@ -414,7 +469,7 @@ class UpdateTest extends TestCase
         $this->assertEquals(0,Address::count());
     }
 
-    public function test_with_change_address_when_before_user_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_happy_case()
+    public function test_happy_case_with_change_address_when_user_is_not_active_member_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password()
     {
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
@@ -445,7 +500,7 @@ class UpdateTest extends TestCase
         $this->assertEquals(2,Address::count());
     }
 
-    public function test_with_change_username_and_new_password_and_without_address_happy_case()
+    public function test_happy_case_with_change_username_and_new_password_and_without_address_when_user_is_not_active_member()
     {
         $data = $this->happyCase;
         $data['username'] = 'testing2';
@@ -458,5 +513,111 @@ class UpdateTest extends TestCase
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
+    }
+
+    public function test_happy_case_without_change_username_and_new_password_and_address_and_member_data_when_user_is_active_member_and_before_member_data_is_null()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $expect['prefix_name'] = null;
+        $expect['nickname'] = null;
+        $expect['suffix_name'] = null;
+        $response->assertJson($expect);
+        $member = Member::find($member->user_id);
+        $this->assertNull($member->prefix_name);
+        $this->assertNull($member->nickname);
+        $this->assertNull($member->suffix_name);
+    }
+
+    public function test_happy_case_without_change_username_and_new_password_and_address_and_with_member_data_when_user_is_active_member_and_before_member_data_is_null()
+    {
+        $member = $this->user->member()->create();
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $data['prefix_name'] = 'Mr.';
+        $data['nickname'] = 'Tester';
+        $data['suffix_name'] = 'Jr.';
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $member = Member::find($member->user_id);
+        $this->assertEquals($data['prefix_name'], $member->prefix_name);
+        $this->assertEquals($data['nickname'], $member->nickname);
+        $this->assertEquals($data['suffix_name'], $member->suffix_name);
+    }
+
+    public function test_happy_case_without_change_username_and_new_password_and_address_and_member_data_when_user_is_active_member_and_before_member_data_is_not_null()
+    {
+        $member = $this->user->member()->create([
+            'prefix_name' => 'Mr.',
+            'nickname' => 'Tester',
+            'suffix_name' => 'Jr.',
+        ]);
+        $member->orders()->create([
+            'user_id' => $this->user->id,
+            'price' => 200,
+            'status' => 'succeeded',
+            'from_year' => now()->year,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
+        ]);
+        $data = $this->happyCase;
+        $data['district_id'] = District::inRandomOrder()->first()->id;
+        $data['address'] = '123 Street';
+        $address = Address::create([
+            'district_id' => $data['district_id'],
+            'value' => $data['address'],
+        ]);
+        $this->user->update(['address_id' => $address->id]);
+        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $expect['prefix_name'] = null;
+        $expect['nickname'] = null;
+        $expect['suffix_name'] = null;
+        $response->assertJson($expect);
+        $member = Member::find($member->user_id);
+        $this->assertNull($member->prefix_name);
+        $this->assertNull($member->nickname);
+        $this->assertNull($member->suffix_name);
     }
 }
