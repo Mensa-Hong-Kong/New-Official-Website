@@ -427,7 +427,7 @@ class UpdateTest extends TestCase
                     ['user' => $this->user]
                 ), $data
             );
-        $response->assertInvalid(['passport_number' => 'The passport number field format is invalid.']);
+        $response->assertInvalid(['passport_number' => 'The passport number field format is invalid. It should only contain uppercase letters and numbers.']);
     }
 
     public function test_passport_number_too_short()

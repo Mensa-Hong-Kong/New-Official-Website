@@ -38,6 +38,7 @@ class RegisterRequest extends FormRequest
         return [
             'passport_type_id.required' => 'The passport type field is required.',
             'passport_type_id.exists' => 'The selected passport type is invalid.',
+            'passport_number.regex' => 'The passport number field format is invalid. It should only contain uppercase letters and numbers.',
             'district_id.integer' => 'The district field must be an integer.',
             'district_id.exists' => 'The selected district is invalid.',
             'address.required_with' => 'The address field is required when district is present.',

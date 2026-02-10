@@ -89,6 +89,8 @@
             feedbacks.passportNumber = `The passport number must be at least ${inputs.passportNumber.minLength} characters.`;
         } else if(inputs.passportNumber.validity.tooLong) {
             feedbacks.passportNumber = `The passport number must not be greater than ${inputs.passportNumber.maxLength} characters.`;
+        } else if(inputs.passportNumber.validity.patternMismatch) {
+            feedbacks.passportNumber = 'The passport number format is invalid. It should only contain uppercase letters and numbers.';
         }
         if(inputs.gender.validity.valueMissing) {
             feedbacks.gender = 'The gender field is required.';
@@ -310,7 +312,7 @@
             <Col md=4>
                 <Label for="passport_number">Passport Number</Label>
                 <Input name="passport_number" disabled={creating}
-                    minlength=8 maxlength=18 required placeholder="passport number"
+                    required minlength=8 maxlength=18 pattern="^[A-Z0-9]+$" placeholder="passport number"
                     feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
                     invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
                     bind:inner="{inputs.passportNumber}" />

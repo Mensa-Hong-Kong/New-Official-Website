@@ -235,7 +235,7 @@ class RegisterTest extends TestCase
         $data = $this->happyCase;
         $data['passport_number'] = '1234567$';
         $response = $this->post(route('register'), $data);
-        $response->assertInvalid(['passport_number' => 'The passport number field format is invalid.']);
+        $response->assertInvalid(['passport_number' => 'The passport number field format is invalid. It should only contain uppercase letters and numbers.']);
     }
 
     public function test_passport_number_too_short()

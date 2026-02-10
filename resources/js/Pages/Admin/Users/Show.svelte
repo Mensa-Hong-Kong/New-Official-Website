@@ -142,6 +142,8 @@
             feedbacks.passportNumber = `The passport number must be at least ${inputs.passportNumber.minLength} characters.`;
         } else if(inputs.passportNumber.validity.tooLong) {
             feedbacks.passportNumber = `The passport number not be greater than ${inputs.passportNumber.maxLength} characters.`;
+        } else if(inputs.passportNumber.validity.patternMismatch) {
+            feedbacks.passportNumber = 'The passport number format is invalid. It should only contain uppercase letters and numbers.';
         }
         if(inputs.gender.validity.valueMissing) {
             feedbacks.gender = 'The gender field is required.';
@@ -475,8 +477,8 @@
                 </Col>
                 <Col md="4">
                     <Label for="passport_number">Passport Number:</Label>
-                    <Input name="passport_number" minlength="8" maxlength="18" required
-                        hidden={! editing} disabled={updating}
+                    <Input name="passport_number" hidden={! editing} disabled={updating}
+                        required minlength=8 maxlength=18 pattern="^[A-Z0-9]+$"
                         value={user.passportNumber} placeholder="passport number"
                         valid={feedbacks.passportNumber == 'Looks good!'}
                         invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!' }
