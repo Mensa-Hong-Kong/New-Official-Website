@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Models\User;
 
-use App\Library\Stripe\Rules\Amount\Other;
 use App\Models\AdmissionTest;
 use App\Models\NationalMensa;
 use App\Models\OtherPaymentGateway;
