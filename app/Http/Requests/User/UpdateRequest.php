@@ -20,7 +20,7 @@ class UpdateRequest extends FormRequest
         $districtUtility = 'nullable';
         $addressUtility = 'required_with:district_id';
         $return = [];
-        if($this->user()->canEditPassportInformation) {
+        if ($this->user()->canEditPassportInformation) {
             $return = array_merge($return, [
                 'family_name' => 'required|string|max:255',
                 'given_name' => 'required|string|max:255',
@@ -30,10 +30,10 @@ class UpdateRequest extends FormRequest
                 'gender' => 'required|string|max:255',
                 'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
             ]);
-        } elseif(
+        } elseif (
             $this->hasAny([
                 'family_name', 'given_name', 'middle_name',
-                'passport_type_id', 'passport_number', 'gender', 'birthday'
+                'passport_type_id', 'passport_number', 'gender', 'birthday',
             ])
         ) {
             abort(409, 'You cannot update passport information, please read the instructions on the profile page.');
@@ -43,7 +43,7 @@ class UpdateRequest extends FormRequest
                 'nickname' => 'nullable|string|max:255',
                 'suffix_name' => 'nullable|string|max:255',
             ]);
-            if(
+            if (
                 $this->user()->member->isActive ||
                 $this->user()->member->orders()->where('expired_at', '>', now())->exists()
             ) {
@@ -52,7 +52,7 @@ class UpdateRequest extends FormRequest
             }
         }
 
-        return array_merge($return,[
+        return array_merge($return, [
             'username' => [
                 'required', 'string', 'min:8', 'max:16',
                 Rule::unique(User::class, 'username')

@@ -768,7 +768,7 @@ class UpdateTest extends TestCase
                 ->where('value', $address->value)
                 ->exists()
         );
-        $this->assertEquals(1,Address::count());
+        $this->assertEquals(1, Address::count());
     }
 
     public function test_happy_case_without_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name()
@@ -793,7 +793,7 @@ class UpdateTest extends TestCase
         $expect['success'] = 'The user data update success!';
         $response->assertJson($expect);
         $this->assertNull($this->user->fresh()->address_id);
-        $this->assertEquals(0,Address::count());
+        $this->assertEquals(0, Address::count());
     }
 
     public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_other_object_using_and_without_middle_name()
@@ -831,7 +831,7 @@ class UpdateTest extends TestCase
                 ->exists()
         );
         $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
-        $this->assertEquals(2,Address::count());
+        $this->assertEquals(2, Address::count());
     }
 
     public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_null()

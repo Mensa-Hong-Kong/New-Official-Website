@@ -32,7 +32,7 @@ class LoginRequest extends FormRequest
                 },
             ])->firstWhere('username', $this->username);
             if (! $user || ! $user->checkPassword($this->password)) {
-                if($user && ! $user->checkPassword($this->password)) {
+                if ($user && ! $user->checkPassword($this->password)) {
                     $user->loginLogs()->create();
                 }
                 $validator->errors()->add('failed', 'The provided username or password is incorrect.');

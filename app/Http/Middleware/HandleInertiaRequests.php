@@ -6,7 +6,6 @@ use App\Models\NavigationItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {

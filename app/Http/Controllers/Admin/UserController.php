@@ -130,7 +130,7 @@ class UserController extends Controller implements HasMiddleware
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            }, 'address'
+            }, 'address',
         ]);
         $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
         $user->member?->append('is_active');
@@ -155,7 +155,7 @@ class UserController extends Controller implements HasMiddleware
                     ->subYears(2)
                     ->format('Y-m-d')
             )->with(
-                'districts', function() {
+                'districts', function () {
                     $areas = Area::with([
                         'districts' => function ($query) {
                             $query->orderBy('display_order');
@@ -211,7 +211,7 @@ class UserController extends Controller implements HasMiddleware
         $return['address'] = $request->address;
         $return['gender'] = $gender->name;
         $return['success'] = 'The user data update success!';
-        if($user->member) {
+        if ($user->member) {
             $user->member->update([
                 'prefix_name' => $request->prefix_name,
                 'nickname' => $request->nickname,

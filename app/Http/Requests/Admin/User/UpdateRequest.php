@@ -27,7 +27,7 @@ class UpdateRequest extends FormRequest
                 'nickname' => 'nullable|string|max:255',
                 'suffix_name' => 'nullable|string|max:255',
             ]);
-            if(
+            if (
                 $this->user()->member->isActive ||
                 $this->user()->member->orders()->where('expired_at', '>', now())->exists()
             ) {

@@ -13,7 +13,6 @@ use App\Models\PassportType;
 use App\Models\ResetPasswordLog;
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Models\UserLoginLog;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Closure;
 use Illuminate\Http\Request;
@@ -62,7 +61,7 @@ class UserController extends Controller implements HasMiddleware
                     ->pluck('name', 'id')
             )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'))
             ->with(
-                'districts', function() {
+                'districts', function () {
                     $areas = Area::with([
                         'districts' => function ($query) {
                             $query->orderBy('display_order');
@@ -97,7 +96,7 @@ class UserController extends Controller implements HasMiddleware
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
         ];
-        if($request->district_id) {
+        if ($request->district_id) {
             $address = Address::firstOrCreate([
                 'district_id' => $request->district_id,
                 'value' => $request->address,
@@ -134,7 +133,7 @@ class UserController extends Controller implements HasMiddleware
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            }, 'address'
+            }, 'address',
         ]);
         $user->makeHidden([
             'roles', 'permissions', 'synced_to_stripe',
@@ -171,7 +170,7 @@ class UserController extends Controller implements HasMiddleware
                     ->subYears(2)
                     ->format('Y-m-d')
             )->with(
-                'districts', function() {
+                'districts', function () {
                     $areas = Area::with([
                         'districts' => function ($query) {
                             $query->orderBy('display_order');
@@ -196,7 +195,7 @@ class UserController extends Controller implements HasMiddleware
         $user = $request->user();
         DB::beginTransaction();
         $update = ['username' => $request->username];
-        if($user->canEditPassportInformation) {
+        if ($user->canEditPassportInformation) {
             $gender = $user->gender->updateName($request->gender);
             $update['family_name'] = $request->family_name;
             $update['middle_name'] = $request->middle_name;
@@ -226,7 +225,7 @@ class UserController extends Controller implements HasMiddleware
         $user->update($update);
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'address_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
-        if($user->canEditPassportInformation) {
+        if ($user->canEditPassportInformation) {
             $return['gender'] = $request->gender;
         }
         $return['district_id'] = $request->district_id;
