@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Models\User;
 
+use App\Models\AdmissionTest;
 use App\Models\NationalMensa;
 use App\Models\QualifyingTest;
 use App\Models\User;
@@ -27,40 +28,44 @@ class CanEditPassportInformationTest extends TestCase
 
     public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_more_than_2_hour()
     {
-        $this->user->admissionTests()->create([
-            'testing_at' => now()->addHours(3)->addSecond(),
-            'expect_end_at' => now()->addHours(4)->addSecond(),
-        ]);
+        $test = AdmissionTest::factory()->state([
+            'testing_at' => now()->addHours(3),
+            'expect_end_at' => now()->addHours(4),
+        ])->create();
+        $test->candidates()->attach($this->user);
 
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
     public function test_user_cannot_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hour()
     {
-        $this->user->admissionTests()->create([
+        $test = AdmissionTest::factory()->state([
             'testing_at' => now()->addHours(1),
             'expect_end_at' => now()->addHours(2),
-        ]);
+        ])->create();
+        $test->candidates()->attach($this->user);
 
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
     public function test_user_cannot_edit_passport_information_when_user_only_has_absent_admission_test_after_less_than_expected_end_time_1_hour()
     {
-        $this->user->admissionTests()->create([
+        $test = AdmissionTest::factory()->state([
             'testing_at' => now()->subHours(2)->subMinutes(30),
             'expect_end_at' => now()->subMinutes(30),
-        ]);
+        ])->create();
+        $test->candidates()->attach($this->user);
 
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
     public function test_user_can_edit_passport_information_when_user_only_has_absent_admission_test_after_than_expected_end_time_1_hour()
     {
-        $this->user->admissionTests()->create([
+        $test = AdmissionTest::factory()->state([
             'testing_at' => now()->subHours(3),
             'expect_end_at' => now()->subHour(),
-        ]);
+        ])->create();
+        $test->candidates()->attach($this->user);
 
         $this->assertTrue($this->user->canEditPassportInformation);
     }
