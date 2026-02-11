@@ -67,7 +67,6 @@ Please read laravel official documents:
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- change address_id from members table to users table
 - add can_join_admission_test column to passport_types table
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
@@ -90,7 +89,10 @@ Please read laravel official documents:
 - admin user add admission test orders list and create order button
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
-- change whatsapp from twilio to whatsapp cloud api (coming soon)
+- add whatsapp_templates table, add seeder and add admin whatsapp templates index 
+- add admin whatsapp templates index edit and update
+- change qr code to from quickchart.io gen image link to use twilio assets
+- add user delete function
 
 #### stage 2 third party iq test result
 
@@ -124,7 +126,7 @@ Please read laravel official documents:
 - Add membership products edit
 - Add membership products price store
 - Add membership products price update
-- Add membership orders create
+- Add membership orders create (require user address)
 - Add membership orders index
 - Add membership orders show
 - Add membership orders update payment status
@@ -136,6 +138,8 @@ Please read laravel official documents:
 - add user public option on user show
 - Add member index
 - Add member show
+- Add upload image to profile when user is member
+- Add remove image to profile when user is member
 - Add edit forwarding email function
 - Add admin forwarding email changing index and approve or reject function
 
@@ -200,6 +204,8 @@ Please read laravel official documents:
 #### stage 7 analytics (coming soon)
 
 #### stage 8 contest (coming soon)
+
+#### stage 9 CalDAV (coming soon)
 
 #### unimportant
 
