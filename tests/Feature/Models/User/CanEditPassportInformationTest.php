@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Models\User;
 
+use App\Library\Stripe\Rules\Amount\Other;
 use App\Models\AdmissionTest;
 use App\Models\NationalMensa;
+use App\Models\OtherPaymentGateway;
 use App\Models\QualifyingTest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -76,6 +78,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'pending',
             'expired_at' => now()->addHour(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -87,6 +91,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => fake()->randomElement(['pending', 'canceled', 'failed']),
             'expired_at' => now()->subSecond(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -98,6 +104,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'succeeded',
             'expired_at' => now()->addHour(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $this->assertFalse($this->user->canEditPassportInformation);
@@ -110,6 +118,8 @@ class CanEditPassportInformationTest extends TestCase
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -121,6 +131,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $order->result()->create([
@@ -140,6 +152,8 @@ class CanEditPassportInformationTest extends TestCase
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $order->result()->create([
@@ -158,6 +172,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $order->result()->create([
@@ -177,6 +193,8 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $order->result()->create([
@@ -197,6 +215,8 @@ class CanEditPassportInformationTest extends TestCase
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
             'price' => 400,
+            'gateway_type' => OtherPaymentGateway::class,
+            'gateway_id' => OtherPaymentGateway::inRandomOrder()->first()->id,
         ]);
 
         $order->result()->create([
