@@ -98,7 +98,7 @@ class CanEditPassportInformationTest extends TestCase
     public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_no_result_and_the_order_returned()
     {
         $this->user->priorEvidenceOrders()->create([
-            'status' => 'full_refunded',
+            'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
         ]);
@@ -126,7 +126,7 @@ class CanEditPassportInformationTest extends TestCase
     public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_has_result_but_in_progress_and_the_order_returned()
     {
         $order = $this->user->priorEvidenceOrders()->create([
-            'status' => 'full_refunded',
+            'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
         ]);
@@ -180,7 +180,7 @@ class CanEditPassportInformationTest extends TestCase
     public function test_user_can_edit_passport_information_when_user_only_has_accepted_prior_evidence_and_the_order_is_returned()
     {
         $order = $this->user->priorEvidenceOrders()->create([
-            'status' => 'full_refunded',
+            'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
         ]);
