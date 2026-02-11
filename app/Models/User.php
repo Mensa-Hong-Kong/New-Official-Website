@@ -399,10 +399,10 @@ class User extends Authenticatable
         return $this->hasMany(PriorEvidenceOrder::class);
     }
 
-    public function passedPriorEvidence()
+    public function acceptedPriorEvidence()
     {
         return $this->hasOneThrough(PriorEvidenceResult::class, PriorEvidenceOrder::class, 'user_id', 'order_id', 'id', 'id')
-            ->where('is_pass', true);
+            ->where('is_accepted', true);
     }
 
     public function hasQualificationOfMembership(): Attribute
@@ -412,7 +412,7 @@ class User extends Authenticatable
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return $user->member || $user->passedAdmissionTest ||
-                    $user->passedPriorEvidence || $user->memberTransfers()
+                    $user->acceptedPriorEvidence || $user->memberTransfers()
                         ->where('is_accepted', true)
                         ->exists();
             }
@@ -429,7 +429,7 @@ class User extends Authenticatable
                         function ($query) {
                             $query->has('member')
                                 ->orHas('passedAdmissionTest')
-                                ->orHas('passedPriorEvidence')
+                                ->orHas('acceptedPriorEvidence')
                                 ->orWhereHas(
                                     'memberTransfers', function ($query) {
                                         $query->where('is_accepted', true);
