@@ -136,7 +136,7 @@ class CanEditPassportInformationTest extends TestCase
 
         $order->result()->create([
             'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
-            'test_on' => fake()->date(),
+            'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
         ]);
@@ -157,7 +157,7 @@ class CanEditPassportInformationTest extends TestCase
 
         $order->result()->create([
             'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
-            'test_on' => fake()->date(),
+            'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
         ]);
@@ -177,7 +177,7 @@ class CanEditPassportInformationTest extends TestCase
 
         $order->result()->create([
             'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
-            'test_on' => fake()->date(),
+            'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
             'is_accepted' => false,
@@ -198,7 +198,7 @@ class CanEditPassportInformationTest extends TestCase
 
         $order->result()->create([
             'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
-            'test_on' => fake()->date(),
+            'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
             'is_accepted' => true,
@@ -220,7 +220,7 @@ class CanEditPassportInformationTest extends TestCase
 
         $order->result()->create([
             'test_id' => QualifyingTest::inRandomOrder()->first()->id ?? QualifyingTest::create(['name' => fake()->word()])->id,
-            'test_on' => fake()->date(),
+            'taken_on' => fake()->date(),
             'score' => fake()->numberBetween(0, 180),
             'percent_of_group' => fake()->randomFloat(2, 0, 99.99),
             'is_accepted' => true,
