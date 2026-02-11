@@ -207,6 +207,8 @@ Please read laravel official documents:
 
 #### stage 9 CalDAV (coming soon)
 
+#### stage 10 project management (coming soon)
+
 #### unimportant
 
 - takeout Strip Library from app folder to make a standalone composer package on standalone repo. 
