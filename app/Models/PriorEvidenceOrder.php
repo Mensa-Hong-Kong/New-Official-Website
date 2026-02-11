@@ -20,7 +20,7 @@ class PriorEvidenceOrder extends Model
         'gateway_id',
         'reference_number',
         'gateway_payment_fee',
-        'is_refunded',
+        'is_returned',
     ];
 
     public function user()
