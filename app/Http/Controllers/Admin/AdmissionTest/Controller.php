@@ -225,39 +225,6 @@ class Controller extends BaseController implements HasMiddleware
             );
     }
 
-    private function updateAddress(Address $address, string $newAddress, int $newDistrictID): Address
-    {
-        $addressModel = $address;
-        if (
-            $newAddress != $address->value ||
-            $newDistrictID != $address->district_id
-        ) {
-            $addressModel = Address::firstWhere([
-                'district_id' => $newDistrictID,
-                'value' => $newAddress,
-            ]);
-            if ($address->admissionTests()->count() == 1) {
-                if ($addressModel) {
-                    $address->delete();
-                } else {
-                    $address->update([
-                        'district_id' => $newDistrictID,
-                        'value' => $newAddress,
-                    ]);
-                    $addressModel = $address;
-                }
-            }
-            if (! $addressModel) {
-                $addressModel = Address::create([
-                    'district_id' => $newDistrictID,
-                    'value' => $newAddress,
-                ]);
-            }
-        }
-
-        return $addressModel;
-    }
-
     private function updateLocation(Location $location, string $newLocationName): Location
     {
         $newLocation = $location;
@@ -295,7 +262,7 @@ class Controller extends BaseController implements HasMiddleware
             'location' => $admissionTest->location->name,
             'address' => "{$admissionTest->address->value}, {$admissionTest->address->district->name}, {$admissionTest->address->district->area->name}",
         ];
-        $address = $this->updateAddress($admissionTest->address, $request->address, $request->district_id);
+        $address = $admissionTest->address->updateAddress($request->district_id, $request->address);
         $location = $this->updateLocation($admissionTest->location, $request->location);
         $admissionTest->update([
             'type_id' => $request->type_id,

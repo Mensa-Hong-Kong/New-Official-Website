@@ -6,12 +6,13 @@ use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
 use App\Http\Requests\User\UpdateRequest;
+use App\Models\Address;
+use App\Models\Area;
 use App\Models\Gender;
 use App\Models\PassportType;
 use App\Models\ResetPasswordLog;
 use App\Models\User;
 use App\Models\UserHasContact;
-use App\Models\UserLoginLog;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Closure;
 use Illuminate\Http\Request;
@@ -58,14 +59,33 @@ class UserController extends Controller implements HasMiddleware
             )->with(
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
-            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'));
+            )->with('maxBirthday', now()->subYears(2)->format('Y-m-d'))
+            ->with(
+                'districts', function () {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
+            );
     }
 
     public function store(RegisterRequest $request)
     {
         DB::beginTransaction();
         $gender = Gender::firstOrCreate(['name' => $request->gender]);
-        $user = User::create([
+        $data = [
             'username' => $request->username,
             'password' => $request->password,
             'family_name' => $request->family_name,
@@ -75,7 +95,15 @@ class UserController extends Controller implements HasMiddleware
             'passport_number' => $request->passport_number,
             'gender_id' => $gender->id,
             'birthday' => $request->birthday,
-        ]);
+        ];
+        if ($request->district_id) {
+            $address = Address::firstOrCreate([
+                'district_id' => $request->district_id,
+                'value' => $request->address,
+            ]);
+            $data['address_id'] = $address->id;
+        }
+        $user = User::create($data);
         if ($request->email) {
             UserHasContact::create([
                 'user_id' => $user->id,
@@ -100,18 +128,22 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = $request->user();
         $user->load([
-            'admissionTests', 'emails.lastVerification' => function ($query) {
+            'member', 'admissionTests',
+            'emails.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
             }, 'mobiles.lastVerification' => function ($query) {
                 $query->select(['contact_id', 'verified_at', 'expired_at']);
-            },
+            }, 'address',
         ]);
-        $user->emails->append('is_verified');
-        $user->mobiles->append('is_verified');
         $user->makeHidden([
             'roles', 'permissions', 'synced_to_stripe',
-            'created_at', 'updated_at', 'member',
+            'created_at', 'updated_at', 'address_id',
         ]);
+        $user->append('can_edit_passport_information');
+        $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
+        $user->member?->append('is_active');
+        $user->emails->append('is_verified');
+        $user->mobiles->append('is_verified');
         $user->emails->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->mobiles->makeHidden(['user_id', 'type', 'created_at', 'lastVerification']);
         $user->admissionTests->makeHidden([
@@ -121,6 +153,7 @@ class UserController extends Controller implements HasMiddleware
         foreach ($user->admissionTests as $test) {
             $test->pivot->makeHidden('user_id', 'test_id');
         }
+        $user->address?->makeHidden(['id', 'created_at', 'updated_at']);
 
         return Inertia::render('User/Profile')
             ->with('user', $user)
@@ -136,32 +169,78 @@ class UserController extends Controller implements HasMiddleware
                 'maxBirthday', now()
                     ->subYears(2)
                     ->format('Y-m-d')
+            )->with(
+                'districts', function () {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
             );
     }
 
     public function update(UpdateRequest $request)
     {
         $user = $request->user();
-        if ($request->password != '' && ! $user->checkPassword($request->password)) {
-            return response([
-                'errors' => ['password' => 'The provided password is incorrect.'],
-            ], 422);
-        }
         DB::beginTransaction();
-        $gender = $user->gender->updateName($request->gender);
-        $update = [
-            'username' => $request->username,
-            'gender_id' => $gender->id,
-            'birthday' => $request->birthday,
-        ];
+        $update = ['username' => $request->username];
+        if ($user->canEditPassportInformation) {
+            $gender = $user->gender->updateName($request->gender);
+            $update['family_name'] = $request->family_name;
+            $update['middle_name'] = $request->middle_name;
+            $update['given_name'] = $request->given_name;
+            $update['passport_type_id'] = $request->passport_type_id;
+            $update['passport_number'] = $request->passport_number;
+            $update['gender_id'] = $gender->id;
+            $update['birthday'] = $request->birthday;
+        }
         if ($request->new_password) {
             $update['password'] = $request->new_password;
         }
+        if ($user->address) {
+            if ($request->district_id) {
+                $update['address_id'] = $user->address->updateAddress($request->district_id, $request->address)->id;
+            } else {
+                $user->address->delete();
+                $update['address_id'] = null;
+            }
+        } elseif ($request->district_id) {
+            $address = Address::firstOrCreate([
+                'district_id' => $request->district_id,
+                'value' => $request->address,
+            ]);
+            $update['address_id'] = $address->id;
+        }
         $user->update($update);
-        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'address_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
-        $return['gender'] = $request->gender;
+        if ($user->canEditPassportInformation) {
+            $return['gender'] = $request->gender;
+        }
+        $return['district_id'] = $request->district_id;
+        $return['address'] = $request->address;
         $return['success'] = 'The profile update success!';
+        if ($user->member) {
+            $user->member->update([
+                'prefix_name' => $request->prefix_name,
+                'nickname' => $request->nickname,
+                'suffix_name' => $request->suffix_name,
+            ]);
+            $return['prefix_name'] = $user->member->prefix_name;
+            $return['nickname'] = $user->member->nickname;
+            $return['suffix_name'] = $user->member->suffix_name;
+        }
         DB::commit();
 
         return $return;
@@ -177,35 +256,13 @@ class UserController extends Controller implements HasMiddleware
 
     public function login(LoginRequest $request)
     {
-        $user = User::with([
-            'loginLogs' => function ($query) {
-                $query->where('status', false)
-                    ->where('created_at', '>=', now()->subDay());
-            },
-        ])->firstWhere('username', $request->username);
-        if ($user) {
-            if ($user->loginLogs->count() >= 10) {
-                $firstInRangeLoginFailedTime = $user->loginLogs[0]['created_at'];
+        $request->user->loginLogs()
+            ->where('status', false)
+            ->delete();
+        $request->user->loginLogs()->create(['status' => true]);
+        Auth::login($request->user, $request->remember_me);
 
-                abort(429, "Too many failed login attempts. Please try again later than $firstInRangeLoginFailedTime.");
-            }
-            $log = ['user_id' => $user->id];
-            if ($user->checkPassword($request->password)) {
-                $log['status'] = true;
-                UserLoginLog::create($log);
-                $user->loginLogs()
-                    ->where('status', false)
-                    ->delete();
-                Auth::login($user, $request->remember_me);
-
-                return redirect()->intended(route('profile.show'));
-            }
-            UserLoginLog::create($log);
-        }
-
-        return response([
-            'errors' => ['failed' => 'The provided username or password is incorrect.'],
-        ], 422);
+        return redirect()->intended(route('profile.show'));
     }
 
     public function forgetPassword()

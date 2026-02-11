@@ -19,7 +19,11 @@ class PriorEvidenceResult extends Model
         'taken_on',
         'score',
         'percent_of_group',
-        'is_pass',
+        'is_accepted',
+    ];
+
+    protected $casts = [
+        'is_accepted' => 'boolean',
     ];
 
     public function order()

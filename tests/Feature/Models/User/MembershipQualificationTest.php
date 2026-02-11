@@ -123,7 +123,7 @@ class MembershipQualificationTest extends TestCase
             'taken_on' => fake()->date(),
             'score' => 100,
             'percent_of_group' => 50,
-            'is_pass' => false,
+            'is_accepted' => false,
         ]);
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
@@ -142,7 +142,7 @@ class MembershipQualificationTest extends TestCase
             'taken_on' => fake()->date(),
             'score' => 131,
             'percent_of_group' => 2,
-            'is_pass' => true,
+            'is_accepted' => true,
         ]);
         $this->assertTrue($this->user->hasQualificationOfMembership);
     }

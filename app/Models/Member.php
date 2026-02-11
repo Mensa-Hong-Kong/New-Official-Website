@@ -21,7 +21,6 @@ class Member extends Model
         'prefix_name',
         'nickname',
         'suffix_name',
-        'address_id',
     ];
 
     /**
@@ -39,11 +38,6 @@ class Member extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function address()
-    {
-        return $this->belongsTo(Address::class);
     }
 
     public function orders()
@@ -73,6 +67,7 @@ class Member extends Model
                         }
                     )->exists() || $this->transfers()
                     ->where('is_accepted', true)
+                    ->whereIn('type', ['in', 'guest'])
                     ->where(
                         function ($query) use ($thisYear) {
                             $query->whereNull('membership_ended_in')

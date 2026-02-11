@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id');
             $table->date('taken_from')->nullable();
             $table->date('taken_to')->nullable();
-            $table->string('score');
+            $table->string('score')->nullable();
             $table->timestamps();
         });
     }

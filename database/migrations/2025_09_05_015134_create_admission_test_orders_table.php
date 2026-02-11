@@ -29,6 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('gateway_id');
             $table->string('reference_number')->nullable();
             $table->decimal('gateway_payment_fee', $priceDigits, $priceDecimal)->unsigned()->nullable();
+            $table->unsignedTinyInteger('returned_quota')->default(0);
             $table->timestamps();
         });
     }

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('passport_number')->nullable();
             $table->date('birthday');
             $table->boolean('synced_to_stripe')->default(false);
+            $table->unsignedBigInteger('address_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

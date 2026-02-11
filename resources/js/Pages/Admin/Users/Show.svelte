@@ -7,10 +7,15 @@
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
 
-    let {auth, user: initUser, passportTypes, genders, maxBirthday} = $props();
+    let {auth, user: initUser, passportTypes, genders, maxBirthday, districts: areaDistricts} = $props();
     let user = $state({
         id: initUser.id,
+        memberNumber: initUser.member?.number,
+        isActiveMember: initUser.member?.is_active,
         username: initUser.username,
+        prefixName: initUser.member?.prefix_name,
+        nickname: initUser.member?.nickname,
+        suffixName: initUser.member?.suffix_name,
         familyName: initUser.family_name,
         middleName: initUser.middle_name,
         givenName: initUser.given_name,
@@ -18,6 +23,8 @@
         passportNumber: initUser.passport_number,
         genderID: initUser.gender_id,
         birthday: formatToDate(initUser.birthday),
+        districtID: initUser.address?.district_id ,
+        address: initUser.address?.value,
         defaultEmail: null,
         defaultMobile: null
     });
@@ -27,7 +34,7 @@
             user.defaultEmail = row.id;
         }
     }
-    
+
     for(let row of initUser.mobiles) {
         if(row.is_default) {
             user.defaultMobile = row.id;
@@ -41,6 +48,9 @@
     let resettingPassword = $state(false);
     let feedbacks = $state({
         username: '',
+        prefixName: '',
+        nickname: '',
+        suffixName: '',
         familyName: '',
         middleName: '',
         givenName: '',
@@ -48,17 +58,32 @@
         passportNumber: '',
         gender: '',
         birthday: '',
+        district: '',
+        address: '',
     });
+
+    let districtValue = $state(user.districtID ?? '');
+    let districts = {};
+    for(let [area, object] of Object.entries(areaDistricts)) {
+        for(let [key, value] of Object.entries(object)) {
+            districts[key] = value;
+        }
+    }
 
     function resetInputValues() {
         inputs.username.value = user.username;
+        inputs.prefixName.value = user.prefixName;
+        inputs.nickname.value = user.nickname;
+        inputs.suffixName.value = user.suffixName;
         inputs.familyName.value = user.familyName;
         inputs.middleName.value = user.middleName;
         inputs.givenName.value = user.givenName;
         inputs.passportType.value = user.passportTypeID;
         inputs.passportNumber.value = user.passportNumber;
-        inputs.gender.value = user.genderID;
+        inputs.gender.value = genders[user.genderID];
         inputs.birthday.value = user.birthday;
+        inputs.district.value = user.districtID;
+        inputs.address.value = user.address;
         for(let key in feedbacks) {
             feedbacks[key] = '';
         }
@@ -84,6 +109,17 @@
         } else if(inputs.username.validity.tooLong) {
             feedbacks.username = `The username field must not be greater than ${inputs.username.maxLength} characters.`;
         }
+        if (user.memberNumber) {
+            if(inputs.prefixName.validity.tooLong) {
+                feedbacks.prefixName = `The prefix name must not be greater than ${inputs.prefixName.maxLength} characters.`;
+            }
+            if(inputs.nickname.validity.tooLong) {
+                feedbacks.nickname = `The nickname must not be greater than ${inputs.nickname.maxLength} characters.`;
+            }
+            if(inputs.suffixName.validity.tooLong) {
+                feedbacks.suffixName = `The suffix name must not be greater than ${inputs.suffixName.maxLength} characters.`;
+            }
+        }
         if(inputs.familyName.validity.valueMissing) {
             feedbacks.familyName = 'The family name field is required.';
         } else if(inputs.familyName.validity.tooLong) {
@@ -106,6 +142,8 @@
             feedbacks.passportNumber = `The passport number must be at least ${inputs.passportNumber.minLength} characters.`;
         } else if(inputs.passportNumber.validity.tooLong) {
             feedbacks.passportNumber = `The passport number not be greater than ${inputs.passportNumber.maxLength} characters.`;
+        } else if(inputs.passportNumber.validity.patternMismatch) {
+            feedbacks.passportNumber = 'The passport number format is invalid. It should only contain uppercase letters and numbers.';
         }
         if(inputs.gender.validity.valueMissing) {
             feedbacks.gender = 'The gender field is required.';
@@ -117,6 +155,19 @@
         } else if(inputs.birthday.validity.rangeOverflow) {
             feedbacks.birthday = `The birthday field must be a date before or equal to ${inputs.birthday.max}.`;
         }
+        if(user.isActiveMember || inputs.district.value) {
+            if (inputs.district.validity.valueMissing) {
+                feedbacks.district = 'The district field is required when user is an active member.';
+            }
+            if(inputs.address.validity.valueMissing) {
+                feedbacks.address = user.isActiveMember ?
+                    'The address field is required when user is an active member.' :
+                    'The address field is required when district is present.';
+            } else if(inputs.address.validity.tooLong) {
+                feedbacks.address = `The address must not be greater than ${inputs.address.maxLength} characters.`;
+            }
+        }
+
         return ! hasError();
     }
 
@@ -124,6 +175,11 @@
         alert(response.data.success);
         genders[response.data.gender_id] = response.data.gender;
         user.username = response.data.username;
+        if (user.memberNumber) {
+            user.prefixName = response.data.prefix_name;
+            user.nickname = response.data.nickname;
+            user.suffixName = response.data.suffix_name;
+        }
         user.familyName = response.data.family_name;
         user.middleName = response.data.middle_name;
         user.givenName = response.data.given_name;
@@ -131,6 +187,8 @@
         user.passportNumber = response.data.passport_number;
         user.genderID = response.data.gender_id;
         user.birthday = response.data.birthday;
+        user.districtID = response.data.district_id ?? '';
+        user.address = response.data.address;
         editing = false;
         resetInputValues();
         submitting = false;
@@ -141,11 +199,18 @@
         if(error.status == 422) {
             for(let key in error.response.data.errors) {
                 let value = error.response.data.errors[key];
-                let feedback;
-                let input;
                 switch(key) {
                     case 'username':
                         feedbacks.username = value;;
+                        break;
+                    case 'prefix_name':
+                        feedbacks.prefixName = value;
+                        break;
+                    case 'nickname':
+                        feedbacks.nickname = value;
+                        break;
+                    case 'suffix_name':
+                        feedbacks.suffixName = value;
                         break;
                     case 'family_name':
                         feedbacks.familyName = value;
@@ -168,6 +233,12 @@
                     case 'birthday':
                         feedbacks.birthday = value;
                         break;
+                    case 'district_id':
+                        feedbacks.district = value;
+                        break;
+                    case 'address':
+                        feedbacks.address = value;
+                        break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
                         break;
@@ -177,7 +248,7 @@
         submitting = false;
         updating = false;
     }
-    
+
     function update(event) {
         event.preventDefault();
         if(submitting == '') {
@@ -186,6 +257,25 @@
             if(submitting == 'update'+submitAt) {
                 if(validation()) {
                     updating = true;
+                    let data = {
+                        username: inputs.username.value,
+                        family_name: inputs.familyName.value,
+                        middle_name: inputs.middleName.value,
+                        given_name: inputs.givenName.value,
+                        passport_type_id: inputs.passportType.value,
+                        passport_number: inputs.passportNumber.value,
+                        gender: inputs.gender.value,
+                        birthday: inputs.birthday.value,
+                    }
+                    if (user.memberNumber) {
+                        data['prefix_name'] = inputs.prefixName.value;
+                        data['nickname'] = inputs.nickname.value;
+                        data['suffix_name'] = inputs.suffixName.value;
+                    }
+                    if (inputs.district.value) {
+                        data['district_id'] = inputs.district.value;
+                        data['address'] = inputs.address.value;
+                    }
                     post(
                         route(
                             'admin.users.update',
@@ -193,16 +283,7 @@
                         ),
                         updateSuccessCallback,
                         updateFailCallback,
-                        'put', {
-                            username: inputs.username.value,
-                            family_name: inputs.familyName.value,
-                            middle_name: inputs.middleName.value,
-                            given_name: inputs.givenName.value,
-                            passport_type_id: inputs.passportType.value,
-                            passport_number: inputs.passportNumber.value,
-                            gender: inputs.gender.value,
-                            birthday: inputs.birthday.value,
-                        }
+                        'put', data
                     );
                 } else {
                     submitting = false;
@@ -262,10 +343,10 @@
 <Layout>
     <section class="container">
         <article>
-            <form method="POST" class="row g-3" novalidate onsubmit="{update}">
+            <form method="POST" class="row g-3" novalidate onsubmit={update}>
                 <h3 class="mb-2 fw-bold">
                     Info
-                    {#if 
+                    {#if
                         auth.user.permissions.includes('Edit:User') ||
                         auth.user.roles.includes('Super Administrator')
                     }
@@ -278,21 +359,30 @@
                         <Button color="danger" onclick={cancel} hidden={!editing || updating}>Cancel</Button>
                     {/if}
                 </h3>
+                <Col md=4>
+                    <div class="form-label">User ID:</div>
+                    <div>{user.id}</div>
+                </Col>
+                <Col md=4>
+                    <div class="form-label">Member Number:</div>
+                    <div>{user.memberNumber}</div>
+                </Col>
+                <Col md=4 />
                 <Col md="4">
-                    <Label for="username">Username</Label>
-                    <div hidden="{editing}">{user.username}</div>
+                    <Label for="username">Username:</Label>
                     <Input name="username" minlength="8" maxlength="16" required
                         hidden={! editing} disabled={updating}
                         value={user.username} placeholder="username"
                         valid={feedbacks.username == 'Looks good!'}
                         invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!' }
                         feedback={feedbacks.username} bind:inner={inputs.username} />
+                    <div hidden={editing}>{user.username}</div>
                 </Col>
                 <Col md="5">
-                    <Label>Password</Label>
+                    <Label>Password:</Label>
                     <Row>
                         <Col md="2">********</Col>
-                        {#if 
+                        {#if
                             auth.user.permissions.includes('Edit:User') ||
                             auth.user.roles.includes('Super Administrator')
                         }
@@ -313,80 +403,138 @@
                     </Row>
                 </Col>
                 <Col md="3"></Col>
+                {#if user.memberNumber}
+                    <Col md=4>
+                        <Label for="family_name">Prefix Name:</Label>
+                        <Input name="prefix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.prefixName} placeholder="prefix name"
+                            valid={feedbacks.prefixName == 'Looks good!'}
+                            invalid={feedbacks.prefixName != '' && feedbacks.prefixName != 'Looks good!' }
+                            feedback={feedbacks.prefixName} bind:inner={inputs.prefixName} />
+                        <div hidden={editing}>{user.prefixName ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <Label for="family_name">Nickname:</Label>
+                        <Input name="nickname" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.nickname} placeholder="nickname"
+                            valid={feedbacks.nickname == 'Looks good!'}
+                            invalid={feedbacks.nickname != '' && feedbacks.nickname != 'Looks good!' }
+                            feedback={feedbacks.nickname} bind:inner={inputs.nickname} />
+                        <div hidden={editing}>{user.nickname ?? "\u00A0"}</div>
+                    </Col>
+                    <Col md=4>
+                        <Label for="family_name">Suffix Name:</Label>
+                        <Input name="suffix_name" hidden={! editing} disabled={updating}
+                            maxlength="255" value={user.suffixName} placeholder="suffix name"
+                            valid={feedbacks.suffixName == 'Looks good!'}
+                            invalid={feedbacks.suffixName != '' && feedbacks.suffixName != 'Looks good!' }
+                            feedback={feedbacks.suffixName} bind:inner={inputs.suffixName} />
+                        <div hidden={editing}>{user.suffixName ?? "\u00A0"}</div>
+                    </Col>
+                {/if}
                 <Col md="4">
-                    <Label for="family_name">Family Name</Label>
-                    <div hidden="{editing}">{user.familyName}</div>
+                    <Label for="family_name">Family Name:</Label>
                     <Input name="family_name" maxlength="255" required
                         hidden={! editing} disabled={updating}
                         value={user.familyName} placeholder="family name"
                         valid={feedbacks.familyName == 'Looks good!'}
                         invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!' }
                         feedback={feedbacks.familyName} bind:inner={inputs.familyName} />
+                    <div hidden={editing}>{user.familyName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="middle_name">Middle Name</Label>
-                    <div hidden="{editing}">{user.middleName}</div>
+                    <Label for="middle_name">Middle Name:</Label>
                     <Input name="middle_name" maxlength="255"
                         hidden={! editing} disabled={updating}
                         value={user.middleName} placeholder="middle name"
                         valid={feedbacks.middleName == 'Looks good!'}
                         invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!' }
                         feedback={feedbacks.middleName} bind:inner={inputs.middleName} />
+                    <div hidden={editing}>{user.middleName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="given_name">Given Name</Label>
-                    <div hidden="{editing}">{user.givenName}</div>
+                    <Label for="given_name">Given Name:</Label>
                     <Input name="given_name" maxlength="255" required
                         hidden={! editing} disabled={updating}
                         value={user.givenName} placeholder="given name"
                         valid={feedbacks.givenName == 'Looks good!'}
                         invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!' }
                         feedback={feedbacks.givenName} bind:inner={inputs.givenName} />
+                    <div hidden={editing}>{user.givenName}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="passport_type_id">Passport Type</Label>
-                    <div hidden="{editing}">{passportTypes[user.passportTypeID]}</div>
+                    <Label for="passport_type_id">Passport Type:</Label>
                     <Input name="passport_type_id" type="select" required
                         hidden={! editing} disabled={updating}
                         valid={feedbacks.passportType == 'Looks good!'}
                         invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!' }
                         feedback={feedbacks.passportType} bind:inner={inputs.passportType}>
                         {#each Object.entries(passportTypes) as [key, value]}
-                            <option value="{key}" selected={key == user.passportTypeID}>{value}</option>
+                            <option value={key} selected={key == user.passportTypeID}>{value}</option>
                         {/each}
                     </Input>
+                    <div hidden={editing}>{passportTypes[user.passportTypeID]}</div>
                 </Col>
                 <Col md="4">
-                    <Label for="passport_number">Passport Number</Label>
-                    <div hidden="{editing}">{user.passportNumber}</div>
-                    <Input name="passport_number" minlength="8" maxlength="18" required
-                        hidden={! editing} disabled={updating}
+                    <Label for="passport_number">Passport Number:</Label>
+                    <Input name="passport_number" hidden={! editing} disabled={updating}
+                        required minlength=8 maxlength=18 pattern="^[A-Z0-9]+$"
                         value={user.passportNumber} placeholder="passport number"
                         valid={feedbacks.passportNumber == 'Looks good!'}
                         invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!' }
                         feedback={feedbacks.passportNumber} bind:inner={inputs.passportNumber} />
+                    <div hidden={editing}>{user.passportNumber}</div>
                 </Col>
                 <Col md="4"></Col>
                 <Col md="4">
-                    <Label for="gender">Gender</Label>
-                    <div hidden="{editing}">{genders[user.genderID]}</div>
+                    <Label for="gender">Gender:</Label>
                     <Input name="gender" maxlength=255 required
                         hidden={! editing} disabled={updating} list="genders"
                         value={genders[user.genderID]} placeholder="gender"
                         valid={feedbacks.gender == 'Looks good!'}
                         invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!' }
                         feedback={feedbacks.gender} bind:inner={inputs.gender} />
+                    <div hidden={editing}>{genders[user.genderID]}</div>
                 </Col>
-                <Datalist id="genders" data={genders} />
+                <Datalist id="genders" data={Object.values(genders)} />
                 <Col md="4">
-                    <Label for="birthday">Date of Birth</Label>
-                    <div hidden="{editing}">{user.birthday}</div>
+                    <Label for="birthday">Date of Birth:</Label>
                     <Input type="date" name="birthday" max={maxBirthday} required
                         hidden={! editing} disabled={updating}
                         value={user.birthday} placeholder="birthday"
                         valid={feedbacks.birthday == 'Looks good!'}
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!' }
                         feedback={feedbacks.birthday} bind:inner={inputs.birthday} />
+                    <div hidden={editing}>{user.birthday}</div>
+                </Col>
+                <Col md=4 />
+                <Col md=4>
+                    <Label for="district_id">District:</Label>
+                    <Input type="select" name="district_id" hidden={! editing}
+                        disabled={updating} required={user.isActiveMember}
+                        feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                        invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
+                        bind:inner={inputs.district} bind:value={districtValue}>
+                        <option value="">Please select district</option>
+                        {#each Object.entries(areaDistricts) as [area, object]}
+                            <optgroup label={area}>
+                                {#each Object.entries(object) as [key, value]}
+                                    <option value={key}>{value}</option>
+                                {/each}
+                            </optgroup>
+                        {/each}
+                    </Input>
+                    <div hidden={editing}>{districts[user.districtID] ?? "\u00A0"}</div>
+                </Col>
+                <Col md=8>
+                    <Label for="address">Address:</Label>
+                    <Input name="address" hidden={! editing}
+                        disabled={(! districtValue && ! user.isActiveMember) || updating}
+                        required maxlength=255 placeholder="Room 123, 12/F, ABC building, XYZ road"
+                        feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                        invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
+                        bind:inner={inputs.address} value={user.address} />
+                    <div hidden={editing}>{user.address ?? "\u00A0"}</div>
                 </Col>
             </form>
         </article>

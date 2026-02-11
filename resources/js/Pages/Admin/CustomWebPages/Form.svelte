@@ -142,7 +142,7 @@
 </script>
 
 <Row class='mb-3 g-3 form-outline'>
-    <Label>Pathname</Label>
+    <Label for="">Pathname</Label>
     <InputGroup>
         <InputGroupText>https://{import.meta.env.VITE_APP_URL}/</InputGroupText>
         <Input name="pathname" placeholder="abc/xyz-123" value={page.pathname ?? null}
@@ -153,14 +153,14 @@
     </InputGroup>
 </Row>
 <Row class='mb-3 g-3 form-outline'>
-    <Label>Title</Label>
+    <Label for="title">Title</Label>
     <Input name="title" placeholder="title..." value={page.title ?? null}
         maxlength="60" required bind:inner={inputs.title} disabled={submitting}
         feedback={feedbacks.title} valid={feedbacks.title == 'Looks good!'}
         invalid={feedbacks.title != '' && feedbacks.title != 'Looks good!'}/>
 </Row>
 <Row class='mb-3 g-3 form-outline'>
-    <Label>Open Graph Image URL</Label>
+    <Label for="og_image_url">Open Graph Image URL</Label>
     <Input name="og_image_url" placeholder="https://google.com"
         maxlength="8000" value={page.open_graph_image_url ?? null} disabled={submitting}
         feedback={feedbacks.openGraphImageUrl} valid={feedbacks.openGraphImageUrl == 'Looks good!'}
@@ -168,7 +168,7 @@
         bind:inner={inputs.openGraphImageUrl} />
 </Row>
 <Row class='mb-3 g-3 form-outline'>
-    <Label>Description</Label>
+    <Label for="description">Description</Label>
     <Input name="description" placeholder="description..."
         maxlength="65" required value={page.description ?? null} disabled={submitting}
         feedback={feedbacks.description} valid={feedbacks.description == 'Looks good!'}
@@ -176,8 +176,8 @@
         bind:inner={inputs.description} />
 </Row>
 <Row class='mb-3 g-3 form-outline'>
-    <Label>Content</Label>
-    <Input type="textarea" name="description" value={page.content ?? null}
+    <Label for="content">Content</Label>
+    <Input type="textarea" name="content" value={page.content ?? null}
         maxlength="4194303" bind:inner={inputs.content} disabled={submitting}
         feedback={feedbacks.content} valid={feedbacks.content == 'Looks good!'}
         invalid={feedbacks.content != '' && feedbacks.content != 'Looks good!'} />

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\District;
 use App\Models\PassportType;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,6 +28,8 @@ class RegisterRequest extends FormRequest
             'birthday' => 'required|date|before_or_equal:'.now()->subYears(2)->format('Y-m-d'),
             'email' => 'nullable|email:rfc,dns',
             'mobile' => 'nullable|integer|min_digits:5|max_digits:15',
+            'district_id' => 'nullable|integer|exists:'.District::class.',id',
+            'address' => 'required_with:district_id|string|max:255',
         ];
     }
 
@@ -35,6 +38,10 @@ class RegisterRequest extends FormRequest
         return [
             'passport_type_id.required' => 'The passport type field is required.',
             'passport_type_id.exists' => 'The selected passport type is invalid.',
+            'passport_number.regex' => 'The passport number field format is invalid. It should only contain uppercase letters and numbers.',
+            'district_id.integer' => 'The district field must be an integer.',
+            'district_id.exists' => 'The selected district is invalid.',
+            'address.required_with' => 'The address field is required when district is present.',
         ];
     }
 }

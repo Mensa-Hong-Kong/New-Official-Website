@@ -33,6 +33,7 @@ class User extends Authenticatable
         'passport_number',
         'birthday',
         'synced_to_stripe',
+        'address_id',
     ];
 
     public $sortable = [
@@ -363,7 +364,7 @@ class User extends Authenticatable
             ->where('status', 'succeeded')
             ->whereHas(
                 'attendedTests', null, '<',
-                DB::raw("$orderTable.quota")
+                DB::raw("$orderTable.quota - $orderTable.returned_quota")
             );
         $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
         if ($quotaValidityMonths) {
@@ -398,10 +399,15 @@ class User extends Authenticatable
         return $this->hasMany(PriorEvidenceOrder::class);
     }
 
-    public function passedPriorEvidence()
+    public function acceptedPriorEvidence()
     {
         return $this->hasOneThrough(PriorEvidenceResult::class, PriorEvidenceOrder::class, 'user_id', 'order_id', 'id', 'id')
-            ->where('is_pass', true);
+            ->where('is_accepted', true);
+    }
+
+    public function membershipOrders()
+    {
+        return $this->hasMany(MembershipOrder::class);
     }
 
     public function hasQualificationOfMembership(): Attribute
@@ -411,7 +417,7 @@ class User extends Authenticatable
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return $user->member || $user->passedAdmissionTest ||
-                    $user->passedPriorEvidence || $user->memberTransfers()
+                    $user->acceptedPriorEvidence || $user->memberTransfers()
                         ->where('is_accepted', true)
                         ->exists();
             }
@@ -428,7 +434,7 @@ class User extends Authenticatable
                         function ($query) {
                             $query->has('member')
                                 ->orHas('passedAdmissionTest')
-                                ->orHas('passedPriorEvidence')
+                                ->orHas('acceptedPriorEvidence')
                                 ->orWhereHas(
                                     'memberTransfers', function ($query) {
                                         $query->where('is_accepted', true);
@@ -436,6 +442,44 @@ class User extends Authenticatable
                                 );
                         }
                     )->exists();
+            }
+        );
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
+
+    public function canEditPassportInformation(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return ! $user->lastAttendedAdmissionTest && // proctor will update on admission test
+                    ! ( // avoid user update overwrite proctor updated data
+                        $user->futureAdmissionTest &&
+                        $user->futureAdmissionTest->testing_at <= now()->addHours(2)
+                    ) &&
+                    ! (
+                        $user->lastAdmissionTest &&
+                        $user->lastAdmissionTest->expect_end_at > now()->subHour()
+                    ) &&
+                    ! $user->memberTransfers()
+                        ->where('is_accepted', true)
+                        ->orWhereNull('is_accepted')
+                        ->exists() &&
+                    ! $user->priorEvidenceOrders()
+                        ->where('is_returned', false)
+                        ->whereIn('status', ['succeeded', 'partial funded', 'full refunded'])
+                        ->whereDoesntHave(
+                            'result', function ($query) {
+                                $query->whereNot('is_accepted', true)
+                                    ->whereNotNull('is_accepted');
+                            }
+                        )->exists() &&
+                    ! $user->member;
             }
         );
     }

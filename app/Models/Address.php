@@ -24,8 +24,38 @@ class Address extends Model
         return $this->hasMany(AdmissionTest::class);
     }
 
-    public function members()
+    public function user()
     {
-        return $this->hasMany(Member::class);
+        return $this->hasMany(User::class);
+    }
+
+    public function updateAddress($districtID, $value)
+    {
+        if ($districtID == $this->district_id && $value == $this->value) {
+            return $this;
+        }
+        $address = Address::firstWhere([
+            'district_id' => $districtID,
+            'value' => $value,
+        ]);
+        if ($this->user()->count() + $this->admissionTests()->count() == 1) {
+            if ($address) {
+                $this->delete();
+            } else {
+                $this->update([
+                    'district_id' => $districtID,
+                    'value' => $value,
+                ]);
+
+                return $this;
+            }
+        } elseif (! $address) {
+            $address = Address::create([
+                'district_id' => $districtID,
+                'value' => $value,
+            ]);
+        }
+
+        return $address;
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('taken_on');
             $table->string('score');
             $table->decimal('percent_of_group', 4, 2)->nullable();
-            $table->boolean('is_pass')->nullable();
+            $table->boolean('is_accepted')->nullable();
             $table->timestamps();
         });
     }

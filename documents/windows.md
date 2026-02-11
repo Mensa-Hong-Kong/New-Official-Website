@@ -186,7 +186,6 @@ nvm install --lts
 -   Svelte Snippets (JakobKruse.svelte-kit-snippets)
 -   svelte-format (melihaltintas.svelte-format)
 -   Thunder Client (rangav.vscode-thunder-client)
--   Tailwind CSS IntelliSense (bradlc.vscode-tailwindcss)
 
 ### Setup Inertia.js from Laravel & PHP Essentials
 

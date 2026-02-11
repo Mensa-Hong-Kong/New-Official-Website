@@ -5,12 +5,6 @@
 $bootstrap-icons-font-src: url("../../node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2") format("woff2"), url("../../node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff") format("woff");
 @import "../../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
 
-/*
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-*/
-
 .draggable {
     cursor: move;
 }
@@ -23,4 +17,16 @@ $bootstrap-icons-font-src: url("../../node_modules/bootstrap-icons/font/fonts/bo
 aside nav > ul > li {
     width: max-content;
     min-width: 100%;
+}
+
+.form-floating:has([required]:empty) label:after {
+  content: " *";
+  color: var(--bs-danger-text-emphasis);
+}
+
+label:has(+ input:required:enabled:not([hidden])):after,
+label:has(+ select:required:enabled:not([hidden])):after,
+label:has(+ textarea:required:enabled:not([hidden])):after {
+  content: ' *';
+  color: var(--bs-danger-text-emphasis);
 }

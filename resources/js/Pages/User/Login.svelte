@@ -132,7 +132,7 @@
 
 <Layout>
     <section class="container">
-        <form class="mx-auto w-25" novalidate onsubmit="{login}">
+        <form class="mx-auto" style="max-width: 350px;" novalidate onsubmit="{login}">
             <h2 class="mb-2 fw-bold text-uppercase">Login</h2>
             <div class="mb-4 form-outline">
                 <FormGroup floating label="Username">
