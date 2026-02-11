@@ -445,4 +445,37 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Address::class);
     }
+
+    public function canEditPassportInformation(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return ! $user->lastAttendedAdmissionTest && // proctor will update on admission test
+                    ! ( // avoid user update overwrite proctor updated data
+                        $user->futureAdmissionTest &&
+                        $user->futureAdmissionTest->testing_at <= now()->addHours(2)
+                    ) &&
+                    ! (
+                        $user->lastAdmissionTest &&
+                        $user->lastAdmissionTest->expect_end_at > now()->subHour()
+                    ) &&
+                    ! $user->memberTransfers()
+                        ->where('is_accepted', true)
+                        ->orWhereNull('is_accepted')
+                        ->exists() &&
+                    ! $user->priorEvidenceOrders()
+                        ->where('is_returned', false)
+                        ->whereIn('status', ['succeeded', 'partial funded', 'full refunded'])
+                        ->whereDoesntHave(
+                            'result', function ($query) {
+                                $query->whereNot('is_accepted', true)
+                                    ->whereNotNull('is_accepted');
+                            }
+                        )->exists() &&
+                    ! $user->member;
+            }
+        );
+    }
 }
