@@ -11,6 +11,7 @@
     let { user: initUser, genders, passportTypes, maxBirthday, districts: areaDistricts } = $props();
     let user = $state({
         id: initUser.id,
+        canEditPassportInformation: initUser.can_edit_passport_information,
         memberNumber: initUser.member?.number,
         isActiveMember: initUser.member?.is_active,
         username: initUser.username,
@@ -38,6 +39,11 @@
         prefixName: '',
         nickname: '',
         suffixName: '',
+        familyName: '',
+        middleName: '',
+        givenName: '',
+        passportTypeID: '',
+        passportNumber: '',
         gender: '',
         birthday: '',
         district: '',
@@ -61,8 +67,18 @@
         inputs.password.value = '';
         inputs.newPassword.value = '';
         inputs.confirmNewPassword.value = '';
-        inputs.gender.value = genders[user.genderID];
-        inputs.birthday.value = user.birthday;
+        inputs.prefixName.value = user.prefixName;
+        inputs.nickname.value = user.nickname;
+        inputs.suffixName.value = user.suffixName;
+        if (user.canEditPassportInformation) {
+            inputs.familyName.value = user.familyName;
+            inputs.middleName.value = user.middleName;
+            inputs.givenName.value = user.givenName;
+            inputs.passportTypeID.value = user.passportTypeID;
+            inputs.passportNumber.value = user.passportNumber;
+            inputs.gender.value = genders[user.genderID];
+            inputs.birthday.value = user.birthday;
+        }
         inputs.district.value = user.districtID;
         inputs.address.value = user.address;
         for(let key in feedbacks) {
@@ -120,15 +136,42 @@
                 feedbacks.suffixName = `The suffix name must not be greater than ${inputs.suffixName.maxLength} characters.`;
             }
         }
-        if(inputs.gender.validity.valueMissing) {
-            feedbacks.gender = 'The gender field is required.';
-        } else if(inputs.gender.validity.tooLong) {
-            feedbacks.gender = `The gender not be greater than ${gender.maxLength} characters.`;
-        }
-        if(inputs.birthday.validity.valueMissing) {
-            feedbacks.birthday = 'The birthday field is required.';
-        } else if(inputs.birthday.validity.rangeOverflow) {
-            feedbacks.birthday = `The birthday not be greater than ${birthday.max} characters.`;
+        if (user.canEditPassportInformation) {
+            if(inputs.familyName.validity.valueMissing) {
+                feedbacks.familyName = 'The family name field is required.';
+            } else if(inputs.familyName.validity.tooLong) {
+                feedbacks.familyName = `The family name must not be greater than ${inputs.familyName.maxLength} characters.`;
+            }
+            if(inputs.middleName.validity.tooLong) {
+                feedbacks.middleName = `The middle name must not be greater than ${inputs.middleName.maxLength} characters.`;
+            }
+            if(inputs.givenName.validity.valueMissing) {
+                feedbacks.givenName = 'The given name field is required.';
+            } else if(inputs.givenName.validity.tooLong) {
+                feedbacks.givenName = `The given name must not be greater than ${inputs.givenName.maxLength} characters.`;
+            }
+            if(inputs.passportTypeID.validity.valueMissing) {
+                feedbacks.passportTypeID = 'The passport type field is required.';
+            }
+            if(inputs.passportNumber.validity.valueMissing) {
+                feedbacks.passportNumber = 'The passport number field is required.';
+            } else if(inputs.passportNumber.validity.tooShort) {
+                feedbacks.passportNumber = `The passport number field must be at least ${inputs.passportNumber.minLength} characters.`;
+            } else if(inputs.passportNumber.validity.tooLong) {
+                feedbacks.passportNumber = `The passport number field must not be greater than ${inputs.passportNumber.maxLength} characters.`;
+            } else if(inputs.passportNumber.validity.patternMismatch) {
+                feedbacks.passportNumber = 'The passport number field format is invalid. It should only contain uppercase letters and numbers.';
+            }
+            if(inputs.gender.validity.valueMissing) {
+                feedbacks.gender = 'The gender field is required.';
+            } else if(inputs.gender.validity.tooLong) {
+                feedbacks.gender = `The gender must not be greater than ${inputs.gender.maxLength} characters.`;
+            }
+            if(inputs.birthday.validity.valueMissing) {
+                feedbacks.birthday = 'The birthday field is required.';
+            } else if(inputs.birthday.validity.rangeOverflow) {
+                feedbacks.birthday = `The birthday must not be greater than ${inputs.birthday.max} characters.`;
+            }
         }
         if(user.isActiveMember || inputs.district.value) {
             if (inputs.district.validity.valueMissing) {
@@ -148,15 +191,22 @@
 
     function successCallback(response) {
         alert(response.data.success);
-        genders[response.data.gender_id] = response.data.gender;
         user.username = response.data.username;
         if (user.memberNumber) {
             user.prefixName = response.data.prefix_name;
             user.nickname = response.data.nickname;
             user.suffixName = response.data.suffix_name;
         }
-        user.genderID = response.data.gender_id;
-        user.birthday = formatToDate(response.data.birthday);
+        if (user.canEditPassportInformation) {
+            genders[response.data.gender_id] = response.data.gender;
+            user.familyName = response.data.family_name;
+            user.middleName = response.data.middle_name;
+            user.givenName = response.data.given_name;
+            user.passportTypeID = response.data.passport_type_id;
+            user.passportNumber = response.data.passport_number;
+            user.genderID = response.data.gender_id;
+            user.birthday = formatToDate(response.data.birthday);
+        }
         user.districtID = response.data.district_id ?? '';
         user.address = response.data.address;
         editing = false;
@@ -176,6 +226,9 @@
                     case 'password':
                         feedbacks.password = value;
                         break;
+                    case 'new_password':
+                        feedbacks.newPassword = value;
+                        break;
                     case 'prefix_name':
                         feedbacks.prefixName = value;
                         break;
@@ -185,8 +238,20 @@
                     case 'suffix_name':
                         feedbacks.suffixName = value;
                         break;
-                    case 'new_password':
-                        feedbacks.newPassword = value;
+                    case 'family_name':
+                        feedbacks.familyName = value;
+                        break;
+                    case 'middle_name':
+                        feedbacks.middleName = value;
+                        break;
+                    case 'given_name':
+                        feedbacks.givenName = value;
+                        break;
+                    case 'passport_type_id':
+                        feedbacks.passportTypeID = value;
+                        break;
+                    case 'passport_number':
+                        feedbacks.passportNumber = value;
                         break;
                     case 'gender':
                         feedbacks.gender = value;
@@ -206,6 +271,10 @@
                 }
             }
         }
+        if(error.status == 409) {
+            alert(error.response.data.message);
+            user.canEditPassportInformation = false;
+        }
         submitting = false;
         updating = false;
     }
@@ -218,11 +287,7 @@
             if(submitting == 'updateProfile'+submitAt) {
                 if(validation()) {
                     updating = true;
-                    let data = {
-                        username: inputs.username.value,
-                        gender: inputs.gender.value,
-                        birthday: inputs.birthday.value,
-                    }
+                    let data = {username: inputs.username.value}
                     if(
                         inputs.newPassword.value ||
                         inputs.username.value != user.username
@@ -232,6 +297,15 @@
                     if(inputs.newPassword.value) {
                         data['new_password'] = inputs.newPassword.value;
                         data['new_password_confirmation'] = inputs.confirmNewPassword.value;
+                    }
+                    if (user.canEditPassportInformation) {
+                        data['family_name'] = inputs.familyName.value;
+                        data['middle_name'] = inputs.middleName.value;
+                        data['given_name'] = inputs.givenName.value;
+                        data['passport_type_id'] = inputs.passportTypeID.value;
+                        data['passport_number'] = inputs.passportNumber.value;
+                        data['gender'] = inputs.gender.value;
+                        data['birthday'] = inputs.birthday.value;
                     }
                     if (user.memberNumber) {
                         data['prefix_name'] = inputs.prefixName.value;
@@ -293,6 +367,21 @@
                     <ol>
                         <li>Password only require when you change the username or password</li>
                         <li>New password and confirm password is not require unless you want to change a new password</li>
+                        <li>
+                            The passport information locks
+                            <ul>
+                                <li>For avoid overwrite proctor passport validated information, you cannot edit the information 2 hours before of the scheduled admission test.</li>
+                                <li>if you a attended admission test, you cannot edit the passport information because it is already verified by proctor.</li>
+                                <li>If you paid prior evidence order, you cannot edit the passport information until we are rejected your evidence because the verification may be in progress.</li>
+                                <li>If we are accepted your prior evidence, you cannot edit the passport information because it is already verified.</li>
+                                <li>If you are in member transfer process, you cannot edit the passport information.</li>
+                                <li>If we are accepted your member transfer, you can not edit the passport information because it is already verified.</li>
+                                <li>If you are member, you cannot edit the passport information because it is already verified.</li>
+                                <li>Otherwise, you can edit the passport information, if you are not in any of the above situations but cannot see the edit input box, please refresh the page, If the problem persists, please contact us.</li>
+                                <li>If you are in any of the above situations and need to change the passport information, please contact us and provide the needed documentation(e.g.: Deed Poll).</li>
+                                <li>If you are active member and need to change the passport information, you must contact us and provide the needed documentation(e.g.: Deed Poll) because we need to update your information to Companies Registry.</li>
+                            </ul>
+                        </li>
                     </ol>
                 </Alert>
                 <Col md=4>
@@ -371,24 +460,59 @@
                     </Col>
                 {/if}
                 <Col md=4>
-                    <div class="form-label">Family Name:</div>
-                    <div>{user.familyName}</div>
+                    <Label for="family_name">Family Name:</Label>
+                    <Input name="family_name" type="text" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
+                        maxlength="255" required value={user.familyName} placeholder="family name"
+                        feedback={feedbacks.familyName} valid={feedbacks.familyName == 'Looks good!'}
+                        invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!'}
+                        bind:inner={inputs.familyName} />
+                    <div hidden={editing && user.canEditPassportInformation}>{user.familyName}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Middle Name:</div>
-                    <div>{user.middleName ?? "\u00A0"}</div>
+                    <Label for="middle_name">Middle Name:</Label>
+                    <Input name="middle_name" type="text" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
+                        maxlength="255" value={user.middleName} placeholder="middle name"
+                        feedback={feedbacks.middleName} valid={feedbacks.middleName == 'Looks good!'}
+                        invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!'}
+                        bind:inner={inputs.middleName} />
+                    <div hidden={editing && !user.canEditPassportInformation}>{user.middleName ?? "\u00A0"}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Given Name:</div>
-                    <div>{user.givenName}</div>
+                    <Label for="given_name">Given Name:</Label>
+                    <Input name="given_name" type="text" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
+                        maxlength="255" required value={user.givenName} placeholder="given name"
+                        feedback={feedbacks.givenName} valid={feedbacks .givenName == 'Looks good!'}
+                        invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!'}
+                        bind:inner={inputs.givenName} />
+                    <div hidden={editing && user.canEditPassportInformation}>{user.givenName}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Passport Type:</div>
-                    <div>{passportTypes[user.passportTypeID]}</div>
+                    <Label for="passport_type_id">Passport Type:</Label>
+                    <Input type="select" name="passport_type_id"
+                        hidden={! editing || ! user.canEditPassportInformation} disabled={updating}
+                        required placeholder="passport type"
+                        feedback={feedbacks.passportTypeID} valid={feedbacks.passportTypeID == 'Looks good!'}
+                        invalid={feedbacks.passportTypeID != '' && feedbacks.passportTypeID != 'Looks good!'}
+                        bind:inner={inputs.passportTypeID}>
+                        {#each Object.entries(passportTypes) as [key, value]}
+                            <option value={key} selected={key == user.passportTypeID}>{value}</option>
+                        {/each}
+                    </Input>
+                    <div hidden={editing && user.canEditPassportInformation}>{passportTypes[user.passportTypeID]}</div>
                 </Col>
                 <Col md=4>
-                    <div class="form-label">Passport Number:</div>
-                    <div>
+                    <Label for="passport_number">Passport Number:</Label>
+                    <Input name="passport_number" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
+                        required minlength=8 maxlength=18 pattern="^[A-Z0-9]+$"
+                        value={user.passportNumber} placeholder="passport number"
+                        feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
+                        invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
+                        bind:inner={inputs.passportNumber} />
+                    <div hidden={editing && user.canEditPassportInformation}>
                         {showPassportNumber ? user.passportNumber : '********'}
                         <button type="button" style="border: none; background-color: transparent;"
                             aria-label="{showPassportNumber ? 'Show' : 'Hide'} passport number"
@@ -400,22 +524,24 @@
                 <Col md=4 />
                 <Col md=4>
                     <Label for="gender">Gender:</Label>
-                    <Input name="gender" type="text" list="genders" hidden={! editing} disabled={updating}
-                        maxlength="255" required value={genders[user.genderID]} placeholder="gender"
+                    <Input name="gender" type="text" list="genders" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
+                        maxlength=255 required value={genders[user.genderID]} placeholder="gender"
                         feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
                         invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
                         bind:inner={inputs.gender} />
-                    <div hidden={editing}>{genders[user.genderID]}</div>
+                    <div hidden={editing && user.canEditPassportInformation}>{genders[user.genderID]}</div>
                 </Col>
                 <Datalist id="genders" data={Object.values(genders)} />
                 <Col md=4>
                     <Label for="birthday">Date of Birth:</Label>
-                    <Input name="birthday" type="date" hidden={! editing} disabled={updating}
+                    <Input name="birthday" type="date" disabled={updating}
+                        hidden={! editing || ! user.canEditPassportInformation}
                         max={maxBirthday} required value={user.birthday}
                         feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
                         invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
                         bind:inner={inputs.birthday} />
-                    <div hidden={editing}>{user.birthday}</div>
+                    <div hidden={editing && user.canEditPassportInformation}>{user.birthday}</div>
                 </Col>
                 <Col md=4 />
                 <Col md=4>

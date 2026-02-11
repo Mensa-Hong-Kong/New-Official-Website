@@ -140,6 +140,7 @@ class UserController extends Controller implements HasMiddleware
             'roles', 'permissions', 'synced_to_stripe',
             'created_at', 'updated_at', 'address_id',
         ]);
+        $user->append('can_edit_passport_information');
         $user->member?->makeHidden(['user_id', 'created_at', 'updated_at']);
         $user->member?->append('is_active');
         $user->emails->append('is_verified');
@@ -194,12 +195,17 @@ class UserController extends Controller implements HasMiddleware
     {
         $user = $request->user();
         DB::beginTransaction();
-        $gender = $user->gender->updateName($request->gender);
-        $update = [
-            'username' => $request->username,
-            'gender_id' => $gender->id,
-            'birthday' => $request->birthday,
-        ];
+        $update = ['username' => $request->username];
+        if($user->canEditPassportInformation) {
+            $gender = $user->gender->updateName($request->gender);
+            $update['family_name'] = $request->family_name;
+            $update['middle_name'] = $request->middle_name;
+            $update['given_name'] = $request->given_name;
+            $update['passport_type_id'] = $request->passport_type_id;
+            $update['passport_number'] = $request->passport_number;
+            $update['gender_id'] = $gender->id;
+            $update['birthday'] = $request->birthday;
+        }
         if ($request->new_password) {
             $update['password'] = $request->new_password;
         }
@@ -220,7 +226,9 @@ class UserController extends Controller implements HasMiddleware
         $user->update($update);
         $unsetKeys = ['password', 'new_password', 'new_password_confirmation', 'address_id'];
         $return = array_diff_key($update, array_flip($unsetKeys));
-        $return['gender'] = $request->gender;
+        if($user->canEditPassportInformation) {
+            $return['gender'] = $request->gender;
+        }
         $return['district_id'] = $request->district_id;
         $return['address'] = $request->address;
         $return['success'] = 'The profile update success!';
