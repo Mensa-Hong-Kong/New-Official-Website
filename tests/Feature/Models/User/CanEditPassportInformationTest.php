@@ -70,6 +70,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->user->priorEvidenceOrders()->create([
             'status' => 'pending',
             'expired_at' => now()->addHour(),
+            'price' => 400,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -80,6 +81,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->user->priorEvidenceOrders()->create([
             'status' => fake()->randomElement(['pending', 'canceled', 'failed']),
             'expired_at' => now()->subSecond(),
+            'price' => 400,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -90,6 +92,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
             'expired_at' => now()->addHour(),
+            'price' => 400,
         ]);
 
         $this->assertFalse($this->user->canEditPassportInformation);
@@ -101,6 +104,7 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
+            'price' => 400,
         ]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
@@ -111,6 +115,7 @@ class CanEditPassportInformationTest extends TestCase
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
+            'price' => 400,
         ]);
 
         $order->result()->create([
@@ -129,6 +134,7 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
+            'price' => 400,
         ]);
 
         $order->result()->create([
@@ -146,6 +152,7 @@ class CanEditPassportInformationTest extends TestCase
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
+            'price' => 400,
         ]);
 
         $order->result()->create([
@@ -164,6 +171,7 @@ class CanEditPassportInformationTest extends TestCase
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
             'expired_at' => now()->subSecond(),
+            'price' => 400,
         ]);
 
         $order->result()->create([
@@ -183,6 +191,7 @@ class CanEditPassportInformationTest extends TestCase
             'status' => 'full refunded',
             'expired_at' => now()->subSecond(),
             'is_returned' => true,
+            'price' => 400,
         ]);
 
         $order->result()->create([
