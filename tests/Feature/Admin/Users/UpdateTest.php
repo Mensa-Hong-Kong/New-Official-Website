@@ -543,7 +543,13 @@ class UpdateTest extends TestCase
         ]);
         $data = $this->happyCase;
         $data['address'] = '123 Street';
-        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
         $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
     }
 
@@ -561,7 +567,13 @@ class UpdateTest extends TestCase
         ]);
         $data = $this->happyCase;
         $data['address'] = '123 Street';
-        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
         $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
     }
 
@@ -608,7 +620,13 @@ class UpdateTest extends TestCase
         ]);
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
-        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
         $response->assertInvalid(['address' => 'The address field is required when you are an active member or have membership order in progress.']);
     }
 
@@ -626,8 +644,14 @@ class UpdateTest extends TestCase
         ]);
         $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
-        $response = $this->actingAs($this->user)->put(route('profile.update'), $data);
-        $response->assertInvalid(['address' => 'The address field is required when you are an active member or have membership order in progress.']);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertInvalid(['address' => 'The address field is required when user is an active member or has membership order in progress.']);
     }
 
     public function test_address_required_when_district_id_present()
