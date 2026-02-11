@@ -452,7 +452,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -467,9 +466,7 @@ class UpdateTest extends TestCase
 
     public function test_missing_district_id_when_user_has_membership_order_in_progress()
     {
-        $member = $this->user->member()->create();
-        $member->orders()->create([
-            'user_id' => $this->user->id,
+        $this->user->membershipOrders()->create([
             'price' => 200,
             'status' => 'pending',
             'from_year' => now()->year,
@@ -505,7 +502,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -520,9 +516,7 @@ class UpdateTest extends TestCase
 
     public function test_missing_address_when_user_has_membership_order_in_progress()
     {
-        $member = $this->user->member()->create();
-        $member->orders()->create([
-            'user_id' => $this->user->id,
+        $member = $this->user->membershipOrders()->create([
             'price' => 200,
             'status' => 'pending',
             'from_year' => now()->year,
@@ -717,7 +711,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -751,7 +744,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -789,7 +781,6 @@ class UpdateTest extends TestCase
             'suffix_name' => 'Jr.',
         ]);
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,

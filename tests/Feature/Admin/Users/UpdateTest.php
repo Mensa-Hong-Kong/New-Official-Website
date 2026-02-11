@@ -529,11 +529,10 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function test_missing_district_id_when_user_is_not_active_member()
+    public function test_missing_district_id_when_user_is_active_member()
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -550,14 +549,12 @@ class UpdateTest extends TestCase
                     ['user' => $this->user]
                 ), $data
             );
-        $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
+        $response->assertInvalid(['district_id' => 'The district field is required when user is an active member or has membership order in progress.']);
     }
 
     public function test_missing_district_id_when_user_has_membership_order_in_progress()
     {
-        $member = $this->user->member()->create();
-        $member->orders()->create([
-            'user_id' => $this->user->id,
+        $this->user->membershipOrders()->create([
             'price' => 200,
             'status' => 'pending',
             'from_year' => now()->year,
@@ -574,7 +571,7 @@ class UpdateTest extends TestCase
                     ['user' => $this->user]
                 ), $data
             );
-        $response->assertInvalid(['district_id' => 'The district field is required when you are an active member or have membership order in progress.']);
+        $response->assertInvalid(['district_id' => 'The district field is required when user is an active member or has membership order in progress.']);
     }
 
     public function test_district_id_is_not_integer()
@@ -611,7 +608,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -627,14 +623,12 @@ class UpdateTest extends TestCase
                     ['user' => $this->user]
                 ), $data
             );
-        $response->assertInvalid(['address' => 'The address field is required when you are an active member or have membership order in progress.']);
+        $response->assertInvalid(['address' => 'The address field is required when user is an active member or has membership order in progress.']);
     }
 
     public function test_missing_address_when_user_has_membership_order_in_progress()
     {
-        $member = $this->user->member()->create();
-        $member->orders()->create([
-            'user_id' => $this->user->id,
+        $this->user->membershipOrders()->create([
             'price' => 200,
             'status' => 'pending',
             'from_year' => now()->year,
@@ -862,7 +856,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -904,7 +897,6 @@ class UpdateTest extends TestCase
     {
         $member = $this->user->member()->create();
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
@@ -947,7 +939,6 @@ class UpdateTest extends TestCase
             'suffix_name' => 'Jr.',
         ]);
         $member->orders()->create([
-            'user_id' => $this->user->id,
             'price' => 200,
             'status' => 'succeeded',
             'from_year' => now()->year,
