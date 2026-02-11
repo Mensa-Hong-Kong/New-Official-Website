@@ -364,7 +364,7 @@ class User extends Authenticatable
             ->where('status', 'succeeded')
             ->whereHas(
                 'attendedTests', null, '<',
-                DB::raw("$orderTable.quota")
+                DB::raw("$orderTable.quota - $orderTable.returned_quota")
             );
         $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
         if ($quotaValidityMonths) {

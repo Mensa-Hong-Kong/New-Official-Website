@@ -23,6 +23,7 @@ class AdmissionTestOrder extends Model
         'gateway_id',
         'reference_number',
         'gateway_payment_fee',
+        'returned_quota',
     ];
 
     protected $casts = [
