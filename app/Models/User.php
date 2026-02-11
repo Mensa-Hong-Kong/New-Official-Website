@@ -405,6 +405,11 @@ class User extends Authenticatable
             ->where('is_accepted', true);
     }
 
+    public function membershipOrders()
+    {
+        return $this->hasMany(MembershipOrder::class);
+    }
+
     public function hasQualificationOfMembership(): Attribute
     {
         $user = $this;
