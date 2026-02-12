@@ -36,8 +36,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('csrf-token', function() {
-   return request()->session()->token();
+Route::get('csrf-token', function () {
+    return request()->session()->token();
 });
 
 Route::inertia('/', 'Index')->name('index');
