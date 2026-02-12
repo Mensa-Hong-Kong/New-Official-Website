@@ -70,7 +70,6 @@ Please read laravel official documents:
 - add can_join_admission_test column to passport_types table
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
-- change SEO from page to layout export props title, desc. and ogImage and change ogImage from public to storage
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table
