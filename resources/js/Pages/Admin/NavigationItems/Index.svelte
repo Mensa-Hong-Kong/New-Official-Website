@@ -69,7 +69,7 @@
                     }
                 }
                 post(
-                    route('admin.other-payment-gateways.display-order.update'),
+                    route('admin.navigation-items.display-order.update'),
                     updateSuccessCallback,
                     updateFailCallback,
                     'put', data
