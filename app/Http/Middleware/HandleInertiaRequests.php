@@ -11,15 +11,6 @@ class HandleInertiaRequests extends Middleware
 {
     public function share(Request $request): array
     {
-        $navigationItems = NavigationItem::orderBy('display_order')
-            ->get(['id', 'master_id', 'name', 'url'])
-            ->keyBy('id');
-        $navigationNodes = array_fill_keys($navigationItems->pluck('id')->toArray(), []);
-        $navigationNodes['root'] = [];
-        foreach ($navigationItems as $item) {
-            $navigationNodes[$item->master_id ?? 'root'][] = $item->id;
-        }
-
         return [
             ...parent::share($request),
             'csrf_token' => csrf_token(),
@@ -36,8 +27,8 @@ class HandleInertiaRequests extends Middleware
 
                 return null;
             },
-            'navigationItems' => $navigationItems,
-            'navigationNodes' => $navigationNodes,
+            'navigationItems' => NavigationItem::orderBy('display_order')
+                ->get(['id', 'master_id', 'name', 'url']),
             'flash' => [
                 'success' => session('success'),
                 'error' => session('errors', new MessageBag)->first('message') ?? null,

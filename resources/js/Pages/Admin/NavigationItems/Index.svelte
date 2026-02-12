@@ -1,4 +1,5 @@
 <script>
+    import { page } from "@inertiajs/svelte";
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import NavigationItems from './NavigationItems.svelte';
@@ -7,27 +8,29 @@
 
     seo.title = 'Administration Navigation Items';
 
-    let { navigationItems, navigationNodes } = $props();
     let editing = $state(false);
     let updating = $state(false);
     let submitting = $state(false);
-    let navNodes = $state({});
+    let navNodes = $state({
+        root: {
+            id: 'root',
+            children: [],
+        }
+    });
     let originNodes;
 
-    for(let [key, children] of Object.entries(navigationNodes)) {
-        navNodes[key] = {
-            id: key,
-            children: []
+    for(let data of $page.props.navigationItems) {
+        navNodes[data.id] = {
+            id: data.id,
+            children: [],
+            name: data.name,
+            url: data.url,
+            deleting: false,
+            disclose: false,
         };
-        for(let id of children) {
-            navNodes[key]['children'].push({id: id});
-        }
-        if(key != 'root') {
-            navNodes[key]['name'] = navigationItems[key]['name'];
-            navNodes[key]['url'] = navigationItems[key]['url'];
-            navNodes[key]['deleting'] = false;
-            navNodes[key]['disclose'] = false;
-        }
+    };
+    for (let data of $page.props.navigationItems ) {
+        navNodes[data.master_id ?? 'root']['children'].push({id: data.id});
     }
 
     function updateSuccessCallback(response) {

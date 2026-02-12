@@ -39,6 +39,15 @@
     if ($page.props.flash.error) {
         alert($page.props.flash.error);
     }
+
+    let navigationNodes = $state(Object.fromEntries(
+        $page.props.navigationItems.map(
+            row => [row.master_id ?? 'root', []]
+        )
+    ));
+    for (let data of $page.props.navigationItems ) {
+        navigationNodes[data.master_id ?? 'root'].push(data);
+    }
 </script>
 <script module>
     import { asset } from "@/asset.svelte.js";
@@ -72,18 +81,17 @@
         <NavbarToggler on:click={navToggle} />
         <Collapse isOpen={isOpenNav} navbar expand="md" on:update={handleNavUpdate}>
             <Nav class="me-auto" navbar>
-                {#each $page.props.navigationNodes.root as itemID}
-                    {#if $page.props.navigationNodes[itemID].length}
+                {#each navigationNodes.root as item}
+                    {#if navigationNodes[item.id] && navigationNodes[item.id].length}
                         <Dropdown nav inNavbar>
-                            <DropdownToggle nav caret>{$page.props.navigationItems[itemID]['name']}</DropdownToggle>
-                            <NavDropdown nodes={$page.props.navigationNodes}
-                                items={$page.props.navigationItems} id={itemID} />
+                            <DropdownToggle nav caret>{item.name}</DropdownToggle>
+                            <NavDropdown nodes={navigationNodes} id={item.id} />
                         </Dropdown>
                     {:else}
                         <NavItem>
-                            <Link class={["nav-link", {active: $page.url == `/${$page.props.navigationItems[itemID]['url']}`}]}
-                                href={$page.props.navigationItems[itemID]['url'] ?? '#'}>
-                                {$page.props.navigationItems[itemID]['name']}
+                            <Link class={["nav-link", {active: $page.url == `/${item.url}`}]}
+                                href={item.url ?? '#'}>
+                                {item.name}
                             </Link>
                         </NavItem>
                     {/if}
