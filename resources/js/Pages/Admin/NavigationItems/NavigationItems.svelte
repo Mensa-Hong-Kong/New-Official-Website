@@ -112,9 +112,8 @@
 {#if navNode && navNode.children}
     <section use:dndzone={{
             items:navNode.children, flipDurationMs,
-            centreDraggedOnCursor: true, 
+            centreDraggedOnCursor: true,
             dragDisabled: ! editing || updating || submitting,
-            dropDisabled: ! editing || updating || submitting,
         }} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
         {#each navNode.children as item(item.id)}
             <article animate:flip="{{duration: flipDurationMs}}">
@@ -127,11 +126,12 @@
 
 <style>
 	section {
-		width: auto;
 		border: 0px solid black;
 		padding: 0.4em 0 0.4em 1em;
 		overflow-y: auto ;
 		height: auto;
+        overflow-x: hidden;
+        width: 100%;
 	}
 	article {
 		width: auto;

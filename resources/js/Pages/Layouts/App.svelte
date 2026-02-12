@@ -1,12 +1,10 @@
 <script>
     import { page, Link } from "@inertiajs/svelte";
-    import { useColorMode, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, Input, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
+    import { useColorMode, Navbar, NavbarToggler, Collapse, Nav, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
-	import { setCsrfToken } from '@/submitForm.svelte';
 
-    let { children } = $props();
     let isOpenNav = $state(false);
 
     let theme = $state(
@@ -32,15 +30,40 @@
         isOpenNav = !isOpenNav;
     }
 
-    setCsrfToken($page.props.csrf_token);
-
     if ($page.props.flash.success) {
         alert($page.props.flash.success);
     }
     if ($page.props.flash.error) {
         alert($page.props.flash.error);
     }
+
+    let navigationNodes = $state(Object.fromEntries(
+        $page.props.navigationItems.map(
+            row => [row.master_id ?? 'root', []]
+        )
+    ));
+    for (let data of $page.props.navigationItems ) {
+        navigationNodes[data.master_id ?? 'root'].push(data);
+    }
 </script>
+<script module>
+    import { asset } from "@/asset.svelte.js";
+    export let seo = $state({
+        title: '',
+        description: import.meta.env.VITE_APP_DESCRIPTION,
+        ogImageUrl: asset('og_image.png'),
+    });
+</script>
+
+<svelte:head>
+    <title>{seo.title ? `${seo.title} | ` : ''}{import.meta.env.VITE_APP_NAME}</title>
+    <meta name="title" content="{seo.title ? `${seo.title} | ` : ''}{import.meta.env.VITE_APP_NAME}">
+    <meta name="description" content="{seo.description}">
+    <meta name="og:description" content="{seo.description}">
+    <meta name="og:image" content="{seo.ogImage}">
+    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
+    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
+</svelte:head>
 
 <header>
     <Navbar color="black" theme="dark" expand="lg" container="xxl" sticky="top" pills fixed="wrap">
@@ -55,19 +78,18 @@
         <NavbarToggler on:click={navToggle} />
         <Collapse isOpen={isOpenNav} navbar expand="md" on:update={handleNavUpdate}>
             <Nav class="me-auto" navbar>
-                {#each $page.props.navigationNodes.root as itemID}
-                    {#if $page.props.navigationNodes[itemID].length}
+                {#each navigationNodes.root as item}
+                    {#if navigationNodes[item.id] && navigationNodes[item.id].length}
                         <Dropdown nav inNavbar>
-                            <DropdownToggle nav caret>{$page.props.navigationItems[itemID]['name']}</DropdownToggle>
-                            <NavDropdown nodes={$page.props.navigationNodes}
-                                items={$page.props.navigationItems} id={itemID} />
+                            <DropdownToggle nav caret>{item.name}</DropdownToggle>
+                            <NavDropdown nodes={navigationNodes} id={item.id} />
                         </Dropdown>
                     {:else}
                         <NavItem>
-                            <Link class="nav-link" href={$page.props.navigationItems[itemID]['url'] ?? '#'}>
-                                {$page.props.navigationItems[itemID]['name']}
+                            <Link class={["nav-link", {active: $page.url == `/${item.url}`}]}
+                                href={item.url ?? '#'}>
+                                {item.name}
                             </Link>
-                            <Link href={route('logout')} class="nav-link">Logout</Link>
                         </NavItem>
                     {/if}
                 {/each}
@@ -93,7 +115,7 @@
                                 route('admin.admission-tests.index')
                             } class={[
                                 'nav-link',
-                                {active: route().current().startsWith('admin.')}
+                                {active: $page.component.startsWith('Admin/')}
                             ]}>Admin</Link>
                         </NavItem>
                         <hr class="d-lg-none text-white-50">
@@ -102,7 +124,7 @@
                         <Link href={route('profile.show')}
                             class={[
                                 'nav-link',
-                                {active: route().current('profile.show')}
+                                {active: $page.component == 'User/Profile'}
                             ]}>Profile</Link>
                     </NavItem>
                     <NavItem>
@@ -113,14 +135,14 @@
                         <Link href={route('login')}
                             class={[
                                 'nav-link',
-                                {active: route().current('login')}
+                                {active: $page.component == 'User/Login'}
                             ]}>Login</Link>
                     </NavItem>
                     <NavItem>
                         <Link href={route('register')}
                             class={[
                                 'nav-link',
-                                {active: route().current('register')}
+                                {active: $page.component == 'User/Register'}
                             ]}>Register</Link>
                     </NavItem>
                 {/if}
@@ -128,8 +150,8 @@
         </Collapse>
     </Navbar>
 </header>
-<Container xxl class={{'d-flex': route().current().startsWith('admin.')}}>
-    {#if route().current().startsWith('admin.')}
+<Container xxl class={{'d-flex': $page.component.startsWith('Admin/')}}>
+    {#if $page.component.startsWith('Admin/')}
         <aside class="offcanvas-lg offcanvas-start" tabindex="-1" id="bdSidebar" aria-labelledby="bdSidebarOffcanvasLabel">
             <div class="offcanvas-header">
                 <h5 id="bdSidebarOffcanvasLabel">Admin</h5>
@@ -145,20 +167,20 @@
                             <Link href={route('admin.index')}
                                 class={[
                                     'nav-link',
-                                    {active: route().current('admin.index')}
+                                    {active: $page.component == 'Admin/Index'}
                                 ]}>Dashboard</Link>
                         </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('View:User') ||
                             $page.props.auth.user.roles.includes('Super Administrator')
                         }
-                            {#if route().current('admin.users.show')}
+                            {#if $page.component == 'Admin/Users/Show'}
                                 <li class="accordion">
                                     <button data-bs-toggle="collapse" aria-expanded="true"
                                         data-bs-target="#asideNavAdminUser" aria-controls="asideNavAdminUser"
                                         style="height: 0em" class={[
                                             'nav-item', 'accordion-button',
-                                            {collapsed: ! route().current().startsWith('admin.users.')},
+                                            {collapsed: ! $page.component.startsWith('Admin/Users/')},
                                         ]}>Users</button>
                                     <ul id="asideNavAdminUser" class="accordion-collapse collapse show">
                                         <NavItem>
@@ -180,7 +202,7 @@
                                     <Link href={route('admin.users.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.users.index')}
+                                            {active: $page.component == 'Admin/Users/Index'}
                                         ]}>Users</Link>
                                 </NavItem>
                             {/if}
@@ -189,33 +211,33 @@
                             <Link href={route('admin.team-types.index')}
                                 class={[
                                     'nav-link',
-                                    {active: route().current('admin.team-types.index')}
+                                    {active: $page.component == 'Admin/TeamTypes'}
                                 ]}>Team Types</Link>
                         </NavItem>
                         {#if
                             $page.props.auth.user.permissions.includes('Edit:Permission') ||
                             $page.props.auth.user.roles.includes('Super Administrator') ||
-                            route().current().startsWith('admin.teams.roles.') ||
-                            ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
+                            $page.component.startsWith('Admin/Teams/Roles/') ||
+                            ['Admin/Teams/Show', 'Admin/Teams/Edit'].includes($page.component)
                         }
                             <li class="accordion">
                                 <button data-bs-toggle="collapse" aria-expanded="true"
                                     data-bs-target="#asideNavAdminTeam" aria-controls="asideNavAdminTeam"
                                     style="height: 0em" class={[
                                         'nav-item', 'accordion-button',
-                                        {collapsed: ! route().current().startsWith('admin.teams.')},
+                                        {collapsed: ! $page.component.startsWith('Admin/Teams/')},
                                     ]}>
                                     Teams
                                 </button>
                                 <ul id="asideNavAdminTeam" class={[
                                     'accordion-collapse', 'collapse',
-                                    {show: route().current().startsWith('admin.teams.')},
+                                    {show: $page.component.startsWith('Admin/Teams/')},
                                 ]}>
                                     <NavItem>
                                         <Link href={route('admin.teams.index')}
                                             class={[
                                                 'nav-link',
-                                                {active: route().current('admin.teams.index')}
+                                                {active: $page.component == 'Admin/Teams/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
                                     {#if
@@ -226,23 +248,23 @@
                                             <Link href={route('admin.teams.create')}
                                                 class={[
                                                     'nav-link',
-                                                    {active: route().current('admin.teams.create')}
+                                                    {active: $page.component == 'Admin/Teams/Create'}
                                                 ]}>Create</Link>
                                         </NavItem>
                                     {/if}
                                     {#if
-                                        route().current().startsWith('admin.teams.roles.') ||
-                                        ['admin.teams.show', 'admin.teams.edit'].includes(route().current())
+                                        $page.component.startsWith('Admin/Teams/Roles/') ||
+                                        ['Admin/Teams/Show', 'Admin/Teams/Edit'].includes($page.component)
                                     }
                                         <NavItem>
                                             <Link href={route('admin.teams.show', {team: route().params.team})}
                                                 class={[
                                                     'nav-link',
-                                                    {active: route().current('admin.teams.show')}
+                                                    {active: $page.component == 'Admin/Teams/Show'}
                                                 ]}>Show</Link>
                                         </NavItem>
                                     {/if}
-                                    {#if route().current('admin.teams.edit')}
+                                    {#if $page.component == 'Admin/Teams/Edit'}
                                         <NavItem>
                                             <Link href={
                                                 route(
@@ -252,7 +274,7 @@
                                             } class="nav-link active">Edit</Link>
                                         </NavItem>
                                     {/if}
-                                    {#if route().current('admin.teams.roles.create')}
+                                    {#if $page.component == 'Admin/Teams/Roles/Create'}
                                         <NavItem>
                                             <Link href={
                                                 route(
@@ -262,7 +284,7 @@
                                             } class="nav-link active">Create Role</Link>
                                         </NavItem>
                                     {/if}
-                                    {#if route().current('admin.teams.roles.edit')}
+                                    {#if $page.component == 'Admin/Teams/Roles/Edit'}
                                         <NavItem>
                                             <Link href={
                                                 route(
@@ -282,7 +304,7 @@
                                 <Link href={route('admin.teams.index')}
                                     class={[
                                         'nav-link',
-                                        {active: route().current('admin.teams.index')}
+                                        {active: $page.component == 'Admin/Teams/Index'}
                                     ]}>Teams</Link>
                             </NavItem>
                         {/if}
@@ -290,14 +312,14 @@
                             <Link href={route('admin.modules.index')}
                                 class={[
                                     'nav-link',
-                                    {active: route().current('admin.modules.index')}
+                                    {active: $page.component == 'Admin/Modules/Index'}
                                 ]}>Module</Link>
                         </NavItem>
                         <NavItem>
                             <Link href={route('admin.permissions.index')}
                             class={[
                                 'nav-link',
-                                {active: route().current('admin.permissions.index')}
+                                {active: $page.component == 'Admin/Permissions/Index'}
                             ]}>Permission</Link>
                         </NavItem>
                     {/if}
@@ -310,27 +332,27 @@
                                 data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! route().current().startsWith('admin.admission-test.types.')},
+                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTest/Types/')},
                                 ]}>Admission Test Types</button>
                             <ul id="asideNavAdminAdmissionTestType" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current().startsWith('admin.admission-test.types.')},
+                                {show: $page.component.startsWith('Admin/AdmissionTest/Types/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.types.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.types.index')}
+                                            {active: $page.component == 'Admin/AdmissionTest/Types/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.types.create')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.types.create')}
+                                            {active: $page.component == 'Admin/AdmissionTest/Types/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if route().current('admin.admission-test.types.edit')}
+                                {#if $page.component == 'Admin/AdmissionTest/Types/Edit'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -347,29 +369,29 @@
                                 data-bs-target="#asideNavAdminAdmissionTestProduct" aria-controls="asideNavAdminAdmissionTestProduct"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! route().current().startsWith('admin.admission-test.products.')},
+                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTest/Products/')},
                                 ]}>
                                 Admission Test Products
                             </button>
                             <ul id="asideNavAdminAdmissionTestProduct" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current().startsWith('admin.admission-test.products.')},
+                                {show: $page.component.startsWith('Admin/AdmissionTest/Products/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.products.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.products.index')}
+                                            {active: $page.component == 'Admin/AdmissionTest/Products/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.products.create')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.products.create')}
+                                            {active: $page.component == 'Admin/AdmissionTest/Products/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if route().current('admin.admission-test.products.show')}
+                                {#if $page.component == 'Admin/AdmissionTest/Products/Show'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -391,13 +413,13 @@
                             ! (
                                 $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
                                 $page.props.auth.user.roles.includes('Super Administrator')
-                            ) && ! route().current('admin.admission-tests.show')
+                            ) && ! $page.component.includes('Admin/AdmissionTests/Show')
                         }
                             <NavItem>
                                 <Link href={route('admin.admission-tests.index')}
                                     class={[
                                         'nav-link',
-                                        {active: route().current('admin.admission-tests.create')}
+                                        {active: $page.component == 'Admin/AdmissionTests/Create'}
                                     ]}>Admission Tests</Link>
                             </NavItem>
                         {:else}
@@ -406,19 +428,19 @@
                                     data-bs-target="#asideNavAdminAdmissionTest" aria-controls="asideNavAdminAdmissionTest"
                                     style="height: 0em" class={[
                                         'nav-item', 'accordion-button',
-                                        {collapsed: ! route().current().startsWith('admin.admission-tests.')},
+                                        {collapsed: ! $page.component.startsWith('Admin/AdmissionTests/')},
                                     ]}>
                                     Admission Tests
                                 </button>
                                 <ul id="asideNavAdminAdmissionTest" class={[
                                     'accordion-collapse', 'collapse',
-                                    {show: route().current().startsWith('admin.admission-tests.')},
+                                    {show: $page.component.startsWith('Admin/AdmissionTests/')},
                                 ]}>
                                     <NavItem>
                                         <Link href={route('admin.admission-tests.index')}
                                             class={[
                                                 'nav-link',
-                                                {active: route().current('admin.admission-tests.index')}
+                                                {active: $page.component == 'Admin/AdmissionTests/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
                                     {#if
@@ -429,11 +451,11 @@
                                             <Link href={route('admin.admission-tests.create')}
                                                 class={[
                                                     'nav-link',
-                                                    {active: route().current('admin.admission-tests.create')}
+                                                    {active: $page.component == 'Admin/AdmissionTests/Create'}
                                                 ]}>Create</Link>
                                         </NavItem>
                                     {/if}
-                                    {#if route().current('admin.admission-tests.show')}
+                                    {#if $page.component == 'Admin/AdmissionTests/Show'}
                                         <NavItem>
                                             <Link href={
                                                 route(
@@ -456,27 +478,27 @@
                                 data-bs-target="#asideNavAdminAdmissionTestOrder" aria-controls="asideNavAdminAdmissionTestOrder"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! route().current().startsWith('admin.admission-test.orders.')},
+                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTestOrders/')},
                                 ]}>Admission Test Orders</button>
                             <ul id="asideNavAdminAdmissionTestOrder" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current().startsWith('admin.admission-test.orders.')},
+                                {show: $page.component.startsWith('Admin/AdmissionTestOrders/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.orders.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.orders.index')}
+                                            {active: $page.component == 'Admin/AdmissionTestOrders/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.orders.create')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.admission-test.orders.create')}
+                                            {active: $page.component == 'Admin/AdmissionTestOrders/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if route().current('admin.admission-test.orders.show')}
+                                {#if $page.component == 'Admin/AdmissionTestOrders/Show'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -497,7 +519,7 @@
                             <Link href={route('admin.other-payment-gateways.index')}
                                 class={[
                                     'nav-link',
-                                    {active: route().current('admin.other-payment-gateways.index')}
+                                    {active: $page.component == 'Admin/OtherPaymentGateways/Index'}
                                 ]}>Other Payment Gateway</Link>
                         </NavItem>
                     {/if}
@@ -505,7 +527,7 @@
                         $page.props.auth.user.permissions.includes('Edit:Site Content') ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
-                        {#if route().current('admin.site-contents.edit')}
+                        {#if $page.component == 'Admin/SiteContents/Edit'}
                             <li class="accordion">
                                 <button data-bs-toggle="collapse" aria-expanded="true"
                                     data-bs-target="#asideNavSiteContent" aria-controls="asideNavSiteContent"
@@ -514,7 +536,7 @@
                                 </button>
                                 <ul id="asideNavSiteContent" class="accordion-collapse collapse show">
                                     <NavItem>
-                                        <Link href={route('admin.site-contents.index')}>Index</Link>
+                                        <Link class="nav-link" href={route('admin.site-contents.index')}>Index</Link>
                                     </NavItem>
                                     <NavItem>
                                         <Link href={
@@ -531,7 +553,7 @@
                                 <Link href={route('admin.site-contents.index')}
                                     class={[
                                         'nav-link',
-                                        {active: route().current('admin.site-contents.index')}
+                                        {active: $page.component == 'Admin/SiteContents/Index'}
                                     ]}>Site Content</Link>
                             </NavItem>
                         {/if}
@@ -545,29 +567,29 @@
                                 data-bs-target="#asideNavCustomWebPage" aria-controls="asideNavCustomWebPage"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! route().current().startsWith('admin.custom-web-pages.')},
+                                    {collapsed: ! $page.component.startsWith('Admin/CustomWebPages/')},
                                 ]}>
                                 Custom Web Pages
                             </button>
                             <ul id="asideNavCustomWebPage" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current().startsWith('admin.custom-web-pages.')},
+                                {show: $page.component.startsWith('Admin/CustomWebPages/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.custom-web-pages.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.custom-web-pages.index')}
+                                            {active: $page.component == 'Admin/CustomWebPages/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.custom-web-pages.create')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.custom-web-pages.create')}
+                                            {active: $page.component == 'Admin/CustomWebPages/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if route().current('admin.custom-web-pages.edit')}
+                                {#if $page.component == 'Admin/CustomWebPages/Edit'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -589,27 +611,27 @@
                                 data-bs-target="#asideNavNavigationItem" aria-controls="asideNavNavigationItem"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! route().current().startsWith('admin.navigation-items.')},
+                                    {collapsed: ! $page.component.startsWith('Admin/NavigationItems/')},
                                 ]}>Navigation Items</button>
                             <ul id="asideNavNavigationItem" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: route().current().startsWith('admin.navigation-items.')},
+                                {show: $page.component.startsWith('Admin/NavigationItems/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.navigation-items.index')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.navigation-items.index')}
+                                            {active: $page.component == 'Admin/NavigationItems/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.navigation-items.create')}
                                         class={[
                                             'nav-link',
-                                            {active: route().current('admin.navigation-items.create')}
+                                            {active: $page.component == 'Admin/NavigationItems/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if route().current('admin.navigation-items.edit')}
+                                {#if $page.component == 'Admin/NavigationItems/Edit'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -627,7 +649,7 @@
         </aside>
     {/if}
     <main class="w-100">
-        {@render children?.()}
+        <slot />
     </main>
 </Container>
 <Alert />

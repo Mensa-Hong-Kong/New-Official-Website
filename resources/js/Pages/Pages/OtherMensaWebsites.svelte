@@ -1,9 +1,13 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import "flag-icons/css/flag-icons.min.css";
     import flagNations from "flag-icons/country.json";
     import { Row, Col } from '@sveltestrap/sveltestrap';
     import { asset } from "@/asset.svelte.js";
+
+    seo.title = 'Other Mensa Websites';
+    seo.description = 'Mensa has members in 90+ countries worldwide. There are active Mensa organizations on every continent except Antarctica.';
+    seo.ogImageUrl = asset('og_image.png');
 
     let { nations } = $props();
 
@@ -20,17 +24,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Other Mensa Websites | {import.meta.env.VITE_APP_NAME}</title>
-    <meta name="title" content="Other Mensa Websites | {import.meta.env.VITE_APP_NAME}">
-    <meta name="description" content="Mensa has members in 90+ countries worldwide. There are active Mensa organizations on every continent except Antarctica.">
-    <meta name="og:description" content="Mensa has members in 90+ countries worldwide. There are active Mensa organizations on every continent except Antarctica.">
-    <meta name="og:image" content="og_image.png">
-    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
-    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
-</svelte:head>
-
-<Layout>
+<section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">Other Mensa Websites</h2>
     <Row class='g-3'>
         <Col md=3 class="text-center">
@@ -48,4 +42,4 @@
             </Col>
         {/each}
     </Row>
-</Layout>
+</section>

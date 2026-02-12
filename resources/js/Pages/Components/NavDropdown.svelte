@@ -3,27 +3,27 @@
     import NavDropdown from './NavDropdown.svelte';
     import { Link } from "@inertiajs/svelte";
 
-	let { nodes, items, id } = $props();
+	let { nodes, id } = $props();
 </script>
 
 <DropdownMenu>
-    {#each nodes[id] as itemID}
-        {#if nodes[itemID].length}
+    {#each nodes[id] as item}
+        {#if nodes[item.id]?.length}
             <Dropdown direction="right">
-                <DropdownToggle nav caret class="dropdown-item">{items[itemID]['name']}</DropdownToggle>
-                <NavDropdown nodes={nodes} items={items} id={itemID} />
+                <DropdownToggle nav caret class="dropdown-item">{item.name}</DropdownToggle>
+                <NavDropdown nodes={nodes} id={item.id} />
             </Dropdown>
         {:else}
-            {#if items[itemID]['url'] && route().match(items[itemID]['url']).name == undefined}
+            {#if item.url && route().match(item.url).name == undefined}
+                <DropdownItem href={item.url ?? '#'}>
+                    {item.name}
+                </DropdownItem>
+            {:else}
                 <li>
-                    <Link href={items[itemID]['url']} class="dropdown-item">
-                        {items[itemID]['name']}
+                    <Link href={item.url} class="dropdown-item">
+                        {item.name}
                     </Link>
                 </li>
-            {:else}
-                <DropdownItem href={items[itemID]['url'] ?? '#'}>
-                    {items[itemID]['name']}
-                </DropdownItem>
             {/if}
         {/if}
     {/each}

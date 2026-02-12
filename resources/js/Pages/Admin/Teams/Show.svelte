@@ -1,10 +1,12 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Table } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+
+    seo.title = 'Administration Show Team';
 
     let { auth, team } = $props();
     let roles = $state(team.roles);
@@ -146,109 +148,103 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Show Team | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <h2 class="mb-2 fw-bold text-uppercase">
-            Team
-        </h2>
-        <article>
-            <h3 class="mb-2 fw-bold">
-                Info
-                {#if
-                    auth.user.permissions.includes('Edit:Permission') ||
-                    auth.user.roles.includes('Super Administrator')
-                }
-                    <Link class="btn btn-primary" href={
-                        route('admin.teams.edit', {team: team.id})
-                    }>Edit</Link>
-                {/if}
-            </h3>
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <th>Type</th>
-                        <td>{team.type.title ?? team.type.name}</td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>{team.name}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </article>
+<section class="container">
+    <h2 class="mb-2 fw-bold text-uppercase">
+        Team
+    </h2>
+    <article>
         <h3 class="mb-2 fw-bold">
-            Roles
+            Info
             {#if
                 auth.user.permissions.includes('Edit:Permission') ||
                 auth.user.roles.includes('Super Administrator')
             }
-                <Link href={route('admin.teams.roles.create', {team: team.id})}
-                    class="btn btn-success">Create</Link>
-                <Button color="primary" hidden={editingDisplayOrder}
-                    onclick={editDisplayOrder}>Edit Display Order</Button>
-                <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
-                    onclick={updateDisplayOrder}>
-                    {#if savingDisplayOrder}
-                        <Spinner type="border" size="sm" />Saving Display Order...
-                    {:else}
-                        Save Display Order
-                    {/if}
-                </Button>
-                <Button color="danger" hidden={! editingDisplayOrder || savingDisplayOrder}
-                    onclick={cancelEditDisplay}>Cancel</Button>
+                <Link class="btn btn-primary" href={
+                    route('admin.teams.edit', {team: team.id})
+                }>Edit</Link>
             {/if}
         </h3>
-        <Table hover>
-            <thead>
+        <table class="table">
+            <tbody>
                 <tr>
-                    <th scope="col">Name</th>
+                    <th>Type</th>
+                    <td>{team.type.title ?? team.type.name}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{team.name}</td>
+                </tr>
+            </tbody>
+        </table>
+    </article>
+    <h3 class="mb-2 fw-bold">
+        Roles
+        {#if
+            auth.user.permissions.includes('Edit:Permission') ||
+            auth.user.roles.includes('Super Administrator')
+        }
+            <Link href={route('admin.teams.roles.create', {team: team.id})}
+                class="btn btn-success">Create</Link>
+            <Button color="primary" hidden={editingDisplayOrder}
+                onclick={editDisplayOrder}>Edit Display Order</Button>
+            <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
+                onclick={updateDisplayOrder}>
+                {#if savingDisplayOrder}
+                    <Spinner type="border" size="sm" />Saving Display Order...
+                {:else}
+                    Save Display Order
+                {/if}
+            </Button>
+            <Button color="danger" hidden={! editingDisplayOrder || savingDisplayOrder}
+                onclick={cancelEditDisplay}>Cancel</Button>
+        {/if}
+    </h3>
+    <Table hover>
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                {#if
+                    auth.user.permissions.includes('Edit:Permission') ||
+                    auth.user.roles.includes('Super Administrator')
+                }
+                    <th scope="col">Control</th>
+                {/if}
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            {#each roles as row, index}
+                <tr data-id="{row.id}"
+                    ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
+                    draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
+                        draggable: editingDisplayOrder && ! updatingDisplayOrder
+                    }}>
+                    <th>{row.name}</th>
                     {#if
                         auth.user.permissions.includes('Edit:Permission') ||
                         auth.user.roles.includes('Super Administrator')
                     }
-                        <th scope="col">Control</th>
+                        <td>
+                            <Link class="btn btn-primary editRole"
+                                href={
+                                    route(
+                                        'admin.teams.roles.edit',
+                                        {
+                                            team: team.id,
+                                            role: row.id,
+                                        }
+                                    )
+                                }>Edit</Link>
+                            <Button color="danger" disabled={submitting} onclick={() => destroy(index)}>
+                                {#if row.deleting}
+                                    <Spinner type="border" size="sm" />Deleting...
+                                {:else}
+                                    Delete
+                                {/if}
+                            </Button>
+                        </td>
                     {/if}
                 </tr>
-            </thead>
-            <tbody id="tableBody">
-                {#each roles as row, index}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
-                            draggable: editingDisplayOrder && ! updatingDisplayOrder
-                        }}>
-                        <th>{row.name}</th>
-                        {#if
-                            auth.user.permissions.includes('Edit:Permission') ||
-                            auth.user.roles.includes('Super Administrator')
-                        }
-                            <td>
-                                <Link class="btn btn-primary editRole"
-                                    href={
-                                        route(
-                                            'admin.teams.roles.edit', 
-                                            {
-                                                team: team.id,
-                                                role: row.id,
-                                            }
-                                        )
-                                    }>Edit</Link>
-                                <Button color="danger" disabled={submitting} onclick={() => destroy(index)}>
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
-                            </td>
-                        {/if}
-                    </tr>
-                {/each}
-            </tbody>
-        </Table>
-    </section>
-</Layout>
+            {/each}
+        </tbody>
+    </Table>
+</section>

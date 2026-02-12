@@ -1,31 +1,36 @@
-<script> 
-    import Layout from '@/Pages/Layouts/App.svelte';
+<script>
+    import { page } from "@inertiajs/svelte";
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import NavigationItems from './NavigationItems.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
-    let { navigationItems, navigationNodes } = $props();
+    seo.title = 'Administration Navigation Items';
+
     let editing = $state(false);
     let updating = $state(false);
     let submitting = $state(false);
-    let navNodes = $state({});
+    let navNodes = $state({
+        root: {
+            id: 'root',
+            children: [],
+        }
+    });
     let originNodes;
 
-    for(let [key, children] of Object.entries(navigationNodes)) {
-        navNodes[key] = {
-            id: key,
-            children: []
+    for(let data of $page.props.navigationItems) {
+        navNodes[data.id] = {
+            id: data.id,
+            children: [],
+            name: data.name,
+            url: data.url,
+            deleting: false,
+            disclose: false,
         };
-        for(let id of children) {
-            navNodes[key]['children'].push({id: id});
-        }
-        if(key != 'root') {
-            navNodes[key]['name'] = navigationItems[key]['name'];
-            navNodes[key]['url'] = navigationItems[key]['url'];
-            navNodes[key]['deleting'] = false;
-            navNodes[key]['disclose'] = false;
-        }
+    };
+    for (let data of $page.props.navigationItems ) {
+        navNodes[data.master_id ?? 'root']['children'].push({id: data.id});
     }
 
     function updateSuccessCallback(response) {
@@ -64,7 +69,7 @@
                     }
                 }
                 post(
-                    route('admin.other-payment-gateways.display-order.update'),
+                    route('admin.navigation-items.display-order.update'),
                     updateSuccessCallback,
                     updateFailCallback,
                     'put', data
@@ -74,7 +79,7 @@
     }
 
     function edit() {
-        originNodes = navNodes;
+        originNodes = $state.snapshot(navNodes);
         editing = true;
     }
 
@@ -86,33 +91,27 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Navigation Items | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <h2 class="mb-2 fw-bold text-uppercase">
-            Navigation Items
-            {#if navNodes.root.children.length}
-                <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
-                <Button color="primary" onclick={update} hidden={! editing}>
-                    {#if updating}
-                        <Spinner type="border" size="sm" />Saving Display Order...
-                    {:else}
-                        Save Display Order
-                    {/if}
-                </Button>
-                <Button color="danger" onclick={cancel} hidden={! editing || updating}>Cancel</Button>
-            {/if}
-        </h2>
+<section class="container">
+    <h2 class="mb-2 fw-bold text-uppercase">
+        Navigation Items
         {#if navNodes.root.children.length}
-            <NavigationItems bind:navNodes={navNodes} navNode={navNodes.root}
-                editing={editing} updating={updating} bind:submitting={submitting} />
-        {:else}
-            <Alert color="danger">
-                No Result
-            </Alert>
+            <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
+            <Button color="primary" onclick={update} hidden={! editing}>
+                {#if updating}
+                    <Spinner type="border" size="sm" />Saving Display Order...
+                {:else}
+                    Save Display Order
+                {/if}
+            </Button>
+            <Button color="danger" onclick={cancel} hidden={! editing || updating}>Cancel</Button>
         {/if}
-    </section>
-</Layout>
+    </h2>
+    {#if navNodes.root.children.length}
+        <NavigationItems bind:navNodes={navNodes} navNode={navNodes.root}
+            editing={editing} updating={updating} bind:submitting={submitting} />
+    {:else}
+        <Alert color="danger">
+            No Result
+        </Alert>
+    {/if}
+</section>

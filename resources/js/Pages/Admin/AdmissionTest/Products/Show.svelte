@@ -1,9 +1,11 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Input } from '@sveltestrap/sveltestrap';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm.svelte";
     import Prices from './Prices.svelte'
+
+    seo.title = 'Administration Show Admission Test Product';
 
     let {product: initProduct} = $props();
     let submitting = $state(false);
@@ -199,109 +201,103 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Show Admission Test Product | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <article>
-            <form onsubmit="{update}" novalidate>
-                <h3 class="mb-2 fw-bold">
-                    Info
-                    <Button color="primary" outline onclick={edit}
-                        hidden={editing || updating}>Edit</Button>
-                    <Button color="primary" outline
-                        hidden={! editing && ! updating}>Save</Button>
-                    <Button color="danger" outline onclick={cancel}
-                        hidden={! editing && ! updating}>Cancel</Button>
-                    <Button color="primary" disabled hidden={! updating}>
-                        <Spinner type="border" size="sm" />Saving...
-                    </Button>
-                </h3>
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Name</th>
-                            <td>
-                                <span hidden="{editing}">{product.name}</span>
-                                <Input name="name" placeholder="name"
-                                    maxlength="255" required disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
-                                    invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
-                                    bind:inner={inputs.name} value={product.name} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Option Name</th>
-                            <td>
-                                <span hidden="{editing}">{product.optionName}</span>
-                                <Input name="option_name" placeholder="option name"
-                                    maxlength="255" required disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
-                                    invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
-                                    bind:inner={inputs.optionName} value={product.optionName} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Minimum Age</th>
-                            <td>
-                                <span hidden="{editing}">{product.minimumAge}</span>
-                                <Input type="number" name="minimum_age" placeholder="minimum age"
-                                    step="1" min="1" max="255" disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
-                                    invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
-                                    bind:inner={inputs.minimumAge} value={product.minimumAge} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Maximum Age</th>
-                            <td>
-                                <span hidden="{editing}">{product.maximumAge}</span>
-                                <Input type="number" name="maximum_age" placeholder="maximum age"
-                                    step="1" min="1" max="255" disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
-                                    invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
-                                    bind:inner={inputs.maximumAge} value={product.maximumAge} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Start At</th>
-                            <td>
-                                <span hidden="{editing}">{product.startAt}</span>
-                                <Input type="datetime-local" name="start_at" placeholder="start at"
-                                    step="1" min="1" max="255" disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.startAt} valid={feedbacks.startAt == 'Looks good!'}
-                                    invalid={feedbacks.startAt != '' && feedbacks.startAt != 'Looks good!'}
-                                    bind:inner={inputs.startAt} value={product.startAt} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>End At</th>
-                            <td>
-                                <span hidden="{editing}">{product.endAt}</span>
-                                <Input type="datetime-local" name="end_at" placeholder="end at"
-                                    step="1" min="1" max="255" disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.endAt} valid={feedbacks.endAt == 'Looks good!'}
-                                    invalid={feedbacks.endAt != '' && feedbacks.endAt != 'Looks good!'}
-                                    bind:inner={inputs.endAt} value={product.endAt} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Quota</th>
-                            <td>
-                                <span  hidden="{editing}">{product.quota}</span>
-                                <Input type="number-local" name="quota" placeholder="quota"
-                                    step="1" min="1" max="255" required disabled={updating} hidden={! editing}
-                                    feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
-                                    invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
-                                    bind:inner={inputs.quota} value={product.quota} />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
-        </article>
-        <Prices prices={initProduct.prices} bind:submitting={submitting}></Prices>
-    </section>
-</Layout>
+<section class="container">
+    <article>
+        <form onsubmit="{update}" novalidate>
+            <h3 class="mb-2 fw-bold">
+                Info
+                <Button color="primary" outline onclick={edit}
+                    hidden={editing || updating}>Edit</Button>
+                <Button color="primary" outline
+                    hidden={! editing && ! updating}>Save</Button>
+                <Button color="danger" outline onclick={cancel}
+                    hidden={! editing && ! updating}>Cancel</Button>
+                <Button color="primary" disabled hidden={! updating}>
+                    <Spinner type="border" size="sm" />Saving...
+                </Button>
+            </h3>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td>
+                            <span hidden="{editing}">{product.name}</span>
+                            <Input name="name" placeholder="name"
+                                maxlength="255" required disabled={updating} hidden={! editing}
+                                feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
+                                invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
+                                bind:inner={inputs.name} value={product.name} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Option Name</th>
+                        <td>
+                            <span hidden="{editing}">{product.optionName}</span>
+                            <Input name="option_name" placeholder="option name"
+                                maxlength="255" required disabled={updating} hidden={! editing}
+                                feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
+                                invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
+                                bind:inner={inputs.optionName} value={product.optionName} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Minimum Age</th>
+                        <td>
+                            <span hidden="{editing}">{product.minimumAge}</span>
+                            <Input type="number" name="minimum_age" placeholder="minimum age"
+                                step="1" min="1" max="255" disabled={updating} hidden={! editing}
+                                feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+                                invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+                                bind:inner={inputs.minimumAge} value={product.minimumAge} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Maximum Age</th>
+                        <td>
+                            <span hidden="{editing}">{product.maximumAge}</span>
+                            <Input type="number" name="maximum_age" placeholder="maximum age"
+                                step="1" min="1" max="255" disabled={updating} hidden={! editing}
+                                feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+                                invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+                                bind:inner={inputs.maximumAge} value={product.maximumAge} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Start At</th>
+                        <td>
+                            <span hidden="{editing}">{product.startAt}</span>
+                            <Input type="datetime-local" name="start_at" placeholder="start at"
+                                step="1" min="1" max="255" disabled={updating} hidden={! editing}
+                                feedback={feedbacks.startAt} valid={feedbacks.startAt == 'Looks good!'}
+                                invalid={feedbacks.startAt != '' && feedbacks.startAt != 'Looks good!'}
+                                bind:inner={inputs.startAt} value={product.startAt} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>End At</th>
+                        <td>
+                            <span hidden="{editing}">{product.endAt}</span>
+                            <Input type="datetime-local" name="end_at" placeholder="end at"
+                                step="1" min="1" max="255" disabled={updating} hidden={! editing}
+                                feedback={feedbacks.endAt} valid={feedbacks.endAt == 'Looks good!'}
+                                invalid={feedbacks.endAt != '' && feedbacks.endAt != 'Looks good!'}
+                                bind:inner={inputs.endAt} value={product.endAt} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Quota</th>
+                        <td>
+                            <span  hidden="{editing}">{product.quota}</span>
+                            <Input type="number-local" name="quota" placeholder="quota"
+                                step="1" min="1" max="255" required disabled={updating} hidden={! editing}
+                                feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
+                                invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
+                                bind:inner={inputs.quota} value={product.quota} />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </article>
+    <Prices prices={initProduct.prices} bind:submitting={submitting}></Prices>
+</section>

@@ -1,9 +1,4 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
+    seo.title = 'Administration Dashboard';
 </script>
-
-<svelte:head>
-    <title>Administration Dashboard | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout></Layout>

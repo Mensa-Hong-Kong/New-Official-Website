@@ -1,9 +1,11 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Label, Row, Col, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
     import { router } from '@inertiajs/svelte';
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
+
+    seo.title = 'Create Admission Test Order';
 
     let { products, paymentGateways, tests } = $props();
     let inputs = $state({});
@@ -235,176 +237,170 @@
     }
 </script>
 
-<svelte:head>
-    <title>Create Admission Test Order | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form id="form" method="POST" novalidate onsubmit={create}>
-            <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test Order</h2>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="User ID">
-                    <Input name="user_id" placeholder="product name"
-                        patten="^\+?[1-9][0-9]*" required  disabled={creating}
-                        feedback={feedbacks.userID} valid={feedbacks.userID == 'Looks good!'}
-                        invalid={feedbacks.userID != '' && feedbacks.userID != 'Looks good!'}
-                        bind:inner={inputs.userID} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Product">
-                    <Input type="select" name="product"bind:inner={inputs.product}
-                        onchange={changedProduct} bind:value={productIDValue}>
-                        {#each products as product, index}
-                            <option value="{index}">{product.name}</option>
-                        {/each}
-                        <option value="" selected>Other</option>
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Product Name">
-                    <Input name="product_name" placeholder="product name"
+<section class="container">
+    <form id="form" method="POST" novalidate onsubmit={create}>
+        <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test Order</h2>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="User ID">
+                <Input name="user_id" placeholder="product name"
+                    patten="^\+?[1-9][0-9]*" required  disabled={creating}
+                    feedback={feedbacks.userID} valid={feedbacks.userID == 'Looks good!'}
+                    invalid={feedbacks.userID != '' && feedbacks.userID != 'Looks good!'}
+                    bind:inner={inputs.userID} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Product">
+                <Input type="select" name="product"bind:inner={inputs.product}
+                    onchange={changedProduct} bind:value={productIDValue}>
+                    {#each products as product, index}
+                        <option value="{index}">{product.name}</option>
+                    {/each}
+                    <option value="" selected>Other</option>
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Product Name">
+                <Input name="product_name" placeholder="product name"
+                    maxlength=255 disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.productName} valid={feedbacks.productName == 'Looks good!'}
+                    invalid={feedbacks.productName != '' && feedbacks.productName != 'Looks good!'}
+                    bind:inner={inputs.productName} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <div class="form-floating">
+                <FormGroup floating label="Price Name">
+                    <Input name="price_name" placeholder="price name"
                         maxlength=255 disabled={creating} readonly={productIDValue !== ''}
-                        feedback={feedbacks.productName} valid={feedbacks.productName == 'Looks good!'}
-                        invalid={feedbacks.productName != '' && feedbacks.productName != 'Looks good!'}
-                        bind:inner={inputs.productName} />
+                        feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
+                        invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
+                        bind:inner={inputs.priceName} />
                 </FormGroup>
             </div>
-            <div class="mb-4 form-outline">
-                <div class="form-floating">
-                    <FormGroup floating label="Price Name">
-                        <Input name="price_name" placeholder="price name"
-                            maxlength=255 disabled={creating} readonly={productIDValue !== ''}
-                            feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
-                            invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
-                            bind:inner={inputs.priceName} />
-                    </FormGroup>
-                </div>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Price">
-                    <Input type="number" name="price" placeholder="price"
-                        step=0.01 min=0.01 max=99999.99 required disabled={creating} readonly={productIDValue !== ''}
-                        feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
-                        invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
-                        bind:inner={inputs.price} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Minimum Age">
-                    <Input type="number" name="minimum_age" placeholder="minimum age"
-                        step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
-                        feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
-                        invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
-                        bind:inner={inputs.minimumAge} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Maximum Age">
-                    <Input type="number" name="maximum_age" placeholder="maximum age"
-                        step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
-                        feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
-                        invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
-                        bind:inner={inputs.maximumAge} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Quota">
-                    <Input type="number" name="quota" placeholder="quota"
-                        step=1 min=1 max=255 required disabled={creating} readonly={productIDValue !== ''}
-                        feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
-                        invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
-                        bind:inner={inputs.quota} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Status">
-                    <Input type="select" name="status" required disabled={creating}
-                        feedback={feedbacks.status} valid={feedbacks.status == 'Looks good!'}
-                        invalid={feedbacks.status != '' && feedbacks.status != 'Looks good!'}
-                        bind:inner={inputs.status} bind:value={statusValue}>
-                        <option value="" disabled>Please select status</option>
-                        <option value="pending">Pending</option>
-                        <option value="succeeded">Succeeded</option>
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline" hidden={statusValue != 'pending'}>
-                <FormGroup floating label="Expired At">
-                    <Input type="datetime-local" name="expired_at" placeholder="expired at"
-                        required min={minExpiredAt} max={maxExpiredAt} disabled={statusValue != 'pending' || creating}
-                        feedback={feedbacks.expiredAt} valid={feedbacks.expiredAt == 'Looks good!'}
-                        invalid={feedbacks.expiredAt != '' && feedbacks.expiredAt != 'Looks good!'}
-                        bind:inner={inputs.expiredAt} bind:value={expiredAtValue} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Payment Gateway">
-                    <Input type="select" name="payment_gateway_id" required disabled={creating}
-                        feedback={feedbacks.paymentGateway} valid={feedbacks.paymentGateway == 'Looks good!'}
-                        invalid={feedbacks.paymentGateway != '' && feedbacks.paymentGateway != 'Looks good!'}
-                        bind:inner={inputs.paymentGateway}>
-                        <option value="" selected disabled>Please select payment gateway</option>
-                        {#each Object.entries(paymentGateways) as [id, name]}
-                            <option value={id}>{name}</option>
-                        {/each}
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Reference Number">
-                    <Input name="reference_number" placeholder="product name"
-                        maxlength=255 disabled={creating}
-                        feedback={feedbacks.referenceNumber} valid={feedbacks.referenceNumber == 'Looks good!'}
-                        invalid={feedbacks.referenceNumber != '' && feedbacks.referenceNumber != 'Looks good!'}
-                        bind:inner={inputs.referenceNumber} />
-                </FormGroup>
-            </div>
-            {#if tests.length}
-                <div class='mb-3 g-3 form-outline'>
-                    <Label>Test</Label>
-                    <Row class="g-4">
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Price">
+                <Input type="number" name="price" placeholder="price"
+                    step=0.01 min=0.01 max=99999.99 required disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
+                    invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
+                    bind:inner={inputs.price} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Minimum Age">
+                <Input type="number" name="minimum_age" placeholder="minimum age"
+                    step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+                    invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+                    bind:inner={inputs.minimumAge} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Maximum Age">
+                <Input type="number" name="maximum_age" placeholder="maximum age"
+                    step="1" min="1" max="255" disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+                    invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+                    bind:inner={inputs.maximumAge} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Quota">
+                <Input type="number" name="quota" placeholder="quota"
+                    step=1 min=1 max=255 required disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
+                    invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
+                    bind:inner={inputs.quota} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Status">
+                <Input type="select" name="status" required disabled={creating}
+                    feedback={feedbacks.status} valid={feedbacks.status == 'Looks good!'}
+                    invalid={feedbacks.status != '' && feedbacks.status != 'Looks good!'}
+                    bind:inner={inputs.status} bind:value={statusValue}>
+                    <option value="" disabled>Please select status</option>
+                    <option value="pending">Pending</option>
+                    <option value="succeeded">Succeeded</option>
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline" hidden={statusValue != 'pending'}>
+            <FormGroup floating label="Expired At">
+                <Input type="datetime-local" name="expired_at" placeholder="expired at"
+                    required min={minExpiredAt} max={maxExpiredAt} disabled={statusValue != 'pending' || creating}
+                    feedback={feedbacks.expiredAt} valid={feedbacks.expiredAt == 'Looks good!'}
+                    invalid={feedbacks.expiredAt != '' && feedbacks.expiredAt != 'Looks good!'}
+                    bind:inner={inputs.expiredAt} bind:value={expiredAtValue} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Payment Gateway">
+                <Input type="select" name="payment_gateway_id" required disabled={creating}
+                    feedback={feedbacks.paymentGateway} valid={feedbacks.paymentGateway == 'Looks good!'}
+                    invalid={feedbacks.paymentGateway != '' && feedbacks.paymentGateway != 'Looks good!'}
+                    bind:inner={inputs.paymentGateway}>
+                    <option value="" selected disabled>Please select payment gateway</option>
+                    {#each Object.entries(paymentGateways) as [id, name]}
+                        <option value={id}>{name}</option>
+                    {/each}
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Reference Number">
+                <Input name="reference_number" placeholder="product name"
+                    maxlength=255 disabled={creating}
+                    feedback={feedbacks.referenceNumber} valid={feedbacks.referenceNumber == 'Looks good!'}
+                    invalid={feedbacks.referenceNumber != '' && feedbacks.referenceNumber != 'Looks good!'}
+                    bind:inner={inputs.referenceNumber} />
+            </FormGroup>
+        </div>
+        {#if tests.length}
+            <div class='mb-3 g-3 form-outline'>
+                <Label>Test</Label>
+                <Row class="g-4">
+                    <Col md=3>
+                        <input type="radio" name="test_id" id="skipTest"
+                            value="" class="radio-input d-none" bind:group={testValue} />
+                        <label class="p-4 d-flex justify-content-center align-items-center radio-card card h-100" for="skipTest">
+                            <div class="text-center">
+                                <h5 class="card-title">Skip</h5>
+                            </div>
+                        </label>
+                    </Col>
+                    {#each tests as test}
                         <Col md=3>
-                            <input type="radio" name="test_id" id="skipTest"
-                                value="" class="radio-input d-none" bind:group={testValue} />
-                            <label class="p-4 d-flex justify-content-center align-items-center radio-card card h-100" for="skipTest">
-                                <div class="text-center">
-                                    <h5 class="card-title">Skip</h5>
+                            <input type="radio" name="test_id" id="test{test.id}"
+                                value={test.id} class="radio-input d-none" bind:group={testValue} />
+                            <label class="p-4 radio-card card h-100" for="test{test.id}">
+                                <div class="p-0 card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">Date: {formatToDate(test.testing_at)}</li>
+                                        <li class="mb-2">Time: {formatToTime(test.testing_at).slice(0, -3)}</li>
+                                        <li class="mb-2">Location: {test.location.name}</li>
+                                        <li class="mb-2">Candidate: {test.candidates_count}/{test.maximum_candidates}</li>
+                                        <li class="mb-2">Visibility: {test.is_public ? 'Public' : 'Private'}</li>
+                                    </ul>
                                 </div>
                             </label>
                         </Col>
-                        {#each tests as test}
-                            <Col md=3>
-                                <input type="radio" name="test_id" id="test{test.id}"
-                                    value={test.id} class="radio-input d-none" bind:group={testValue} />
-                                <label class="p-4 radio-card card h-100" for="test{test.id}">
-                                    <div class="p-0 card-body">
-                                        <ul class="list-unstyled">
-                                            <li class="mb-2">Date: {formatToDate(test.testing_at)}</li>
-                                            <li class="mb-2">Time: {formatToTime(test.testing_at).slice(0, -3)}</li>
-                                            <li class="mb-2">Location: {test.location.name}</li>
-                                            <li class="mb-2">Candidate: {test.candidates_count}/{test.maximum_candidates}</li>
-                                            <li class="mb-2">Visibility: {test.is_public ? 'Public' : 'Private'}</li>
-                                        </ul>
-                                    </div>
-                                </label>
-                            </Col>
-                        {/each}
-                    </Row>
-                </div>
+                    {/each}
+                </Row>
+            </div>
+        {/if}
+        <Button color="success" class="form-control" disabled={submitting}>
+            {#if creating}
+                <Spinner type="border" size="sm" />Creating...
+            {:else}
+                Create
             {/if}
-            <Button color="success" class="form-control" disabled={submitting}>
-                {#if creating}
-                    <Spinner type="border" size="sm" />Creating...
-                {:else}
-                    Create
-                {/if}
-            </Button>
-        </form>
-    </section>
-</Layout>
+        </Button>
+    </form>
+</section>
 
 <style>
     .radio-card {

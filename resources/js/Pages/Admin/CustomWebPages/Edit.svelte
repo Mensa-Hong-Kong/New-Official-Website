@@ -1,11 +1,13 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
 	import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
-    
+
+    seo.title = 'Administration Edit Custom Web Page';
+
     let { page } = $props();
     let inputs = $state({});
     let feedbacks = $state({
@@ -18,7 +20,7 @@
     let submitting = $state(false);
     let updating = $state(false);
     let form;
-    
+
     function successCallback(response) {
         updating = false;
         submitting = false;
@@ -54,7 +56,7 @@
         updating = false;
         submitting = false;
     }
-    
+
     function update(event) {
         event.preventDefault();
         if(! submitting) {
@@ -86,23 +88,17 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Edit Custom Web Page | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form method="POST" novalidate onsubmit="{update}">
-            <h2 class="mb-2 fw-bold text-uppercase">Edit Custom Web Page</h2>
-            <Form bind:inputs={inputs} bind:feedbacks={feedbacks}
-                page={page} bind:submitting={updating} bind:this={form} />
-            <Button color="primary" class="form-control" disabled={submitting}>
-                {#if updating}
-                    <Spinner type="border" size="sm" />Saving...
-                {:else}
-                    Save
-                {/if}
-            </Button>
-        </form>
-    </section>
-</Layout>
+<section class="container">
+    <form method="POST" novalidate onsubmit="{update}">
+        <h2 class="mb-2 fw-bold text-uppercase">Edit Custom Web Page</h2>
+        <Form bind:inputs={inputs} bind:feedbacks={feedbacks}
+            page={page} bind:submitting={updating} bind:this={form} />
+        <Button color="primary" class="form-control" disabled={submitting}>
+            {#if updating}
+                <Spinner type="border" size="sm" />Saving...
+            {:else}
+                Save
+            {/if}
+        </Button>
+    </form>
+</section>

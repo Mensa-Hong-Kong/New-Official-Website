@@ -1,8 +1,10 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm.svelte";
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+
+    seo.title = 'Administration Team Types';
 
     let {types: initTypes} = $props();
     let types = $state([]);
@@ -168,70 +170,64 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Team Types | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <h2 class="mb-2 fw-bold text-uppercase">
-            Team Types
-            <Button color="primary" onclick={editDisplayOrder}
-                hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
-            <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
-                hidden={! editingDisplayOrder || updatingDisplayOrder}>Save Display Order</Button>
-            <Button color="danger" onclick={cancelEditDisplay}
-                hidden={! editingDisplayOrder || updatingDisplayOrder}>Cancel</Button>
-            <Button color="success" hidden={! updatingDisplayOrder} disabled>
-                <Spinner type="border" size="sm" />
-                Saving Display Order...
-            </Button>
-        </h2>
-        {#if types.length}
-            <Table hover>
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Display Name</th>
-                        <th scope="col">Control</th>
+<section class="container">
+    <h2 class="mb-2 fw-bold text-uppercase">
+        Team Types
+        <Button color="primary" onclick={editDisplayOrder}
+            hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
+        <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
+            hidden={! editingDisplayOrder || updatingDisplayOrder}>Save Display Order</Button>
+        <Button color="danger" onclick={cancelEditDisplay}
+            hidden={! editingDisplayOrder || updatingDisplayOrder}>Cancel</Button>
+        <Button color="success" hidden={! updatingDisplayOrder} disabled>
+            <Spinner type="border" size="sm" />
+            Saving Display Order...
+        </Button>
+    </h2>
+    {#if types.length}
+        <Table hover>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Display Name</th>
+                    <th scope="col">Control</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#each types as row, index}
+                    <tr data-id="{row.id}"
+                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
+                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
+                        class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
+                        <th scope="row">{row.name}</th>
+                        <td>
+                            <span hidden="{row.editing}">{row.title}</span>
+                            <form method="POST" id="updateName{row.id}" hidden="{! row.editing}" novalidate
+                                onsubmit={(event) => updateName(event, index)}>
+                                <Input name="name" maxlength="255"
+                                    value={row.title} disabled={row.updating}
+                                    bind:inner={inputNames[index]} />
+                            </form>
+                        </td>
+                        <td>
+                            <Button color="primary" hidden={row.editing || row.updating}
+                                onclick={() => types[index]['editing'] = true}>Edit</Button>
+                            <Button color="primary" form="updateName{row.id}"
+                                hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                            <Button color="danger" hidden={! row.editing || row.updating}
+                                onclick={() => cancelEditName(index)}>Cancel</Button>
+                            <Button color="primary" hidden={! row.updating} disabled>
+                                <Spinner type="border" size="sm" />
+                                Saving...
+                            </Button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {#each types as row, index}
-                        <tr data-id="{row.id}"
-                            ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                            draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
-                            class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
-                            <th scope="row">{row.name}</th>
-                            <td>
-                                <span hidden="{row.editing}">{row.title}</span>
-                                <form method="POST" id="updateName{row.id}" hidden="{! row.editing}" novalidate
-                                    onsubmit={(event) => updateName(event, index)}>
-                                    <Input name="name" maxlength="255"
-                                        value={row.title} disabled={row.updating}
-                                        bind:inner={inputNames[index]} />
-                                </form>
-                            </td>
-                            <td>
-                                <Button color="primary" hidden={row.editing || row.updating}
-                                    onclick={() => types[index]['editing'] = true}>Edit</Button>
-                                <Button color="primary" form="updateName{row.id}"
-                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
-                                <Button color="danger" hidden={! row.editing || row.updating}
-                                    onclick={() => cancelEditName(index)}>Cancel</Button>
-                                <Button color="primary" hidden={! row.updating} disabled>
-                                    <Spinner type="border" size="sm" />
-                                    Saving...
-                                </Button>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </Table>
-        {:else}
-            <Alert color="danger">
-                No Result
-            </Alert>
-        {/if}
-    </section>
-</Layout>
+                {/each}
+            </tbody>
+        </Table>
+    {:else}
+        <Alert color="danger">
+            No Result
+        </Alert>
+    {/if}
+</section>

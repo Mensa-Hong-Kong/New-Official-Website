@@ -122,7 +122,7 @@ class PageController extends Controller
                 'nations' => function () {
                     return NationalMensa::orderBy('name')
                         ->where('is_active', true)
-                        ->get(['id', 'type', 'name', 'url']);
+                        ->get(['id', 'name', 'url']);
                 },
             ]
         );
