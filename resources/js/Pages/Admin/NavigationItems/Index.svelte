@@ -79,7 +79,7 @@
     }
 
     function edit() {
-        originNodes = navNodes;
+        originNodes = $state.snapshot(navNodes);
         editing = true;
     }
 

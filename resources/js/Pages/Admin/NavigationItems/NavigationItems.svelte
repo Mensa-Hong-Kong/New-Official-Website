@@ -114,7 +114,6 @@
             items:navNode.children, flipDurationMs,
             centreDraggedOnCursor: true,
             dragDisabled: ! editing || updating || submitting,
-            dropDisabled: ! editing || updating || submitting,
         }} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
         {#each navNode.children as item(item.id)}
             <article animate:flip="{{duration: flipDurationMs}}">
