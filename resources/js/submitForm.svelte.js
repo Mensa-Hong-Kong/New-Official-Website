@@ -11,7 +11,7 @@ function failHandle(error, callback) {
             alert('Sorry, you have no permission');
             break;
         case 419:
-            alert('Cross-site request forgery alert, may be the domain is not mensa.org.hk, or you hold on this page longer than the CSRF token lifetime');
+            alert('Cross-site request forgery alert, may be the domain is not mensa.org.hk.');
             break;
         case 500:
             alert('Unexpected error, please contact I.T.');
@@ -35,14 +35,14 @@ export function post(action, successCallback, failCallback, method="POST", data 
     axios.post(action, data).then(function (response) {
         successCallback(response);
     }).catch(function(error) {
-        failHandle(error, failCallback)}
-    );
+        failHandle(error, failCallback);
+    });
 }
 
 export function get(action, successCallback, failCallback, parameters = {}) {
     axios.get(action, {params: parameters}).then(function (response) {
         successCallback(response);
     }).catch(function(error) {
-        failHandle(error, failCallback)}
-    );
+        failHandle(error, failCallback);
+    });
 }

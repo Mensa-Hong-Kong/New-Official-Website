@@ -36,6 +36,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('csrf-token', function() {
+   return request()->session()->token();
+});
+
 Route::inertia('/', 'Index')->name('index');
 Route::middleware('guest')->group(function () {
     Route::get('register', [UserController::class, 'create'])->name('register');
