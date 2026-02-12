@@ -1,5 +1,5 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Row, Col, Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { onMount } from "svelte";
@@ -7,6 +7,8 @@
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
+
+    seo.title = 'Login';
 
     let inputs = $state({});
     let submitting = $state(false);
@@ -120,58 +122,46 @@
     }
 </script>
 
-<svelte:head>
-    <title>Login | {import.meta.env.VITE_APP_NAME}</title>
-    <meta name="title" content="Login | {import.meta.env.VITE_APP_NAME}">
-    <meta name="description" content="{import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:description" content="{import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:image" content="og_image.png">
-    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
-    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form class="mx-auto" style="max-width: 350px;" novalidate onsubmit="{login}">
-            <h2 class="mb-2 fw-bold text-uppercase">Login</h2>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Username">
-                    <Input name="username" placeholder="username"
-                        minlength=7 maxlength=320 required disabled={loggingIn}
-                        feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
-                        invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
-                        bind:inner={inputs.username} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Password">
-                    <Input name="password" type="password" placeholder="password"
-                        minlength=8 maxlength=16 required disabled={loggingIn}
-                        feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
-                        invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
-                        bind:inner={inputs.password} />
-                </FormGroup>
-            </div>
-            <Row class="mb-4">
-                <Col class="d-flex justify-content-center">
-                    <Input type="checkbox" name="remember_me" value={true} label="Remember Me"
-                        bind:inner={inputs.rememberMe} />
-                </Col>
-                <Col class="d-flex justify-content-center">
-                    <Link href={route('forget-password')}>Forgot password?</Link>
-                </Col>
-            </Row>
-            <Button color="primary" disabled={submitting} class="form-control">
-                {#if submitting}
-                    <Spinner type="border" size="sm" />Logging in...
-                {:else}
-                    Login
-                {/if}
-            </Button>
-            <Alert color="danger" hidden={feedbacks.failed == ''}>{feedbacks.failed}</Alert>
-            <div class="text-center form-control">
-                <p>Not a member? <Link href={route('register')}>Register</Link></p>
-            </div>
-        </form>
-    </section>
-</Layout>
+<section class="container">
+    <form class="mx-auto" style="max-width: 350px;" novalidate onsubmit="{login}">
+        <h2 class="mb-2 fw-bold text-uppercase">Login</h2>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Username">
+                <Input name="username" placeholder="username"
+                    minlength=7 maxlength=320 required disabled={loggingIn}
+                    feedback={feedbacks.username} valid={feedbacks.username == 'Looks good!'}
+                    invalid={feedbacks.username != '' && feedbacks.username != 'Looks good!'}
+                    bind:inner={inputs.username} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Password">
+                <Input name="password" type="password" placeholder="password"
+                    minlength=8 maxlength=16 required disabled={loggingIn}
+                    feedback={feedbacks.password} valid={feedbacks.password == 'Looks good!'}
+                    invalid={feedbacks.password != '' && feedbacks.password != 'Looks good!'}
+                    bind:inner={inputs.password} />
+            </FormGroup>
+        </div>
+        <Row class="mb-4">
+            <Col class="d-flex justify-content-center">
+                <Input type="checkbox" name="remember_me" value={true} label="Remember Me"
+                    bind:inner={inputs.rememberMe} />
+            </Col>
+            <Col class="d-flex justify-content-center">
+                <Link href={route('forget-password')}>Forgot password?</Link>
+            </Col>
+        </Row>
+        <Button color="primary" disabled={submitting} class="form-control">
+            {#if submitting}
+                <Spinner type="border" size="sm" />Logging in...
+            {:else}
+                Login
+            {/if}
+        </Button>
+        <Alert color="danger" hidden={feedbacks.failed == ''}>{feedbacks.failed}</Alert>
+        <div class="text-center form-control">
+            <p>Not a member? <Link href={route('register')}>Register</Link></p>
+        </div>
+    </form>
+</section>

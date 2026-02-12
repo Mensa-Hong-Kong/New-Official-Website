@@ -1,10 +1,12 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import { router } from '@inertiajs/svelte';
+
+    seo.title = 'Administration Create Admission Test';
 
     let { types, locations, districts, addresses } = $props();
     let inputs = $state({});
@@ -64,7 +66,7 @@
         }
         return !hasError();
     }
-    
+
     function successCallback(response) {
         creating = false;
         submitting = false;
@@ -139,101 +141,95 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Create Admission Test | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form id="form" method="POST" novalidate onsubmit={create}>
-            <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test</h2>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Type">
-                    <Input type="select" name="type_id" required disabled={creating}
-                        feedback={feedbacks.type} valid={feedbacks.type == 'Looks good!'}
-                        invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!'}
-                        bind:inner={inputs.type}>
-                        <option value="" selected disabled>Please select test type</option>
-                        {#each Object.entries(types) as [key, value]}
-                            <option value={key}>{value}</option>
-                        {/each}
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Testing At">
-                    <Input type="datetime-local" name="testing_at" disabled={creating}
-                        feedback={feedbacks.testingAt} valid={feedbacks.testingAt == 'Looks good!'}
-                        invalid={feedbacks.testingAt != '' && feedbacks.testingAt != 'Looks good!'}
-                        bind:inner={inputs.testingAt} value={Date.now()} required />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Expect End At">
-                    <Input type="datetime-local" name="expect_end_at" disabled={creating}
-                        feedback={feedbacks.expectEndAt} valid={feedbacks.expectEndAt == 'Looks good!'}
-                        invalid={feedbacks.expectEndAt != '' && feedbacks.expectEndAt != 'Looks good!'}
-                        bind:inner={inputs.expectEndAt} value={Date.now()} required />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Location">
-                    <Input name="location" disabled={creating} list="locations"
-                        feedback={feedbacks.location} valid={feedbacks.location == 'Looks good!'}
-                        invalid={feedbacks.location != '' && feedbacks.location != 'Looks good!'}
-                        bind:inner={inputs.location} maxlength="255" required />
-                    <Datalist id="locations" data={locations} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="District">
-                    <Input type="select" name="district_id" required disabled={creating}
-                        feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
-                        invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
-                        bind:inner={inputs.district}>
-                        <option value="" selected disabled>Please select district</option>
-                        {#each Object.entries(districts) as [area, object]}
-                            <optgroup label={area}>
-                                {#each Object.entries(object) as [key, value]}
-                                    <option value={key}>{value}</option>
-                                {/each}
-                            </optgroup>
-                        {/each}
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Address">
-                    <Input name="address" disabled={creating} list="addresses"
-                        feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
-                        invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
-                        bind:inner={inputs.address} maxlength="255" required />
-                    <Datalist id="addresses" data={addresses} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Maximum Candidates">
-                    <Input type="number" name="maximum_candidates" disabled={creating}
-                        feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
-                        invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!'}
-                        bind:inner={inputs.maximumCandidates} min="1" step="1" required />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <Input type="switch" name="is_free" label="Is Free"
-                    bind:inner={inputs.isFree} disabled={creating} />
-            </div>
-            <div class="mb-4 form-outline">
-                <Input type="switch" name="is_public" label="Is Public"
-                    bind:inner={inputs.isPublic} disabled={creating} />
-            </div>
-            <Button color="success" class="form-control" disabled={submitting}>
-                {#if creating}
-                    <Spinner type="border" size="sm" />Creating...
-                {:else}
-                    Create
-                {/if}
-            </Button>
-        </form>
-    </section>
-</Layout>
+<section class="container">
+    <form id="form" method="POST" novalidate onsubmit={create}>
+        <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test</h2>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Type">
+                <Input type="select" name="type_id" required disabled={creating}
+                    feedback={feedbacks.type} valid={feedbacks.type == 'Looks good!'}
+                    invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!'}
+                    bind:inner={inputs.type}>
+                    <option value="" selected disabled>Please select test type</option>
+                    {#each Object.entries(types) as [key, value]}
+                        <option value={key}>{value}</option>
+                    {/each}
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Testing At">
+                <Input type="datetime-local" name="testing_at" disabled={creating}
+                    feedback={feedbacks.testingAt} valid={feedbacks.testingAt == 'Looks good!'}
+                    invalid={feedbacks.testingAt != '' && feedbacks.testingAt != 'Looks good!'}
+                    bind:inner={inputs.testingAt} value={Date.now()} required />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Expect End At">
+                <Input type="datetime-local" name="expect_end_at" disabled={creating}
+                    feedback={feedbacks.expectEndAt} valid={feedbacks.expectEndAt == 'Looks good!'}
+                    invalid={feedbacks.expectEndAt != '' && feedbacks.expectEndAt != 'Looks good!'}
+                    bind:inner={inputs.expectEndAt} value={Date.now()} required />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Location">
+                <Input name="location" disabled={creating} list="locations"
+                    feedback={feedbacks.location} valid={feedbacks.location == 'Looks good!'}
+                    invalid={feedbacks.location != '' && feedbacks.location != 'Looks good!'}
+                    bind:inner={inputs.location} maxlength="255" required />
+                <Datalist id="locations" data={locations} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="District">
+                <Input type="select" name="district_id" required disabled={creating}
+                    feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                    invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
+                    bind:inner={inputs.district}>
+                    <option value="" selected disabled>Please select district</option>
+                    {#each Object.entries(districts) as [area, object]}
+                        <optgroup label={area}>
+                            {#each Object.entries(object) as [key, value]}
+                                <option value={key}>{value}</option>
+                            {/each}
+                        </optgroup>
+                    {/each}
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Address">
+                <Input name="address" disabled={creating} list="addresses"
+                    feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                    invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
+                    bind:inner={inputs.address} maxlength="255" required />
+                <Datalist id="addresses" data={addresses} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Maximum Candidates">
+                <Input type="number" name="maximum_candidates" disabled={creating}
+                    feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
+                    invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!'}
+                    bind:inner={inputs.maximumCandidates} min="1" step="1" required />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <Input type="switch" name="is_free" label="Is Free"
+                bind:inner={inputs.isFree} disabled={creating} />
+        </div>
+        <div class="mb-4 form-outline">
+            <Input type="switch" name="is_public" label="Is Public"
+                bind:inner={inputs.isPublic} disabled={creating} />
+        </div>
+        <Button color="success" class="form-control" disabled={submitting}>
+            {#if creating}
+                <Spinner type="border" size="sm" />Creating...
+            {:else}
+                Create
+            {/if}
+        </Button>
+    </form>
+</section>

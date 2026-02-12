@@ -1,9 +1,11 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
+
+    seo.title = 'Administration Create Admission Test Product';
 
     let inputs = $state({});
     let feedbacks = $state({
@@ -19,7 +21,7 @@
     });
     let submitting = $state(false);
     let creating = $state(false);
-    
+
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
             if(feedback != 'Looks good!') {
@@ -133,7 +135,7 @@
         creating = false;
         submitting = false;
     }
-    
+
     function create(event) {
         event.preventDefault();
         if(! submitting) {
@@ -177,102 +179,96 @@
     }
 </script>
 
-<svelte:head>
-    <title>Create Admission Test Product | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form id="form" method="POST" novalidate onsubmit={create}>
-            <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test Product</h2>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Name">
-                    <Input name="name" placeholder="name"
-                        maxlength=255 required  disabled={creating}
-                        feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
-                        invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
-                        bind:inner={inputs.name} />
+<section class="container">
+    <form id="form" method="POST" novalidate onsubmit={create}>
+        <h2 class="mb-2 fw-bold text-uppercase">Create Admission Test Product</h2>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Name">
+                <Input name="name" placeholder="name"
+                    maxlength=255 required  disabled={creating}
+                    feedback={feedbacks.name} valid={feedbacks.name == 'Looks good!'}
+                    invalid={feedbacks.name != '' && feedbacks.name != 'Looks good!'}
+                    bind:inner={inputs.name} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Option Name">
+                <Input name="option_name" placeholder="option name"
+                    maxlength=255 required disabled={creating}
+                    feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
+                    invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
+                    bind:inner={inputs.optionName} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Minimum Age">
+                <Input type="number" name="minimum_age" placeholder="minimum age"
+                    step=1 min=1 max=255 disabled={creating}
+                    feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
+                    invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
+                    bind:inner={inputs.minimumAge} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Maximum Age">
+                <Input type="number" name="maximum_age" placeholder="maximum age"
+                    step=1 min=1 max=255 disabled={creating}
+                    feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
+                    invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
+                    bind:inner={inputs.maximumAge} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Start At">
+                <Input type="datetime-local" name="start_at" placeholder="start at" disabled={creating}
+                    feedback={feedbacks.startAt} valid={feedbacks.startAt == 'Looks good!'}
+                    invalid={feedbacks.startAt != '' && feedbacks.startAt != 'Looks good!'}
+                    bind:inner={inputs.startAt} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="End At">
+                <Input type="datetime-local" name="end_at" placeholder="end at" disabled={creating}
+                    feedback={feedbacks.endAt} valid={feedbacks.endAt == 'Looks good!'}
+                    invalid={feedbacks.endAt != '' && feedbacks.endAt != 'Looks good!'}
+                    bind:inner={inputs.endAt} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Quota">
+                <Input type="number-local" name="quota" placeholder="quota"
+                    step=1 min=1 max=255 required disabled={creating}
+                    feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
+                    invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
+                    bind:inner={inputs.quota} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <div class="form-floating">
+                <FormGroup floating label="Price Name">
+                    <Input name="price_name" placeholder="price name"
+                        maxlength=255 disabled={creating}
+                        feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
+                        invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
+                        bind:inner={inputs.priceName} />
                 </FormGroup>
             </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Option Name">
-                    <Input name="option_name" placeholder="option name"
-                        maxlength=255 required disabled={creating}
-                        feedback={feedbacks.optionName} valid={feedbacks.optionName == 'Looks good!'}
-                        invalid={feedbacks.optionName != '' && feedbacks.optionName != 'Looks good!'}
-                        bind:inner={inputs.optionName} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Minimum Age">
-                    <Input type="number" name="minimum_age" placeholder="minimum age"
-                        step=1 min=1 max=255 disabled={creating}
-                        feedback={feedbacks.minimumAge} valid={feedbacks.minimumAge == 'Looks good!'}
-                        invalid={feedbacks.minimumAge != '' && feedbacks.minimumAge != 'Looks good!'}
-                        bind:inner={inputs.minimumAge} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Maximum Age">
-                    <Input type="number" name="maximum_age" placeholder="maximum age"
-                        step=1 min=1 max=255 disabled={creating}
-                        feedback={feedbacks.maximumAge} valid={feedbacks.maximumAge == 'Looks good!'}
-                        invalid={feedbacks.maximumAge != '' && feedbacks.maximumAge != 'Looks good!'}
-                        bind:inner={inputs.maximumAge} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Start At">
-                    <Input type="datetime-local" name="start_at" placeholder="start at" disabled={creating}
-                        feedback={feedbacks.startAt} valid={feedbacks.startAt == 'Looks good!'}
-                        invalid={feedbacks.startAt != '' && feedbacks.startAt != 'Looks good!'}
-                        bind:inner={inputs.startAt} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="End At">
-                    <Input type="datetime-local" name="end_at" placeholder="end at" disabled={creating}
-                        feedback={feedbacks.endAt} valid={feedbacks.endAt == 'Looks good!'}
-                        invalid={feedbacks.endAt != '' && feedbacks.endAt != 'Looks good!'}
-                        bind:inner={inputs.endAt} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Quota">
-                    <Input type="number-local" name="quota" placeholder="quota"
-                        step=1 min=1 max=255 required disabled={creating}
-                        feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
-                        invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
-                        bind:inner={inputs.quota} />
-                </FormGroup>
-            </div>
-            <div class="mb-4 form-outline">
-                <div class="form-floating">
-                    <FormGroup floating label="Price Name">
-                        <Input name="price_name" placeholder="price name"
-                            maxlength=255 disabled={creating}
-                            feedback={feedbacks.priceName} valid={feedbacks.priceName == 'Looks good!'}
-                            invalid={feedbacks.priceName != '' && feedbacks.priceName != 'Looks good!'}
-                            bind:inner={inputs.priceName} />
-                    </FormGroup>
-                </div>
-            </div>
-            <div class="mb-4 form-outline">
-                <FormGroup floating label="Price">
-                    <Input type="number" name="price" placeholder="price"
-                        step=0.01 min=0.01 max=99999.99 required disabled={creating}
-                        feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
-                        invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
-                        bind:inner={inputs.price} />
-                </FormGroup>
-            </div>
-            <Button color="success" class="form-control" disabled={submitting}>
-                {#if creating}
-                    <Spinner type="border" size="sm" />Creating...
-                {:else}
-                    Create
-                {/if}
-            </Button>
-        </form>
-    </section>
-</Layout>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Price">
+                <Input type="number" name="price" placeholder="price"
+                    step=0.01 min=0.01 max=99999.99 required disabled={creating}
+                    feedback={feedbacks.price} valid={feedbacks.price == 'Looks good!'}
+                    invalid={feedbacks.price != '' && feedbacks.price != 'Looks good!'}
+                    bind:inner={inputs.price} />
+            </FormGroup>
+        </div>
+        <Button color="success" class="form-control" disabled={submitting}>
+            {#if creating}
+                <Spinner type="border" size="sm" />Creating...
+            {:else}
+                Create
+            {/if}
+        </Button>
+    </form>
+</section>

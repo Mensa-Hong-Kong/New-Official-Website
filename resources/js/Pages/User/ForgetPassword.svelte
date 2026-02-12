@@ -1,11 +1,13 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Button, Spinner, Alert, Row, Col } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+
+    seo.title = 'Forget Password';
 
 	let { passportTypes, maxBirthday } = $props();
     let inputs = $state({});
@@ -165,104 +167,92 @@
     }
 </script>
 
-<svelte:head>
-    <title>Forget Password | {import.meta.env.VITE_APP_NAME}</title>
-    <meta name="title" content="Forget Password | {import.meta.env.VITE_APP_NAME}">
-    <meta name="description" content="{import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:description" content="{import.meta.env.VITE_APP_DESCRIPTION}">
-    <meta name="og:image" content="og_image.png">
-    <meta name="og:url" content="{import.meta.env.VITE_APP_URL}">
-    <meta name="og:site_name" content="{import.meta.env.VITE_APP_NAME}">
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form class="mx-auto w-25" novalidate onsubmit="{forgetPassword}">
-            <h2 class="mb-2 fw-bold text-uppercase">Forget Password</h2>
-            <div class="mb-4">
-                <FormGroup floating label="Passport Type">
-                    <Input type="select" name="passport_type_id" disabled={forgetting} required
-                        feedback={feedbacks.passportType} valid={feedbacks.passportType == 'Looks good!'}
-                        invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
-                        bind:inner={inputs.passportType}>
-                        <option value="" selected disabled>Please select passport type</option>
-                        {#each Object.entries(passportTypes) as [key, value]}
-                            <option value="{key}">{value}</option>
-                        {/each}
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4">
-                <FormGroup floating label="Passport Number">
-                    <Input name="passport_number" disabled={forgetting}
-                        minlength=8 maxlength=18 required placeholder="passport number"
-                        feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
-                        invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
-                        bind:inner="{inputs.passportNumber}" />
-                </FormGroup>
-            </div>
-            <div class="mb-4">
-                <FormGroup floating label="Date of Birth">
-                    <Input name="birthday" type="date" disabled={forgetting}
-                        max={maxBirthday} required placeholder="birthday"
-                        feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
-                        invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
-                        bind:inner={inputs.birthday} />
-                </FormGroup>
-            </div>
-            <div class="mb-4">
-                <FormGroup floating label="Verified Contact Type">
-                    <Input type="select" name="verified_contact_type" required disabled={forgetting}
-                        feedback={feedbacks.verifiedContactType} valid={feedbacks.verifiedContactType == 'Looks good!'}
-                        invalid={feedbacks.verifiedContactType != '' && feedbacks.verifiedContactType != 'Looks good!'}
-                        bind:inner={inputs.verifiedContactType} bind:value={verifiedContactTypeValue}>
-                        <option value="" selected disabled>Please select verified contact type</option>
-                        <option value="email">Email</option>
-                        <option value="mobile">Mobile</option>
-                    </Input>
-                </FormGroup>
-            </div>
-            <div class="mb-4">
-                <FormGroup floating label="Verified Contact">
-                    {#if verifiedContactTypeValue == 'email'}
-                        <Input name="email" type="email" disabled={forgetting}
-                            maxlength=320 required placeholder="dammy@example.com"
-                            feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
-                            invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
-                            bind:inner={inputs.verifiedContact} />
-                    {:else if verifiedContactTypeValue == 'mobile'}
-                        <Input type="tel"  name="verified_contact" disabled={forgetting}
-                            minlength=5 maxlength=15 required placeholder=85298765432
-                            feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
-                            invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
-                            bind:inner={inputs.verifiedContact} />
-                    {:else}
-                        <Input name="verified_contact" placeholder="Verified Contact" disabled
-                            feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
-                            invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
-                            bind:inner={inputs.verifiedContact} />
-                    {/if}
-                </FormGroup>
-            </div>
-            <div class="mb-4">
-                <Button color="primary" class="form-control" disabled={submitting}>
-                    {#if submitting}
-                        <Spinner type="border" size="sm" />Resetting...
-                    {:else}
-                        Reset Password
-                    {/if}
-                </Button>
-                <Alert color="danger" hidden={! feedbacks.failed}>{feedbacks.failed}</Alert>
-                <Alert color="danger" hidden={! feedbacks.succeeded}>{feedbacks.succeeded}</Alert>
-            </div>
-            <Row class="mb-4">
-                <Col class="d-flex justify-content-center">
-                    <Link href={route('login')} class="form-control btn btn-outline-primary">Login</Link>
-                </Col>
-                <Col class="d-flex justify-content-center">
-                    <Link href={route('register')} class="form-control btn btn-outline-success">Register</Link>
-                </Col>
-            </Row>
-        </form>
-    </section>
-</Layout>
+<section class="container">
+    <form class="mx-auto w-25" novalidate onsubmit="{forgetPassword}">
+        <h2 class="mb-2 fw-bold text-uppercase">Forget Password</h2>
+        <div class="mb-4">
+            <FormGroup floating label="Passport Type">
+                <Input type="select" name="passport_type_id" disabled={forgetting} required
+                    feedback={feedbacks.passportType} valid={feedbacks.passportType == 'Looks good!'}
+                    invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
+                    bind:inner={inputs.passportType}>
+                    <option value="" selected disabled>Please select passport type</option>
+                    {#each Object.entries(passportTypes) as [key, value]}
+                        <option value="{key}">{value}</option>
+                    {/each}
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4">
+            <FormGroup floating label="Passport Number">
+                <Input name="passport_number" disabled={forgetting}
+                    minlength=8 maxlength=18 required placeholder="passport number"
+                    feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
+                    invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
+                    bind:inner="{inputs.passportNumber}" />
+            </FormGroup>
+        </div>
+        <div class="mb-4">
+            <FormGroup floating label="Date of Birth">
+                <Input name="birthday" type="date" disabled={forgetting}
+                    max={maxBirthday} required placeholder="birthday"
+                    feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
+                    invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
+                    bind:inner={inputs.birthday} />
+            </FormGroup>
+        </div>
+        <div class="mb-4">
+            <FormGroup floating label="Verified Contact Type">
+                <Input type="select" name="verified_contact_type" required disabled={forgetting}
+                    feedback={feedbacks.verifiedContactType} valid={feedbacks.verifiedContactType == 'Looks good!'}
+                    invalid={feedbacks.verifiedContactType != '' && feedbacks.verifiedContactType != 'Looks good!'}
+                    bind:inner={inputs.verifiedContactType} bind:value={verifiedContactTypeValue}>
+                    <option value="" selected disabled>Please select verified contact type</option>
+                    <option value="email">Email</option>
+                    <option value="mobile">Mobile</option>
+                </Input>
+            </FormGroup>
+        </div>
+        <div class="mb-4">
+            <FormGroup floating label="Verified Contact">
+                {#if verifiedContactTypeValue == 'email'}
+                    <Input name="email" type="email" disabled={forgetting}
+                        maxlength=320 required placeholder="dammy@example.com"
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
+                {:else if verifiedContactTypeValue == 'mobile'}
+                    <Input type="tel"  name="verified_contact" disabled={forgetting}
+                        minlength=5 maxlength=15 required placeholder=85298765432
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
+                {:else}
+                    <Input name="verified_contact" placeholder="Verified Contact" disabled
+                        feedback={feedbacks.verifiedContact} valid={feedbacks.verifiedContact == 'Looks good!'}
+                        invalid={feedbacks.verifiedContact != '' && feedbacks.verifiedContact != 'Looks good!'}
+                        bind:inner={inputs.verifiedContact} />
+                {/if}
+            </FormGroup>
+        </div>
+        <div class="mb-4">
+            <Button color="primary" class="form-control" disabled={submitting}>
+                {#if submitting}
+                    <Spinner type="border" size="sm" />Resetting...
+                {:else}
+                    Reset Password
+                {/if}
+            </Button>
+            <Alert color="danger" hidden={! feedbacks.failed}>{feedbacks.failed}</Alert>
+            <Alert color="danger" hidden={! feedbacks.succeeded}>{feedbacks.succeeded}</Alert>
+        </div>
+        <Row class="mb-4">
+            <Col class="d-flex justify-content-center">
+                <Link href={route('login')} class="form-control btn btn-outline-primary">Login</Link>
+            </Col>
+            <Col class="d-flex justify-content-center">
+                <Link href={route('register')} class="form-control btn btn-outline-success">Register</Link>
+            </Col>
+        </Row>
+    </form>
+</section>

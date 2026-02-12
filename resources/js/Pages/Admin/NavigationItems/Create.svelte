@@ -1,10 +1,12 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner } from '@sveltestrap/sveltestrap';
     import Form from './Form.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
+
+    seo.title = 'Administration Create Navigation Item';
 
     let { items, displayOptions } = $props();
     let inputs = $state({});
@@ -50,7 +52,7 @@
         creating = false;
         submitting = false;
     }
-    
+
     function create(event) {
         event.preventDefault();
         if(! submitting) {
@@ -78,24 +80,18 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Create Edit Navigation Item | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <form id="form" method="POST" novalidate onsubmit={create}>
-            <h2 class="mb-2 fw-bold text-uppercase">Create Edit Navigation Item</h2>
-            <Form items={items} displayOptions={displayOptions}
-                bind:inputs={inputs} bind:feedbacks={feedbacks}
-                bind:submitting={creating} bind:this={form} />
-            <Button color="success" class="form-control" disabled={submitting}>
-                {#if creating}
-                    <Spinner type="border" size="sm" />Creating...
-                {:else}
-                    Create
-                {/if}
-            </Button>
-        </form>
-    </section>
-</Layout>
+<section class="container">
+    <form id="form" method="POST" novalidate onsubmit={create}>
+        <h2 class="mb-2 fw-bold text-uppercase">Create Edit Navigation Item</h2>
+        <Form items={items} displayOptions={displayOptions}
+            bind:inputs={inputs} bind:feedbacks={feedbacks}
+            bind:submitting={creating} bind:this={form} />
+        <Button color="success" class="form-control" disabled={submitting}>
+            {#if creating}
+                <Spinner type="border" size="sm" />Creating...
+            {:else}
+                Create
+            {/if}
+        </Button>
+    </form>
+</section>

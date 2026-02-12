@@ -1,5 +1,5 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { onMount } from 'svelte';
     import { Row, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { post } from "@/submitForm.svelte";
@@ -17,7 +17,9 @@
     import coreTranslations from 'ckeditor5/translations/zh.js';
     import { router } from '@inertiajs/svelte';
     import "ckeditor5/ckeditor5.css";
-    
+
+    seo.title = 'Administration Edit Site Content';
+
     let {content} = $props();
     let contentInput;
     let contentFeedback = $state('');
@@ -152,11 +154,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Edit Site Content | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
+<section class="container">
     <form method="POST" novalidate onsubmit="{update}">
         <h2 class="mb-2 fw-bold text-uppercase">
             Edit Site Content -
@@ -178,4 +176,4 @@
             {/if}
         </Button>
     </form>
-</Layout>
+</section>

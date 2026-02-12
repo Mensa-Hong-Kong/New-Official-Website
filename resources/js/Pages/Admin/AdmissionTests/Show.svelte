@@ -1,5 +1,5 @@
 <script>
-    import Layout from '@/Pages/Layouts/App.svelte';
+    import { seo } from '@/Pages/Layouts/App.svelte';
     import { post } from "@/submitForm.svelte";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { Table, Button, Spinner, Input } from '@sveltestrap/sveltestrap';
@@ -7,6 +7,8 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
+
+    seo.title = 'Administration Show Admission Test';
 
     let { auth, test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
     let submitting = $state(false);
@@ -99,7 +101,7 @@
         }
         return !hasError();
     }
-    
+
     function successCallback(response) {
         test.type = response.data.type_id;
         test.testingAt = formatToDatetime(response.data.testing_at);
@@ -197,145 +199,139 @@
     }
 </script>
 
-<svelte:head>
-    <title>Administration Show Admission Test | {import.meta.env.VITE_APP_NAME}</title>
-</svelte:head>
-
-<Layout>
-    <section class="container">
-        <article>
-            <form id="form" method="POST" novalidate onsubmit={update}>
-                <h3 class="mb-2 fw-bold">
-                    Info
-                    <Button color="primary" disabled hidden={! updating}>
-                        <Spinner type="border" size="sm" />Saving...
-                    </Button>
-                    <Button color="primary" outline hidden={editing || updating}
-                        onclick={edit}>Edit</Button>
-                    <Button color="primary" outline hidden={! editing && ! updating}
-                        disabled={submitting}>Save</Button>
-                    <Button color="danger" outline hidden={! editing && ! updating}
-                        onclick={cancel}>Cancel</Button>
-                </h3>
-                <Table hover>
-                    <tbody>
-                        <tr>
-                            <th>Type</th>
-                            <td>
-                                <span hidden={editing}>{types[test.typeID]}</span>
-                                <Input type="select" name="type_id" required
-                                    hidden={! editing} disable={updating}
-                                    feedback={feedbacks.type} valid={feedbacks.type == 'Looks good!'}
-                                    invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!' }
-                                    bind:inner={inputs.type}>
-                                    {#each Object.entries(types) as [key, value]}
-                                        <option selected={key == test.typeID}
-                                            value={key}>{value}</option>
-                                    {/each}
-                                </Input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Testing At</th>
-                            <td>
-                                <span hidden={editing}>{test.testingAt}</span>
-                                <Input type="datetime-local" name="testing_at" required
-                                    hidden={! editing} disable={updating} placeholder="testing at"
-                                    feedback={feedbacks.testingAt} valid={feedbacks.testingAt == 'Looks good!'}
-                                    invalid={feedbacks.testingAt != '' && feedbacks.testingAt != 'Looks good!' }
-                                    bind:inner={inputs.testingAt} value={test.testingAt} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Expect End At</th>
-                            <td>
-                                <span hidden={editing}>{test.expectEndAt}</span>
-                                <Input type="datetime-local" name="expect_end_at" required
-                                    hidden={! editing} disable={updating} placeholder="expect end at"
-                                    feedback={feedbacks.expectEndAt} valid={feedbacks.expectEndAt == 'Looks good!'}
-                                    invalid={feedbacks.expectEndAt != '' && feedbacks.expectEndAt != 'Looks good!' }
-                                    bind:inner={inputs.expectEndAt} value={test.expectEndAt} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Location</th>
-                            <td>
-                                <span hidden={editing}>{locations[test.locationID]}</span>
-                                <Input name="location" maxlength="255" required placeholder="location"
-                                    hidden={! editing} disable={updating} list="locations"
-                                    feedback={feedbacks.location} valid={feedbacks.location == 'Looks good!'}
-                                    invalid={feedbacks.location != '' && feedbacks.location != 'Looks good!' }
-                                    bind:inner={inputs.location} value={locations[test.locationID]} />
-                                <Datalist id="locations" data={Object.values(locations)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>District</th>
-                            <td>
-                                <span hidden={editing}>{districts[test.districtID]}</span>
-                                <Input type="select" name="type_id" required
-                                    hidden={! editing} disable={updating}
-                                    feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
-                                    invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!' }
-                                    bind:inner={inputs.district}>
-                                    {#each Object.entries(areaDistricts) as [area, object]}
-                                        <optgroup label={area}>
-                                            {#each Object.entries(object) as [key, value]}
-                                                <option selected={key == test.districtID}
-                                                    value="{key}">{value}</option>
-                                                {/each}
-                                        </optgroup>
-                                    {/each}
-                                </Input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Address</th>
-                            <td>
-                                <span hidden={editing}>{addresses[test.addressID]}</span>
-                                <Input name="location" maxlength="255" required placeholder="address"
-                                    hidden={! editing} disable={updating} list="addresses"
-                                    feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
-                                    invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!' }
-                                    bind:inner={inputs.address} value={addresses[test.addressID]} />
-                                <Datalist id="addresses" data={Object.values(addresses)} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Maximum Candidates</th>
-                            <td>
-                                <span hidden={editing}>{test.maximumCandidates}</span>
-                                <Input type="number" name="maximum_candidates"
-                                    min="1" step="1" required placeholder="maximum candidates"
-                                    hidden={! editing} disable={updating}
-                                    feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
-                                    invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!' }
-                                    bind:inner={inputs.maximumCandidates} value={test.maximumCandidates} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Current Candidates</th>
-                            <td>{initTest.candidates.length}</td>
-                        </tr>
-                        <tr>
-                            <th>Is Free</th>
-                            <td>
-                                <span>{test.isFree ? 'Free' : 'Fee'}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Is Public</th>
-                            <td>
-                                <span hidden={editing}>{test.isPublic ? 'Public' : 'Private'}</span>
-                                <Input type="switch" name="is_public" hidden={! editing} disable={updating}
-                                    bind:inner={inputs.isPublic} checked={test.isPublic} />
-                            </td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </form>
-        </article>
-        <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
-        <Candidates auth={auth} test={test} candidates={initTest.candidates} bind:submitting={submitting} />
-    </section>
-</Layout>
+<section class="container">
+    <article>
+        <form id="form" method="POST" novalidate onsubmit={update}>
+            <h3 class="mb-2 fw-bold">
+                Info
+                <Button color="primary" disabled hidden={! updating}>
+                    <Spinner type="border" size="sm" />Saving...
+                </Button>
+                <Button color="primary" outline hidden={editing || updating}
+                    onclick={edit}>Edit</Button>
+                <Button color="primary" outline hidden={! editing && ! updating}
+                    disabled={submitting}>Save</Button>
+                <Button color="danger" outline hidden={! editing && ! updating}
+                    onclick={cancel}>Cancel</Button>
+            </h3>
+            <Table hover>
+                <tbody>
+                    <tr>
+                        <th>Type</th>
+                        <td>
+                            <span hidden={editing}>{types[test.typeID]}</span>
+                            <Input type="select" name="type_id" required
+                                hidden={! editing} disable={updating}
+                                feedback={feedbacks.type} valid={feedbacks.type == 'Looks good!'}
+                                invalid={feedbacks.type != '' && feedbacks.type != 'Looks good!' }
+                                bind:inner={inputs.type}>
+                                {#each Object.entries(types) as [key, value]}
+                                    <option selected={key == test.typeID}
+                                        value={key}>{value}</option>
+                                {/each}
+                            </Input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Testing At</th>
+                        <td>
+                            <span hidden={editing}>{test.testingAt}</span>
+                            <Input type="datetime-local" name="testing_at" required
+                                hidden={! editing} disable={updating} placeholder="testing at"
+                                feedback={feedbacks.testingAt} valid={feedbacks.testingAt == 'Looks good!'}
+                                invalid={feedbacks.testingAt != '' && feedbacks.testingAt != 'Looks good!' }
+                                bind:inner={inputs.testingAt} value={test.testingAt} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Expect End At</th>
+                        <td>
+                            <span hidden={editing}>{test.expectEndAt}</span>
+                            <Input type="datetime-local" name="expect_end_at" required
+                                hidden={! editing} disable={updating} placeholder="expect end at"
+                                feedback={feedbacks.expectEndAt} valid={feedbacks.expectEndAt == 'Looks good!'}
+                                invalid={feedbacks.expectEndAt != '' && feedbacks.expectEndAt != 'Looks good!' }
+                                bind:inner={inputs.expectEndAt} value={test.expectEndAt} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Location</th>
+                        <td>
+                            <span hidden={editing}>{locations[test.locationID]}</span>
+                            <Input name="location" maxlength="255" required placeholder="location"
+                                hidden={! editing} disable={updating} list="locations"
+                                feedback={feedbacks.location} valid={feedbacks.location == 'Looks good!'}
+                                invalid={feedbacks.location != '' && feedbacks.location != 'Looks good!' }
+                                bind:inner={inputs.location} value={locations[test.locationID]} />
+                            <Datalist id="locations" data={Object.values(locations)} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>District</th>
+                        <td>
+                            <span hidden={editing}>{districts[test.districtID]}</span>
+                            <Input type="select" name="type_id" required
+                                hidden={! editing} disable={updating}
+                                feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
+                                invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!' }
+                                bind:inner={inputs.district}>
+                                {#each Object.entries(areaDistricts) as [area, object]}
+                                    <optgroup label={area}>
+                                        {#each Object.entries(object) as [key, value]}
+                                            <option selected={key == test.districtID}
+                                                value="{key}">{value}</option>
+                                            {/each}
+                                    </optgroup>
+                                {/each}
+                            </Input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>
+                            <span hidden={editing}>{addresses[test.addressID]}</span>
+                            <Input name="location" maxlength="255" required placeholder="address"
+                                hidden={! editing} disable={updating} list="addresses"
+                                feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
+                                invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!' }
+                                bind:inner={inputs.address} value={addresses[test.addressID]} />
+                            <Datalist id="addresses" data={Object.values(addresses)} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Maximum Candidates</th>
+                        <td>
+                            <span hidden={editing}>{test.maximumCandidates}</span>
+                            <Input type="number" name="maximum_candidates"
+                                min="1" step="1" required placeholder="maximum candidates"
+                                hidden={! editing} disable={updating}
+                                feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
+                                invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!' }
+                                bind:inner={inputs.maximumCandidates} value={test.maximumCandidates} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Current Candidates</th>
+                        <td>{initTest.candidates.length}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Free</th>
+                        <td>
+                            <span>{test.isFree ? 'Free' : 'Fee'}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Is Public</th>
+                        <td>
+                            <span hidden={editing}>{test.isPublic ? 'Public' : 'Private'}</span>
+                            <Input type="switch" name="is_public" hidden={! editing} disable={updating}
+                                bind:inner={inputs.isPublic} checked={test.isPublic} />
+                        </td>
+                    </tr>
+                </tbody>
+            </Table>
+        </form>
+    </article>
+    <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
+    <Candidates auth={auth} test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+</section>
