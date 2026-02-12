@@ -41,10 +41,11 @@
     }
 </script>
 <script module>
+    import { asset } from "@/asset.svelte.js";
     export let seo = $state({
         title: '',
         description: import.meta.env.VITE_APP_DESCRIPTION,
-        ogImageUrl: 'og_image.png',
+        ogImageUrl: asset('og_image.png'),
     });
 </script>
 
