@@ -1,6 +1,6 @@
 <script>
     import { page, Link } from "@inertiajs/svelte";
-    import { useColorMode, Navbar, NavbarToggler, Collapse, Nav, Input, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
+    import { useColorMode, Navbar, NavbarToggler, Collapse, Nav, Dropdown, DropdownToggle, Container, NavItem } from '@sveltestrap/sveltestrap';
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
