@@ -67,7 +67,6 @@ Please read laravel official documents:
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- add can_join_admission_test column to passport_types table
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
 - update candidate store method to support select product and contact stripe
@@ -95,10 +94,6 @@ Please read laravel official documents:
 
 #### stage 2 third party iq test result
 
-- add admin nation index
-- add admin nation store
-- add admin nation update
-- add admin nation update status
 - Add admin third party iq test accept list store
 - Add admin third party iq test accept list index
 - Add admin third party iq test accept list update name
@@ -120,6 +115,13 @@ Please read laravel official documents:
 
 #### stage 3 membership
 
+- add admin nation mensa index
+- add admin nation mensa store
+- add admin nation mensa update
+- add admin nation mensa update status
+- add can_join_admission_test column to passport_types table, update admin edit and update user logic for passport type and update admission test schedule logic
+- add transfer member register page
+- add admin user in progress transfer member filter
 - Add membership products create
 - Add membership products index
 - Add membership products edit
