@@ -1,12 +1,6 @@
 import { router } from '@inertiajs/svelte'
 import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
-let csrf_token = $state('');
-
-export function setCsrfToken(csrfToken) {
-    csrf_token = csrfToken;
-}
-
 function failHandle(error, callback) {
     switch(error.status) {
         case 401:
@@ -35,7 +29,6 @@ function failHandle(error, callback) {
 }
 
 export function post(action, successCallback, failCallback, method="POST", data = {}) {
-    data['_token'] = csrf_token;
     if(method.toUpperCase() != 'POST') {
         data['_method'] = method;
     }

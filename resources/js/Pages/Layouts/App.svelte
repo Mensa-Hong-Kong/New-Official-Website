@@ -4,7 +4,6 @@
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
-	import { setCsrfToken } from '@/submitForm.svelte';
 
     let isOpenNav = $state(false);
 
@@ -30,8 +29,6 @@
     function navToggle() {
         isOpenNav = !isOpenNav;
     }
-
-    setCsrfToken($page.props.csrf_token);
 
     if ($page.props.flash.success) {
         alert($page.props.flash.success);
