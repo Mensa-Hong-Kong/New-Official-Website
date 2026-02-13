@@ -88,8 +88,9 @@ Please read laravel official documents:
 - admin user add admission test orders list and create order button
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
-- add whatsapp_templates table, add seeder and add admin whatsapp templates index 
-- add admin whatsapp templates index edit and update
+- add notification_templates table, add seeder and add admin notification templates index 
+- add admin notification templates edit and update
+- change notifications to use templates
 - change qr code to from quickchart.io gen image link to use twilio assets
 - add user delete function
 

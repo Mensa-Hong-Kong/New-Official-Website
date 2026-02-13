@@ -168,6 +168,9 @@
     - [ ] Edit transaction status
       - [ ] Update status
     - [ ] Update result
+  - [ ] Notification template
+    - [ ] Index
+    - [ ] Edit
 - [ ] Admission Test
   - [ ] Index
     - [x] Show upcoming test
