@@ -67,6 +67,7 @@ Please read laravel official documents:
 
 #### stage 1 permission system, nav, custom web page and admission test
 
+- move the project checklist to github project or jira
 - change module to support submodule
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
 - update candidate store method to support select product and contact stripe
