@@ -16,16 +16,18 @@ use Illuminate\Database\Seeder;
  * | 2   | Edit | NULL  | 1             | ...        | ...        |
  *
  * The 'modules' table will contain:
- * | id  | name                  | title | display_order | created_at | updated_at |
- * | --- | --------------------- | ----- | ------------- | ---------- | ---------- |
- * | 1   | User                  | NULL  | 1             | ...        | ...        |
- * | 2   | Permission            | NULL  | 2             | ...        | ...        |
- * | 3   | Admission Test        | NULL  | 3             | ...        | ...        |
- * | 4   | Admission Test Order  | NULL  | 4             | ...        | ...        |
- * | 5   | Site Content          | NULL  | 5             | ...        | ...        |
- * | 6   | Custom Web Page       | NULL  | 6             | ...        | ...        |
- * | 7   | Navigation Item       | NULL  | 7             | ...        | ...        |
- * | 8   | Other Payment Gateway | NULL  | 8             | ...        | ...        |
+ * | id  | master_id | name                     | title     | display_order | created_at | updated_at |
+ * | --- | ----------| ------------------------ | --------- | ------------- | ---------- | ---------- |
+ * | 1   | NULL      | User                     | NULL      | 1             | ...        | ...        |
+ * | 2   | NULL      | Permission               | NULL      | 2             | ...        | ...        |
+ * | 3   | NULL      | Admission Test           | NULL      | 3             | ...        | ...        |
+ * | 4   | NULL      | Admission Test Order     | NULL      | 4             | ...        | ...        |
+ * | 5   | NULL      | Site Content             | NULL      | 5             | ...        | ...        |
+ * | 6   | NULL      | Custom Web Page          | NULL      | 6             | ...        | ...        |
+ * | 7   | NULL      | Navigation Item          | NULL      | 7             | ...        | ...        |
+ * | 8   | NULL      | Other Payment Gateway    | NULL      | 8             | ...        | ...        |
+ * | 9   | 3         | Admission Test Candidate | Candidate | 1             | ...        | ...        |
+ * | 9   | 3         | Admission Test Result    | Result.   | 2             | ...        | ...        |
  *
  * The 'module_permissions' table will contain:
  * | id  | name                       | module_id | permission_id | guard_name | created_at | updated_at |
@@ -45,57 +47,98 @@ class ModulePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $viewPermission = Permission::firstOrCreate(['name' => 'View']);
-        $viewPermission->update(['display_order' => 0]);
-        $editPermission = Permission::firstOrCreate(['name' => 'Edit']);
-        $editPermission->update(['display_order' => 1]);
+        $viewPermission = Permission::firstOrCreate(
+            ['name' => 'View'],
+            ['display_order' => 0]
+        );
+        $editPermission = Permission::firstOrCreate(
+            ['name' => 'Edit'],
+            ['display_order' => 1]
+        );
 
-        $module = Module::firstOrCreate(['name' => 'User']);
-        $module->update(['display_order' => 1]);
+        $module = Module::firstOrCreate(
+            ['name' => 'User'],
+            ['display_order' => 1]
+        );
         $module->permissions()->sync([
             $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Permission']);
-        $module->update(['display_order' => 2]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Permission'],
+            ['display_order' => 2]
+        );
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Admission Test']);
-        $module->update(['display_order' => 3]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Admission Test'],
+            ['display_order' => 3]
+        );
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+            $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Admission Test Order']);
-        $module->update(['display_order' => 4]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Admission Test Order'],
+            ['display_order' => 4]
+        );
         $module->permissions()->sync([
             $viewPermission->id => ['name' => "{$viewPermission->name}:{$module->name}"],
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Site Content']);
-        $module->update(['display_order' => 5]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Site Content'],
+            ['display_order' => 5]
+        );
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Custom Web Page']);
-        $module->update(['display_order' => 6]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Custom Web Page'],
+            ['display_order' => 6]
+        );
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        $module = Module::firstOrCreate(['name' => 'Navigation Item']);
-        $module->update(['display_order' => 7]);
+        $module = Module::firstOrCreate(
+            ['name' => 'Navigation Item'],
+            ['display_order' => 7]
+        );
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
         $module = Module::firstOrCreate(['name' => 'Other Payment Gateway']);
         $module->update(['display_order' => 8]);
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+
+        $module = Module::firstOrCreate(
+            [
+                'name' => 'Admission Test Candidate',
+                'title' => 'Candidate',
+                'master_id' => 3
+            ],
+            ['display_order' => 1]
+        );
+        $module->permissions()->sync([
+            $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
+        ]);
+
+        $module = Module::firstOrCreate([
+            'name' => 'Admission Test Result',
+            'title' => 'Result',
+            'master_id' => 3
+        ]);
+        $module->update(['display_order' => 1]);
         $module->permissions()->sync([
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
