@@ -20,8 +20,11 @@ class ModuleController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return Inertia::render('Admin/Modules')
-            ->with('modules', Module::orderBy('display_order')->get());
+        return Inertia::render('Admin/Modules/Index')
+            ->with(
+                'modules', Module::orderBy('display_order')
+                    ->get(['id', 'name', 'title', 'master_id'])
+            );
     }
 
     public function update(NameRequest $request, Module $module)
