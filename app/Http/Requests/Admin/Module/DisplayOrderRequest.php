@@ -16,35 +16,84 @@ class DisplayOrderRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        $IDs = Module::get('id');
-        $size = $IDs->count();
-        $IDs = $IDs->implode('id', ',');
-
-        return [
-            'display_order' => "required|array|size:$size",
-            'display_order.*' => "required|integer|distinct|in:$IDs",
-        ];
-    }
-
-    public function messages(): array
+    public function after(): array
     {
         return [
-            'display_order.size' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.',
-            'display_order.*.in' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.',
+            function (Validator $validator) {
+                if (! $this->display_order) {
+                    $validator->errors()->add(
+                        'display_order',
+                        'The display order field is required.'
+                    );
+                } elseif (! is_array($this->display_order)) {
+                    $validator->errors()->add(
+                        'display_order',
+                        'The display order field must be an array.'
+                    );
+                } elseif (! count($this->display_order)) {
+                    $validator->errors()->add(
+                        'display_order',
+                        'The display order field is required.'
+                    );
+                } else {
+                    $itemIDs = Module::get('id');
+                    $size = $itemIDs->count();
+                    $itemIDs = $itemIDs->pluck('id')->toArray();
+                    $masterIDs = $itemIDs;
+                    $masterIDs[] = '0';
+                    $IDs = [];
+                    foreach ($this->display_order as $masterID => $array) {
+                        if (! is_array($array)) {
+                            $validator->errors()->add(
+                                "display_order.$masterID",
+                                "The display_order.$masterID field must be an array."
+                            );
+                        } elseif (! count($array)) {
+                            $validator->errors()->add(
+                                "display_order.$masterID",
+                                "The display_order.$masterID field is required."
+                            );
+                        } elseif (! preg_match('/^-?\d+$/', $masterID)) {
+                            $validator->errors()->add(
+                                'display_order',
+                                'The array key of display_order field must be an integer.'
+                            );
+                        } elseif (! in_array($masterID, $masterIDs)) {
+                            $validator->errors()->add(
+                                'message',
+                                'The master ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.'
+                            );
+                        } else {
+                            foreach ($array as $order => $id) {
+                                if (! preg_match('/^-?\d+$/', $id)) {
+                                    $validator->errors()->add(
+                                        "display_order.$masterID.$order",
+                                        "The display_order.$masterID.$order field must be an integer."
+                                    );
+                                } elseif (! in_array($id, $itemIDs)) {
+                                    $validator->errors()->add(
+                                        'message',
+                                        'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.'
+                                    );
+                                }
+                                $IDs[] = $id;
+                            }
+                        }
+                    }
+                    $countIDs = count($IDs);
+                    if ($countIDs != $size) {
+                        $validator->errors()->add(
+                            'message',
+                            'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.'
+                        );
+                    } elseif (count(array_unique($IDs)) != $countIDs) {
+                        $validator->errors()->add(
+                            'message',
+                            'The ID(s) of display order field has a duplicate value. If the problem persists, please contact I.T. officer.'
+                        );
+                    }
+                }
+            },
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $errors = $validator->errors();
-        $message = $errors->first();
-        $key = 'message';
-        if ($message != 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.') {
-            $key = $errors->keys()[0];
-        }
-
-        throw ValidationException::withMessages([$key => $message]);
     }
 }
