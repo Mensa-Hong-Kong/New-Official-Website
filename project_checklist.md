@@ -4,7 +4,7 @@
 - [ ] User
   - [ ] Register
     - [x] suport non transfer member
-    - suport transfer member
+    - [ ] suport transfer member
   - [x] Login
   - [ ] Profile
     - [x] Show
