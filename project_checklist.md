@@ -55,7 +55,6 @@
       - [x] index
       - [x] Edit display name
       - [x] Edit display order
-      - [ ] change to support sub-module
   - [ ] User
     - [ ] Index
       - [x] Filter by user information
