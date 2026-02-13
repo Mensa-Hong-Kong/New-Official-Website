@@ -36,7 +36,7 @@
   - [x] Permission
     - [x] index
     - [x] Edit display name
-    - [x]Edit display order
+    - [x] Edit display order
   - [x] Team Roles
     - [x] Team Types(e.g.: Office, Committee, SIG) (done)
     - [x] Teams (done)
@@ -181,7 +181,7 @@
     - [ ] disabled transfer member and not accepted passport type user schedule
   - [x] Show scheduled test detail
 
-### stage 4 News
+### stage 4 News(start on after than deploy)
 
 - [ ] Admin
   - [ ] News
@@ -193,7 +193,7 @@
   - [ ] Index
   - [ ] Show
 
-### stage 5 Event
+### stage 5 Event(start on after than deploy)
 
 - [ ] Admin
   - [ ] Event
@@ -217,7 +217,7 @@
   - [ ] Profile
     - [ ] Event record
 
-### stage 6 Online shop
+### stage 6 Online shop(start on after than deploy)
 
 - [ ] Admin
   - [ ] Shop
@@ -248,7 +248,7 @@
   - [ ] Profile
     - [ ] Shop order list
 
-### stage 7-10 no detail planing
+### stage 7-10 no detail planing(start on after than deploy)
 
 - stage 7 analytics
 - stage 8 contest
