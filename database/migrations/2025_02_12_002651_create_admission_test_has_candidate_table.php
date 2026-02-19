@@ -16,9 +16,11 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('order_id')->nullable();
+            $table->unsignedTinyInteger('seat_number')->nullable();
             $table->boolean('is_present')->default(false);
             $table->boolean('is_pass')->nullable();
             $table->timestamps();
+            $table->unique(['test_id', 'seat_number']);
             $table->foreign('test_id')
                 ->references('id') // admission test id
                 ->on('admission_tests')
