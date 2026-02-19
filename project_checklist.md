@@ -1,0 +1,261 @@
+### stage 1-3 (deploy preconditions)
+
+- [ ] Home
+- [ ] User
+  - [ ] Register
+    - [x] suport non transfer member
+    - [ ] suport transfer member
+  - [x] Login
+  - [ ] Profile
+    - [x] Show
+    - [x] Edit
+      - [x] Contect(Email and mobile)
+        - [x] Create
+        - [x] Verify
+        - [x] Set default
+        - [x] Edit
+        - [x] Delete
+      - [x] Member Info
+        - [x] Show
+        - [x] Edit
+    - [ ] Prior evidence order and result list
+      - [ ] Show
+      - [ ] Create
+    - [ ] Member Transfer records
+      - [ ] Show
+      - [ ] Create
+    - [ ] Delete account (GDPR)
+    - [ ] Public member info setting (member optional public info items to public, member or private)
+    - [ ] Upload photo when user want public or show member only
+    - [ ] Remove photo
+  - [x] Forger Password
+- [ ] Member Directory (only show user can see member info)
+  - [ ] Index
+  - [ ] Show
+- [ ] Admin
+  - [x] Permission
+    - [x] index
+    - [x] Edit display name
+    - [x] Edit display order
+  - [x] Team Roles
+    - [x] Team Types(e.g.: Office, Committee, SIG) (done)
+    - [x] Teams (done)
+    - [x] Index
+    - [x] Create
+    - [x] Edit
+    - [x] Delete
+    - [x] Roles
+      - [x] Create
+      - [x] Edit
+        - [x] info
+        - [x] Assign permission(s)
+      - [x] Edit display order
+      - [x] Delete
+    - [x] Module
+      - [x] index
+      - [x] Edit display name
+      - [x] Edit display order
+  - [ ] User
+    - [ ] Index
+      - [x] Filter by user information
+      - [ ] Filter in progress transfer member
+    - [ ] Show
+      - [x] User information
+      - [x] Reset Password
+      - [x] Contact
+        - [x] Create
+        - [x] Set Verified
+        - [x] Set default
+        - [x] Edit
+        - [x] Delete
+      - [ ] Assign role(s)
+      - [ ] Admission test Candidate record (if user can edit candidate)
+        - [ ] Show scheduled record
+        - [ ] Show upcoming admission Test
+        - [ ] Scheduled upcoming admission Test
+      - [ ] Admission test Proctor
+        - [ ] Show scheduled record
+        - [ ] Show upcoming admission Test
+        - [ ] Scheduled upcoming admission Test
+        - [ ] Update is_present status
+        - [ ] Claim transportation cost
+      - [ ] Admission test order create link button
+      - [ ] Admission test order index link button
+      - [ ] Prior evidence order create link button
+      - [ ] Prior evidence order index link button
+      - [ ] Transfer
+        - [ ] Show
+        - [ ] Create
+  - [x] Site content
+    - [x] Index
+    - [x] Edit
+  - [x] Custom web page
+    - [x] Index
+    - [x] Create
+    - [x] Edit
+    - [x] Delete
+  - [x] Navigation item
+    - [x] Index
+    - [x] Create
+    - [x] Edit
+    - [x] Edit Display Order
+    - [x] Delete
+  - [x] Other payment gateway
+    - [x] Index
+    - [x] Create
+    - [x] Update
+    - [x] Update Order
+  - [ ] Admission test types
+    - [ ] Index
+      - [x] Show list
+      - [ ] Edit active status
+    - [x] Create
+    - [x] Edit
+    - [x] Edit Display Order
+  - [x] Admission test products
+    - [x] Index
+    - [x] Create
+    - [x] Show
+    - [x] Edit
+    - [x] Price
+      - [x] Show
+      - [x] Create
+      - [x] Edit name and start time
+  - [ ] Admission test
+    - [x] Index
+    - [x] Create
+    - [x] Show Information
+    - [x] Edit Information
+    - [x] Proctor
+      - [x] Add
+      - [x] Delete
+    - [x] Candidate
+      - [x] Add
+      - [ ] Disabled add transfer member and not accepted passport type user 
+      - [x] Delete
+      - [x] Show Result
+      - [x] Update Result
+  - [ ] Admission test order
+    - [x] Index
+    - [x] Create
+    - [x] Show
+    - [ ] Edit
+    - [x] Edit transaction Status
+      - [x] Update status
+      - [ ] Limit only type of OtherPaymentGateway class
+    - [ ] Refund
+  - [ ] Qualifying Test
+    - [ ] Index
+    - [ ] Create
+    - [ ] Show
+    - [ ] Edit
+    - [ ] Delete
+  - [ ] Prior evidence product
+    - [ ] Index
+    - [ ] Create
+    - [ ] Show
+    - [ ] Edit
+    - [ ] Price
+      - [ ] Show
+      - [ ] Create
+      - [ ] Edit name and start time
+  - [ ] Prior evidence order
+    - [ ] Index
+    - [ ] Create
+    - [ ] Show
+    - [ ] Edit
+    - [ ] Edit transaction status
+      - [ ] Update status
+    - [ ] Update result
+  - [ ] Notification template
+    - [ ] Index
+    - [ ] Edit
+- [ ] Admission Test
+  - [ ] Index
+    - [x] Show upcoming test
+    - [ ] show in progress holding seat(s)
+    - [ ] disabled transfer member and not accepted passport type user schedule
+  - Schedule Confirm
+    - [x] Show detail (done)
+    - [x] Store if has quota(s) (done)
+    - [x] Store if have no quota (done)
+    - [x] create stripe checkout and redirect to stripe
+    - [ ] disabled transfer member and not accepted passport type user schedule
+  - [x] Show scheduled test detail
+
+### stage 4 News(start on after than deploy)
+
+- [ ] Admin
+  - [ ] News
+    - [ ] Index
+    - [ ] Create
+    - [ ] Show
+    - [ ] Edit
+- [ ] News
+  - [ ] Index
+  - [ ] Show
+
+### stage 5 Event(start on after than deploy)
+
+- [ ] Admin
+  - [ ] Event
+    - [ ] Index
+    - [ ] Create (official)
+    - [ ] Show
+        - [ ]  Event information
+        - [ ]  Participants
+        - [ ]  Refund
+        - [ ]  Transfer
+    - [ ] Edit
+- [ ] Event
+  - [ ] Index
+  - [ ] Create (non-official)
+  - [ ] Show
+    - [ ] Event information
+    - [ ] Participants
+  - [ ] Join
+  - [ ] Edit (non-official and only owner)
+- [ ] User
+  - [ ] Profile
+    - [ ] Event record
+
+### stage 6 Online shop(start on after than deploy)
+
+- [ ] Admin
+  - [ ] Shop
+    - [ ] Product
+      - [ ] Index
+      - [ ] Create
+      - [ ] Edit
+      - [ ] Price
+        - [ ] Create
+        - [ ] Edit name
+        - [ ] Start time
+    - [ ] Order
+      - [ ] Index
+      - [ ] Create
+      - [ ] Order start
+- [ ] Show
+  - [ ] Shop
+    - [ ] Product
+      - [ ] Index
+      - [ ] Show
+        - [ ] Add to cart
+    - [ ] Cart
+      - [ ] Index
+      - [ ] Update number of product
+      - [ ] Delete product
+      - [ ] Checkout
+- [ ] User
+  - [ ] Profile
+    - [ ] Shop order list
+
+### stage 7-10 no detail planing(start on after than deploy)
+
+- stage 7 analytics
+- stage 8 contest
+- stage 9 User readonly CalDAV by route and sql(for admission test schedule and event)
+- stage 10 project management refer to jira
+
+todo details please read:
+https://github.com/Mensa-Hong-Kong/New-Official-Website/tree/change-module-to-support-submodule-and-add-edit-candidate-and-edit-candidate-result-module?tab=readme-ov-file#todo

@@ -14,23 +14,38 @@ class UpdateDisplayOrderTest extends TestCase
 
     private $user;
 
+    private $happyCase;
+
     protected function setUp(): void
     {
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Permission');
+        Module::query()->delete();
+        $item1 = Module::create(['name' => 'aaa']);
+        $item1point1 = Module::create([
+            'name' => 'bbb',
+            'master_id' => $item1->id,
+            'display_order' => 0,
+        ]);
+        $item2 = Module::create([
+            'name' => 'ccc',
+            'master_id' => null,
+            'display_order' => 1,
+        ]);
+        $this->happyCase = [
+            'display_order' => [
+                0 => [$item1->id, $item2->id],
+                $item1->id => [$item1point1->id],
+            ],
+        ];
     }
 
     public function test_have_no_login()
     {
         $response = $this->putJson(
             route('admin.modules.display-order.update'),
-            [
-                'display_order' => Module::inRandomOrder()
-                    ->get('display_order')
-                    ->pluck('display_order')
-                    ->toArray(),
-            ]
+            $this->happyCase
         );
         $response->assertUnauthorized();
     }
@@ -46,12 +61,7 @@ class UpdateDisplayOrderTest extends TestCase
         );
         $response = $this->actingAs($user)->putJson(
             route('admin.modules.display-order.update'),
-            [
-                'display_order' => Module::inRandomOrder()
-                    ->get('display_order')
-                    ->pluck('display_order')
-                    ->toArray(),
-            ]
+            $this->happyCase
         );
         $response->assertForbidden();
     }
@@ -73,13 +83,13 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be an array.']);
     }
 
-    public function test_display_order_size_is_not_match()
+    public function test_display_order_value_is_not_array()
     {
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => [Module::first()->id]]
+            ['display_order' => ['abc']]
         );
-        $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
+        $response->assertInvalid(['display_order.0' => 'The display_order.0 field must be an array.']);
     }
 
     public function test_display_order_have_no_value()
@@ -91,64 +101,112 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_value_is_not_integer()
+    public function test_display_order_sub_array_have_no_value()
     {
-        $IDs = Module::inRandomOrder()
-            ->get('id')
-            ->pluck('id')
-            ->toArray();
-        $IDs[0] = 'abc';
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => $IDs]
+            ['display_order' => [[]]]
         );
-        $response->assertInvalid(['display_order.0' => 'The display_order.0 field must be an integer.']);
+        $response->assertInvalid(['display_order.0' => 'The display_order.0 field is required.']);
     }
 
-    public function test_display_order_value_is_duplicate()
+    public function test_display_order_array_key_is_not_integer()
     {
-        $IDs = Module::inRandomOrder()
-            ->get('id')
-            ->pluck('id')
-            ->toArray();
-        $IDs[] = $IDs[0];
-        Module::create(['name' => 'abc']);
-        $module = Module::first();
+        $data = $this->happyCase;
+        $data['display_order']['abc'] = $data['display_order'][0];
+        unset($data['display_order'][0]);
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => $IDs]
+            $data
         );
-        $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
+        $response->assertInvalid(['display_order' => 'The array key of display_order field must be an integer.']);
     }
 
-    public function test_display_order_value_is_not_exists_on_database()
+    public function test_display_order_array_key_is_not_item_id_or_0()
     {
-        $IDs = Module::inRandomOrder()
-            ->get('id')
-            ->pluck('id')
-            ->toArray();
-        $IDs[0] = 0;
+        $data = $this->happyCase;
+        $data['display_order'][-1] = $data['display_order'][0];
+        unset($data['display_order'][0]);
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => $IDs]
+            $data
+        );
+        $response->assertInvalid(['message' => 'The master ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
+    }
+
+    public function test_display_order_sub_array_value_is_not_integer()
+    {
+        $data = $this->happyCase;
+        $data['display_order'][0][0] = 'abc';
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.modules.display-order.update'),
+            $data
+        );
+        $response->assertInvalid(['display_order.0.0' => 'The display_order.0.0 field must be an integer.']);
+    }
+
+    public function test_display_order_total_sub_array_value_no_match_database()
+    {
+        $data = $this->happyCase;
+        unset($data['display_order'][0][0]);
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.modules.display-order.update'),
+            $data
         );
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_display_order_value_is_duplicate()
     {
-        $moduleIDs = Module::inRandomOrder()
-            ->get('id')
-            ->pluck('id')
-            ->toArray();
+        $data = $this->happyCase;
+        $data['display_order'][0][0] = $data['display_order'][0][1];
         $response = $this->actingAs($this->user)->putJson(
             route('admin.modules.display-order.update'),
-            ['display_order' => $moduleIDs]
+            $data
+        );
+        $response->assertInvalid(['message' => 'The ID(s) of display order field has a duplicate value. If the problem persists, please contact I.T. officer.']);
+    }
+
+    public function test_display_order_value_is_not_exist_item_id()
+    {
+        $data = $this->happyCase;
+        $data['display_order'][0][0] = 0;
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.modules.display-order.update'),
+            $data
+        );
+        $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
+    }
+
+    public function test_happy_case_with_no_change()
+    {
+        $data = $this->happyCase;
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.modules.display-order.update'),
+            $this->happyCase
         );
         $response->assertSuccessful();
-        $response->assertJson([
-            'success' => 'The display order update success!',
-            'display_order' => $moduleIDs,
-        ]);
+        $data['success'] = 'The display order update success!';
+        $response->assertJson($data);
+    }
+
+    public function test_happy_case_change_all()
+    {
+        $item1ID = $this->happyCase['display_order'][0][0];
+        $item2ID = $this->happyCase['display_order'][0][1];
+        $item1point1ID = $this->happyCase['display_order'][$item1ID][0];
+        $data = [
+            'display_order' => [
+                0 => [$item1point1ID, $item1ID],
+                $item1point1ID => [$item2ID],
+            ],
+        ];
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.modules.display-order.update'),
+            $data
+        );
+        $response->assertSuccessful();
+        $data['success'] = 'The display order update success!';
+        $response->assertJson($data);
     }
 }

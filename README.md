@@ -67,9 +67,10 @@ Please read laravel official documents:
 
 #### stage 1 permission system, nav, custom web page and admission test
 
-- add can_join_admission_test column to passport_types table
-- change module to support submodule
+- move the project checklist to github project or jira
 - add edit candidate and edit candidate result permission and update admin admission test candidate permission checking
+- add seat_number column to admission test
+- add set present auto gen seat number and return to found end
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table
@@ -88,17 +89,14 @@ Please read laravel official documents:
 - admin user add admission test orders list and create order button
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
-- add whatsapp_templates table, add seeder and add admin whatsapp templates index 
-- add admin whatsapp templates index edit and update
+- add notification_templates table, add seeder and add admin notification templates index 
+- add admin notification templates edit and update
+- change notifications to use templates
 - change qr code to from quickchart.io gen image link to use twilio assets
 - add user delete function
 
 #### stage 2 third party iq test result
 
-- add admin nation index
-- add admin nation store
-- add admin nation update
-- add admin nation update status
 - Add admin third party iq test accept list store
 - Add admin third party iq test accept list index
 - Add admin third party iq test accept list update name
@@ -120,6 +118,13 @@ Please read laravel official documents:
 
 #### stage 3 membership
 
+- add admin nation mensa index
+- add admin nation mensa store
+- add admin nation mensa update
+- add admin nation mensa update status
+- add can_join_admission_test column to passport_types table, update admin edit and update user logic for passport type and update admission test schedule logic
+- add transfer member register page
+- add admin user in progress transfer member filter
 - Add membership products create
 - Add membership products index
 - Add membership products edit
