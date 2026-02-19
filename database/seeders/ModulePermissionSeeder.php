@@ -125,7 +125,7 @@ class ModulePermissionSeeder extends Seeder
             [
                 'name' => 'Admission Test Candidate',
                 'title' => 'Candidate',
-                'master_id' => 3
+                'master_id' => 3,
             ],
             ['display_order' => 1]
         );
@@ -136,7 +136,7 @@ class ModulePermissionSeeder extends Seeder
         $module = Module::firstOrCreate([
             'name' => 'Admission Test Result',
             'title' => 'Result',
-            'master_id' => 3
+            'master_id' => 3,
         ]);
         $module->update(['display_order' => 1]);
         $module->permissions()->sync([

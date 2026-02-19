@@ -5,7 +5,6 @@ namespace App\Http\Requests\Admin\Module;
 use App\Models\Module;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 
 class DisplayOrderRequest extends FormRequest
 {
