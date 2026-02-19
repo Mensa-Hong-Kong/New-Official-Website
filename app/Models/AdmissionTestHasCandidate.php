@@ -13,6 +13,7 @@ class AdmissionTestHasCandidate extends Pivot
         'test_id',
         'user_id',
         'order_id',
+        'seat_number',
         'is_present',
         'is_pass',
     ];
