@@ -331,14 +331,12 @@ class User extends Authenticatable
     public function futureAdmissionTest()
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass'])
             ->where('testing_at', '>', now());
     }
 
     public function lastAdmissionTest()
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass'])
             ->where('testing_at', '<=', now())
             ->latest('testing_at');
     }
