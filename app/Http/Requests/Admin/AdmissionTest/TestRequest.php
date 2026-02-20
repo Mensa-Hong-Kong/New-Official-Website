@@ -22,7 +22,7 @@ class TestRequest extends FormRequest
             'location' => 'required|string|max:255',
             'testing_at' => 'required|date',
             'expect_end_at' => 'required|date|after:testing_at',
-            'maximum_candidates' => 'required|integer|min:1',
+            'maximum_candidates' => 'required|integer|min:1|max:65535',
             'is_public' => 'nullable|boolean',
         ];
         if ($this->method() == 'POST') {

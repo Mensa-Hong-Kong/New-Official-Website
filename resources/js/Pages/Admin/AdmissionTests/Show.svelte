@@ -98,6 +98,8 @@
             feedbacks.maximumCandidates = 'The maximum candidates field is required.';
         } else if(inputs.maximumCandidates.validity.rangeUnderflow) {
             feedbacks.maximumCandidates = `The maximum candidates field must be at least ${inputs.maximumCandidates.min}.`;
+        } else if(inputs.maximumCandidates.validity.rangeOverflow) {
+            feedbacks.maximumCandidates = `The maximum candidates field must be at least ${inputs.maximumCandidates.max}.`;
         }
         return !hasError();
     }
@@ -290,7 +292,7 @@
                         <th>Address</th>
                         <td>
                             <span hidden={editing}>{addresses[test.addressID]}</span>
-                            <Input name="location" maxlength="255" required placeholder="address"
+                            <Input name="location" maxlength=255 required placeholder="address"
                                 hidden={! editing} disable={updating} list="addresses"
                                 feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
                                 invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!' }
@@ -303,7 +305,7 @@
                         <td>
                             <span hidden={editing}>{test.maximumCandidates}</span>
                             <Input type="number" name="maximum_candidates"
-                                min="1" step="1" required placeholder="maximum candidates"
+                                required step=1 min=1 max=65535 placeholder="maximum candidates"
                                 hidden={! editing} disable={updating}
                                 feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
                                 invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!' }

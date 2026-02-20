@@ -62,7 +62,9 @@
         if(inputs.maximumCandidates.validity.valueMissing) {
             feedbacks.maximumCandidates = 'The maximum candidates field is required.';
         } else if(inputs.maximumCandidates.validity.rangeUnderflow) {
-            feedbacks.maximumCandidates = `The maximum candidates field must be at least ${inputs.address.min}.`;
+            feedbacks.maximumCandidates = `The maximum candidates field must be at least ${inputs.maximumCandidates.min}.`;
+        } else if(inputs.maximumCandidates.validity.rangeOverflow) {
+            feedbacks.maximumCandidates = `The maximum candidates field must be at least ${inputs.maximumCandidates.max}.`;
         }
         return !hasError();
     }
@@ -178,7 +180,7 @@
                 <Input name="location" disabled={creating} list="locations"
                     feedback={feedbacks.location} valid={feedbacks.location == 'Looks good!'}
                     invalid={feedbacks.location != '' && feedbacks.location != 'Looks good!'}
-                    bind:inner={inputs.location} maxlength="255" required />
+                    bind:inner={inputs.location} maxlength=255 required />
                 <Datalist id="locations" data={locations} />
             </FormGroup>
         </div>
@@ -204,7 +206,7 @@
                 <Input name="address" disabled={creating} list="addresses"
                     feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
                     invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
-                    bind:inner={inputs.address} maxlength="255" required />
+                    bind:inner={inputs.address} required maxlength=255 />
                 <Datalist id="addresses" data={addresses} />
             </FormGroup>
         </div>
@@ -213,7 +215,7 @@
                 <Input type="number" name="maximum_candidates" disabled={creating}
                     feedback={feedbacks.maximumCandidates} valid={feedbacks.maximumCandidates == 'Looks good!'}
                     invalid={feedbacks.maximumCandidates != '' && feedbacks.maximumCandidates != 'Looks good!'}
-                    bind:inner={inputs.maximumCandidates} min="1" step="1" required />
+                    bind:inner={inputs.maximumCandidates} required step=1 min=1 max=65535 />
             </FormGroup>
         </div>
         <div class="mb-4 form-outline">
