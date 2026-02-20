@@ -46,8 +46,8 @@ class CandidateController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
-                    if ($test->testing_at <= now()) {
-                        abort(410, 'Can not add candidate after than testing time.');
+                    if ($test->testing_at <= now()->addDays(2)->endOfDay()) {
+                        abort(410, 'Cannot add candidate after than before testing date two days.');
                     }
                     if ($test->candidates()->count() >= $test->maximum_candidates) {
                         return response(['errors' => ['user_id' => 'The admission test is fulled.']], 422);

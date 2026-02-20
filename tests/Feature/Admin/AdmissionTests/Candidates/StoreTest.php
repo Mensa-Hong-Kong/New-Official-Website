@@ -29,7 +29,11 @@ class StoreTest extends TestCase
         parent::setup();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
-        $this->test = AdmissionTest::factory()->create();
+        $testingAt = now()->addDays(3)->startOfDay();
+        $this->test = AdmissionTest::factory()->state([
+            'testing_at' => $testingAt,
+            'expect_end_at' => $testingAt->addHour(),
+        ])->create();
         $this->test->type->update(['interval_month' => 6]);
         $contact = UserHasContact::factory()
             ->state([
@@ -114,9 +118,9 @@ class StoreTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_not_admission_test_ended_more_than_one_hour()
+    public function test_before_admission_test_testing_date_less_than_2_days()
     {
-        $this->test->update(['testing_at' => now()->subSecond()]);
+        $this->test->update(['testing_at' => now()->addDays(2)->endOfDay()]);
         $response = $this->actingAs($this->user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -129,7 +133,7 @@ class StoreTest extends TestCase
             ]
         );
         $response->assertGone();
-        $response->assertJson(['message' => 'Can not add candidate after than testing time.']);
+        $response->assertJson(['message' => 'Cannot add candidate after than before testing date two days.']);
     }
 
     public function test_missing_user_id()
@@ -322,11 +326,6 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_of_passport_has_already_been_qualification_for_membership()
     {
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
@@ -357,11 +356,6 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_other_same_passport_user_account_tested()
     {
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => now()->subSecond(),
@@ -389,11 +383,6 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_already_been_taken_within_latest_test_interval_months()
     {
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
@@ -649,16 +638,10 @@ class StoreTest extends TestCase
         ]);
         $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -691,16 +674,10 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
@@ -831,16 +808,10 @@ class StoreTest extends TestCase
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -883,16 +854,10 @@ class StoreTest extends TestCase
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
@@ -1014,16 +979,10 @@ class StoreTest extends TestCase
         ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -1062,16 +1021,10 @@ class StoreTest extends TestCase
         ])->create();
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
@@ -1194,16 +1147,10 @@ class StoreTest extends TestCase
         Notification::fake();
         $this->user->update(['birthday' => $order->created_at->subYears(18)->addDay()]);
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -1244,16 +1191,10 @@ class StoreTest extends TestCase
         Notification::fake();
         $this->user->update(['birthday' => $order->created_at->subYears(18)->addDay()]);
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
@@ -1380,16 +1321,10 @@ class StoreTest extends TestCase
         $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -1440,16 +1375,10 @@ class StoreTest extends TestCase
         );
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $newTestingAt = now()->addDay();
-        $this->test->update([
-            'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
-        ]);
-        $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'testing_at' => $this->test->testing_at,
+                'expect_end_at' => $this->test->expect_end_at,
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
