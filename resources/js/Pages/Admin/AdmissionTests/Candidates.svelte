@@ -5,7 +5,7 @@
     import { Table, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
-    
+
     let { auth, candidates: initCandidates, submitting = $bindable(), test } = $props();
     let candidates = $state([]);
     let inputs = $state({
@@ -15,7 +15,7 @@
 
     for(let row of initCandidates) {
         inputs['candidates'].push({});
-        candidates.push({
+        let data = {
             id: row.id,
             name: row.adorned_name,
             passportType: row.passport_type.name,
@@ -24,12 +24,22 @@
             lastAttendedAdmissionTestOfOtherSamePassportUser: row.last_attended_admission_test_of_other_same_passport_user,
             hasSamePassportAlreadyQualificationOfMembership: row.has_same_passport_already_qualification_of_membership,
             lastAttendedAdmissionTest: row.last_attended_admission_test,
+            seatNumber: row.pivot.seat_number,
             isPresent: row.pivot.is_present,
             isPass: row.pivot.is_pass,
-            isFree: row.pivot.order_id == null,
             updatingStatue: false,
             deleting: false,
-        });
+        };
+        if(
+            ! test.isFree && (
+                ['View:Admission Test Order', 'Edit:Admission Test Order']
+                    .some(permission => auth.user.permissions.includes(permission)) ||
+                auth.user.roles.includes('Super Administrator')
+            )
+        ) {
+            data['isFree'] = row.pivot.order_id == null;
+        }
+        candidates.push(data);
     }
 
     function getIndexById(id) {
@@ -248,23 +258,38 @@
 
 <article>
     <h3 class="mb-2 fw-bold">Candidates</h3>
-    <Table responsive hover>
+    <Table responsive hover class="text-nowrap">
         <thead>
             <tr>
-                <th>User ID</th>
+                <th style="width: 120ox !important;">User ID</th>
                 <th>Name</th>
                 <th>Passport Type</th>
                 <th>Passport Number</th>
+                {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
+                    <th>Seat Number</th>
+                {/if}
                 {#if
-                    auth.user.permissions.includes('View:User') ||
+                    ! test.isFree && (
+                        ['View:Admission Test Order', 'Edit:Admission Test Order']
+                            .some(permission => auth.user.permissions.includes(permission)) ||
+                        auth.user.roles.includes('Super Administrator')
+                    )
+                }
+                    <th>Is Free</th>
+                {/if}
+                {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
+                    <th>Show</th>
+                {/if}
+                {#if
+                    auth.user.permissions.includes('Edit:Admission Test') ||
                     auth.user.roles.includes('Super Administrator')
                 }
-                    {#if ! test.isFree}
-                        <th>Is Free</th>
-                    {/if}
+                    <th colspan={new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2) ? 3 : 2}>Control</th>
+                {:else if
+                    new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
+                    new Date(formatToDatetime(test.expectEndAt)) > (new Date).subHour(2)
+                }
                     <th>Control</th>
-                {:else}
-                    <th>Detail</th>
                 {/if}
             </tr>
         </thead>
@@ -278,7 +303,7 @@
                         }
                             <Link href={
                                 route(
-                                    'admin.users.show', 
+                                    'admin.users.show',
                                     {user: row.id}
                                 )
                             }>{row.id}</Link>
@@ -301,54 +326,72 @@
                                 ) && new Date(lastAttendedAdmissionTest.testing_at) <= new Date
                             ),
                     }}>{row.passportNumber}</td>
+                    {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
+                        <td>{row.seatNumber}</td>
+                    {/if}
                     {#if
-                        auth.user.permissions.includes('View:User') ||
-                        auth.user.roles.includes('Super Administrator')
+                        ! test.isFree && (
+                            ['View:Admission Test Order', 'Edit:Admission Test Order']
+                                .some(permission => auth.user.permissions.includes(permission)) ||
+                            auth.user.roles.includes('Super Administrator')
+                        )
                     }
-                        {#if ! test.isFree}
-                            <td>{row.isFree ? 'Free' : 'Fee'}</td>
-                        {/if}
-                        <td class="row">
-                            <Button color={row.isPresent ? 'success' : 'danger'}
-                                name="status" value={! row.isPresent}
-                                disabled={test.inTestingTimeRange || booleans.includes(row.isPass)}
-                                onclick={() => updatePresentStatue(index, ! row.isPresent)}
-                                class="col-md-3">{row.isPresent ? 'Present' : 'Absent'}</Button>
-                            {#if
-                                auth.user.permissions.includes('Edit:Admission Test') ||
-                                auth.user.roles.includes('Super Administrator')
-                            }
-                                <Button color="success" name="status" value={true}
-                                    di  sabled={row.isPass || ! row.isPresent || new Date(test.expectEndAt) > new Date || submitting}
-                                    onclick={() => updateResult(index, true)}
-                                    class="col-md-3">Pass</Button>
-                                <Button color="danger" name="status" value={false}
-                                    disabled={(! row.isPass && row.isPass !== null) || ! row.isPresent || new Date(test.expectEndAt) > new Date || submitting}
-                                    onclick={() => updateResult(index, false)}
-                                    class="col-md-3">Fail</Button>
-                                <Button color="danger" disabled={submitting} 
-                                    onclick={() => destroy(index)} class="col-md-3">
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
-                            {/if}
-                        </td>
-                    {:else}
+                        <td>{row.isFree ? 'Free' : 'Fee'}</td>
+                    {/if}
+                    {#if
+                        new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
+                        new Date(formatToDatetime(test.expectEndAt)) > (new Date).subHour(2)
+                    }
                         <td>
-                            <Link class="btn btn-primary col-md-1"
+                            <Link class="btn btn-primary"
                                 href={
                                     route(
-                                        'admin.admission-tests.candidates.show', 
+                                        'admin.admission-tests.candidates.show',
                                         {
                                             admission_test: route().params.admission_test,
-                                            candidate: row[index]['id'],
+                                            candidate: row.id,
                                         }
                                     )
                                 }>Show</Link>
+                        </td>
+                    {/if}
+                    {#if
+                        new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
+                        new Date(formatToDatetime(test.expectEndAt)) > (new Date).subHour(2)
+                    }
+                        <td>
+                            <Button block color={row.isPresent ? 'success' : 'danger'}
+                                name="status" value={! row.isPresent} style="min-width: 85px !important"
+                                disabled={test.inTestingTimeRange || booleans.includes(row.isPass)}
+                                onclick={() => updatePresentStatue(index, ! row.isPresent)}>
+                                {row.isPresent ? 'Present' : 'Absent'}</Button>
+                        </td>
+                    {/if}
+                    {#if
+                        auth.user.permissions.includes('Edit:Admission Test') ||
+                        auth.user.roles.includes('Super Administrator')
+                    }
+                        {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
+                            <td>
+                                <Button block color="success" name="status" value={true} style="min-width: 85px !important"
+                                    disabled={row.isPass || ! row.isPresent || new Date(test.expectEndAt) > new Date || submitting}
+                                    onclick={() => updateResult(index, true)}>Pass</Button>
                             </td>
+                            <td>
+                                <Button block color="danger" name="status" value={false} style="min-width: 85px !important"
+                                    disabled={(! row.isPass && row.isPass !== null) || ! row.isPresent || new Date(test.expectEndAt) > new Date || submitting}
+                                    onclick={() => updateResult(index, false)}>Fail</Button>
+                            </td>
+                        {/if}
+                        <td colspan={new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2) ? 3 : 2}>
+                            <Button block color="danger" disabled={submitting} onclick={() => destroy(index)} style="min-width: 85px !important">
+                                {#if row.deleting}
+                                    <Spinner type="border" size="sm" />Deleting...
+                                {:else}
+                                    Delete
+                                {/if}
+                            </Button>
+                        </td>
                     {/if}
                 </tr>
             {/each}
@@ -361,8 +404,8 @@
                 )
             }
                 <tr>
-                    <td>
-                        <form class="row g-3" method="POST" novalidate onsubmit={create} id="createCandidateForm">
+                    <td style="width: 150px">
+                        <form method="POST" novalidate onsubmit={create} id="createCandidateForm">
                             <Input name="user_id" patten="^\+?[1-9][0-9]*" required
                                 bind:inner={inputs.user} />
                         </form>
@@ -377,16 +420,20 @@
                             <label class="form-control btn btn-outline-success" for='isFree'>Is Free</label>
                         </td>
                     {/if}
-                    <td class="row">
-                        <Button color="success" class="col-md-6" disabled={submitting} hidden={creating}
+                    <td colspan=1 hidden={creating}>
+                        <Button block color="success" disabled={submitting} hidden={creating}
                             name="function" value="schedule" form="createCandidateForm">Schedule</Button>
-                        <Button color="success" class="col-md-6" disabled={submitting} hidden={creating}
+                    </td>
+                    <td colspan=1 hidden={creating}>
+                        <Button block color="success" disabled={submitting} hidden={creating}
                             name="function" value="reschedule" form="createCandidateForm">Reschedule</Button>
-                        <Button color="success" class="col" disabled  hidden={! creating}>
+                    </td>
+                    <td colspan=2 hidden={! creating}>
+                        <Button block color="success" disabled  hidden={! creating}>
                             <Spinner type="border" size="sm" />Adding...
                         </Button>
                     </td>
-            </tr>
+                </tr>
             {/if}
         </tbody>
     </Table>

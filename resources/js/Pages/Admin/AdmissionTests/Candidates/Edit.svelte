@@ -9,16 +9,16 @@
 
     seo.title = 'Administration Edit Candidate';
 
-    let { user: initUser, passportTypes, genders, maxBirthday } = $props();
-    let user = {
-        id: initUser.id,
-        familyName: initUser.family_name,
-        middleName: initUser.middle_name,
-        givenName: initUser.given_name,
-        genderID: initUser.gender_id,
-        passportTypeID: initUser.passport_type_id,
-        passportNumber: initUser.passport_number,
-        birthday: formatToDate(initUser.birthday),
+    let { candidate: initCandidate, passportTypes, genders, maxBirthday } = $props();
+    let candidate = {
+        id: initCandidate.id,
+        familyName: initCandidate.family_name,
+        middleName: initCandidate.middle_name,
+        givenName: initCandidate.given_name,
+        genderID: initCandidate.gender_id,
+        passportTypeID: initCandidate.passport_type_id,
+        passportNumber: initCandidate.passport_number,
+        birthday: formatToDate(initCandidate.birthday),
     }
     let inputs = $state({});
     let feedbacks = $state({
@@ -137,7 +137,7 @@
                             'admin.admission-tests.candidates.update',
                             {
                                 admission_test: route().params.admission_test,
-                                candidate: user.id,
+                                candidate: candidate.id,
                             }
                         ),
                         successCallback,
@@ -166,7 +166,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Family Name">
                 <Input name="family_name" placeholder="family name" disabled={updating}
-                    maxlength=255 required value={user.familyName}
+                    maxlength=255 required value={candidate.familyName}
                     feedback={feedbacks.familyName} valid={feedbacks.familyName == 'Looks good!'}
                     invalid={feedbacks.familyName != '' && feedbacks.familyName != 'Looks good!'}
                     bind:inner={inputs.familyName} />
@@ -175,7 +175,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Middle Name">
                 <Input name="middle_name" placeholder="middle name" disabled={updating}
-                    maxlength=255 value={user.middleName}
+                    maxlength=255 value={candidate.middleName}
                     feedback={feedbacks.middleName} valid={feedbacks.middleName == 'Looks good!'}
                     invalid={feedbacks.middleName != '' && feedbacks.middleName != 'Looks good!'}
                     bind:inner={inputs.middleName} />
@@ -184,7 +184,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Given Name">
                 <Input name="given_name" placeholder="given name" disabled={updating}
-                    maxlength=255 required value={user.givenName}
+                    maxlength=255 required value={candidate.givenName}
                     feedback={feedbacks.givenName} valid={feedbacks.givenName == 'Looks good!'}
                     invalid={feedbacks.givenName != '' && feedbacks.givenName != 'Looks good!'}
                     bind:inner={inputs.givenName} />
@@ -193,7 +193,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Gender">
                 <Input name="gender" placeholder="gender" disabled={updating}
-                    maxlength=255 required value={genders[user.genderID]}
+                    maxlength=255 required value={genders[candidate.genderID]}
                     feedback={feedbacks.gender} valid={feedbacks.gender == 'Looks good!'}
                     invalid={feedbacks.gender != '' && feedbacks.gender != 'Looks good!'}
                     bind:inner={inputs.gender} />
@@ -207,7 +207,7 @@
                     invalid={feedbacks.passportType != '' && feedbacks.passportType != 'Looks good!'}
                     bind:inner={inputs.passportType}>
                     {#each Object.entries(passportTypes) as [key, value]}
-                        <option value="{key}" selected={key == user.passportTypeID}>{value}</option>
+                        <option value="{key}" selected={key == candidate.passportTypeID}>{value}</option>
                     {/each}
                 </Input>
             </FormGroup>
@@ -215,7 +215,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Passport Number">
                 <Input name="passport_number" placeholder="passport number" disabled={updating}
-                    minlength="8" maxlength="18" required value={user.passportNumber}
+                    minlength="8" maxlength="18" required value={candidate.passportNumber}
                     feedback={feedbacks.passportNumber} valid={feedbacks.passportNumber == 'Looks good!'}
                     invalid={feedbacks.passportNumber != '' && feedbacks.passportNumber != 'Looks good!'}
                     bind:inner={inputs.passportNumber} />
@@ -224,7 +224,7 @@
         <div class="mb-4 form-outline">
             <FormGroup floating label="Birthday">
                 <Input type="date" name="birthday" placeholder="birthday" disabled={updating}
-                    max={maxBirthday} required value={user.birthday}
+                    max={maxBirthday} required value={candidate.birthday}
                     feedback={feedbacks.birthday} valid={feedbacks.birthday == 'Looks good!'}
                     invalid={feedbacks.birthday != '' && feedbacks.birthday != 'Looks good!'}
                     bind:inner={inputs.birthday} />

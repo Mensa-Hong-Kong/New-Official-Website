@@ -211,13 +211,13 @@ class CandidateController extends Controller implements HasMiddleware
             },
         ]);
         $candidate->append([
-            'adorned_name', 'has_other_same_passport_user_joined_future_test',
+            'has_other_same_passport_user_joined_future_test',
             'last_attended_admission_test_of_other_same_passport_user',
             'has_same_passport_already_qualification_of_membership',
         ]);
         $candidate->makeHidden([
-            'username', 'member', 'family_name', 'middle_name', 'given_name',
-            'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
+            'username', 'member', 'gender_id', 'passport_type_id',
+            'synced_to_stripe', 'created_at', 'updated_at',
         ]);
         $candidate->passportType->makeHidden('id');
         $candidate->gender->makeHidden('id');
@@ -231,9 +231,9 @@ class CandidateController extends Controller implements HasMiddleware
         }
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
-            ->with('test', $admissionTest)
-            ->with('user', $candidate)
-            ->with('isPresent', $request->pivot->is_present);
+            ->with('candidate', $candidate)
+            ->with('isPresent', $request->pivot->is_present)
+            ->with('seatNumber', $request->pivot->seat_number);
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)
@@ -241,7 +241,7 @@ class CandidateController extends Controller implements HasMiddleware
         $candidate->makeHidden(['username', 'synced_to_stripe', 'created_at', 'updated_at', 'member']);
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Edit')
-            ->with('user', $candidate)
+            ->with('candidate', $candidate)
             ->with(
                 'passportTypes', PassportType::all()
                     ->pluck('name', 'id')
