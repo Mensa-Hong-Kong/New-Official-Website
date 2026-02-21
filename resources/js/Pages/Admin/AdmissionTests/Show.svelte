@@ -324,9 +324,11 @@
                     </tr>
                     <tr>
                         <th>Is Public</th>
-                        <td>
+                        <td hidden={editing}>
                             <span hidden={editing}>{test.isPublic ? 'Public' : 'Private'}</span>
-                            <Input type="switch" name="is_public" hidden={! editing} disable={updating}
+                        </td>
+                        <td hidden={! editing}>
+                            <Input type="switch" name="is_public" disable={updating}
                                 bind:inner={inputs.isPublic} checked={test.isPublic} />
                         </td>
                     </tr>
