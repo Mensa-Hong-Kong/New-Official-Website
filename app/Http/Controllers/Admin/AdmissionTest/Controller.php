@@ -142,7 +142,7 @@ class Controller extends BaseController implements HasMiddleware
         );
     }
 
-    public function show(AdmissionTest $admissionTest)
+    public function show(Request $request, AdmissionTest $admissionTest)
     {
         $areas = Area::with([
             'districts' => function ($query) {
@@ -190,17 +190,28 @@ class Controller extends BaseController implements HasMiddleware
             'username', 'member', 'family_name', 'middle_name', 'given_name',
             'birthday', 'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
         ]);
-        foreach ($admissionTest->candidates as $candidate) {
-            $candidate->passportType->makeHidden('id');
-            if ($candidate->lastAttendedAdmissionTest) {
-                $candidate->lastAttendedAdmissionTest->makeHidden([
-                    'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
-                    'maximum_candidates', 'is_public', 'created_at', 'updated_at',
-                    'laravel_through_key',
-                ]);
-                $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
-            }
+        $pivotHidden = ['test_id', 'user_id'];
+        if (
+            $admissionTest->is_free ||
+            ! $request->user()->canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
+        ) {
+            $pivotHidden[] = 'order_id';
         }
+        $admissionTest->candidates->each(
+            function ($candidate) use ($pivotHidden) {
+                $candidate->passportType->makeHidden('id');
+                $pivotHidden = ['test_id', 'user_id'];
+                $candidate->pivot->makeHidden($pivotHidden);
+                if ($candidate->lastAttendedAdmissionTest) {
+                    $candidate->lastAttendedAdmissionTest->makeHidden([
+                        'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
+                        'maximum_candidates', 'is_public', 'created_at', 'updated_at',
+                        'laravel_through_key',
+                    ]);
+                    $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
+                }
+            }
+        );
 
         return Inertia::render('Admin/AdmissionTests/Show')
             ->with('test', $admissionTest)

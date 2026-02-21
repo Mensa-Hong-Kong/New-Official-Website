@@ -371,6 +371,20 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
     }
 
+    public function test_maximum_candidates_greater_than_65535()
+    {
+        $data = $this->happyCase;
+        $data['maximum_candidates'] = 65536;
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.update',
+                ['admission_test' => $this->test]
+            ),
+            $data
+        );
+        $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must not be greater than 65535.']);
+    }
+
     public function test_is_public_is_not_boolean()
     {
         $data = $this->happyCase;

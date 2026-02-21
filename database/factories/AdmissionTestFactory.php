@@ -32,7 +32,7 @@ class AdmissionTestFactory extends Factory
             'address_id' => fake()->randomElement([true, false]) ?
                 Address::factory()->create() :
                 Address::inRandomOrder()->first() ?? Address::factory()->create(),
-            'maximum_candidates' => fake()->numberBetween(1, 10000),
+            'maximum_candidates' => fake()->numberBetween(1, 65535),
             'is_public' => fake()->randomElement([true, false]),
         ];
     }
