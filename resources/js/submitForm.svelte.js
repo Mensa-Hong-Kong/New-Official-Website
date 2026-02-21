@@ -2,6 +2,7 @@ import { router } from '@inertiajs/svelte'
 import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
 function failHandle(error, callback) {
+    console.log(error);
     switch(error.status) {
         case 401:
             alert('Unauthorized, please login first');
@@ -20,8 +21,8 @@ function failHandle(error, callback) {
             alert('Database connect fail, please try again later, or contact I.T.');
             break;
         default:
-            if(error.data && error.data.message) {
-                alert(error.data.message);
+            if(error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
             }
             break;
     }
