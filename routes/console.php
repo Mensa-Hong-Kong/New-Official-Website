@@ -1,8 +1,8 @@
 <?php
 
-use App\Schedules\GenerateAdmissionTestSeatNumber;
 use App\Schedules\ClearUnusedAdminVerifiedRecode;
 use App\Schedules\ClearUnusedUserResetPasswordFailedRecord;
+use App\Schedules\GenerateAdmissionTestSeatNumber;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;

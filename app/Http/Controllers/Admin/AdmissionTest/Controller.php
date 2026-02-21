@@ -191,7 +191,7 @@ class Controller extends BaseController implements HasMiddleware
             'birthday', 'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
         ]);
         $pivotHidden = ['test_id', 'user_id'];
-        if(
+        if (
             $admissionTest->is_free ||
             ! $request->user()->canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
         ) {

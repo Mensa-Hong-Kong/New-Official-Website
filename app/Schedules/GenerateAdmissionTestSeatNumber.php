@@ -10,20 +10,20 @@ class GenerateAdmissionTestSeatNumber
     public function __invoke()
     {
         $testHasCandidateIDs = AdmissionTestHasCandidate::whereHas(
-            'test', function($query) {
+            'test', function ($query) {
                 $query->whereDate('testing_at', today());
             }
         )->get()
-        ->groupBy('test_id')
-        ->map(
-            function($rows) {
-                return $rows->shuffle()->pluck('id');
-            }
-        );
+            ->groupBy('test_id')
+            ->map(
+                function ($rows) {
+                    return $rows->shuffle()->pluck('id');
+                }
+            );
         $IDs = [];
         $seatNumberCase = [];
-        foreach($testHasCandidateIDs as $testID => $candidatesIDs) {
-            foreach($candidatesIDs as $index => $candidatesID) {
+        foreach ($testHasCandidateIDs as $testID => $candidatesIDs) {
+            foreach ($candidatesIDs as $index => $candidatesID) {
                 $seatNumberCase[] = "WHEN id = $candidatesID THEN ".($index + 1);
                 $IDs[] = $candidatesID;
             }
