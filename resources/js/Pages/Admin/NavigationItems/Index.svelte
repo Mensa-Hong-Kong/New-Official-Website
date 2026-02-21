@@ -3,7 +3,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
     import NavigationItems from './NavigationItems.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     seo.title = 'Administration Navigation Items';

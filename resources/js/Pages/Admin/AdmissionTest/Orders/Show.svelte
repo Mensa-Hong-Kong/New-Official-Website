@@ -3,7 +3,7 @@
     import { Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 

@@ -4,7 +4,7 @@
 	import Datalist from '@/Pages/Components/Datalist.svelte';
 	import Contacts from './Contacts.svelte';
     import { Link } from "@inertiajs/svelte";
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
 

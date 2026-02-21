@@ -1,7 +1,7 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Label, Row, Col, Button, Spinner } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import { router } from '@inertiajs/svelte';
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 

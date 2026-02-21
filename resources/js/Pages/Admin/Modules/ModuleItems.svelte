@@ -1,7 +1,7 @@
 <script>
     import { InputGroup, InputGroupText, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { dndzone } from 'svelte-dnd-action';
     import ModuleItems from './ModuleItems.svelte';
 	import { flip } from 'svelte/animate';

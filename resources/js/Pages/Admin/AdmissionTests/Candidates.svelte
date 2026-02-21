@@ -1,5 +1,5 @@
 <script>
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Table, Input, Button, Spinner } from '@sveltestrap/sveltestrap';

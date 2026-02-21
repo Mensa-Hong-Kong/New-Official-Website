@@ -2,7 +2,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Table } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 

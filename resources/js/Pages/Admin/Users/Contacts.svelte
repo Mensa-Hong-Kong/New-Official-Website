@@ -1,6 +1,6 @@
 <script>
     import { Row, Button, Spinner, Col, Input } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     let { auth, type, contacts: initContacts, submitting = $bindable(), defaultContact = $bindable() } = $props();
@@ -345,7 +345,7 @@
             <i class="bi bi-phone"></i> Mobile
         {/if}
     </h3>
-    {#if 
+    {#if
         auth.user.permissions.includes('Edit:User') ||
         auth.user.roles.includes('Super Administrator')
     }

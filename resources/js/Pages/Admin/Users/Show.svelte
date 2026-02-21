@@ -3,7 +3,7 @@
 	import Datalist from '@/Pages/Components/Datalist.svelte';
     import Contacts from './Contacts.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
 
