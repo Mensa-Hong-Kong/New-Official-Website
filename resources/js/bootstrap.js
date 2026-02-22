@@ -13,5 +13,5 @@ window.axios.interceptors.response.use(response => response, async error => {
         return axios(error.response.config);
     }
 
-    return Promise.reject(error.status == 422 ? error : error.response);
+    return Promise.reject(error);
 })
