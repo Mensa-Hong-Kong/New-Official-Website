@@ -2,7 +2,6 @@ import { router } from '@inertiajs/svelte'
 import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
 function failHandle(error, callback) {
-    console.log(error);
     switch(error.status) {
         case 401:
             alert('Unauthorized, please login first');

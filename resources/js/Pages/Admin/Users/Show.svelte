@@ -6,10 +6,11 @@
     import { post } from "@/submitForm";
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Show User';
 
-    let { auth, user: initUser, passportTypes, genders, maxBirthday, districts: areaDistricts } = $props();
+    let { user: initUser, passportTypes, genders, maxBirthday, districts: areaDistricts } = $props();
     let user = $state({
         id: initUser.id,
         memberNumber: initUser.member?.number,
@@ -343,10 +344,7 @@
         <form method="POST" class="row g-3" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                {#if
-                    auth.user.permissions.includes('Edit:User') ||
-                    auth.user.roles.includes('Super Administrator')
-                }
+                {#if can('Edit:User')}
                     <Button color="primary" hidden={! updating} disabled>
                         <Spinner type="border" size="sm" />Saving...
                     </Button>
@@ -379,10 +377,7 @@
                 <Label>Password:</Label>
                 <Row>
                     <Col md="2">********</Col>
-                    {#if
-                        auth.user.permissions.includes('Edit:User') ||
-                        auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:User')}
                         <Button color={user.defaultEmail ? 'danger' : 'secondary'}
                             hidden={resettingPassword}
                             disabled={! user.defaultEmail || submitting}
@@ -535,8 +530,8 @@
             </Col>
         </form>
     </article>
-    <Contacts auth={auth} type='email' contacts={initUser.emails}
+    <Contacts type='email' contacts={initUser.emails}
         bind:submitting={submitting} bind:defaultContact={user.defaultEmail} />
-    <Contacts auth={auth} type='mobile' contacts={initUser.mobiles}
+    <Contacts type='mobile' contacts={initUser.mobiles}
         bind:submitting={submitting} bind:defaultContact={user.defaultMobile} />
 </section>

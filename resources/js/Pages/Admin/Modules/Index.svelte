@@ -4,10 +4,11 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Modules';
 
-    let { auth, modules } = $props();
+    let { modules } = $props();
     let editing = $state(false);
     let updating = $state(false);
     let submitting = $state(false);
@@ -93,12 +94,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Modules
-        {#if
-            (
-                auth.user.permissions.includes('Edit:Permission') ||
-                auth.user.roles.includes('Super Administrator')
-            ) && moduleNodes.root.children.length
-        }
+        {#if can('Edit:Permission') && moduleNodes.root.children.length}
             <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
             <Button color="primary" onclick={update} hidden={! editing}>
                 {#if updating}
@@ -111,7 +107,7 @@
         {/if}
     </h2>
     {#if moduleNodes.root.children.length}
-        <ModuleItems auth={auth} bind:moduleNodes={moduleNodes} moduleNode={moduleNodes.root}
+        <ModuleItems bind:moduleNodes={moduleNodes} moduleNode={moduleNodes.root}
             editing={editing} updating={updating} bind:submitting={submitting} />
     {:else}
         <Alert color="danger">

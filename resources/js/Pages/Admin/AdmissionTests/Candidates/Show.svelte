@@ -10,7 +10,6 @@
 
     let { candidate, isPresent, seatNumber } = $props();
     let submitting = $state(false);
-    console.log(route().params.admission_test);
 
     function updatePresentStatueSuccessCallback(response) {
         alert(response.data.success);

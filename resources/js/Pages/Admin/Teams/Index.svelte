@@ -5,10 +5,11 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Teams';
 
-    let { auth, types: initTypes } = $props();
+    let { types: initTypes } = $props();
     let submitting = $state(false);
     let types = $state(initTypes);
 
@@ -161,10 +162,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Teams
-        {#if
-            auth.user.permissions.includes('Edit:Permission') ||
-            auth.user.roles.includes('Super Administrator')
-        }
+        {#if can('Edit:Permission')}
             <Button color="primary" hidden={editingDisplayOrder}
                 onclick={editDisplayOrder}>Edit Display Order</Button>
             <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
@@ -212,10 +210,7 @@
                                                 {team: team.id}
                                             )
                                         }>Show</Link>
-                                    {#if
-                                        auth.user.permissions.includes('Edit:Permission') ||
-                                        auth.user.roles.includes('Super Administrator')
-                                    }
+                                    {#if can('Edit:Permission')}
                                         <Button color="danger" disabled={submitting} onclick={() => destroy(typeIndex, teamIndex)}>
                                             {#if team.deleting}
                                                 <Spinner type="border" size="sm" />Deleting...
