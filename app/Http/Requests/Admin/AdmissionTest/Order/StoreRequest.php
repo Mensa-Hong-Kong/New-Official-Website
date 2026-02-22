@@ -40,7 +40,7 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id has already member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
                         $fail('The selected user id has already qualification for membership.');
-                    } elseif ($request->test_id && $request->user->futureAdmissionTest) {
+                    } elseif ($request->user->futureAdmissionTest) {
                         $fail('The selected user id has been scheduled admission test.');
                     } elseif ($request->user->hasUnusedQuotaAdmissionTestOrder) {
                         $fail('The selected user has unused quota.');
@@ -74,6 +74,8 @@ class StoreRequest extends FormRequest
                     ]);
                     if (! $request->test) {
                         $fail('The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
+                    } elseif ($request->test->is_free) {
+                        $fail('The admission test order cannot select free admission test.');
                     } elseif ($request->test->candidates_count >= $request->test->maximum_candidates) {
                         // checking of lesser use row id because auto increment counter is not reset to its value before the transaction began
                         $fail('The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');

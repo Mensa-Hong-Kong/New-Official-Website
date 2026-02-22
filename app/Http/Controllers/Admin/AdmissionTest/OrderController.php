@@ -92,6 +92,7 @@ class OrderController extends BaseController implements HasMiddleware
                 },
                 'tests' => function () {
                     $tests = AdmissionTest::with(['address.district.area', 'location'])
+                        ->where('is_free', false)
                         ->where('testing_at', '>=', now()->addDays(2)->endOfDay())
                         ->whereAvailable()
                         ->withCount('candidates')

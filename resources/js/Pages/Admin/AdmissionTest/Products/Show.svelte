@@ -2,7 +2,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Button, Spinner, Input } from '@sveltestrap/sveltestrap';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import Prices from './Prices.svelte'
 
     seo.title = 'Administration Show Admission Test Product';

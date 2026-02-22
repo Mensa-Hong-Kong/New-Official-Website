@@ -1,13 +1,14 @@
 <script>
     import { InputGroup, InputGroupText, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { dndzone } from 'svelte-dnd-action';
     import ModuleItems from './ModuleItems.svelte';
 	import { flip } from 'svelte/animate';
+    import { can } from "@/gate.svelte";
 
     let {
-        auth, moduleNodes = $bindable(), moduleNode,
+        moduleNodes = $bindable(), moduleNode,
         editing, updating, submitting = $bindable()
     } = $props();
 	const flipDurationMs = 300;
@@ -103,10 +104,7 @@
                 </InputGroup>
             </form>
         </div>
-        {#if
-            auth.user.permissions.includes('Edit:Permission') ||
-            auth.user.roles.includes('Super Administrator')
-        }
+        {#if can('Edit:Permission')}
             <div class="col text-end">
                 <Button color="primary" hidden={moduleNode.editing || moduleNode.updating}
                     onclick={() => moduleNodes[moduleNode.id]['editing'] = true}>Edit</Button>
@@ -130,7 +128,7 @@
         }} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
         {#each moduleNode.children as item(item.id)}
             <article animate:flip="{{duration: flipDurationMs}}">
-                <ModuleItems auth={auth} bind:moduleNodes={moduleNodes} moduleNode={moduleNodes[item.id]}
+                <ModuleItems bind:moduleNodes={moduleNodes} moduleNode={moduleNodes[item.id]}
                     editing={editing} updating={updating} bind:submitting={submitting} />
             </article>
         {/each}

@@ -2,7 +2,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Table, Button } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
 
@@ -10,7 +10,6 @@
 
     let { candidate, isPresent, seatNumber } = $props();
     let submitting = $state(false);
-    console.log(route().params.admission_test);
 
     function updatePresentStatueSuccessCallback(response) {
         alert(response.data.success);

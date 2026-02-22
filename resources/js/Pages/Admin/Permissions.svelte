@@ -1,12 +1,13 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Permissions';
 
-    let {auth, permissions: initPermissions} = $props();
+    let { permissions: initPermissions } = $props();
     let permissions = $state([]);
     let submitting = $state(false);
     let inputNames = $state({});
@@ -174,10 +175,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Permissions
-        {#if
-            auth.user.permissions.includes('Edit:Permission') ||
-            auth.user.roles.includes('Super Administrator')
-        }
+        {#if can('Edit:Permission')}
             <Button color="primary" onclick={editDisplayOrder}
                 hidden={editingDisplayOrder || updatingDisplayOrder}>Edit Display Order</Button>
             <Button color="primary" onclick={updateDisplayOrder} disabled={submitting}
@@ -196,10 +194,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Display Name</th>
-                    {#if
-                        auth.user.permissions.includes('Edit:Permission') ||
-                        auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Permission')}
                         <th scope="col">Control</th>
                     {/if}
                 </tr>
@@ -220,10 +215,7 @@
                                     bind:inner={inputNames[index]} />
                             </form>
                         </td>
-                        {#if
-                            auth.user.permissions.includes('Edit:Permission') ||
-                            auth.user.roles.includes('Super Administrator')
-                        }
+                        {#if can('Edit:Permission')}
                             <td>
                                 <Button color="primary" hidden={row.editing || row.updating}
                                     onclick={() => permissions[index]['editing'] = true}>Edit</Button>

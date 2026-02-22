@@ -4,14 +4,15 @@
     import SortableLink from '@/Pages/Components/SortableLink.svelte';
     import { Link, router } from "@inertiajs/svelte";
     import Pagination from '@/Pages/Components/Pagination.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Admission Tests';
 
-    let { auth, tests: initTests } = $props();
+    let { tests: initTests } = $props();
     let submitting = $state();
     let tests = $state(initTests.data);
 
@@ -92,8 +93,7 @@
                         <td>
                             {#if
                                 row.in_testing_time_range ||
-                                auth.user.permissions.includes('Edit:Admission Test') ||
-                                auth.user.roles.includes('Super Administrator')
+                                can('Edit:Admission Test')
                             }
                                 <Link class="btn btn-primary" href={
                                     route(

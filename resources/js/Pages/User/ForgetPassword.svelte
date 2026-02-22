@@ -4,7 +4,7 @@
     import { Link } from "@inertiajs/svelte";
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     seo.title = 'Forget Password';

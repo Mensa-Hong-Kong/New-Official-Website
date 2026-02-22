@@ -3,13 +3,14 @@
     import { Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Show Admission Test Order';
 
-    let { auth, order: initOrder } = $props();
+    let { order: initOrder } = $props();
     let order = $state(initOrder);
     let submitting = $state(false);
 
@@ -85,10 +86,7 @@
                 <tr>
                     <th>Payer</th>
                     <td>
-                        {#if
-                            auth.user.permissions.includes('View:User') ||
-                            auth.user.roles.includes('Super Administrator')
-                        }
+                        {#if can('View:User')}
                             <Link href={route('admin.users.show', {user: order.user.id})}>
                                 {order.user.adorned_name}
                             </Link>
@@ -120,10 +118,7 @@
                 <tr>
                     <th>Quota</th>
                     <td>
-                        {#if
-                            auth.user.permissions.includes('Edit:Admission Test') ||
-                            auth.user.roles.includes('Super Administrator')
-                        }
+                        {#if can('Edit:Admission Test')}
                             {order.tests.length}
                         {:else}
                             {order.tests_count}
@@ -134,12 +129,7 @@
                     <th>Status</th>
                     <td>
                         {order.status.ucfirst()}
-                        {#if
-                            order.status == 'pending' && (
-                                auth.user.roles.includes('Super Administrator') ||
-                                auth.user.permissions.includes('permission:Edit:Admission Test Order')
-                            )
-                        }
+                        {#if order.status == 'pending' && can('permission:Edit:Admission Test Order')}
                             <Button color="success" disabled={submitting}
                                 onclick={() => updateStatus("succeeded")}>Succeeded</Button>
                             <Button color="danger" disabled={submitting}
@@ -170,10 +160,7 @@
             </tbody>
         </Table>
     </article>>
-    {#if
-        auth.user.permissions.includes('Edit:Admission Test') ||
-        auth.user.roles.includes('Super Administrator')
-    }
+    {#if can('Edit:Admission Test')}
         <article>
             <h3 class="mb-2 fw-bold">Tests</h3>
             <Table>

@@ -4,6 +4,11 @@
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
+    import { setup, can } from "@/gate.svelte";
+
+	$effect(() => {
+        setup($page.props.auth);
+    });
 
     let isOpenNav = $state(false);
 
@@ -103,8 +108,8 @@
                 </NavItem>
                 {#if $page.props.auth.user}
                     {#if
-                        $page.props.auth.user.hasProctorTests ||
                         $page.props.auth.user.permissions.length ||
+                        $page.props.auth.user.hasProctorTests ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <NavItem>
@@ -161,6 +166,7 @@
                 <Nav vertical pills class="offcanvas-body">
                     {#if
                         $page.props.auth.user.permissions.length ||
+                        $page.props.auth.user.hasProctorTests ||
                         $page.props.auth.user.roles.includes('Super Administrator')
                     }
                         <NavItem>
@@ -170,10 +176,7 @@
                                     {active: $page.component == 'Admin/Index'}
                                 ]}>Dashboard</Link>
                         </NavItem>
-                        {#if
-                            $page.props.auth.user.permissions.includes('View:User') ||
-                            $page.props.auth.user.roles.includes('Super Administrator')
-                        }
+                        {#if can('View:User')}
                             {#if $page.component == 'Admin/Users/Show'}
                                 <li class="accordion">
                                     <button data-bs-toggle="collapse" aria-expanded="true"
@@ -215,9 +218,7 @@
                                 ]}>Team Types</Link>
                         </NavItem>
                         {#if
-                            $page.props.auth.user.permissions.includes('Edit:Permission') ||
-                            $page.props.auth.user.roles.includes('Super Administrator') ||
-                            $page.component.startsWith('Admin/Teams/Roles/') ||
+                            can('Edit:Permission') || $page.component.startsWith('Admin/Teams/Roles/') ||
                             ['Admin/Teams/Show', 'Admin/Teams/Edit'].includes($page.component)
                         }
                             <li class="accordion">
@@ -240,10 +241,7 @@
                                                 {active: $page.component == 'Admin/Teams/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
-                                    {#if
-                                        $page.props.auth.user.permissions.includes('Edit:Permission') ||
-                                        $page.props.auth.user.roles.includes('Super Administrator')
-                                    }
+                                    {#if can('Edit:Permission')}
                                         <NavItem>
                                             <Link href={route('admin.teams.create')}
                                                 class={[
@@ -319,14 +317,11 @@
                             <Link href={route('admin.permissions.index')}
                             class={[
                                 'nav-link',
-                                {active: $page.component == 'Admin/Permissions/Index'}
+                                {active: $page.component == 'Admin/Permissions'}
                             ]}>Permission</Link>
                         </NavItem>
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Admission Test')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
@@ -404,16 +399,10 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if
-                        $page.props.auth.user.hasProctorTests ||
-                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Admission Test') || $page.props.auth.user.hasProctorTests}
                         {#if
-                            ! (
-                                $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
-                                $page.props.auth.user.roles.includes('Super Administrator')
-                            ) && ! $page.component.includes('Admin/AdmissionTests/Show')
+                            ! can('Edit:Admission Test') &&
+                            ! $page.component.includes('Admin/AdmissionTests/Show')
                         }
                             <NavItem>
                                 <Link href={route('admin.admission-tests.index')}
@@ -443,10 +432,7 @@
                                                 {active: $page.component == 'Admin/AdmissionTests/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
-                                    {#if
-                                        $page.props.auth.user.permissions.includes('Edit:Admission Test') ||
-                                        $page.props.auth.user.roles.includes('Super Administrator')
-                                    }
+                                    {#if can('Edit:Admission Test')}
                                         <NavItem>
                                             <Link href={route('admin.admission-tests.create')}
                                                 class={[
@@ -469,36 +455,33 @@
                             </li>
                         {/if}
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Admission Test Order') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Admission Test Order')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavAdminAdmissionTestOrder" aria-controls="asideNavAdminAdmissionTestOrder"
                                 style="height: 0em" class={[
                                     'nav-item', 'accordion-button',
-                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTestOrders/')},
+                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTest/Orders/')},
                                 ]}>Admission Test Orders</button>
                             <ul id="asideNavAdminAdmissionTestOrder" class={[
                                 'accordion-collapse', 'collapse',
-                                {show: $page.component.startsWith('Admin/AdmissionTestOrders/')},
+                                {show: $page.component.startsWith('Admin/AdmissionTest/Orders/')},
                             ]}>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.orders.index')}
                                         class={[
                                             'nav-link',
-                                            {active: $page.component == 'Admin/AdmissionTestOrders/Index'}
+                                            {active: $page.component == 'Admin/AdmissionTest/Orders/Index'}
                                         ]}>Index</Link>
                                 </NavItem>
                                 <NavItem>
                                     <Link href={route('admin.admission-test.orders.create')}
                                         class={[
                                             'nav-link',
-                                            {active: $page.component == 'Admin/AdmissionTestOrders/Create'}
+                                            {active: $page.component == 'Admin/AdmissionTest/Orders/Create'}
                                         ]}>Create</Link>
                                 </NavItem>
-                                {#if $page.component == 'Admin/AdmissionTestOrders/Show'}
+                                {#if $page.component == 'Admin/AdmissionTest/Orders/Show'}
                                     <NavItem>
                                         <Link href={
                                             route(
@@ -511,22 +494,16 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Other Payment Gateway') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Other Payment Gateway')}
                         <NavItem>
                             <Link href={route('admin.other-payment-gateways.index')}
                                 class={[
                                     'nav-link',
-                                    {active: $page.component == 'Admin/OtherPaymentGateways/Index'}
+                                    {active: $page.component == 'Admin/OtherPaymentGateways'}
                                 ]}>Other Payment Gateway</Link>
                         </NavItem>
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Site Content') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Site Content')}
                         {#if $page.component == 'Admin/SiteContents/Edit'}
                             <li class="accordion">
                                 <button data-bs-toggle="collapse" aria-expanded="true"
@@ -558,10 +535,7 @@
                             </NavItem>
                         {/if}
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Custom Web Page') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Custom Web Page')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavCustomWebPage" aria-controls="asideNavCustomWebPage"
@@ -602,10 +576,7 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if
-                        $page.props.auth.user.permissions.includes('Edit:Navigation Item') ||
-                        $page.props.auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Navigation Item')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavNavigationItem" aria-controls="asideNavNavigationItem"

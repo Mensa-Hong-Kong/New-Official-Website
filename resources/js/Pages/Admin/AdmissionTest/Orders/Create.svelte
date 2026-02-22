@@ -1,7 +1,7 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { FormGroup, Input, Label, Row, Col, Button, Spinner } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import { router } from '@inertiajs/svelte';
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 
@@ -415,6 +415,5 @@
 
     .radio-input:checked + .radio-card {
         border-color: #0d6efd;
-        background-color: #f8f9ff;
     }
 </style>

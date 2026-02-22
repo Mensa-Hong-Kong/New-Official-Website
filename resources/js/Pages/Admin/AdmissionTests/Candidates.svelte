@@ -1,12 +1,13 @@
 <script>
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Table, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
+    import { can, canAny } from "@/gate.svelte";
 
-    let { auth, candidates: initCandidates, submitting = $bindable(), test } = $props();
+    let { candidates: initCandidates, submitting = $bindable(), test } = $props();
     let candidates = $state([]);
     let inputs = $state({
         candidates: []
@@ -31,11 +32,8 @@
             deleting: false,
         };
         if(
-            ! test.isFree && (
-                ['View:Admission Test Order', 'Edit:Admission Test Order']
-                    .some(permission => auth.user.permissions.includes(permission)) ||
-                auth.user.roles.includes('Super Administrator')
-            )
+            ! test.isFree &&
+            canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
         ) {
             data['isFree'] = row.pivot.order_id == null;
         }
@@ -269,21 +267,15 @@
                     <th>Seat Number</th>
                 {/if}
                 {#if
-                    ! test.isFree && (
-                        ['View:Admission Test Order', 'Edit:Admission Test Order']
-                            .some(permission => auth.user.permissions.includes(permission)) ||
-                        auth.user.roles.includes('Super Administrator')
-                    )
+                    ! test.isFree &&
+                    canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
                 }
                     <th>Is Free</th>
                 {/if}
                 {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
                     <th>Show</th>
                 {/if}
-                {#if
-                    auth.user.permissions.includes('Edit:Admission Test') ||
-                    auth.user.roles.includes('Super Administrator')
-                }
+                {#if can('Edit:Admission Test')}
                     <th colspan={new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2) ? 3 : 2}>Control</th>
                 {:else if
                     new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
@@ -297,10 +289,7 @@
             {#each candidates as row, index}
                 <tr>
                     <td>
-                        {#if
-                            auth.user.permissions.includes('View:User') ||
-                            auth.user.roles.includes('Super Administrator')
-                        }
+                        {#if can('View:User')}
                             <Link href={
                                 route(
                                     'admin.users.show',
@@ -330,11 +319,8 @@
                         <td>{row.seatNumber}</td>
                     {/if}
                     {#if
-                        ! test.isFree && (
-                            ['View:Admission Test Order', 'Edit:Admission Test Order']
-                                .some(permission => auth.user.permissions.includes(permission)) ||
-                            auth.user.roles.includes('Super Administrator')
-                        )
+                        ! test.isFree &&
+                        canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
                     }
                         <td>{row.isFree ? 'Free' : 'Fee'}</td>
                     {/if}
@@ -367,10 +353,7 @@
                                 {row.isPresent ? 'Present' : 'Absent'}</Button>
                         </td>
                     {/if}
-                    {#if
-                        auth.user.permissions.includes('Edit:Admission Test') ||
-                        auth.user.roles.includes('Super Administrator')
-                    }
+                    {#if can('Edit:Admission Test')}
                         {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
                             <td>
                                 <Button block color="success" name="status" value={true} style="min-width: 85px !important"
@@ -396,12 +379,8 @@
                 </tr>
             {/each}
             {#if
-                new Date(formatToDatetime(test.testingAt)) >= (new Date).addDays(2).endOfDay() && (
-                    (
-                        auth.user.permissions.includes('View:User') &&
-                        auth.user.permissions.includes('Edit:Admission Test')
-                    ) || auth.user.roles.includes('Super Administrator')
-                )
+                can(['View:User', 'Edit:Admission Test']) &&
+                new Date(formatToDatetime(test.testingAt)) >= (new Date).addDays(2).endOfDay()
             }
                 <tr>
                     <td style="width: 150px">

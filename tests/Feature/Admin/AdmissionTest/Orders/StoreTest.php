@@ -184,13 +184,12 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
     }
 
-    public function test_user_id_of_user_has_future_admission_test_when_test_id_not_null()
+    public function test_user_id_of_user_has_future_admission_test()
     {
         $test1 = AdmissionTest::factory()->create();
         $test1->candidates()->attach($this->user->id);
         $test2 = AdmissionTest::factory()->create();
         $data = $this->happyCase;
-        $data['test_id'] = $test2->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
@@ -677,6 +676,20 @@ class StoreTest extends TestCase
             $data
         );
         $response->assertInvalid(['test_id' => 'The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.']);
+    }
+
+    public function test_test_is_free()
+    {
+        $data = $this->happyCase;
+        $test = AdmissionTest::factory()
+            ->state(['is_free' => true])
+            ->create();
+        $data['test_id'] = $test->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $response->assertInvalid(['test_id' => 'The admission test order cannot select free admission test.']);
     }
 
     public function test_test_is_full()

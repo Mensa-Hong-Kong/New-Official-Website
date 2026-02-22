@@ -20,8 +20,8 @@ function failHandle(error, callback) {
             alert('Database connect fail, please try again later, or contact I.T.');
             break;
         default:
-            if(error.data && error.data.message) {
-                alert(error.data.message);
+            if(error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
             }
             break;
     }

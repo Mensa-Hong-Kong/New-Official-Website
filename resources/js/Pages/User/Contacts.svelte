@@ -1,6 +1,6 @@
 <script>
     import { Row, Col, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
-    import { post, get } from "@/submitForm.svelte";
+    import { post, get } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 
@@ -295,7 +295,7 @@
         contacts.splice(index, 1)
         submitting = false;
     }
-    
+
     function deleteFailCallback(error) {
         let id = route().match(response.request.responseURL, 'delete').params.contact;
         let index = getIndexById(id);
@@ -404,12 +404,12 @@
                 hidden="{! row.editing}" onsubmit={(event) => update(event, index)}>
                 {#if type == 'email'}
                     <Input name="email" type="email" disabled={row.updating}
-                        maxlength=320 required 
+                        maxlength=320 required
                         value={row.contact} placeholder="dammy@example.com"
                         bind:inner="{inputs[index]['contact']}" />
                 {:else if type == 'mobile'}
                     <Input name="mobile" type="tel" disabled={row.updating}
-                        minlength=5 maxlength=15 required 
+                        minlength=5 maxlength=15 required
                         value={row.contact} placeholder=85298765432
                         bind:inner="{inputs[index]['contact']}" class="form-control" />
                 {/if}

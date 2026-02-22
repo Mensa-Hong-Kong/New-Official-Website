@@ -2,7 +2,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { onMount } from 'svelte';
     import { Row, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
     import {
         ClassicEditor, Essentials, TextTransformation, GeneralHtmlSupport, AutoImage, AutoLink,
         PasteFromOffice, Clipboard,

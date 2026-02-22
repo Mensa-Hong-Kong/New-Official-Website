@@ -4,10 +4,11 @@
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
     import Pagination from '@/Pages/Components/Pagination.svelte';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Admission Test Orders';
 
-    let { auth, orders, append } = $props();
+    let { orders, append } = $props();
 </script>
 
 <section class="container">
@@ -76,10 +77,7 @@
                     <tr>
                         <td>{row.id}</td>
                         <td>
-                            {#if
-                                auth.user.permissions.includes('View:User') ||
-                                auth.user.roles.includes('Super Administrator')
-                            }
+                            {#if can('View:User')}
                                 <Link href={
                                     route('admin.users.show', {user: row.user.id})
                                 }>

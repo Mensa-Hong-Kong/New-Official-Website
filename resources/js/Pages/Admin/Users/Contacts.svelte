@@ -1,9 +1,11 @@
 <script>
     import { Row, Button, Spinner, Col, Input } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
-    let { auth, type, contacts: initContacts, submitting = $bindable(), defaultContact = $bindable() } = $props();
+    import { can } from "@/gate.svelte";
+
+    let { type, contacts: initContacts, submitting = $bindable(), defaultContact = $bindable() } = $props();
     let contacts = $state([]);
     let createInputs = $state({});
     let creating = $state(false);
@@ -345,10 +347,7 @@
             <i class="bi bi-phone"></i> Mobile
         {/if}
     </h3>
-    {#if 
-        auth.user.permissions.includes('Edit:User') ||
-        auth.user.roles.includes('Super Administrator')
-    }
+    {#if can('Edit:User')}
         {#each contacts as row, index}
             <Row class="g-3" hidden={row.editing}>
                 <Col md=3>{row.contact}</Col>

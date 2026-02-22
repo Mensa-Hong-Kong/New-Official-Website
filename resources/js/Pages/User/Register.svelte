@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import ClearInputHistory from '@/clearInputHistory.js';
 	import Datalist from '@/Pages/Components/Datalist.svelte';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { router } from '@inertiajs/svelte';
 

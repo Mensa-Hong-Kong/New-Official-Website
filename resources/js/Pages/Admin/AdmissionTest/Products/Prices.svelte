@@ -1,6 +1,6 @@
 <script>
     import { Col, Input, Button, Spinner, TabContent, TabPane, Table } from '@sveltestrap/sveltestrap';
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 
     let { prices: initPrices, submitting = $bindable() } = $props();

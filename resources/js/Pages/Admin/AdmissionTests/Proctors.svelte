@@ -1,10 +1,10 @@
 <script>
-    import { post } from "@/submitForm.svelte";
+    import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Row, Col, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
-    
+
     let { proctors: initProctors, submitting = $bindable() } = $props();
     let proctors = $state([]);
     let inputs = $state({
@@ -211,7 +211,7 @@
             <Col md=1>
                 <span hidden={row.editing}>{row.id}</span>
                 <Input name="user_id" hidden={! row.editing}
-                    value={row.id} patten="^\+?[1-9][0-9]*" required 
+                    value={row.id} patten="^\+?[1-9][0-9]*" required
                     bind:inner={inputs['proctors'][index]['user']} />
             </Col>
             <Col md=2>{row.name}</Col>
@@ -225,7 +225,7 @@
             <Button color="primary" class="col-md-1"
                 hidden={row.editing || row.updating || row.deleting}
                 onclick={(event) => edit(event, index)}>Edit</Button>
-            <Button color="primary" disabled={submitting} 
+            <Button color="primary" disabled={submitting}
                 hidden={! row.editing} class={[{
                     "col-md-1": ! row.updating,
                     "col-md-2": row.updating,
@@ -239,7 +239,7 @@
             <Button color="danger" class="col-md-1"
                 hidden={! row.editing || row.updating}
                 onclick={(event) => cancel(event, index)}>Cancel</Button>
-            <Button color="danger" disabled={submitting} 
+            <Button color="danger" disabled={submitting}
                 hidden={row.editing || row.updating}
                 onclick={() => destroy(event, index)} class={[{
                     "col-md-1": ! row.deleting,
@@ -255,7 +255,7 @@
     {/each}
     <form class="row g-3" method="POST" novalidate onsubmit={create}>
         <Col md=1>
-            <Input name="user_id" patten="^\+?[1-9][0-9]*" required 
+            <Input name="user_id" patten="^\+?[1-9][0-9]*" required
                 bind:inner={inputs.user} />
         </Col>
         <Col md=2 />
