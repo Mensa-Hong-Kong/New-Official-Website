@@ -415,6 +415,5 @@
 
     .radio-input:checked + .radio-card {
         border-color: #0d6efd;
-        background-color: #f8f9ff;
     }
 </style>
