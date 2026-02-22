@@ -85,6 +85,8 @@ Please read laravel official documents:
 - add transportation cost paid button to admin admission test show page
 - add transportation cost received button to user profile
 - admin user add admission test orders list and create order button
+- add from and to column to model_has_team_roles table and overwrite roles relationship method on user model (parent roles where pivot now between from and to columns)
+- add team_statuses table and update team found end and back end to support team_statuses
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
 - add notification_templates table, add seeder and add admin notification templates index 
