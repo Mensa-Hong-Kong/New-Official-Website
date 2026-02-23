@@ -4,7 +4,7 @@
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
     import Pagination from '@/Pages/Components/Pagination.svelte';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Admission Test Orders';
 
@@ -77,7 +77,7 @@
                     <tr>
                         <td>{row.id}</td>
                         <td>
-                            {#if can('View:User')}
+                            {#if $can('View:User')}
                                 <Link href={
                                     route('admin.users.show', {user: row.user.id})
                                 }>

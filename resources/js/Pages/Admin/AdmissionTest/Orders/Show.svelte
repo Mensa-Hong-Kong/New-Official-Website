@@ -6,7 +6,7 @@
     import { post } from "@/submitForm";
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Show Admission Test Order';
 
@@ -86,7 +86,7 @@
                 <tr>
                     <th>Payer</th>
                     <td>
-                        {#if can('View:User')}
+                        {#if $can('View:User')}
                             <Link href={route('admin.users.show', {user: order.user.id})}>
                                 {order.user.adorned_name}
                             </Link>

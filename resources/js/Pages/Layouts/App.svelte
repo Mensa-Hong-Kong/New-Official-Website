@@ -4,11 +4,7 @@
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
-    import { setup, can, canAny } from "@/gate.svelte";
-
-	$effect(() => {
-        setup($page.props.auth);
-    });
+    import { can, canAny } from "@/gate";
 
     let isOpenNav = $state(false);
 
@@ -176,7 +172,7 @@
                                     {active: $page.component == 'Admin/Index'}
                                 ]}>Dashboard</Link>
                         </NavItem>
-                        {#if can('View:User')}
+                        {#if $can('View:User')}
                             {#if $page.component == 'Admin/Users/Show'}
                                 <li class="accordion">
                                     <button data-bs-toggle="collapse" aria-expanded="true"
@@ -218,7 +214,7 @@
                                 ]}>Team Types</Link>
                         </NavItem>
                         {#if
-                            can('Edit:Permission') || $page.component.startsWith('Admin/Teams/Roles/') ||
+                            $can('Edit:Permission') || $page.component.startsWith('Admin/Teams/Roles/') ||
                             ['Admin/Teams/Show', 'Admin/Teams/Edit'].includes($page.component)
                         }
                             <li class="accordion">
@@ -241,7 +237,7 @@
                                                 {active: $page.component == 'Admin/Teams/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
-                                    {#if can('Edit:Permission')}
+                                    {#if $can('Edit:Permission')}
                                         <NavItem>
                                             <Link href={route('admin.teams.create')}
                                                 class={[
@@ -321,7 +317,7 @@
                             ]}>Permission</Link>
                         </NavItem>
                     {/if}
-                    {#if can('Edit:Admission Test')}
+                    {#if $can('Edit:Admission Test')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavAdminAdmissionTestType" aria-controls="asideNavAdminAdmissionTestType"
@@ -400,7 +396,7 @@
                         </li>
                     {/if}
                     {#if
-                        canAny([
+                        $canAny([
                             'Edit:Admission Test',
                             'Edit:Admission Test Proctor',
                             'View:Admission Test Candidate',
@@ -410,7 +406,7 @@
                         ]) || $page.props.auth.user.hasProctorTests
                     }
                         {#if
-                            ! can('Edit:Admission Test') &&
+                            ! $can('Edit:Admission Test') &&
                             ! $page.component.includes('Admin/AdmissionTests/Show')
                         }
                             <NavItem>
@@ -441,7 +437,7 @@
                                                 {active: $page.component == 'Admin/AdmissionTests/Index'}
                                             ]}>Index</Link>
                                     </NavItem>
-                                    {#if can('Edit:Admission Test')}
+                                    {#if $can('Edit:Admission Test')}
                                         <NavItem>
                                             <Link href={route('admin.admission-tests.create')}
                                                 class={[
@@ -464,7 +460,7 @@
                             </li>
                         {/if}
                     {/if}
-                    {#if can('Edit:Admission Test Order')}
+                    {#if $can('Edit:Admission Test Order')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavAdminAdmissionTestOrder" aria-controls="asideNavAdminAdmissionTestOrder"
@@ -503,7 +499,7 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if can('Edit:Other Payment Gateway')}
+                    {#if $can('Edit:Other Payment Gateway')}
                         <NavItem>
                             <Link href={route('admin.other-payment-gateways.index')}
                                 class={[
@@ -512,7 +508,7 @@
                                 ]}>Other Payment Gateway</Link>
                         </NavItem>
                     {/if}
-                    {#if can('Edit:Site Content')}
+                    {#if $can('Edit:Site Content')}
                         {#if $page.component == 'Admin/SiteContents/Edit'}
                             <li class="accordion">
                                 <button data-bs-toggle="collapse" aria-expanded="true"
@@ -544,7 +540,7 @@
                             </NavItem>
                         {/if}
                     {/if}
-                    {#if can('Edit:Custom Web Page')}
+                    {#if $can('Edit:Custom Web Page')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavCustomWebPage" aria-controls="asideNavCustomWebPage"
@@ -585,7 +581,7 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if can('Edit:Navigation Item')}
+                    {#if $can('Edit:Navigation Item')}
                         <li class="accordion">
                             <button data-bs-toggle="collapse" aria-expanded="true"
                                 data-bs-target="#asideNavNavigationItem" aria-controls="asideNavNavigationItem"

@@ -4,7 +4,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Modules';
 
@@ -94,7 +94,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Modules
-        {#if can('Edit:Permission') && moduleNodes.root.children.length}
+        {#if $can('Edit:Permission') && moduleNodes.root.children.length}
             <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
             <Button color="primary" onclick={update} hidden={! editing}>
                 {#if updating}

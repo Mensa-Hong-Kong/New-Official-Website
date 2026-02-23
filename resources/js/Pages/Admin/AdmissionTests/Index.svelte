@@ -8,7 +8,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Admission Tests';
 
@@ -93,7 +93,7 @@
                         <td>
                             {#if
                                 row.in_testing_time_range ||
-                                can('Edit:Admission Test')
+                                $can('Edit:Admission Test')
                             }
                                 <Link class="btn btn-primary" href={
                                     route(
@@ -101,7 +101,7 @@
                                         {admission_test: row.id}
                                     )
                                 }>Show</Link>
-                                {#if can('Edit:Admission Test')}
+                                {#if $can('Edit:Admission Test')}
                                     <Button color="danger"
                                         disabled={submitting} onclick={() => destroy(index)}>
                                         {#if row.deleting}

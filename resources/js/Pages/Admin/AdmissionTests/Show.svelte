@@ -7,11 +7,11 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Show Admission Test';
 
-    let { auth, test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
+    let { test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
     let submitting = $state(false);
     let editing = $state(false);
     let updating = $state(false);
@@ -207,7 +207,7 @@
         <form id="form" method="POST" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                {#if can('Edit:Admission Test')}
+                {#if $can('Edit:Admission Test')}
                     <Button color="primary" disabled hidden={! updating}>
                         <Spinner type="border" size="sm" />Saving...
                     </Button>
@@ -339,8 +339,8 @@
             </Table>
         </form>
     </article>
-    {#if can('Edit:Admission Test Proctor')}
+    {#if $can('Edit:Admission Test Proctor')}
         <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
     {/if}
-    <Candidates auth={auth} test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+    <Candidates test={test} candidates={initTest.candidates} bind:submitting={submitting} />
 </section>

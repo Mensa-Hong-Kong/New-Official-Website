@@ -5,7 +5,7 @@
 	import { dndzone } from 'svelte-dnd-action';
     import ModuleItems from './ModuleItems.svelte';
 	import { flip } from 'svelte/animate';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     let {
         moduleNodes = $bindable(), moduleNode,
@@ -104,7 +104,7 @@
                 </InputGroup>
             </form>
         </div>
-        {#if can('Edit:Permission')}
+        {#if $can('Edit:Permission')}
             <div class="col text-end">
                 <Button color="primary" hidden={moduleNode.editing || moduleNode.updating}
                     onclick={() => moduleNodes[moduleNode.id]['editing'] = true}>Edit</Button>

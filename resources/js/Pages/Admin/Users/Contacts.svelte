@@ -3,7 +3,7 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     let { type, contacts: initContacts, submitting = $bindable(), defaultContact = $bindable() } = $props();
     let contacts = $state([]);
@@ -347,7 +347,7 @@
             <i class="bi bi-phone"></i> Mobile
         {/if}
     </h3>
-    {#if can('Edit:User')}
+    {#if $can('Edit:User')}
         {#each contacts as row, index}
             <Row class="g-3" hidden={row.editing}>
                 <Col md=3>{row.contact}</Col>

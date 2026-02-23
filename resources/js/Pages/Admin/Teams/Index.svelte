@@ -5,7 +5,7 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate";
 
     seo.title = 'Administration Teams';
 
@@ -162,7 +162,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Teams
-        {#if can('Edit:Permission')}
+        {#if $can('Edit:Permission')}
             <Button color="primary" hidden={editingDisplayOrder}
                 onclick={editDisplayOrder}>Edit Display Order</Button>
             <Button color="primary" disabled={submitting} hidden={! editingDisplayOrder}
@@ -210,7 +210,7 @@
                                                 {team: team.id}
                                             )
                                         }>Show</Link>
-                                    {#if can('Edit:Permission')}
+                                    {#if $can('Edit:Permission')}
                                         <Button color="danger" disabled={submitting} onclick={() => destroy(typeIndex, teamIndex)}>
                                             {#if team.deleting}
                                                 <Spinner type="border" size="sm" />Deleting...
