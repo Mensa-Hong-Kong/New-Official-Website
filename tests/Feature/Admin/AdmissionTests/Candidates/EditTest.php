@@ -59,7 +59,7 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_have_no_view_user_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_permission_and_user_is_not_proctor()
     {
         $user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
