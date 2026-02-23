@@ -21,6 +21,8 @@ class ResultTest extends TestCase
 
     private $test;
 
+    private $seatNumber = 1;
+
     protected function setUp(): void
     {
         parent::setup();
@@ -31,7 +33,13 @@ class ResultTest extends TestCase
                 'testing_at' => now()->subSecond()->subHour(),
                 'expect_end_at' => now()->subSecond(),
             ])->create();
-        $this->test->candidates()->attach($this->user->id, ['is_present' => true]);
+        $this->test->candidates()->attach(
+            $this->user->id,
+            [
+                'is_present' => true,
+                'seat_number' => $this->seatNumber,
+            ]
+        );
         $contact = UserHasContact::factory()
             ->state([
                 'user_id' => $this->user->id,
@@ -54,7 +62,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
@@ -70,7 +78,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
@@ -86,7 +94,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
@@ -100,14 +108,14 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => 0,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
         $response->assertNotFound();
     }
 
-    public function test_candidate_is_not_exists()
+    public function test_seat_number_is_not_exists_on_the_test()
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
@@ -115,7 +123,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $user,
+                    'seat_number' => $user,
                 ]
             )
         );
@@ -130,7 +138,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
@@ -148,7 +156,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );
@@ -163,7 +171,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             ),
             ['status' => 'abc']
@@ -180,7 +188,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             ),
             ['status' => true]
@@ -204,7 +212,7 @@ class ResultTest extends TestCase
                 'admin.admission-tests.candidates.result.update',
                 [
                     'admission_test' => $this->test,
-                    'candidate' => $this->user,
+                    'seat_number' => $this->seatNumber,
                 ]
             )
         );

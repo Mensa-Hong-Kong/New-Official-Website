@@ -48,6 +48,14 @@
         );
     }
 
+    function getIndexBySeatNumber(seatNumber) {
+        return candidates.findIndex(
+            function(element) {
+                return element.seatNumber == seatNumber;
+            }
+        );
+    }
+
     function updatePresentStatueSuccessCallback(response) {
         alert(response.data.success);
         let id = route().match(response.request.responseURL, 'put').params.candidate;
@@ -57,7 +65,7 @@
         submitting = false;
     }
 
-    function updateStatueFailCallback(error) {
+    function updatePresentStatueFailCallback(error) {
         if(error.status == 422) {
             for(let key in error.response.data.errors) {
                 let value = error.response.data.errors[key];
@@ -92,7 +100,7 @@
                         }
                     ),
                     updatePresentStatueSuccessCallback,
-                    updateStatueFailCallback,
+                    updatePresentStatueFailCallback,
                     'put', {status: status}
                 );
             }
@@ -101,9 +109,29 @@
 
     function updateResultSuccessCallback(response) {
         alert(response.data.success);
-        let id = route().match(response.request.responseURL, 'put').params.candidate;
-        let index = getIndexById(id);
+        let seatNumber = route().match(response.request.responseURL, 'put').params.seat_number;
+        let index = getIndexBySeatNumber(seatNumber);
         candidates[index]['isPass'] = response.data.status;
+        candidates[index]['updatingStatue'] = false;
+        submitting = false;
+    }
+
+    function updateResultFailCallback(error) {
+        if(error.status == 422) {
+            for(let key in error.response.data.errors) {
+                let value = error.response.data.errors[key];
+                switch(key) {
+                    case 'status':
+                        alert(value);
+                        break;
+                    default:
+                        alert(`Undefine Feedback Key: ${key}\nMessage: ${value}`);
+                        break;
+                }
+            }
+        }
+        let seatNumber = route().match(error.request.responseURL, 'put').params.seat_number;
+        let index = getIndexBySeatNumber(seatNumber);
         candidates[index]['updatingStatue'] = false;
         submitting = false;
     }
@@ -120,11 +148,11 @@
                         'admin.admission-tests.candidates.result.update',
                         {
                             admission_test: route().params.admission_test,
-                            candidate: candidates[index]['id'],
+                            seat_number: candidates[index]['seatNumber'],
                         }
                     ),
                     updateResultSuccessCallback,
-                    updateStatueFailCallback,
+                    updateResultFailCallback,
                     'put', {status: status}
                 );
             }
@@ -132,7 +160,7 @@
     }
 
     function updateResult(index, status) {
-        let message = `Are you sure to update candidate of ${candidates[index]['name']}(${candidates[index]['passportNumber']}) result to ${status? 'pass' : 'fail'}?`;
+        let message = `Are you sure to update candidate of seat number ${candidates[index]['seatNumber']}) result to ${status? 'pass' : 'fail'}?`;
         confirm(message, confirmedUpdateResult, [index, status]);
     }
 

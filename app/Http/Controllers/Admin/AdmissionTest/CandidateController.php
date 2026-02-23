@@ -60,15 +60,12 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $pivot = AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
                         ->where('user_id', $request->route('candidate')->id)
-                        ->first();
-                    if (! $pivot) {
-                        abort(404);
-                    }
+                        ->firstOrFail();
                     $request->merge(['pivot' => $pivot]);
 
                     return $next($request);
                 }
-            ))->except('store'),
+            ))->except(['store', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
@@ -141,10 +138,17 @@ class CandidateController extends Controller implements HasMiddleware
             ))->only('present'),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if ($request->route('admission_test')->expect_end_at > now()) {
+                    $test = $request->route('admission_test');
+                    $pivot = AdmissionTestHasCandidate::with('candidate')
+                        ->where('test_id', $test->id)
+                        ->where('seat_number', $request->route('seat_number'))
+                        ->firstOrFail();
+                    if ($test->expect_end_at > now()) {
                         abort(409, 'Cannot add result before expect end time.');
                     }
-                    if ($request->pivot->is_present) {
+                    if ($pivot->is_present) {
+                        $request->merge(['pivot' => $pivot]);
+
                         return $next($request);
                     }
                     abort(409, 'Cannot add result to absent candidate.');
@@ -305,19 +309,19 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
-    public function result(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
+    public function result(StatusRequest $request, AdmissionTest $admissionTest, int $seatNumber)
     {
         DB::beginTransaction();
         $request->pivot->update(['is_pass' => (bool) $request->status]);
         if ($request->pivot->is_pass) {
-            $candidate->notify(new PassAdmissionTest($admissionTest));
+            $request->pivot->candidate->notify(new PassAdmissionTest($admissionTest));
         } else {
-            $candidate->notify(new FailAdmissionTest($admissionTest));
+            $request->pivot->candidate->notify(new FailAdmissionTest($admissionTest));
         }
         DB::commit();
 
         return [
-            'success' => "The candidate of $candidate->adornedName changed to be ".($request->pivot->is_pass ? 'pass.' : 'fail.'),
+            'success' => "The candidate of {$request->pivot->candidate->adornedName} changed to be ".($request->pivot->is_pass ? 'pass.' : 'fail.'),
             'status' => $request->pivot->is_pass,
         ];
     }
