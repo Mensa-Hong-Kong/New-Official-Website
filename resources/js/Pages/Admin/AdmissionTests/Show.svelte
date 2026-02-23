@@ -339,6 +339,8 @@
             </Table>
         </form>
     </article>
-    <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
+    {#if can('Edit:Admission Test Proctor')}
+        <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
+    {/if}
     <Candidates auth={auth} test={test} candidates={initTest.candidates} bind:submitting={submitting} />
 </section>

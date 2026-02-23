@@ -48,9 +48,12 @@ class Controller extends BaseController implements HasMiddleware
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
                     if (
-                        $request->user()->can('Edit:Admission Test') || (
+                        $request->user()->canAny([
+                            'Edit:Admission Test',
+                            'Edit:Admission Test Proctor',
+                        ]) || (
                             $test->inTestingTimeRange &&
-                            in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
+                            $test->proctors()->where('user_id', $request->user()->id)->exists()
                         )
                     ) {
                         return $next($request);
@@ -182,12 +185,11 @@ class Controller extends BaseController implements HasMiddleware
             },
         ]);
         $admissionTest->makeHidden(['address_id', 'created_at', 'updated_at']);
-        $admissionTest->proctors->append('adorned_name');
-        $admissionTest->proctors->makeHidden([
-            'username', 'member', 'family_name', 'middle_name', 'given_name',
-            'passport_type_id', 'passport_number', 'birthday', 'gender_id',
-            'synced_to_stripe', 'created_at', 'updated_at', 'pivot',
-        ]);
+        if($request->user()->can('Edit:Admission Test Proctor')) {
+            $admissionTest->load('proctors:id,family_name,middle_name,given_name');
+            $admissionTest->proctors->append('adorned_name');
+            $admissionTest->proctors->makeHidden(['family_name', 'middle_name', 'given_name', 'pivot', 'member']);
+        }
         $admissionTest->candidates->append([
             'adorned_name', 'has_other_same_passport_user_joined_future_test',
             'last_attended_admission_test_of_other_same_passport_user',

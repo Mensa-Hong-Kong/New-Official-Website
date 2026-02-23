@@ -17,8 +17,7 @@ class ProctorController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:Edit:Admission Test'),
-            new Middleware('permission:View:User'),
+            new Middleware('permission:Edit:Admission Test Proctor'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (
