@@ -101,15 +101,17 @@
                                         {admission_test: row.id}
                                     )
                                 }>Show</Link>
-                                <Button color="danger"
-                                    disabled={submitting} onclick={() => destroy(index)}>
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />
-                                        Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
+                                {#if can('Edit:Admission Test')}
+                                    <Button color="danger"
+                                        disabled={submitting} onclick={() => destroy(index)}>
+                                        {#if row.deleting}
+                                            <Spinner type="border" size="sm" />
+                                            Deleting...
+                                        {:else}
+                                            Delete
+                                        {/if}
+                                    </Button>
+                                {/if}
                             {:else}
                                 <Button color="secondary" disabled={submitting}>Show</Button>
                             {/if}

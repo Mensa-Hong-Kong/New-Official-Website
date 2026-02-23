@@ -30,7 +30,14 @@ class Controller extends BaseController implements HasMiddleware
                 function (Request $request, Closure $next) {
                     if (
                         $request->user()->proctorTests()->count() ||
-                        $request->user()->can('Edit:Admission Test')
+                        $request->user()->canAny([
+                            'Edit:Admission Test',
+                            'Edit:Admission Test Proctor',
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                            'View:Admission Test Result',
+                            'Edit:Admission Test Result',
+                        ])
                     ) {
                         return $next($request);
                     }
@@ -158,7 +165,7 @@ class Controller extends BaseController implements HasMiddleware
             }
         }
         $admissionTest->load([
-            'proctors', 'address' => function ($query) {
+            'address' => function ($query) {
                 $query->select(['id', 'district_id']);
             }, 'candidates' => function ($query) use ($admissionTest) {
                 $query->with([

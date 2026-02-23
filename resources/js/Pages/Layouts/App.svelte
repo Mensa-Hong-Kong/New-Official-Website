@@ -4,7 +4,7 @@
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
-    import { setup, can } from "@/gate.svelte";
+    import { setup, can, canAny } from "@/gate.svelte";
 
 	$effect(() => {
         setup($page.props.auth);
@@ -399,7 +399,16 @@
                             </ul>
                         </li>
                     {/if}
-                    {#if can('Edit:Admission Test') || $page.props.auth.user.hasProctorTests}
+                    {#if
+                        canAny([
+                            'Edit:Admission Test',
+                            'Edit:Admission Test Proctor',
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                            'View:Admission Test Result',
+                            'Edit:Admission Test Result',
+                        ]) || $page.props.auth.user.hasProctorTests
+                    }
                         {#if
                             ! can('Edit:Admission Test') &&
                             ! $page.component.includes('Admin/AdmissionTests/Show')
