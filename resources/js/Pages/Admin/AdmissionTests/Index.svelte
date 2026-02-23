@@ -92,8 +92,10 @@
                         <td>{row.is_public ? 'Public' : 'Private'}</td>
                         <td>
                             {#if
-                                row.in_testing_time_range ||
-                                $can('Edit:Admission Test')
+                                (
+                                    row.in_testing_time_range &&
+                                    row.current_user_is_proctor
+                                ) || $can('Edit:Admission Test')
                             }
                                 <Link class="btn btn-primary" href={
                                     route(

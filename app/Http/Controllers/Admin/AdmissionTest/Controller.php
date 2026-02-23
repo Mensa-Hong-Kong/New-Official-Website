@@ -78,7 +78,7 @@ class Controller extends BaseController implements HasMiddleware
                     $query->select(['id', 'name']);
                 },
             ])->sortable('testing_at')->paginate();
-        $tests->append('in_testing_time_range');
+        $tests->append(['in_testing_time_range', 'current_user_is_proctor']);
         $tests->makeHidden(['type_id', 'expect_end_at', 'location_id', 'address_id', 'created_at', 'updated_at']);
         foreach ($tests as $test) {
             $test->location->makeHidden('id');
