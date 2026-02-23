@@ -7,6 +7,7 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
+    import { can } from "@/gate.svelte";
 
     seo.title = 'Administration Show Admission Test';
 
@@ -206,15 +207,17 @@
         <form id="form" method="POST" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                <Button color="primary" disabled hidden={! updating}>
-                    <Spinner type="border" size="sm" />Saving...
-                </Button>
-                <Button color="primary" outline hidden={editing || updating}
-                    onclick={edit}>Edit</Button>
-                <Button color="primary" outline hidden={! editing && ! updating}
-                    disabled={submitting}>Save</Button>
-                <Button color="danger" outline hidden={! editing && ! updating}
-                    onclick={cancel}>Cancel</Button>
+                {#if can('Edit:Admission Test')}
+                    <Button color="primary" disabled hidden={! updating}>
+                        <Spinner type="border" size="sm" />Saving...
+                    </Button>
+                    <Button color="primary" outline hidden={editing || updating}
+                        onclick={edit}>Edit</Button>
+                    <Button color="primary" outline hidden={! editing && ! updating}
+                        disabled={submitting}>Save</Button>
+                    <Button color="danger" outline hidden={! editing && ! updating}
+                        onclick={cancel}>Cancel</Button>
+                {/if}
             </h3>
             <Table hover>
                 <tbody>
