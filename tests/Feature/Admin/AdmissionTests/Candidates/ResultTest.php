@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\ContactHasVerification;
+use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\Admin\FailAdmissionTest;
@@ -27,7 +28,7 @@ class ResultTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
+        $this->user->givePermissionTo('Edit:Admission Test Result');
         $this->test = AdmissionTest::factory()
             ->state([
                 'testing_at' => now()->subSecond()->subHour(),
@@ -69,26 +70,15 @@ class ResultTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_result_permission()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)->putJson(
-            route(
-                'admin.admission-tests.candidates.result.update',
-                [
-                    'admission_test' => $this->test,
-                    'seat_number' => $this->seatNumber,
-                ]
-            )
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Admission Test Result')
+                ->first()
+                ->name
         );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_view_user_permission()
-    {
-        $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->putJson(
             route(
                 'admin.admission-tests.candidates.result.update',

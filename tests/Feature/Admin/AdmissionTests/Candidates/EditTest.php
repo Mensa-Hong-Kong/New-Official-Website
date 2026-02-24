@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -24,7 +25,7 @@ class EditTest extends TestCase
                 'expect_end_at' => now()->addHour(),
             ])->create();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
+        $this->test->proctors()->attach($this->user->id);
         $this->test->candidates()->attach($this->user->id);
     }
 
@@ -42,27 +43,15 @@ class EditTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_admission_test_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor()
     {
         $user = User::factory()->create();
-        $this->user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)
-            ->get(
-                route(
-                    'admin.admission-tests.candidates.edit',
-                    [
-                        'admission_test' => $this->test,
-                        'candidate' => $this->user,
-                    ]
-                )
-            );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_edit_permission_and_user_is_not_proctor()
-    {
-        $user = User::factory()->create();
-        $this->user->givePermissionTo('Edit:Admission Test');
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Admission Test Candidate')
+                ->first()
+                ->name
+        );
         $response = $this->actingAs($user)
             ->get(
                 route(
@@ -107,7 +96,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -123,7 +112,7 @@ class EditTest extends TestCase
         $response->assertConflict();
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
     {
         $this->test->update(['expect_end_at' => now()->subHours(2)]);
         $response = $this->actingAs($this->user)
@@ -141,7 +130,9 @@ class EditTest extends TestCase
 
     public function test_happy_case_when_user_only_has_permission()
     {
-        $response = $this->actingAs($this->user)
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Admission Test Candidate');
+        $response = $this->actingAs($user)
             ->get(
                 route(
                     'admin.admission-tests.candidates.edit',
@@ -156,9 +147,7 @@ class EditTest extends TestCase
 
     public function test_happy_case_when_user_only_is_proctor()
     {
-        $user = User::factory()->create();
-        $this->test->proctors()->attach($user->id);
-        $response = $this->actingAs($user)
+        $response = $this->actingAs($this->user)
             ->get(
                 route(
                     'admin.admission-tests.candidates.edit',
@@ -173,7 +162,7 @@ class EditTest extends TestCase
 
     public function test_happy_case_when_user_has_permission_and_is_proctor()
     {
-        $this->test->proctors()->attach($this->user->id);
+        $this->user->givePermissionTo('Edit:Admission Test Candidate');
         $response = $this->actingAs($this->user)
             ->get(
                 route(

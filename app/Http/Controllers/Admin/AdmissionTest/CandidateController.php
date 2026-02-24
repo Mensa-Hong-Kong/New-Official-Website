@@ -31,18 +31,32 @@ class CandidateController extends Controller implements HasMiddleware
     {
         return [
             (new Middleware(EncryptHistoryMiddleware::class))->only(['show', 'edit']),
+            (new Middleware('permission:Edit:Admission Test Candidate'))->only(['store', 'destroy']),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    if (
-                        ! $request->user()->can('View:User') ||
-                        ! $request->user()->can('Edit:Admission Test')
-                    ) {
+                    $permissions = ['Edit:Admission Test Candidate'];
+                    $test = $request->route('admission_test');
+                    $test->append('current_user_is_proctor');
+                    if($request->route()->getActionMethod() == 'show') {
+                        $permissions[] = 'View:Admission Test Candidate';
+                    }
+                    if ($request->user()->canAny($permissions)) {
+                        return $next($request);
+                    }
+                    if($test->current_user_is_proctor) {
+                        if ($test->testing_at > now()->addHours(2)) {
+                            abort(409, 'Could not access before than testing time 2 hours.');
+                        }
+                        if ($test->expect_end_at < now()->subHour()) {
+                            abort(410, 'Could not access after than expect end time 1 hour.');
+                        }
+
+                        return $next($request);
+                    } else {
                         abort(403);
                     }
-
-                    return $next($request);
                 }
-            ))->only(['store', 'result', 'destroy']),
+            ))->except(['store', 'destroy', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
@@ -68,37 +82,13 @@ class CandidateController extends Controller implements HasMiddleware
             ))->except(['store', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
-                    $test = $request->route('admission_test');
-                    if (
-                        ! (
-                            $request->user()->can('View:User') &&
-                            $request->user()->can('Edit:Admission Test')
-                        ) && ! (
-                            $test->inTestingTimeRange &&
-                            in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
-                        )
-                    ) {
-                        abort(403);
-                    }
-                    if ($test->testing_at > now()->addHours(2)) {
-                        abort(409, 'Could not access before than testing time 2 hours.');
-                    }
-                    if ($test->expect_end_at < now()->subHour()) {
-                        abort(410, 'Could not access after than expect end time 1 hour.');
-                    }
-
-                    return $next($request);
-                }
-            ))->only(['show', 'edit', 'update', 'present']),
-            (new Middleware(
-                function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
                     $test = $request->route('admission_test');
                     if ($test->type->minimum_age && $test->type->minimum_age > floor($user->ageForPsychology)) {
                         abort(410, 'The candidate age less than test minimum age limit.');
                     } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($user->ageForPsychology)) {
                         abort(410, 'The candidate age greater than test maximum age limit.');
-                    } elseif (in_array($request->pivot->is_pass, ['0', '1'])) {
+                    } elseif ($request->pivot->is_pass !== null) {
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
@@ -138,6 +128,9 @@ class CandidateController extends Controller implements HasMiddleware
             ))->only('present'),
             (new Middleware(
                 function (Request $request, Closure $next) {
+                    if (! $request->user()->can('Edit:Admission Test Result')) {
+                        abort(403);
+                    }
                     $test = $request->route('admission_test');
                     $pivot = AdmissionTestHasCandidate::with('candidate')
                         ->where('test_id', $test->id)
@@ -197,21 +190,21 @@ class CandidateController extends Controller implements HasMiddleware
     public function show(Request $request, AdmissionTest $admissionTest, User $candidate)
     {
         $admissionTest->makeHidden([
-            'type_id', 'testing_at', 'expect_end_at',
-            'location_id', 'address_id', 'maximum_candidates',
-            'is_public', 'created_at', 'updated_at',
+            'id', 'type_id', 'location_id', 'address_id', 'maximum_candidates',
+            'is_free', 'is_public', 'created_at', 'updated_at',
         ]);
         $candidate->load([
+            'passportType:id,name',
+            'gender:id,name',
             'lastAttendedAdmissionTest' => function ($query) use ($admissionTest) {
-                $query->with([
-                    'type' => function ($query) {
-                        $query->select(['id', 'interval_month']);
-                    },
-                ])->whereNot('test_id', $admissionTest->id);
-            }, 'passportType' => function ($query) {
-                $query->select(['id', 'name']);
-            }, 'gender' => function ($query) {
-                $query->select(['id', 'name']);
+                $query->select(
+                    array_map(
+                        function ($column) use ($query) {
+                            return $query->getRelated()->qualifyColumn($column);
+                        },
+                        ['id', 'testing_at']
+                    )
+                )->with('type:id,interval_month')->whereNot('test_id', $admissionTest->id);
             },
         ]);
         $candidate->append([
@@ -221,23 +214,22 @@ class CandidateController extends Controller implements HasMiddleware
         ]);
         $candidate->makeHidden([
             'username', 'member', 'gender_id', 'passport_type_id',
-            'synced_to_stripe', 'created_at', 'updated_at',
+            'address_id',  'synced_to_stripe', 'created_at', 'updated_at',
         ]);
         $candidate->passportType->makeHidden('id');
         $candidate->gender->makeHidden('id');
         if ($candidate->lastAttendedAdmissionTest) {
-            $candidate->lastAttendedAdmissionTest->makeHidden([
-                'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
-                'maximum_candidates', 'is_public', 'created_at', 'updated_at',
-                'laravel_through_key',
-            ]);
-            $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
+            $candidate->lastAttendedAdmissionTest
+                ->makeHidden(['id', 'laravel_through_key']);
+            $candidate->lastAttendedAdmissionTest->type
+                ->makeHidden('id');
         }
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
             ->with('candidate', $candidate)
             ->with('isPresent', $request->pivot->is_present)
-            ->with('seatNumber', $request->pivot->seat_number);
+            ->with('seatNumber', $request->pivot->seat_number)
+            ->with('test', $admissionTest);
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)

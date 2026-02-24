@@ -5,10 +5,11 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { formatToDate } from '@/timeZoneDatetime';
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show Candidate';
 
-    let { candidate, isPresent, seatNumber } = $props();
+    let { candidate, isPresent, seatNumber, test } = $props();
     let submitting = $state(false);
 
     function updatePresentStatueSuccessCallback(response) {
@@ -59,18 +60,25 @@
 <section class="container">
     <h2 class="mb-2 fw-bold">
         Candidate
-        <Link class="btn btn-primary"
-            href={
-                route(
-                    'admin.admission-tests.candidates.edit',
-                    {
-                        admission_test: route().params.admission_test,
-                        candidate: candidate.id,
-                    }
-                )
-            }>Edit</Link>
+        {#if
+            can('Edit:Admission Test Candidate') || (
+                new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
+                new Date(formatToDatetime(test.expectEndAt)) > (new Date).subHour(2)
+            )
+        }
+            <Link class="btn btn-primary"
+                href={
+                    route(
+                        'admin.admission-tests.candidates.edit',
+                        {
+                            admission_test: route().params.admission_test,
+                            candidate: candidate.id,
+                        }
+                    )
+                }>Edit</Link>
+        {/if}
     </h2>
-    <Table>
+    <Table hover>
         <tbody>
             <tr>
                 <th>Gender</th>
@@ -118,12 +126,21 @@
             </tr>
             <tr>
                 <th>Is Present</th>
-                <td>
-                    <Button color={isPresent ? 'success' : 'danger'}
-                        onclick={() => updatePresentStatue(! isPresent)}>
-                        {isPresent ? 'Present' : 'Absent'}
-                    </Button>
-                </td>
+                {#if
+                    can('Edit:Admission Test Candidate') || (
+                        new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                        new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
+                    )
+                }
+                    <td>
+                        <Button color={isPresent ? 'success' : 'danger'}
+                            onclick={() => updatePresentStatue(! isPresent)}>
+                            {isPresent ? 'Present' : 'Absent'}
+                        </Button>
+                    </td>
+                {:else}
+                    <td>{row.isPresent ? 'Present' : 'Absent'}</td>
+                {/if}
             </tr>
         </tbody>
     </Table>
