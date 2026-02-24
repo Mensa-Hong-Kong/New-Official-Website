@@ -95,7 +95,7 @@
                                 (
                                     row.in_testing_time_range &&
                                     row.current_user_is_proctor
-                                ) || $can('Edit:Admission Test')
+                                ) || can('Edit:Admission Test')
                             }
                                 <Link class="btn btn-primary" href={
                                     route(
@@ -103,7 +103,7 @@
                                         {admission_test: row.id}
                                     )
                                 }>Show</Link>
-                                {#if $can('Edit:Admission Test')}
+                                {#if can('Edit:Admission Test')}
                                     <Button color="danger"
                                         disabled={submitting} onclick={() => destroy(index)}>
                                         {#if row.deleting}

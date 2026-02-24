@@ -156,7 +156,7 @@
     <article>
         <h3 class="mb-2 fw-bold">
             Info
-            {#if $can('Edit:Permission')}
+            {#if can('Edit:Permission')}
                 <Link class="btn btn-primary" href={
                     route('admin.teams.edit', {team: team.id})
                 }>Edit</Link>
@@ -177,7 +177,7 @@
     </article>
     <h3 class="mb-2 fw-bold">
         Roles
-        {#if $can('Edit:Permission')}
+        {#if can('Edit:Permission')}
             <Link href={route('admin.teams.roles.create', {team: team.id})}
                 class="btn btn-success">Create</Link>
             <Button color="primary" hidden={editingDisplayOrder}
@@ -198,7 +198,7 @@
         <thead>
             <tr>
                 <th scope="col">Name</th>
-                {#if $can('Edit:Permission')}
+                {#if can('Edit:Permission')}
                     <th scope="col">Control</th>
                 {/if}
             </tr>
@@ -211,7 +211,7 @@
                         draggable: editingDisplayOrder && ! updatingDisplayOrder
                     }}>
                     <th>{row.name}</th>
-                    {#if $can('Edit:Permission')}
+                    {#if can('Edit:Permission')}
                         <td>
                             <Link class="btn btn-primary editRole"
                                 href={

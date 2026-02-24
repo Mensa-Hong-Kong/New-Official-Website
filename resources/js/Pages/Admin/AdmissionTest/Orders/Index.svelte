@@ -77,7 +77,7 @@
                     <tr>
                         <td>{row.id}</td>
                         <td>
-                            {#if $can('View:User')}
+                            {#if can('View:User')}
                                 <Link href={
                                     route('admin.users.show', {user: row.user.id})
                                 }>

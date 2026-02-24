@@ -94,7 +94,7 @@
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">
         Modules
-        {#if $can('Edit:Permission') && moduleNodes.root.children.length}
+        {#if can('Edit:Permission') && moduleNodes.root.children.length}
             <Button color="primary" onclick={edit} hidden={editing} disabled={submitting}>Edit Display Order</Button>
             <Button color="primary" onclick={update} hidden={! editing}>
                 {#if updating}

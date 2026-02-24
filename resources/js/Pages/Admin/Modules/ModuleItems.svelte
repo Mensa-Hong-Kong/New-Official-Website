@@ -104,7 +104,7 @@
                 </InputGroup>
             </form>
         </div>
-        {#if $can('Edit:Permission')}
+        {#if can('Edit:Permission')}
             <div class="col text-end">
                 <Button color="primary" hidden={moduleNode.editing || moduleNode.updating}
                     onclick={() => moduleNodes[moduleNode.id]['editing'] = true}>Edit</Button>

@@ -344,7 +344,7 @@
         <form method="POST" class="row g-3" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                {#if $can('Edit:User')}
+                {#if can('Edit:User')}
                     <Button color="primary" hidden={! updating} disabled>
                         <Spinner type="border" size="sm" />Saving...
                     </Button>
@@ -377,7 +377,7 @@
                 <Label>Password:</Label>
                 <Row>
                     <Col md="2">********</Col>
-                    {#if $can('Edit:User')}
+                    {#if can('Edit:User')}
                         <Button color={user.defaultEmail ? 'danger' : 'secondary'}
                             hidden={resettingPassword}
                             disabled={! user.defaultEmail || submitting}

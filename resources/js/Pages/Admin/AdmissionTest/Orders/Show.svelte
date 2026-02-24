@@ -86,7 +86,7 @@
                 <tr>
                     <th>Payer</th>
                     <td>
-                        {#if $can('View:User')}
+                        {#if can('View:User')}
                             <Link href={route('admin.users.show', {user: order.user.id})}>
                                 {order.user.adorned_name}
                             </Link>

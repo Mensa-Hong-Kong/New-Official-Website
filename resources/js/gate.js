@@ -1,54 +1,54 @@
 // src/lib/utils/permissions.js or similar
 import { page } from '@inertiajs/svelte';
-import { derived } from 'svelte/store';
+import { get } from 'svelte/store';
 
-export const can = derived(
-    page, ($page) => (permissions) => {
-        if ($page.props.auth.user.roles.includes('Super Administrator')) {
-            return true;
-        }
-
-        if (Array.isArray(permissions)) {
-            return permissions.filter(
-                function (permission) {
-                    return $page.props.auth.user.permissions.includes(permission);
-                }
-            ).length == permissions.length;
-        }
-
-        return $page.props.auth.user.permissions.includes(permissions);
+export function can(permissions) {
+    if (get(page).props.auth.user.roles.includes('Super Administrator')) {
+        return true;
     }
-);
 
-export const canAny = derived(
-    page, ($page) => (permissions) => {
-        return permissions.some(
-            permission => $page.props.auth.user.permissions.includes(permission)
-        ) || $page.props.auth.user.roles.includes('Super Administrator');
+    if (Array.isArray(permissions)) {
+        return permissions.filter(
+            function (permission) {
+                return get(page).props.auth.user.permissions.includes(permission);
+            }
+        ).length == permissions.length;
     }
-);
 
-export const role = derived(
-    page, ($page) => (permissions) => {
-        if ($page.props.auth.user.roles.includes('Super Administrator')) {
-            return true;
-        }
+    return get(page).props.auth.user.permissions.includes(permissions);
+}
 
-        if (Array.isArray(roles)) {
-            return roles.filter(
-                function (role) {
-                    return $page.props.auth.user.roles.includes(role);
-                }
-            ).length == roles.length;
-        }
+export function cant(permissions) {
+    return ! can(permissions);
+}
 
-        return $page.props.auth.user.roles.includes(roles);
+export function cannot(permissions) {
+    return ! can(permissions);
+}
+
+export function canAny(permissions) {
+    return permissions.some(
+        permission => get(page).props.auth.user.permissions.includes(permission)
+    ) || get(page).props.auth.user.roles.includes('Super Administrator');
+}
+
+export function role(permissions) {
+    if (get(page).props.auth.user.roles.includes('Super Administrator')) {
+        return true;
     }
-);
 
-export const hasAnyRole = derived(
-    page, ($page) => (permissions) => {
-        return roles.some(role => $page.props.auth.user.roles.includes(role)) ||
-            $page.props.auth.user.roles.includes('Super Administrator');
+    if (Array.isArray(roles)) {
+        return roles.filter(
+            function (role) {
+                return get(page).props.auth.user.roles.includes(role);
+            }
+        ).length == roles.length;
     }
-);
+
+    return get(page).props.auth.user.roles.includes(roles);
+}
+
+export function hasAnyRole(permissions) {
+    return roles.some(role => get(page).props.auth.user.roles.includes(role)) ||
+        get(page).props.auth.user.roles.includes('Super Administrator');
+}

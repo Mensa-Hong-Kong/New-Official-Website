@@ -33,7 +33,7 @@
         };
         if(
             ! test.isFree &&
-            $canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
+            canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
         ) {
             data['isFree'] = row.pivot.order_id == null;
         }
@@ -296,14 +296,14 @@
                 {/if}
                 {#if
                     ! test.isFree &&
-                    $canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
+                    canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
                 }
                     <th>Is Free</th>
                 {/if}
                 {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
                     <th>Show</th>
                 {/if}
-                {#if $can('Edit:Admission Test')}
+                {#if can('Edit:Admission Test')}
                     <th colspan={new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2) ? 3 : 2}>Control</th>
                 {:else if
                     new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
@@ -317,7 +317,7 @@
             {#each candidates as row, index}
                 <tr>
                     <td>
-                        {#if $can('View:User')}
+                        {#if can('View:User')}
                             <Link href={
                                 route(
                                     'admin.users.show',
@@ -348,7 +348,7 @@
                     {/if}
                     {#if
                         ! test.isFree &&
-                        $canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
+                        canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
                     }
                         <td>{row.isFree ? 'Free' : 'Fee'}</td>
                     {/if}
@@ -381,7 +381,7 @@
                                 {row.isPresent ? 'Present' : 'Absent'}</Button>
                         </td>
                     {/if}
-                    {#if $can('Edit:Admission Test')}
+                    {#if can('Edit:Admission Test')}
                         {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
                             <td>
                                 <Button block color="success" name="status" value={true} style="min-width: 85px !important"
@@ -407,7 +407,7 @@
                 </tr>
             {/each}
             {#if
-                $can(['View:User', 'Edit:Admission Test']) &&
+                can(['View:User', 'Edit:Admission Test']) &&
                 new Date(formatToDatetime(test.testingAt)) >= (new Date).addDays(2).endOfDay()
             }
                 <tr>

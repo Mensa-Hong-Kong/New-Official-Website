@@ -207,7 +207,7 @@
         <form id="form" method="POST" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                {#if $can('Edit:Admission Test')}
+                {#if can('Edit:Admission Test')}
                     <Button color="primary" disabled hidden={! updating}>
                         <Spinner type="border" size="sm" />Saving...
                     </Button>
@@ -339,7 +339,7 @@
             </Table>
         </form>
     </article>
-    {#if $can('Edit:Admission Test Proctor')}
+    {#if can('Edit:Admission Test Proctor')}
         <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
     {/if}
     <Candidates test={test} candidates={initTest.candidates} bind:submitting={submitting} />
