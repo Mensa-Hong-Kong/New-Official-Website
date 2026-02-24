@@ -6,7 +6,7 @@
     import { post } from "@/submitForm";
     import { Button, Spinner, Col, Row, Label, Input } from '@sveltestrap/sveltestrap';
     import { formatToDate } from '@/timeZoneDatetime';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show User';
 

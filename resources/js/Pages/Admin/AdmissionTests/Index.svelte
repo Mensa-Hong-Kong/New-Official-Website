@@ -8,7 +8,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Admission Tests';
 

@@ -4,7 +4,7 @@
 	import NavDropdown from '@/Pages/Components/NavDropdown.svelte';
 	import Alert, { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import Confirm from '@/Pages/Components/Modals/Confirm.svelte';
-    import { can, canAny } from "@/gate";
+    import { can, canAny } from "@/gate.ts";
 
     let isOpenNav = $state(false);
 

@@ -3,7 +3,7 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     let { type, contacts: initContacts, submitting = $bindable(), defaultContact = $bindable() } = $props();
     let contacts = $state([]);

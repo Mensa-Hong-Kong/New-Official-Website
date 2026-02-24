@@ -4,7 +4,7 @@
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
     import Pagination from '@/Pages/Components/Pagination.svelte';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Admission Test Orders';
 

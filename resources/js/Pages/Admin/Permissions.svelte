@@ -3,7 +3,7 @@
     import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Permissions';
 

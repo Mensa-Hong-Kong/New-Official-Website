@@ -5,7 +5,7 @@
     import { Table, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can, canAny } from "@/gate";
+    import { can, canAny } from "@/gate.ts";
 
     let { candidates: initCandidates, submitting = $bindable(), test } = $props();
     let candidates = $state([]);

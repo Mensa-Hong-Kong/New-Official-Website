@@ -6,7 +6,7 @@
     import { post } from "@/submitForm";
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show Admission Test Order';
 

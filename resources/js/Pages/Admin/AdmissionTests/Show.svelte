@@ -7,7 +7,7 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show Admission Test';
 
