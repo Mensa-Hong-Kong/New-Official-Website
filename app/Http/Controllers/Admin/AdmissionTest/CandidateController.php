@@ -231,10 +231,11 @@ class CandidateController extends Controller implements HasMiddleware
         }
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
+            ->with('test', $admissionTest)
             ->with('candidate', $candidate)
-            ->with('isPresent', $request->pivot->is_present)
             ->with('seatNumber', $request->pivot->seat_number)
-            ->with('test', $admissionTest);
+            ->with('isPresent', $request->pivot->is_present)
+            ->with('hasResult', $request->pivot->is_pass !== null);
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)

@@ -4,12 +4,12 @@
     import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { formatToDate } from '@/timeZoneDatetime';
+    import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show Candidate';
 
-    let { candidate, isPresent, seatNumber, test } = $props();
+    let { test, candidate, isPresent, seatNumber, hasResult } = $props();
     let submitting = $state(false);
 
     function updatePresentStatueSuccessCallback(response) {
@@ -62,8 +62,8 @@
         Candidate
         {#if
             can('Edit:Admission Test Candidate') || (
-                new Date(formatToDatetime(test.testingAt)) < (new Date).addHours(2) &&
-                new Date(formatToDatetime(test.expectEndAt)) > (new Date).subHour(2)
+                new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
             )
         }
             <Link class="btn btn-primary"
@@ -122,10 +122,10 @@
             </tr>
             <tr>
                 <th>Seat Number</th>
-                <td>{seatNumber}</td>
+                <td>{seatNumber ?? '--'}</td>
             </tr>
             <tr>
-                <th>Is Present</th>
+                <th>Status</th>
                 {#if
                     can('Edit:Admission Test Candidate') || (
                         new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
@@ -134,12 +134,18 @@
                 }
                     <td>
                         <Button color={isPresent ? 'success' : 'danger'}
-                            onclick={() => updatePresentStatue(! isPresent)}>
+                            onclick={() => updatePresentStatue(! isPresent)}
+                            disabled={hasResult || submitting}>
                             {isPresent ? 'Present' : 'Absent'}
                         </Button>
                     </td>
                 {:else}
-                    <td>{row.isPresent ? 'Present' : 'Absent'}</td>
+                    <td>
+                        {
+                            new Date(formatToDatetime(test.testing_at)) >= (new Date).addHours(2) ?
+                                '--' : isPresent ? 'Present' : 'Absent'
+                        }
+                    </td>
                 {/if}
             </tr>
         </tbody>
