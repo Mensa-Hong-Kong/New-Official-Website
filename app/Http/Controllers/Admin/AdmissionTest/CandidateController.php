@@ -153,9 +153,21 @@ class CandidateController extends Controller implements HasMiddleware
     public function store(StoreRequest $request, AdmissionTest $admissionTest)
     {
         DB::beginTransaction();
+        $return = [
+            'success' => 'The candidate create success',
+            'user_id' => $request->user->id,
+            'name' => $request->user->adornedName,
+            'passport_type' => $request->user->passportType->name,
+            'passport_number' => $request->user->passport_number,
+            'has_other_same_passport_user_joined_future_test' => $request->user->hasOtherSamePassportUserJoinedFutureTest,
+        ];
         if ($admissionTest->is_free || $request->is_free) {
+            if(! $admissionTest->is_free) {
+                $return['is_free'] = true;
+            }
             $admissionTest->candidates()->attach($request->user->id);
         } else {
+            $return['is_free'] = false;
             $admissionTest->candidates()->attach(
                 $request->user->id,
                 [
@@ -177,14 +189,7 @@ class CandidateController extends Controller implements HasMiddleware
         }
         DB::commit();
 
-        return [
-            'success' => 'The candidate create success',
-            'user_id' => $request->user->id,
-            'name' => $request->user->adornedName,
-            'passport_type' => $request->user->passportType->name,
-            'passport_number' => $request->user->passport_number,
-            'has_other_same_passport_user_joined_future_test' => $request->user->hasOtherSamePassportUserJoinedFutureTest,
-        ];
+        return $return;
     }
 
     public function show(Request $request, AdmissionTest $admissionTest, User $candidate)
@@ -281,10 +286,10 @@ class CandidateController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $admissionTest->candidates()->detach($candidate->id);
-        if (in_array($request->pivot->is_pass, ['0', '1'])) {
-            $candidate->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
-        } else {
+        if ($request->pivot->is_pass === null) {
             $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest));
+        } else {
+            $candidate->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
         }
         DB::commit();
 
