@@ -7,7 +7,7 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate.ts";
+    import { can, canAny } from "@/gate.ts";
 
     seo.title = 'Administration Show Admission Test';
 
@@ -26,6 +26,8 @@
         maximumCandidates: initTest.maximum_candidates,
         isFree: initTest.is_free,
         isPublic: initTest.is_public,
+        currentUserIsProctor: initTest.current_user_is_proctor,
+        inTestingTimeRange: initTest.in_testing_time_range,
     });
     let inputs = $state({});
     let feedbacks = $state({
@@ -204,7 +206,7 @@
 
 <section class="container">
     <article>
-        <form id="form" method="POST" novalidate onsubmit={update}>
+        <form method="POST" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
                 {#if can('Edit:Admission Test')}
@@ -342,5 +344,14 @@
     {#if can('Edit:Admission Test Proctor')}
         <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
     {/if}
-    <Candidates test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+    {#if
+        canAny([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+            'View:Admission Test Result',
+            'Edit:Admission Test Result',
+        ]) || test.currentUserIsProctor
+    }
+        <Candidates test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+    {/if}
 </section>
