@@ -24,6 +24,7 @@
             let data = {
                 id: row.id,
                 name: row.adorned_name,
+                birthday: response.data.birthday,
                 passportType: row.passport_type.name,
                 passportNumber: row.passport_number,
                 hasOtherSamePassportUserJoinedFutureTest: row.has_other_same_passport_user_joined_future_test,
@@ -249,6 +250,7 @@
         let data = {
             id: response.data.user_id,
             name: response.data.name,
+            birthday: response.data.birthday,
             passportType: response.data.passport_type,
             passportNumber: response.data.passport_number,
             hasOtherSamePassportUserJoinedFutureTest: response.has_other_same_passport_user_joined_future_test,
