@@ -7,7 +7,8 @@
     import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { can, canAny } from "@/gate.ts";
 
-    let { candidates: initCandidates, submitting = $bindable(), test } = $props();
+    let { candidates: initCandidates, submitting = $bindable(), test,
+        countCandidate = $bindable(), countAttendedCandidate = $bindable() } = $props();
     let candidates = $state([]);
     let inputs = $state({
         candidates: []
@@ -24,7 +25,7 @@
             let data = {
                 id: row.id,
                 name: row.adorned_name,
-                birthday: formatToDate(response.data.birthday),
+                birthday: formatToDate(row.birthday),
                 passportType: row.passport_type.name,
                 passportNumber: row.passport_number,
                 hasOtherSamePassportUserJoinedFutureTest: row.has_other_same_passport_user_joined_future_test,
@@ -62,6 +63,24 @@
                 isPass: row.pivot.is_pass,
             });
         }
+    }
+
+    if (
+        canAny([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+        ]) || test.currentUserIsProctor
+    ) {
+        $effect(
+            function() {
+                countAttendedCandidate = candidates.filter(
+                    function(candidates) {
+                        return candidates.isPresent;
+                    }
+                ).length;
+                countCandidate = candidates.length;
+            }
+        );
     }
 
     function getIndexById(id) {

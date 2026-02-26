@@ -11,7 +11,10 @@
 
     seo.title = 'Administration Show Admission Test';
 
-    let { test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
+    let {
+        test: initTest, types, locations, districts: areaDistricts, addresses,
+        countCandidate, countAttendedCandidate
+    } = $props();
     let submitting = $state(false);
     let editing = $state(false);
     let updating = $state(false);
@@ -319,7 +322,11 @@
                     </tr>
                     <tr>
                         <th>Current Candidates</th>
-                        <td>{initTest.candidates.length}</td>
+                        <td>{countCandidate}</td>
+                    </tr>
+                    <tr>
+                        <th>Presented Candidates</th>
+                        <td>{countAttendedCandidate}</td>
                     </tr>
                     <tr>
                         <th>Is Free</th>
@@ -352,6 +359,7 @@
             'Edit:Admission Test Result',
         ]) || test.currentUserIsProctor
     }
-        <Candidates test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+        <Candidates test={test} candidates={initTest.candidates}
+            bind:submitting={submitting} bind:countCandidate bind:countAttendedCandidate />
     {/if}
 </section>

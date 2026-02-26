@@ -254,6 +254,10 @@ class Controller extends BaseController implements HasMiddleware
                     }
                 }
             );
+            $countAttendedCandidate = $admissionTest->candidates
+                ->where('pivot.is_present', true)
+                ->count();
+            $countCandidate = $admissionTest->candidate?->count() ?? 0;
         } else if(
             $request->user()->canAny([
                 'View:Admission Test Result',
@@ -278,6 +282,13 @@ class Controller extends BaseController implements HasMiddleware
                     $candidate->pivot->makeHidden(['test_id', 'user_id', 'is_present', 'order_id']);
                 }
             );
+            $countAttendedCandidate = $admissionTest->candidates->count();
+            $countCandidate = $admissionTest->candidate()->count();
+        } else {
+            $countCandidate = $admissionTest->candidate()->count();
+            $countAttendedCandidate = $admissionTest->candidate()
+                ->where('is_present', true)
+                ->count();
         }
 
         return Inertia::render('Admin/AdmissionTests/Show')
@@ -300,7 +311,8 @@ class Controller extends BaseController implements HasMiddleware
                     ->get(['id', 'value'])
                     ->pluck('value', 'id')
                     ->toArray()
-            );
+            )->with('countCandidate', $countCandidate)
+            ->with('countAttendedCandidate', $countAttendedCandidate);
     }
 
     private function updateLocation(Location $location, string $newLocationName): Location
