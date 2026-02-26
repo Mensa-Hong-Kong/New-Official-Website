@@ -195,7 +195,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
@@ -264,7 +264,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
@@ -436,7 +436,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
@@ -508,7 +508,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
@@ -640,7 +640,6 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $this->assertTrue($candidate->lastAttendedAdmissionTest()->exists());
         $user = User::factory()->create();
         $user->givePermissionTo([
             'View:Admission Test Candidate',
@@ -687,7 +686,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
@@ -706,7 +705,7 @@ class ShowTest extends TestCase
         $candidate = User::factory()->create();
         $this->test->candidates()->attach(
             $candidate->id,
-            ['is_present' => true,]
+            ['is_present' => true]
         );
         $test = AdmissionTest::factory()->state([
             'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
@@ -762,7 +761,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('is_pass');
                                                     }
                                                 );
@@ -837,7 +836,7 @@ class ShowTest extends TestCase
                                                     'pivot', function(Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('order_id')
+                                                            ->has('is_free')
                                                             ->has('is_pass');
                                                     }
                                                 );

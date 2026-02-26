@@ -219,15 +219,16 @@ class Controller extends BaseController implements HasMiddleware
                 'has_same_passport_already_qualification_of_membership',
             ]);
             $admissionTest->candidates->makeHidden(['family_name', 'middle_name', 'given_name', 'passport_type_id', 'member']);
-            $pivotHidden = ['test_id', 'user_id'];
+            $pivotHidden = ['test_id', 'user_id', 'order_id'];
+            $pivotAppend = [];
             if (
-                $admissionTest->is_free ||
-                ! $request->user()->canAny([
+                ! $admissionTest->is_free &&
+                $request->user()->canAny([
                     'View:Admission Test Candidate',
                     'Edit:Admission Test Candidate',
                 ])
             ) {
-                $pivotHidden[] = 'order_id';
+                $pivotAppend[] = 'is_free';
             }
             if (
                 ! $request->user()->canAny([
@@ -235,14 +236,15 @@ class Controller extends BaseController implements HasMiddleware
                     'Edit:Admission Test Result',
                 ])
             ) {
+                $pivotAppend[] = 'has_result';
                 $pivotHidden[] = 'is_pass';
             }
             $admissionTest->candidates->each(
-                function ($candidate) use ($pivotHidden) {
+                function ($candidate) use ($pivotHidden, $pivotAppend) {
                     $candidate->passportType->makeHidden(['id']);
                     $candidate->pivot->makeHidden($pivotHidden);
-                    if (in_array('is_pass', $pivotHidden)) {
-                        $candidate->pivot->append('has_result');
+                    if (count($pivotAppend)) {
+                        $candidate->pivot->append($pivotAppend);
                     }
                     if ($candidate->lastAttendedAdmissionTest) {
                         $candidate->lastAttendedAdmissionTest
@@ -365,7 +367,7 @@ class Controller extends BaseController implements HasMiddleware
             $from['address'] != $to['address']
         ) {
             foreach ($admissionTest->candidates as $index => $candidate) {
-               //  $candidate->notify((new UpdateAdmissionTest($from, $to))->delay($index));
+                $candidate->notify((new UpdateAdmissionTest($from, $to))->delay($index));
             }
         }
         DB::commit();

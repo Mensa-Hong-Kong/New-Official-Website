@@ -43,7 +43,7 @@
                     'Edit:Admission Test Candidate',
                 ])
             ) {
-                data['isFree'] = row.pivot.order_id == null;
+                data['isFree'] = row.pivot.is_free == null;
             }
             if(
                 canAny([
