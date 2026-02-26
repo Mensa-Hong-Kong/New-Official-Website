@@ -141,7 +141,7 @@ class ShowTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHasErrors(['message' => 'You have no register this admission test and your passport has already been qualification for membership.']);
+        $response->assertSessionHasErrors(['message' => 'You have no register this admission test and you has other same passport user account already been qualification for membership.']);
     }
 
     public function test_user_has_other_same_passport_user_account_tested()
@@ -169,7 +169,7 @@ class ShowTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHasErrors(['message' => 'You have no register this admission test and your passport has other same passport user account tested.']);
+        $response->assertSessionHasErrors(['message' => 'You have no register this admission test and you has other same passport user account attended admission test.']);
     }
 
     public function test_user_has_already_been_taken_within_6_months()

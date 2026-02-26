@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin\AdmissionTests;
 
 use App\Models\AdmissionTest;
-use App\Models\AdmissionTestOrder;
 use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -179,7 +178,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -248,7 +247,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -420,7 +419,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -492,7 +491,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -670,7 +669,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -745,7 +744,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -820,7 +819,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {
@@ -941,7 +940,7 @@ class ShowTest extends TestCase
                                                 )->has('passport_number')
                                                 ->has('birthday')
                                                 ->has('has_other_same_passport_user_joined_future_test')
-                                                ->has('last_attended_admission_test_of_other_same_passport_user')
+                                                ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
                                                     'last_attended_admission_test', function(Assert $page) {

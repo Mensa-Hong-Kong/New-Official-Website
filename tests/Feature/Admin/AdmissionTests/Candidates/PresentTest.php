@@ -217,7 +217,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate has already been qualification for membership.']);
     }
 
-    public function test_has_other_same_passport_user_account_tested()
+    public function test_has_other_same_passport_user_account_attended_admission_test()
     {
         $oldTest = AdmissionTest::factory()
             ->state([
@@ -243,7 +243,30 @@ class PresentTest extends TestCase
             )
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The candidate has other same passport user account tested.']);
+        $response->assertJson(['message' => 'The candidate has other same passport user account attended admission test.']);
+    }
+
+    public function test_has_other_same_passport_user_account_attended_this_test()
+    {
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach(
+            $user->id, ['is_present' => true]
+        );
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            )
+        );
+        $response->assertConflict();
+        $response->assertJson(['message' => 'The candidate has other same passport user account attended this test.']);
     }
 
     public function test_has_same_passport_tested_within_date_range()

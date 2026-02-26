@@ -92,11 +92,12 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
-                    } elseif (
-                        $user->lastAttendedAdmissionTestOfOtherSamePassportUser &&
-                        $user->lastAttendedAdmissionTestOfOtherSamePassportUser->id != $test->id
-                    ) {
-                        abort(409, 'The candidate has other same passport user account tested.');
+                    } elseif ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
+                        if ($user->lastAttendedAdmissionTestOfOtherSamePassportUser->id != $test->id) {
+                            abort(409, 'The candidate has other same passport user account attended admission test.');
+                        } else {
+                            abort(409, 'The candidate has other same passport user account attended this test.');
+                        }
                     } elseif (
                         $user->lastAttendedAdmissionTest &&
                         $user->lastAttendedAdmissionTest->id != $test->id &&
@@ -215,7 +216,7 @@ class CandidateController extends Controller implements HasMiddleware
         ]);
         $candidate->append([
             'has_other_same_passport_user_joined_future_test',
-            'last_attended_admission_test_of_other_same_passport_user',
+            'has_other_same_passport_user_attended_admission_test',
             'has_same_passport_already_qualification_of_membership',
         ]);
         $candidate->makeHidden([

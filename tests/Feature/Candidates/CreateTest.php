@@ -207,7 +207,7 @@ class CreateTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHasErrors(['message' => 'You other same passport user account tested.']);
+        $response->assertSessionHasErrors(['message' => 'You have other same passport user account attended other admission test, if you forgot account, please contact us.']);
     }
 
     public function test_user_has_already_been_taken_within_interval_months()

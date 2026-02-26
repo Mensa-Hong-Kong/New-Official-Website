@@ -222,7 +222,7 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => 'You other same passport user account tested.']);
+        $response->assertSessionHasErrors(['message' => 'You have other same passport user account attended other admission test, if you forgot account, please contact us.']);
     }
 
     public function test_user_has_already_been_taken_within_latest_test_interval_months()

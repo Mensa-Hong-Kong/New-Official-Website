@@ -279,7 +279,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $this->happyCase
         );
-        $response->assertInvalid(['user_id' => 'The passport of selected user id has already been qualification for membership.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account already been qualification for membership.']);
     }
 
     public function test_user_id_has_other_same_passport_user_account_tested()
@@ -299,7 +299,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $this->happyCase
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account tested.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account attended admission test.']);
     }
 
     public function test_product_name_is_not_string()

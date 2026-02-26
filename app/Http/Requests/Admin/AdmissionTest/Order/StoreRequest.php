@@ -45,9 +45,9 @@ class StoreRequest extends FormRequest
                     } elseif ($request->user->hasUnusedQuotaAdmissionTestOrder) {
                         $fail('The selected user has unused quota.');
                     } elseif ($request->user->hasSamePassportAlreadyQualificationOfMembership) {
-                        $fail('The passport of selected user id has already been qualification for membership.');
-                    } elseif ($request->user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
-                        $fail('The selected user id has other same passport user account tested.');
+                        $fail('The selected user id has other same passport user account already been qualification for membership.');
+                    } elseif ($request->user->hasOtherSamePassportUserAttendedAdmissionTest) {
+                        $fail('The selected user id has other same passport user account attended admission test.');
                     }
                 },
             ],

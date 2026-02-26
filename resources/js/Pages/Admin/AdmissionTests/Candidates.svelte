@@ -4,7 +4,7 @@
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { Table, Input, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
-    import { formatToDatetime } from '@/timeZoneDatetime';
+    import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { can, canAny } from "@/gate.ts";
 
     let { candidates: initCandidates, submitting = $bindable(), test } = $props();
@@ -24,11 +24,11 @@
             let data = {
                 id: row.id,
                 name: row.adorned_name,
-                birthday: response.data.birthday,
+                birthday: formatToDate(response.data.birthday),
                 passportType: row.passport_type.name,
                 passportNumber: row.passport_number,
                 hasOtherSamePassportUserJoinedFutureTest: row.has_other_same_passport_user_joined_future_test,
-                lastAttendedAdmissionTestOfOtherSamePassportUser: row.last_attended_admission_test_of_other_same_passport_user,
+                hasOtherSamePassportUserAttendedAdmissionTest: row.has_other_same_passport_user_attended_admission_test,
                 hasSamePassportAlreadyQualificationOfMembership: row.has_same_passport_already_qualification_of_membership,
                 lastAttendedAdmissionTest: row.last_attended_admission_test,
                 seatNumber: row.pivot.seat_number,
@@ -250,7 +250,7 @@
         let data = {
             id: response.data.user_id,
             name: response.data.name,
-            birthday: response.data.birthday,
+            birthday: formatToDate(response.data.birthday),
             passportType: response.data.passport_type,
             passportNumber: response.data.passport_number,
             hasOtherSamePassportUserJoinedFutureTest: response.has_other_same_passport_user_joined_future_test,
@@ -402,7 +402,7 @@
                         <td>{row.passportType}</td>
                         <td class={{
                             'text-warning': row.hasOtherSamePassportUserJoinedFutureTest,
-                            'text-danger': row.lastAttendedAdmissionTestOfOtherSamePassportUser ||
+                            'text-danger': row.hasOtherSamePassportUserAttendedAdmissionTest ||
                                 row.hasSamePassportAlreadyQualificationOfMembership || (
                                     row.lastAttendedAdmissionTest &&
                                     row.lastAttendedAdmissionTest.testing_at >= new Date(

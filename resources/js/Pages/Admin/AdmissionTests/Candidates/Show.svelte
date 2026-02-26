@@ -105,7 +105,7 @@
                 <td class={[{
                     'text-warning': candidate.has_other_same_passport_user_joined_future_test,
                     'text-danger': candidate.has_same_passport_already_qualification_of_membership ||
-                        candidate.last_attended_admission_test_of_other_same_passport_user || (
+                        candidate.has_other_same_passport_user_attended_admission_test || (
                             candidate.last_attended_admission_test &&
                             candidate.last_attended_admission_test.testing_at >= new Date(
                                 (new Date(candidate.last_attended_admission_test.testing_at)).setMonth(

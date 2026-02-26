@@ -198,6 +198,17 @@ class User extends Authenticatable
         );
     }
 
+    public function hasOtherSamePassportUserAttendedAdmissionTest(): Attribute
+    {
+        $user = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($user) {
+                return (bool) $user->lastAttendedAdmissionTestOfOtherSamePassportUser;
+            }
+        );
+    }
+
     public function passedAdmissionTest()
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
