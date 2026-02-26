@@ -456,17 +456,20 @@
                                         <NavItem>
                                             <Link href={
                                                 route(
-                                                    'admin.admission-tests.candidates.show',
+                                                    'admin.admission-tests.show',
                                                     {admission_test: route().params.admission_test}
                                                 )
-                                            } class="nav-link active">Show</Link>
+                                            } class={[
+                                                'nav-link',
+                                                {active: $page.component == 'Admin/AdmissionTests/Show'}
+                                            ]}>Show</Link>
                                         </NavItem>
                                     {/if}
                                     {#if $page.component == 'Admin/AdmissionTests/Candidates/Show'}
                                         <NavItem>
                                             <Link href={
                                                 route(
-                                                    'admin.admission-tests.candidate.candidates.edit',
+                                                    'admin.admission-tests.candidates.show',
                                                     {
                                                         admission_test: route().params.admission_test,
                                                         candidate: route().params.candidate,
@@ -479,7 +482,7 @@
                                         <NavItem>
                                             <Link href={
                                                 route(
-                                                    'admin.admission-tests.candidate.show',
+                                                    'admin.admission-tests.candidates.edit',
                                                     {
                                                         admission_test: route().params.admission_test,
                                                         candidate: route().params.candidate,
