@@ -407,7 +407,10 @@
                     }
                         {#if
                             ! can('Edit:Admission Test') &&
-                            ! $page.component.includes('Admin/AdmissionTests/Show')
+                            (
+                                ! $page.component.startsWith('Admin/AdmissionTests/') ||
+                                $page.component == 'Admin/AdmissionTests/Index'
+                            )
                         }
                             <NavItem>
                                 <Link href={route('admin.admission-tests.index')}
@@ -446,14 +449,43 @@
                                                 ]}>Create</Link>
                                         </NavItem>
                                     {/if}
-                                    {#if $page.component == 'Admin/AdmissionTests/Show'}
+                                    {#if
+                                        $page.component == 'Admin/AdmissionTests/Show' ||
+                                        $page.component.startsWith('Admin/AdmissionTests/Candidates/')
+                                    }
                                         <NavItem>
                                             <Link href={
                                                 route(
-                                                    'admin.admission-tests.show',
+                                                    'admin.admission-tests.candidates.show',
                                                     {admission_test: route().params.admission_test}
                                                 )
                                             } class="nav-link active">Show</Link>
+                                        </NavItem>
+                                    {/if}
+                                    {#if $page.component == 'Admin/AdmissionTests/Candidates/Show'}
+                                        <NavItem>
+                                            <Link href={
+                                                route(
+                                                    'admin.admission-tests.candidate.candidates.edit',
+                                                    {
+                                                        admission_test: route().params.admission_test,
+                                                        candidate: route().params.candidate,
+                                                    }
+                                                )
+                                            } class="nav-link active">Show Candidate</Link>
+                                        </NavItem>
+                                    {/if}
+                                    {#if $page.component == 'Admin/AdmissionTests/Candidates/Edit'}
+                                        <NavItem>
+                                            <Link href={
+                                                route(
+                                                    'admin.admission-tests.candidate.show',
+                                                    {
+                                                        admission_test: route().params.admission_test,
+                                                        candidate: route().params.candidate,
+                                                    }
+                                                )
+                                            } class="nav-link active">Edit Candidate</Link>
                                         </NavItem>
                                     {/if}
                                 </ul>
