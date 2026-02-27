@@ -195,7 +195,7 @@ class StoreTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
-        $response->assertSessionHasErrors(['message' => 'Your passport has already been qualification for membership.']);
+        $response->assertSessionHasErrors(['message' => 'You have other same passport user account already been qualification for membership.']);
     }
 
     public function test_user_has_other_same_passport_user_account_tested()
