@@ -184,11 +184,10 @@ class User extends Authenticatable
 
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($table) {
-                return AdmissionTest::where('testing_at', '<', now())
-                    ->whereHas(
+                return AdmissionTest::whereHas(
                         'candidates', function ($query) use ($attributes, $table) {
-                            $query->where('passport_type_id', $attributes['passport_type_id'])
-                                ->where('passport_number', $attributes['passport_number'])
+                            $query->where('passport_number', $attributes['passport_number'])
+                                ->where('passport_type_id', $attributes['passport_type_id'])
                                 ->whereNot("$table.id", $attributes['id'])
                                 ->where('is_present', true);
                         }
@@ -348,13 +347,15 @@ class User extends Authenticatable
     public function lastAdmissionTest()
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->where('testing_at', '<=', now())
+            ->where('expect_end_at', '>', now()->subHour())
             ->latest('testing_at');
     }
 
     public function lastAttendedAdmissionTest()
     {
-        return $this->lastAdmissionTest()->where('is_present', true);
+        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
+            ->where('is_present', true)
+            ->latest('testing_at');
     }
 
     public function admissionTestOrders()
@@ -469,13 +470,9 @@ class User extends Authenticatable
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
                 return ! $user->lastAttendedAdmissionTest && // proctor will update on admission test
-                    ! ( // avoid user update overwrite proctor updated data
-                        $user->futureAdmissionTest &&
-                        $user->futureAdmissionTest->testing_at <= now()->addHours(2)
-                    ) &&
-                    ! (
-                        $user->lastAdmissionTest &&
-                        $user->lastAdmissionTest->expect_end_at > now()->subHour()
+                    ( // avoid user update overwrite proctor updated data
+                        ! $user->lastAdmissionTest ||
+                        $user->lastAdmissionTest->testing_at > now()->addHours(2)
                     ) &&
                     ! $user->memberTransfers()
                         ->where('is_accepted', true)
