@@ -44,7 +44,7 @@ class UserFactory extends Factory
             'passport_type_id' => $passportType->id,
             'passport_number' => $passportNumber,
             'gender_id' => Gender::inRandomOrder()->first()->id,
-            'birthday' => fake()->date(),
+            'birthday' => fake()->date(max: '-2 years'),
             'remember_token' => Str::random(10),
         ];
     }
