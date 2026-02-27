@@ -37,13 +37,13 @@ class CandidateController extends Controller implements HasMiddleware
                     $permissions = ['Edit:Admission Test Candidate'];
                     $test = $request->route('admission_test');
                     $test->append('current_user_is_proctor');
-                    if($request->route()->getActionMethod() == 'show') {
+                    if ($request->route()->getActionMethod() == 'show') {
                         $permissions[] = 'View:Admission Test Candidate';
                     }
                     if ($request->user()->canAny($permissions)) {
                         return $next($request);
                     }
-                    if($test->current_user_is_proctor) {
+                    if ($test->current_user_is_proctor) {
                         if ($test->testing_at > now()->addHours(2)) {
                             abort(409, 'Could not access before than testing time 2 hours.');
                         }
@@ -164,7 +164,7 @@ class CandidateController extends Controller implements HasMiddleware
             'has_other_same_passport_user_joined_future_test' => $request->user->hasOtherSamePassportUserJoinedFutureTest,
         ];
         if ($admissionTest->is_free || $request->is_free) {
-            if(! $admissionTest->is_free) {
+            if (! $admissionTest->is_free) {
                 $return['is_free'] = true;
             }
             $admissionTest->candidates()->attach($request->user->id);

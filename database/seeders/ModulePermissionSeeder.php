@@ -49,7 +49,6 @@ use Illuminate\Database\Seeder;
  * | 11  | View:Admission Test Result    | 8         | 2             | web        | ...        | ...        |
  * | 11  | Edit:Admission Test Result    | 8         | 2             | web        | ...        | ...        |
  */
-
 class ModulePermissionSeeder extends Seeder
 {
     public function run(): void

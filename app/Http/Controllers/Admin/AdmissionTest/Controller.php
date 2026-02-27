@@ -171,15 +171,15 @@ class Controller extends BaseController implements HasMiddleware
         }
         $admissionTest->load(['address:id,district_id']);
         $admissionTest->makeHidden(['address_id', 'created_at', 'updated_at']);
-        if($request->user()->can('Edit:Admission Test Proctor')) {
+        if ($request->user()->can('Edit:Admission Test Proctor')) {
             $admissionTest->load('proctors:id,family_name,middle_name,given_name');
             $admissionTest->proctors->append('adorned_name');
             $admissionTest->proctors->makeHidden(['family_name', 'middle_name', 'given_name', 'pivot', 'member']);
         }
-        if(
+        if (
             $request->user()->canAny([
                 'View:Admission Test Candidate',
-                'Edit:Admission Test Candidate'
+                'Edit:Admission Test Candidate',
             ]) || (
                 $admissionTest->in_testing_time_range &&
                 $admissionTest->current_user_is_proctor
@@ -194,7 +194,7 @@ class Controller extends BaseController implements HasMiddleware
                             },
                             [
                                 'id', 'family_name', 'middle_name', 'given_name',
-                                'birthday', 'passport_type_id', 'passport_number'
+                                'birthday', 'passport_type_id', 'passport_number',
                             ]
                         )
                     )->with([
@@ -207,7 +207,7 @@ class Controller extends BaseController implements HasMiddleware
                                     ['id', 'type_id', 'testing_at']
                                 )
                             )->with('type:id,interval_month')
-                            ->whereNot('test_id', $admissionTest->id);
+                                ->whereNot('test_id', $admissionTest->id);
                         },
                         'passportType:id,name',
                     ]);
@@ -258,7 +258,7 @@ class Controller extends BaseController implements HasMiddleware
                 ->where('pivot.is_present', true)
                 ->count();
             $countCandidate = $admissionTest->candidate?->count() ?? 0;
-        } else if(
+        } elseif (
             $request->user()->canAny([
                 'View:Admission Test Result',
                 'Edit:Admission Test Result',
@@ -274,7 +274,7 @@ class Controller extends BaseController implements HasMiddleware
                             ['id', 'birthday']
                         )
                     )->where('is_present', true);
-                }
+                },
             ]);
             $admissionTest->candidates->makeHidden(['id', 'member']);
             $admissionTest->candidates->each(

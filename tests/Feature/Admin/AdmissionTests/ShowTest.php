@@ -130,7 +130,7 @@ class ShowTest extends TestCase
                                             ->has('adorned_name');
                                     }
                                 )->missing('candidates')
-                                ->etc();
+                                    ->etc();
                             }
                         )->etc();
                 }
@@ -168,7 +168,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -181,7 +181,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -191,15 +191,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -237,7 +237,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -250,7 +250,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -260,15 +260,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -309,16 +309,16 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('birthday')
                                                 ->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -359,16 +359,16 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('birthday')
                                                 ->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -409,7 +409,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -422,7 +422,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -432,15 +432,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -481,7 +481,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -494,7 +494,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -504,15 +504,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -556,16 +556,16 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('birthday')
                                                 ->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -609,16 +609,16 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('birthday')
                                                 ->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -659,7 +659,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -672,7 +672,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -682,15 +682,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('has_result');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -734,7 +734,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -747,7 +747,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -757,15 +757,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -809,7 +809,7 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('id')
                                                 ->has('adorned_name')
                                                 ->has(
@@ -822,7 +822,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -832,15 +832,15 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -876,16 +876,16 @@ class ShowTest extends TestCase
                             'test', function (Assert $page) {
                                 $page->missing('proctor')
                                     ->has(
-                                    'candidates.0', function (Assert $page) {
+                                        'candidates.0', function (Assert $page) {
                                             $page->has('birthday')
                                                 ->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_pass');
                                                     }
                                                 );
-                                    }
-                                )->etc();
+                                        }
+                                    )->etc();
                             }
                         )->etc();
                 }
@@ -943,7 +943,7 @@ class ShowTest extends TestCase
                                                 ->has('has_other_same_passport_user_attended_admission_test')
                                                 ->has('has_same_passport_already_qualification_of_membership')
                                                 ->has(
-                                                    'last_attended_admission_test', function(Assert $page) {
+                                                    'last_attended_admission_test', function (Assert $page) {
                                                         $page->missing('id')
                                                             ->has('testing_at')
                                                             ->has(
@@ -953,7 +953,7 @@ class ShowTest extends TestCase
                                                             );
                                                     }
                                                 )->has(
-                                                    'pivot', function(Assert $page) {
+                                                    'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('has_result');

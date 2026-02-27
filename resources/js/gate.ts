@@ -1,4 +1,3 @@
-// src/lib/utils/permissions.js or similar
 import { page } from '@inertiajs/svelte';
 import { get } from 'svelte/store';
 
