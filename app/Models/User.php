@@ -185,13 +185,13 @@ class User extends Authenticatable
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($table) {
                 return AdmissionTest::whereHas(
-                        'candidates', function ($query) use ($attributes, $table) {
-                            $query->where('passport_number', $attributes['passport_number'])
-                                ->where('passport_type_id', $attributes['passport_type_id'])
-                                ->whereNot("$table.id", $attributes['id'])
-                                ->where('is_present', true);
-                        }
-                    )->orderByDesc('testing_at')
+                    'candidates', function ($query) use ($attributes, $table) {
+                        $query->where('passport_number', $attributes['passport_number'])
+                            ->where('passport_type_id', $attributes['passport_type_id'])
+                            ->whereNot("$table.id", $attributes['id'])
+                            ->where('is_present', true);
+                    }
+                )->orderByDesc('testing_at')
                     ->first();
             }
         );
