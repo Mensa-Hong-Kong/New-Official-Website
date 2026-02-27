@@ -7,10 +7,14 @@
     import Proctors from './Proctors.svelte';
     import Candidates from './Candidates.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
+    import { can, canAny } from "@/gate.ts";
 
     seo.title = 'Administration Show Admission Test';
 
-    let { auth, test: initTest, types, locations, districts: areaDistricts, addresses } = $props();
+    let {
+        test: initTest, types, locations, districts: areaDistricts, addresses,
+        countCandidate, countAttendedCandidate
+    } = $props();
     let submitting = $state(false);
     let editing = $state(false);
     let updating = $state(false);
@@ -25,6 +29,8 @@
         maximumCandidates: initTest.maximum_candidates,
         isFree: initTest.is_free,
         isPublic: initTest.is_public,
+        currentUserIsProctor: initTest.current_user_is_proctor,
+        inTestingTimeRange: initTest.in_testing_time_range,
     });
     let inputs = $state({});
     let feedbacks = $state({
@@ -203,18 +209,20 @@
 
 <section class="container">
     <article>
-        <form id="form" method="POST" novalidate onsubmit={update}>
+        <form method="POST" novalidate onsubmit={update}>
             <h3 class="mb-2 fw-bold">
                 Info
-                <Button color="primary" disabled hidden={! updating}>
-                    <Spinner type="border" size="sm" />Saving...
-                </Button>
-                <Button color="primary" outline hidden={editing || updating}
-                    onclick={edit}>Edit</Button>
-                <Button color="primary" outline hidden={! editing && ! updating}
-                    disabled={submitting}>Save</Button>
-                <Button color="danger" outline hidden={! editing && ! updating}
-                    onclick={cancel}>Cancel</Button>
+                {#if can('Edit:Admission Test')}
+                    <Button color="primary" disabled hidden={! updating}>
+                        <Spinner type="border" size="sm" />Saving...
+                    </Button>
+                    <Button color="primary" outline hidden={editing || updating}
+                        onclick={edit}>Edit</Button>
+                    <Button color="primary" outline hidden={! editing && ! updating}
+                        disabled={submitting}>Save</Button>
+                    <Button color="danger" outline hidden={! editing && ! updating}
+                        onclick={cancel}>Cancel</Button>
+                {/if}
             </h3>
             <Table hover>
                 <tbody>
@@ -314,7 +322,11 @@
                     </tr>
                     <tr>
                         <th>Current Candidates</th>
-                        <td>{initTest.candidates.length}</td>
+                        <td>{countCandidate}</td>
+                    </tr>
+                    <tr>
+                        <th>Presented Candidates</th>
+                        <td>{countAttendedCandidate}</td>
                     </tr>
                     <tr>
                         <th>Is Free</th>
@@ -336,6 +348,18 @@
             </Table>
         </form>
     </article>
-    <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
-    <Candidates auth={auth} test={test} candidates={initTest.candidates} bind:submitting={submitting} />
+    {#if can('Edit:Admission Test Proctor')}
+        <Proctors proctors={initTest.proctors} bind:submitting={submitting} />
+    {/if}
+    {#if
+        canAny([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+            'View:Admission Test Result',
+            'Edit:Admission Test Result',
+        ]) || test.currentUserIsProctor
+    }
+        <Candidates test={test} candidates={initTest.candidates}
+            bind:submitting={submitting} bind:countCandidate bind:countAttendedCandidate />
+    {/if}
 </section>

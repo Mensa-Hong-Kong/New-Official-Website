@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -23,12 +24,12 @@ class PresentTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
         $this->test = AdmissionTest::factory()
             ->state([
                 'testing_at' => now(),
                 'expect_end_at' => now()->addHour(),
             ])->create();
+        $this->test->proctors()->attach($this->user->id);
         $this->order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
@@ -50,26 +51,15 @@ class PresentTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)->putJson(
-            route(
-                'admin.admission-tests.candidates.present.update',
-                [
-                    'admission_test' => $this->test,
-                    'candidate' => $this->user,
-                ]
-            )
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Admission Test Candidate')
+                ->first()
+                ->name
         );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_view_user_permission_and_user_is_not_proctor()
-    {
-        $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -111,7 +101,7 @@ class PresentTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -128,7 +118,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'Could not access before than testing time 2 hours.']);
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
     {
         $this->test->update(['expect_end_at' => now()->subHour()->subSecond()]);
         $response = $this->actingAs($this->user)->putJson(
@@ -227,7 +217,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate has already been qualification for membership.']);
     }
 
-    public function test_has_other_same_passport_user_account_tested()
+    public function test_has_other_same_passport_user_account_attended_admission_test()
     {
         $oldTest = AdmissionTest::factory()
             ->state([
@@ -253,7 +243,30 @@ class PresentTest extends TestCase
             )
         );
         $response->assertConflict();
-        $response->assertJson(['message' => 'The candidate has other same passport user account tested.']);
+        $response->assertJson(['message' => 'The candidate has other same passport user account attended admission test.']);
+    }
+
+    public function test_has_other_same_passport_user_account_attended_this_test()
+    {
+        $user = User::factory()
+            ->state([
+                'passport_type_id' => $this->user->passport_type_id,
+                'passport_number' => $this->user->passport_number,
+            ])->create();
+        $this->test->candidates()->attach(
+            $user->id, ['is_present' => true]
+        );
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.admission-tests.candidates.present.update',
+                [
+                    'admission_test' => $this->test,
+                    'candidate' => $this->user,
+                ]
+            )
+        );
+        $response->assertConflict();
+        $response->assertJson(['message' => 'The candidate has other same passport user account attended this test.']);
     }
 
     public function test_has_same_passport_tested_within_date_range()

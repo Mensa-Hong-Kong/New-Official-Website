@@ -30,7 +30,14 @@ class Controller extends BaseController implements HasMiddleware
                 function (Request $request, Closure $next) {
                     if (
                         $request->user()->proctorTests()->count() ||
-                        $request->user()->can('Edit:Admission Test')
+                        $request->user()->canAny([
+                            'Edit:Admission Test',
+                            'Edit:Admission Test Proctor',
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                            'View:Admission Test Result',
+                            'Edit:Admission Test Result',
+                        ])
                     ) {
                         return $next($request);
                     }
@@ -40,11 +47,16 @@ class Controller extends BaseController implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
+                    $test->append(['current_user_is_proctor', 'in_testing_time_range']);
                     if (
-                        $request->user()->can('Edit:Admission Test') || (
-                            $test->inTestingTimeRange &&
-                            in_array($request->user()->id, $test->proctors->pluck('id')->toArray())
-                        )
+                        $request->user()->canAny([
+                            'Edit:Admission Test',
+                            'Edit:Admission Test Proctor',
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                            'View:Admission Test Result',
+                            'Edit:Admission Test Result',
+                        ]) || ($test->in_testing_time_range && $test->current_user_is_proctor)
                     ) {
                         return $next($request);
                     }
@@ -68,7 +80,7 @@ class Controller extends BaseController implements HasMiddleware
                     $query->select(['id', 'name']);
                 },
             ])->sortable('testing_at')->paginate();
-        $tests->append('in_testing_time_range');
+        $tests->append(['in_testing_time_range', 'current_user_is_proctor']);
         $tests->makeHidden(['type_id', 'expect_end_at', 'location_id', 'address_id', 'created_at', 'updated_at']);
         foreach ($tests as $test) {
             $test->location->makeHidden('id');
@@ -157,61 +169,127 @@ class Controller extends BaseController implements HasMiddleware
                 $districts[$area->name][$district->id] = $district->name;
             }
         }
-        $admissionTest->load([
-            'proctors', 'address' => function ($query) {
-                $query->select(['id', 'district_id']);
-            }, 'candidates' => function ($query) use ($admissionTest) {
-                $query->with([
-                    'lastAttendedAdmissionTest' => function ($query) use ($admissionTest) {
-                        $query->with([
-                            'type' => function ($query) {
-                                $query->select(['id', 'interval_month']);
-                            },
-                        ])->whereNot('test_id', $admissionTest->id);
-                    }, 'passportType' => function ($query) {
-                        $query->select(['id', 'name']);
-                    },
-                ]);
-            },
-        ]);
+        $admissionTest->load(['address:id,district_id']);
         $admissionTest->makeHidden(['address_id', 'created_at', 'updated_at']);
-        $admissionTest->proctors->append('adorned_name');
-        $admissionTest->proctors->makeHidden([
-            'username', 'member', 'family_name', 'middle_name', 'given_name',
-            'passport_type_id', 'passport_number', 'birthday', 'gender_id',
-            'synced_to_stripe', 'created_at', 'updated_at', 'pivot',
-        ]);
-        $admissionTest->candidates->append([
-            'adorned_name', 'has_other_same_passport_user_joined_future_test',
-            'last_attended_admission_test_of_other_same_passport_user',
-            'has_same_passport_already_qualification_of_membership',
-        ]);
-        $admissionTest->candidates->makeHidden([
-            'username', 'member', 'family_name', 'middle_name', 'given_name',
-            'birthday', 'gender_id', 'synced_to_stripe', 'created_at', 'updated_at',
-        ]);
-        $pivotHidden = ['test_id', 'user_id'];
-        if (
-            $admissionTest->is_free ||
-            ! $request->user()->canAny(['View:Admission Test Order', 'Edit:Admission Test Order'])
-        ) {
-            $pivotHidden[] = 'order_id';
+        if ($request->user()->can('Edit:Admission Test Proctor')) {
+            $admissionTest->load('proctors:id,family_name,middle_name,given_name');
+            $admissionTest->proctors->append('adorned_name');
+            $admissionTest->proctors->makeHidden(['family_name', 'middle_name', 'given_name', 'pivot', 'member']);
         }
-        $admissionTest->candidates->each(
-            function ($candidate) use ($pivotHidden) {
-                $candidate->passportType->makeHidden('id');
-                $pivotHidden = ['test_id', 'user_id'];
-                $candidate->pivot->makeHidden($pivotHidden);
-                if ($candidate->lastAttendedAdmissionTest) {
-                    $candidate->lastAttendedAdmissionTest->makeHidden([
-                        'id', 'type_id', 'expect_end_at', 'address_id', 'location_id',
-                        'maximum_candidates', 'is_public', 'created_at', 'updated_at',
-                        'laravel_through_key',
+        if (
+            $request->user()->canAny([
+                'View:Admission Test Candidate',
+                'Edit:Admission Test Candidate',
+            ]) || (
+                $admissionTest->in_testing_time_range &&
+                $admissionTest->current_user_is_proctor
+            )
+        ) {
+            $admissionTest->load([
+                'candidates' => function ($query) use ($admissionTest) {
+                    $query->select(
+                        array_map(
+                            function ($column) use ($query) {
+                                return $query->getRelated()->qualifyColumn($column);
+                            },
+                            [
+                                'id', 'family_name', 'middle_name', 'given_name',
+                                'birthday', 'passport_type_id', 'passport_number',
+                            ]
+                        )
+                    )->with([
+                        'lastAttendedAdmissionTest' => function ($query) use ($admissionTest) {
+                            $query->select(
+                                array_map(
+                                    function ($column) use ($query) {
+                                        return $query->getRelated()->qualifyColumn($column);
+                                    },
+                                    ['id', 'type_id', 'testing_at']
+                                )
+                            )->with('type:id,interval_month')
+                                ->whereNot('test_id', $admissionTest->id);
+                        },
+                        'passportType:id,name',
                     ]);
-                    $candidate->lastAttendedAdmissionTest->type->makeHidden('id');
-                }
+                },
+            ]);
+            $admissionTest->candidates->append([
+                'adorned_name', 'has_other_same_passport_user_joined_future_test',
+                'has_other_same_passport_user_attended_admission_test',
+                'has_same_passport_already_qualification_of_membership',
+            ]);
+            $admissionTest->candidates->makeHidden(['family_name', 'middle_name', 'given_name', 'passport_type_id', 'member']);
+            $pivotHidden = ['test_id', 'user_id', 'order_id'];
+            $pivotAppend = [];
+            if (
+                ! $admissionTest->is_free &&
+                $request->user()->canAny([
+                    'View:Admission Test Candidate',
+                    'Edit:Admission Test Candidate',
+                ])
+            ) {
+                $pivotAppend[] = 'is_free';
             }
-        );
+            if (
+                ! $request->user()->canAny([
+                    'View:Admission Test Result',
+                    'Edit:Admission Test Result',
+                ])
+            ) {
+                $pivotAppend[] = 'has_result';
+                $pivotHidden[] = 'is_pass';
+            }
+            $admissionTest->candidates->each(
+                function ($candidate) use ($pivotHidden, $pivotAppend) {
+                    $candidate->passportType->makeHidden(['id']);
+                    $candidate->pivot->makeHidden($pivotHidden);
+                    if (count($pivotAppend)) {
+                        $candidate->pivot->append($pivotAppend);
+                    }
+                    if ($candidate->lastAttendedAdmissionTest) {
+                        $candidate->lastAttendedAdmissionTest
+                            ->makeHidden(['id', 'type_id', 'laravel_through_key']);
+                        $candidate->lastAttendedAdmissionTest->type
+                            ->makeHidden('id');
+                    }
+                }
+            );
+            $countAttendedCandidate = $admissionTest->candidates
+                ->where('pivot.is_present', true)
+                ->count();
+            $countCandidate = $admissionTest->candidate?->count() ?? 0;
+        } elseif (
+            $request->user()->canAny([
+                'View:Admission Test Result',
+                'Edit:Admission Test Result',
+            ])
+        ) {
+            $admissionTest->load([
+                'candidates' => function ($query) {
+                    $query->select(
+                        array_map(
+                            function ($column) use ($query) {
+                                return $query->getRelated()->qualifyColumn($column);
+                            },
+                            ['id', 'birthday']
+                        )
+                    )->where('is_present', true);
+                },
+            ]);
+            $admissionTest->candidates->makeHidden(['id', 'member']);
+            $admissionTest->candidates->each(
+                function ($candidate) {
+                    $candidate->pivot->makeHidden(['test_id', 'user_id', 'is_present', 'order_id']);
+                }
+            );
+            $countAttendedCandidate = $admissionTest->candidates->count();
+            $countCandidate = $admissionTest->candidates()->count();
+        } else {
+            $countCandidate = $admissionTest->candidates()->count();
+            $countAttendedCandidate = $admissionTest->candidates()
+                ->where('is_present', true)
+                ->count();
+        }
 
         return Inertia::render('Admin/AdmissionTests/Show')
             ->with('test', $admissionTest)
@@ -233,7 +311,8 @@ class Controller extends BaseController implements HasMiddleware
                     ->get(['id', 'value'])
                     ->pluck('value', 'id')
                     ->toArray()
-            );
+            )->with('countCandidate', $countCandidate)
+            ->with('countAttendedCandidate', $countAttendedCandidate);
     }
 
     private function updateLocation(Location $location, string $newLocationName): Location

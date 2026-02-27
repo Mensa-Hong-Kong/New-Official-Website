@@ -21,7 +21,7 @@ class AdmissionTestTypeFactory extends Factory
 
         return [
             'name' => fake()->word(),
-            'interval_month' => fake()->numberBetween(0, 60),
+            'interval_month' => fake()->numberBetween(1, 60),
             'is_active' => fake()->randomElement([true, false]),
             'display_order' => $displayOrder,
         ];

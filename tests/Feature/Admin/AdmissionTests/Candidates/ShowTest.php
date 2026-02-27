@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\AdmissionTests\Candidates;
 
 use App\Models\AdmissionTest;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -24,7 +25,7 @@ class ShowTest extends TestCase
                 'expect_end_at' => now()->addHour(),
             ])->create();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
+        $this->test->proctors()->attach($this->user->id);
         $this->test->candidates()->attach($this->user->id);
     }
 
@@ -42,27 +43,20 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_admission_test_permission_and_user_is_not_proctor()
+    public function test_have_no_view_or_edit_candidate_permission_and_user_is_not_proctor()
     {
         $user = User::factory()->create();
-        $this->user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)
-            ->get(
-                route(
-                    'admin.admission-tests.candidates.show',
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNotIn(
+                    'name',
                     [
-                        'admission_test' => $this->test,
-                        'candidate' => $this->user,
+                        'View:Admission Test Candidate',
+                        'Edit:Admission Test Candidate',
                     ]
-                )
-            );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_view_user_permission_and_user_is_not_proctor()
-    {
-        $user = User::factory()->create();
-        $this->user->givePermissionTo('Edit:Admission Test');
+                )->first()
+                ->name
+        );
         $response = $this->actingAs($user)
             ->get(
                 route(
@@ -107,7 +101,7 @@ class ShowTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -123,7 +117,7 @@ class ShowTest extends TestCase
         $response->assertConflict();
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
     {
         $this->test->update(['expect_end_at' => now()->subHours(2)]);
         $response = $this->actingAs($this->user)
@@ -139,9 +133,28 @@ class ShowTest extends TestCase
         $response->assertGone();
     }
 
-    public function test_happy_case_when_user_only_has_permission()
+    public function test_happy_case_when_user_only_has_view_candidate_permission()
     {
+        $user = User::factory()->create();
+        $user->givePermissionTo('View:Admission Test Candidate');
         $response = $this->actingAs($this->user)
+            ->get(
+                route(
+                    'admin.admission-tests.candidates.show',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_only_has_edit_candidate_permission()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Admission Test Candidate');
+        $response = $this->actingAs($user)
             ->get(
                 route(
                     'admin.admission-tests.candidates.show',
@@ -171,9 +184,70 @@ class ShowTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_has_permission_and_is_proctor()
+    public function test_happy_case_when_user_only_has_view_and_edit_candidate_permission()
     {
-        $this->test->proctors()->attach($this->user->id);
+        $user = User::factory()->create();
+        $user->givePermissionTo([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+        ]);
+        $response = $this->actingAs($this->user)
+            ->get(
+                route(
+                    'admin.admission-tests.candidates.show',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_only_has_view_candidate_permission_and_is_proctor()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('View:Admission Test Candidate');
+        $this->test->proctors()->attach($user->id);
+        $response = $this->actingAs($this->user)
+            ->get(
+                route(
+                    'admin.admission-tests.candidates.show',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_only_has_edit_candidate_permission_and_is_proctor()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('Edit:Admission Test Candidate');
+        $this->test->proctors()->attach($user->id);
+        $response = $this->actingAs($this->user)
+            ->get(
+                route(
+                    'admin.admission-tests.candidates.show',
+                    [
+                        'admission_test' => $this->test,
+                        'candidate' => $this->user,
+                    ]
+                )
+            );
+        $response->assertSuccessful();
+    }
+
+    public function test_happy_case_when_user_only_has_view_and_edit_candidate_permission_and_is_proctor()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+        ]);
+        $this->test->proctors()->attach($user->id);
         $response = $this->actingAs($this->user)
             ->get(
                 route(

@@ -4,11 +4,12 @@
     import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { formatToDate } from '@/timeZoneDatetime';
+    import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Show Candidate';
 
-    let { candidate, isPresent, seatNumber } = $props();
+    let { test, candidate, isPresent, seatNumber, hasResult } = $props();
     let submitting = $state(false);
 
     function updatePresentStatueSuccessCallback(response) {
@@ -59,18 +60,25 @@
 <section class="container">
     <h2 class="mb-2 fw-bold">
         Candidate
-        <Link class="btn btn-primary"
-            href={
-                route(
-                    'admin.admission-tests.candidates.edit',
-                    {
-                        admission_test: route().params.admission_test,
-                        candidate: candidate.id,
-                    }
-                )
-            }>Edit</Link>
+        {#if
+            can('Edit:Admission Test Candidate') || (
+                new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
+            )
+        }
+            <Link class="btn btn-primary"
+                href={
+                    route(
+                        'admin.admission-tests.candidates.edit',
+                        {
+                            admission_test: route().params.admission_test,
+                            candidate: candidate.id,
+                        }
+                    )
+                }>Edit</Link>
+        {/if}
     </h2>
-    <Table>
+    <Table hover>
         <tbody>
             <tr>
                 <th>Gender</th>
@@ -97,7 +105,7 @@
                 <td class={[{
                     'text-warning': candidate.has_other_same_passport_user_joined_future_test,
                     'text-danger': candidate.has_same_passport_already_qualification_of_membership ||
-                        candidate.last_attended_admission_test_of_other_same_passport_user || (
+                        candidate.has_other_same_passport_user_attended_admission_test || (
                             candidate.last_attended_admission_test &&
                             candidate.last_attended_admission_test.testing_at >= new Date(
                                 (new Date(candidate.last_attended_admission_test.testing_at)).setMonth(
@@ -114,16 +122,31 @@
             </tr>
             <tr>
                 <th>Seat Number</th>
-                <td>{seatNumber}</td>
+                <td>{seatNumber ?? '--'}</td>
             </tr>
             <tr>
-                <th>Is Present</th>
-                <td>
-                    <Button color={isPresent ? 'success' : 'danger'}
-                        onclick={() => updatePresentStatue(! isPresent)}>
-                        {isPresent ? 'Present' : 'Absent'}
-                    </Button>
-                </td>
+                <th>Status</th>
+                {#if
+                    can('Edit:Admission Test Candidate') || (
+                        new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                        new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
+                    )
+                }
+                    <td>
+                        <Button color={isPresent ? 'success' : 'danger'}
+                            onclick={() => updatePresentStatue(! isPresent)}
+                            disabled={hasResult || submitting}>
+                            {isPresent ? 'Present' : 'Absent'}
+                        </Button>
+                    </td>
+                {:else}
+                    <td>
+                        {
+                            new Date(formatToDatetime(test.testing_at)) >= (new Date).addHours(2) ?
+                                '--' : isPresent ? 'Present' : 'Absent'
+                        }
+                    </td>
+                {/if}
             </tr>
         </tbody>
     </Table>

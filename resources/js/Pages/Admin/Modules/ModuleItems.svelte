@@ -5,7 +5,7 @@
 	import { dndzone } from 'svelte-dnd-action';
     import ModuleItems from './ModuleItems.svelte';
 	import { flip } from 'svelte/animate';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate.ts";
 
     let {
         moduleNodes = $bindable(), moduleNode,

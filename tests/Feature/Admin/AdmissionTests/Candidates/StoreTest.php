@@ -7,6 +7,7 @@ use App\Models\AdmissionTestOrder;
 use App\Models\ContactHasVerification;
 use App\Models\Member;
 use App\Models\MembershipOrder;
+use App\Models\ModulePermission;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use App\Models\UserHasContact;
@@ -28,7 +29,7 @@ class StoreTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
+        $this->user->givePermissionTo('Edit:Admission Test Candidate');
         $testingAt = now()->addDays(3)->startOfDay();
         $this->test = AdmissionTest::factory()->state([
             'testing_at' => $testingAt,
@@ -66,28 +67,15 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_candidate_permission()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)->postJson(
-            route(
-                'admin.admission-tests.candidates.store',
-                ['admission_test' => $this->test]
-            ),
-            [
-                'user_id' => $this->user->id,
-                'is_free' => true,
-                'function' => 'schedule',
-            ]
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Admission Test Candidate')
+                ->first()
+                ->name
         );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_view_user_permission()
-    {
-        $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->postJson(
             route(
                 'admin.admission-tests.candidates.store',
@@ -351,7 +339,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The passport of selected user id has already been qualification for membership.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account already been qualification for membership.']);
     }
 
     public function test_user_id_has_other_same_passport_user_account_tested()
@@ -378,7 +366,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account tested.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account attended admission test.']);
     }
 
     public function test_user_id_has_already_been_taken_within_latest_test_interval_months()
@@ -583,9 +571,12 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -620,6 +611,7 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
@@ -660,9 +652,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -702,9 +696,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -740,9 +736,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -785,9 +783,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -830,9 +830,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -882,9 +884,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -919,9 +923,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -960,9 +966,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => true,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -1001,9 +1009,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -1049,9 +1059,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => true,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -1084,9 +1096,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -1126,9 +1140,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -1168,9 +1184,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -1218,9 +1236,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -1256,9 +1276,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -1299,9 +1321,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => false,
         ]);
         Notification::assertSentTo(
             [$this->user], AssignAdmissionTest::class
@@ -1342,9 +1366,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => false,
+            'is_free' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(
@@ -1402,9 +1428,11 @@ class StoreTest extends TestCase
             'success' => 'The candidate create success',
             'user_id' => $this->user->id,
             'name' => $this->user->adornedName,
+            'birthday' => $this->user->birthday->toJSON(),
             'passport_type' => $this->user->passportType->name,
             'passport_number' => $this->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => true,
+            'is_free' => false,
         ]);
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertSentTo(

@@ -49,10 +49,10 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => 'You has already been qualification for membership.']);
                     }
                     if ($user->hasSamePassportAlreadyQualificationOfMembership) {
-                        return $errorReturn->withErrors(['message' => 'Your passport has already been qualification for membership.']);
+                        return $errorReturn->withErrors(['message' => 'You have other same passport user account already been qualification for membership.']);
                     }
-                    if ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
-                        return $errorReturn->withErrors(['message' => 'You other same passport user account tested.']);
+                    if ($user->hasOtherSamePassportUserAttendedAdmissionTest) {
+                        return $errorReturn->withErrors(['message' => 'You have other same passport user account attended other admission test, if you forgot account, please contact us.']);
                     }
                     if (
                         $user->lastAttendedAdmissionTest &&
@@ -174,10 +174,10 @@ class CandidateController extends Controller implements HasMiddleware
                                 return $redirect->withErrors(['message' => 'You have no register this admission test and you has already been qualification for membership.']);
                             }
                             if ($user->hasSamePassportAlreadyQualificationOfMembership) {
-                                return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has already been qualification for membership.']);
+                                return $redirect->withErrors(['message' => 'You have no register this admission test and you has other same passport user account already been qualification for membership.']);
                             }
-                            if ($user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
-                                return $redirect->withErrors(['message' => 'You have no register this admission test and your passport has other same passport user account tested.']);
+                            if ($user->hasOtherSamePassportUserAttendedAdmissionTest) {
+                                return $redirect->withErrors(['message' => 'You have no register this admission test and you has other same passport user account attended admission test.']);
                             }
                             if (
                                 $user->lastAttendedAdmissionTest &&

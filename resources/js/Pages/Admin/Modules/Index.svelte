@@ -4,7 +4,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
     import { Button, Spinner, Alert } from '@sveltestrap/sveltestrap';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Modules';
 

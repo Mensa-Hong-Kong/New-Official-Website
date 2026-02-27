@@ -40,9 +40,9 @@ class StoreRequest extends FormRequest
                     } elseif ($request->function == 'reschedule' && ! $request->user->futureAdmissionTest) {
                         $fail('The selected user id have no scheduled other admission test after than now.');
                     } elseif ($request->user->hasSamePassportAlreadyQualificationOfMembership) {
-                        $fail('The passport of selected user id has already been qualification for membership.');
-                    } elseif ($request->user->lastAttendedAdmissionTestOfOtherSamePassportUser) {
-                        $fail('The selected user id has other same passport user account tested.');
+                        $fail('The selected user id has other same passport user account already been qualification for membership.');
+                    } elseif ($request->user->hasOtherSamePassportUserAttendedAdmissionTest) {
+                        $fail('The selected user id has other same passport user account attended admission test.');
                     } elseif (
                         $request->user->lastAttendedAdmissionTest &&
                         $request->user->lastAttendedAdmissionTest->testing_at

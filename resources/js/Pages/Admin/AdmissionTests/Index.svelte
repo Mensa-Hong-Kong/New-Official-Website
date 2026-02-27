@@ -8,7 +8,7 @@
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { formatToDatetime } from '@/timeZoneDatetime';
-    import { can } from "@/gate.svelte";
+    import { can } from "@/gate.ts";
 
     seo.title = 'Administration Admission Tests';
 
@@ -92,8 +92,10 @@
                         <td>{row.is_public ? 'Public' : 'Private'}</td>
                         <td>
                             {#if
-                                row.in_testing_time_range ||
-                                can('Edit:Admission Test')
+                                (
+                                    row.in_testing_time_range &&
+                                    row.current_user_is_proctor
+                                ) || can('Edit:Admission Test')
                             }
                                 <Link class="btn btn-primary" href={
                                     route(
@@ -101,15 +103,17 @@
                                         {admission_test: row.id}
                                     )
                                 }>Show</Link>
-                                <Button color="danger"
-                                    disabled={submitting} onclick={() => destroy(index)}>
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />
-                                        Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
+                                {#if can('Edit:Admission Test')}
+                                    <Button color="danger"
+                                        disabled={submitting} onclick={() => destroy(index)}>
+                                        {#if row.deleting}
+                                            <Spinner type="border" size="sm" />
+                                            Deleting...
+                                        {:else}
+                                            Delete
+                                        {/if}
+                                    </Button>
+                                {/if}
                             {:else}
                                 <Button color="secondary" disabled={submitting}>Show</Button>
                             {/if}

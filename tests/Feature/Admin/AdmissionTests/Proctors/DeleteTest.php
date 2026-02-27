@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin\AdmissionTests\Proctors;
 
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestHasProctor;
+use App\Models\ModulePermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,7 +21,7 @@ class DeleteTest extends TestCase
     {
         parent::setup();
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
+        $this->user->givePermissionTo('Edit:Admission Test Proctor');
         $this->test = AdmissionTest::factory()->create();
         $this->test->proctors()->attach($this->user->id);
     }
@@ -39,27 +40,15 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_proctor_permission()
     {
         $user = User::factory()->create();
-        $user->givePermissionTo('View:User');
-        $response = $this->actingAs($user)->deleteJson(
-            route(
-                'admin.admission-tests.proctors.destroy',
-                [
-                    'admission_test' => $this->test,
-                    'proctor' => $this->user,
-                ]
-            ),
-            ['user_id' => $this->user->id]
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Admission Test Proctor')
+                ->first()
+                ->name
         );
-        $response->assertForbidden();
-    }
-
-    public function test_have_no_view_user_permission()
-    {
-        $user = User::factory()->create();
-        $user->givePermissionTo('Edit:Admission Test');
         $response = $this->actingAs($user)->deleteJson(
             route(
                 'admin.admission-tests.proctors.destroy',

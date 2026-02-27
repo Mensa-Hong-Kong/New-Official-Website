@@ -80,4 +80,17 @@ class AdmissionTest extends Model
             DB::raw("$thisTable.maximum_candidates")
         );
     }
+
+    public function currentUserIsProctor(): Attribute
+    {
+        $test = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use ($test) {
+                return $test->proctors()
+                    ->where('user_id', request()->user()->id)
+                    ->exists();
+            }
+        );
+    }
 }
