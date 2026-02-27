@@ -283,10 +283,10 @@ class Controller extends BaseController implements HasMiddleware
                 }
             );
             $countAttendedCandidate = $admissionTest->candidates->count();
-            $countCandidate = $admissionTest->candidate()->count();
+            $countCandidate = $admissionTest->candidates()->count();
         } else {
-            $countCandidate = $admissionTest->candidate()->count();
-            $countAttendedCandidate = $admissionTest->candidate()
+            $countCandidate = $admissionTest->candidates()->count();
+            $countAttendedCandidate = $admissionTest->candidates()
                 ->where('is_present', true)
                 ->count();
         }
