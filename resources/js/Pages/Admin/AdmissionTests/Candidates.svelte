@@ -298,7 +298,9 @@
             data['isFree'] = response.data.is_free;
             inputs.isFree.checked = false;
         }
-        sorting();
+        if (sortBy.column != "random") {
+            sorting();
+        }
         inputs.user.value = '';
         inputs.candidates.push({});
         candidates.push(data);
@@ -410,10 +412,18 @@
         new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ?
             'seatNumber' : 'passportNumber'
     );
+
+    function randomSorting(event) {
+        sortBy.column = 'random';
+        candidates.shuffle();
+    }
 </script>
 
 <article>
-    <h3 class="mb-2 fw-bold">Candidates</h3>
+    <h3 class="mb-2 fw-bold">
+        Candidates
+        <Button color="warning" onclick={randomSorting}>Random Order</Button>
+    </h3>
     {#if
         canAny([
             'View:Admission Test Candidate',
@@ -422,7 +432,7 @@
     }
         <InputGroup hidden={candidates.length == 0}>
             <InputGroupText><i class="bi bi-search"></i></InputGroupText>
-            <Input type="search" bind:value={search} placeholder="search('name/passport number/birthday')" />
+            <Input type="search" bind:value={search} placeholder="search ( name / passport number / birthday )" />
         </InputGroup>
     {/if}
     <Table responsive hover class="text-nowrap">

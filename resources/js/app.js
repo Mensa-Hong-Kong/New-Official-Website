@@ -170,6 +170,22 @@ Date.prototype.endOfMinute = function() {
     return date;
 }
 
+Array.prototype.shuffle = function() {
+    let max = this.length;
+    let tempItem;
+    let index;
+    // 當還有元素需要洗牌時
+    while (max) {
+        // 隨機選擇一個剩餘元素
+        index = Math.floor(Math.random() * max--);
+        // 與當前元素交換
+        tempItem = this[max];
+        this[max] = this[index];
+        this[index] = tempItem;
+    }
+    return this;
+};
+
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';
 import Layout from "@/Pages/Layouts/App.svelte";
