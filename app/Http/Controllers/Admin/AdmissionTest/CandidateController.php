@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdmissionTest\Candidate\SeatNumbersRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
 use App\Http\Requests\StatusRequest;
@@ -31,7 +32,7 @@ class CandidateController extends Controller implements HasMiddleware
     {
         return [
             (new Middleware(EncryptHistoryMiddleware::class))->only(['show', 'edit']),
-            (new Middleware('permission:Edit:Admission Test Candidate'))->only(['store', 'destroy']),
+            (new Middleware('permission:Edit:Admission Test Candidate'))->only(['store', 'destroy', 'seatNumbers']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $permissions = ['Edit:Admission Test Candidate'];
@@ -56,7 +57,7 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(403);
                     }
                 }
-            ))->except(['store', 'destroy', 'result']),
+            ))->except(['store', 'destroy', 'seatNumbers', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
@@ -79,7 +80,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->except(['store', 'result']),
+            ))->except(['store', 'seatNumbers', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
@@ -299,6 +300,28 @@ class CandidateController extends Controller implements HasMiddleware
         DB::commit();
 
         return ['success' => 'The candidate delete success!'];
+    }
+
+    public function seatNumbers(SeatNumbersRequest $request, AdmissionTest $admissionTest)
+    {
+        $case = [];
+        foreach (array_values($request->seat_numbers) as $index => $id) {
+            $case[] = "WHEN user_id = $id THEN ".$index + 1;
+        }
+        $case = implode(' ', $case);
+        AdmissionTestHasCandidate::where('test_id', $admissionTest->id)
+            ->whereIn('user_id', $request->seat_numbers)
+            ->update(['seat_number' => DB::raw("(CASE $case ELSE seat_number END)")]);
+
+        return [
+            'success' => 'The seat numbers update success!',
+            'seat_numbers' => AdmissionTestHasCandidate::orderBy('seat_number')
+                ->where('test_id', $admissionTest->id)
+                ->whereIn('user_id', $request->seat_numbers)
+                ->get(['user_id', 'seat_number'])
+                ->pluck('user_id', 'seat_number')
+                ->toArray(),
+        ];
     }
 
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)

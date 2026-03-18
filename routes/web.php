@@ -155,6 +155,8 @@ Route::middleware('auth')->group(function () {
                     Route::resource('proctors', ProctorController::class)
                         ->only(['store', 'update', 'destroy'])
                         ->whereNumber('proctor');
+                    Route::match(['put', 'patch'], 'candidates/seat-numbers', [AdminCandidateController::class, 'seatNumbers'])
+                        ->name('candidates.seat-numbers.update');
                     Route::match(['put', 'patch'], '/candidates/{candidate}/present', [AdminCandidateController::class, 'present'])
                         ->name('candidates.present.update')
                         ->whereNumber('candidate');
