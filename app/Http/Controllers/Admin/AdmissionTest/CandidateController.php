@@ -162,7 +162,10 @@ class CandidateController extends Controller implements HasMiddleware
             'middle_name' => $request->user->middle_name,
             'given_name' => $request->user->given_name,
             'birthday' => $request->user->birthday,
-            'passport_type' => $request->user->passportType->name,
+            'passport_type' => [
+                'name' => $request->user->passportType->name,
+                'display_order' => $request->user->passportType->display_order,
+            ],
             'passport_number' => $request->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => $request->user->hasOtherSamePassportUserJoinedFutureTest,
         ];

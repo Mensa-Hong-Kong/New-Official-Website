@@ -28,7 +28,10 @@
                 middleName: row.middle_name,
                 givenName: row.given_name,
                 birthday: formatToDate(row.birthday),
-                passportType: row.passport_type.name,
+                passportType: {
+                    name: row.passport_type.name,
+                    displayOrder: row.passport_type.display_order,
+                },
                 passportNumber: row.passport_number,
                 hasOtherSamePassportUserJoinedFutureTest: row.has_other_same_passport_user_joined_future_test,
                 hasOtherSamePassportUserAttendedAdmissionTest: row.has_other_same_passport_user_attended_admission_test,
@@ -344,10 +347,7 @@
 
     let search = $state('');
     let searchRexExp = $derived(new RegExp(`(?=.*${search.toLocaleLowerCase().split(' ').join(')(?=.*')}).*`));
-    let sortBy = $state({
-        column: 'seatNumber',
-        ascending: true,
-    });
+    let sortBy = $state({});
 
     function sortableKeydown(event) {
         if (['Enter', ' '].includes(event.key)) {
@@ -376,13 +376,25 @@
                         (! sortBy.ascending && column != 'seatNumber') ? -1 : 1;
                 }
                 if (
-                    column == 'seatNumber' &&
-                    a[column] === null && b[column] === null
+                    (
+                        column == 'seatNumber' &&
+                        a[column] === null && b[column] === null
+                    ) || column == 'passportNumber'
                 ) {
-                    if (sortBy.ascending) {
-                        return `${a['passportNumber']}`.localeCompare(`${b['passportNumber']}`);
-                    } else {
-                        return `${b['passportNumber']}`.localeCompare(`${a['passportNumber']}`);
+                    if (a['passportType']['displayOrder'] > b['passportType']['displayOrder']) {
+                        return sortBy.ascending ? 1 : -1;
+                    } else if (a['passportType']['displayOrder'] < b['passportType']['displayOrder']) {
+                        return sortBy.ascending ? -1 : 1;
+                    }
+                    if (
+                        column == 'seatNumber' &&
+                        a[column] === null && b[column] === null
+                    ) {
+                        if (sortBy.ascending) {
+                            return `${a['passportNumber']}`.localeCompare(`${b['passportNumber']}`);
+                        } else {
+                            return `${b['passportNumber']}`.localeCompare(`${a['passportNumber']}`);
+                        }
                     }
                 }
                 if (sortBy.ascending) {
@@ -393,6 +405,11 @@
             }
         );
     }
+
+    sorting(
+        new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ?
+            'seatNumber' : 'passportNumber'
+    );
 </script>
 
 <article>
@@ -405,7 +422,7 @@
     }
         <InputGroup hidden={candidates.length == 0}>
             <InputGroupText><i class="bi bi-search"></i></InputGroupText>
-            <Input type="search" bind:value={search} placeholder="search" />
+            <Input type="search" bind:value={search} placeholder="search('name/passport number/birthday')" />
         </InputGroup>
     {/if}
     <Table responsive hover class="text-nowrap">
@@ -547,7 +564,7 @@
                             <td>{row.familyName}</td>
                             <td>{row.middleName}</td>
                             <td>{row.givenName}</td>
-                            <td>{row.passportType}</td>
+                            <td>{row.passportType.name}</td>
                             <td class={{
                                 'text-warning': row.hasOtherSamePassportUserJoinedFutureTest,
                                 'text-danger': row.hasOtherSamePassportUserAttendedAdmissionTest ||

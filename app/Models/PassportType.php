@@ -11,5 +11,6 @@ class PassportType extends Model
 
     protected $fillable = [
         'name',
+        'display_order',
     ];
 }
