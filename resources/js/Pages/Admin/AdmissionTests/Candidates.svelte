@@ -2,13 +2,18 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+	import { dndzone, overrideItemIdKeyNameBeforeInitialisingDndZones } from 'svelte-dnd-action';
     import { InputGroup, InputGroupText, Input, Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { can, canAny } from "@/gate.ts";
 
-    let { candidates: initCandidates, submitting = $bindable(), test,
-        countCandidate = $bindable(), countAttendedCandidate = $bindable() } = $props();
+    overrideItemIdKeyNameBeforeInitialisingDndZones('dndShadowID')
+
+    let {
+        candidates: initCandidates, submitting = $bindable(), test,
+        countCandidate = $bindable(), countAttendedCandidate = $bindable()
+    } = $props();
     let candidates = $state([]);
     let inputs = $state({
         candidates: []
@@ -24,6 +29,7 @@
         ) {
             let data = {
                 id: row.id,
+                dndShadowID: row.id,
                 familyName: row.family_name,
                 middleName: row.middle_name,
                 givenName: row.given_name,
@@ -347,6 +353,86 @@
         }
     }
 
+	const flipDurationMs = 300;
+    let updatingSeatNumbers = $state(false);
+    let originCandidateIDs = $state([]);
+    let sameWithSortOrder = $derived(
+        candidates.every(
+            function(data, index) {
+                return data['id'] === originCandidateIDs[index];
+            }
+        )
+    );
+
+    function getIndex(id) {
+        return candidates.findIndex(
+            function(element) {
+                return element.id == id;
+            }
+        );
+    }
+
+	function handleDnd(event) {
+        candidates = event.detail.items;
+	}
+
+    let editingSeatNumbers = $state(false);
+
+    function cancelEditDisplay(event) {
+        editingSeatNumbers = false;
+    }
+
+    function updateSeatNumbersSuccessCallback(response) {
+        alert(response.data.success);
+        for(let [seatNumber, id] of Object.entries(response.data.seat_numbers)) {
+            candidates[getIndex(id)]['seatNumber'] = Number(seatNumber);
+        }
+        sortBy.column = 'seatNumber';
+        sortBy.ascending = false;
+        sorting('seatNumber');
+        editingSeatNumbers = false;
+        updatingSeatNumbers = false;
+        submitting = false;
+    }
+
+    function updateSeatNumbersFailCallback(error) {
+        if(error.status == 422) {
+            alert(error.response.data.errors.seat_numbers);
+        }
+        updatingSeatNumbers = false;
+        submitting = false;
+    }
+
+    function confirmedUpdateSeatNumbers() {
+        if(submitting == '') {
+            let submitAt = Date.now();
+            submitting = 'updateDisplayOrder'+submitAt;
+            if(submitting == 'updateDisplayOrder'+submitAt) {
+                updatingSeatNumbers = true;
+                let data = {seat_numbers: candidates.map(candidate => candidate.id)};
+                post(
+                    route(
+                        'admin.admission-tests.candidates.seat-numbers.update',
+                        {admission_test: test.id}
+                    ),
+                    updateSeatNumbersSuccessCallback,
+                    updateSeatNumbersFailCallback,
+                    'put', data
+                );
+            }
+        }
+    }
+
+    function updateSeatNumbers(event) {
+        let message = `Are you sure to update candidate seat numbers?`;
+        confirm(message, confirmedUpdateSeatNumbers);
+    }
+
+    function editSeatNumbers(event) {
+        editingSeatNumbers = true;
+        search = '';
+    }
+
     let search = $state('');
     let searchRexExp = $derived(new RegExp(`(?=.*${search.toLocaleLowerCase().split(' ').join(')(?=.*')}).*`));
     let sortBy = $state({});
@@ -360,7 +446,7 @@
 
     function sorting(column = null) {
         if (column) {
-            if (sortBy.column === column) {
+            if (sortBy.column === column && sameWithSortOrder) {
                 sortBy.ascending = ! sortBy.ascending;
             } else {
                 sortBy.ascending = true;
@@ -392,20 +478,14 @@
                         column == 'seatNumber' &&
                         a[column] === null && b[column] === null
                     ) {
-                        if (sortBy.ascending) {
-                            return `${a['passportNumber']}`.localeCompare(`${b['passportNumber']}`);
-                        } else {
-                            return `${b['passportNumber']}`.localeCompare(`${a['passportNumber']}`);
-                        }
+                        return sortBy.ascending ^ a[column] > b[column] ? -1 : 1;
                     }
                 }
-                if (sortBy.ascending) {
-                    return `${a[column]}`.localeCompare(`${b[column]}`);
-                } else {
-                    return `${b[column]}`.localeCompare(`${a[column]}`);
-                }
+                if (a[column] === null && b[column] === null) return 0;
+                return sortBy.ascending ^ a[column] > b[column] ? -1 : 1;
             }
         );
+        originCandidateIDs = candidates.map(candidate => candidate.id);
     }
 
     sorting(
@@ -423,6 +503,25 @@
     <h3 class="mb-2 fw-bold">
         Candidates
         <Button color="warning" onclick={randomSorting}>Random Order</Button>
+        {#if
+            (
+                canAny([
+                    'View:Admission Test Candidate',
+                    'Edit:Admission Test Candidate',
+                ]) || test.currentUserIsProctor
+            ) && new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()
+        }
+            <Button color="primary" onclick={editSeatNumbers}
+                hidden={editingSeatNumbers || updatingSeatNumbers}>Edit Seat Numbers</Button>
+            <Button color="primary" onclick={updateSeatNumbers} disabled={submitting}
+                hidden={! editingSeatNumbers || updatingSeatNumbers}>Save Seat Numbers</Button>
+            <Button color="danger" onclick={cancelEditDisplay}
+                hidden={! editingSeatNumbers || updatingSeatNumbers}>Cancel</Button>
+            <Button color="primary" hidden={! updatingSeatNumbers} disabled>
+                <Spinner type="border" size="sm" />
+                Saving Seat Numbers...
+            </Button>
+        {/if}
     </h3>
     {#if
         canAny([
@@ -432,7 +531,8 @@
     }
         <InputGroup hidden={candidates.length == 0}>
             <InputGroupText><i class="bi bi-search"></i></InputGroupText>
-            <Input type="search" bind:value={search} placeholder="search ( name / passport number / birthday )" />
+            <Input type="search" bind:value={search} placeholder="search ( name / passport number / birthday )"
+                disabled={editingSeatNumbers || updatingSeatNumbers} />
         </InputGroup>
     {/if}
     <Table responsive hover class="text-nowrap">
@@ -450,9 +550,9 @@
                             onclick={() => {sorting('familyName'); return false;}}>Family Name</u>
                         <i class={[
                             'fa', {
-                                'fa-sort': sortBy.column != 'familyName',
-                                'fa-sort-asc': sortBy.column == 'familyName' && sortBy.ascending,
-                                'fa-sort-desc': sortBy.column == 'familyName' && ! sortBy.ascending,
+                                'fa-sort': sameWithSortOrder || sortBy.column != 'familyName',
+                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'familyName' && sortBy.ascending,
+                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'familyName' && ! sortBy.ascending,
                             }
                         ]}></i>
                     </th>
@@ -461,9 +561,9 @@
                             onclick={() => {sorting('middleName'); return false;}}>Middle Name</u>
                         <i class={[
                             'fa', {
-                                'fa-sort': sortBy.column != 'middleName',
-                                'fa-sort-asc': sortBy.column == 'middleName' && sortBy.ascending,
-                                'fa-sort-desc': sortBy.column == 'middleName' && ! sortBy.ascending,
+                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'middleName',
+                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'middleName' && sortBy.ascending,
+                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'middleName' && ! sortBy.ascending,
                             }
                         ]}></i>
                     </th>
@@ -472,9 +572,9 @@
                             onclick={() => {sorting('givenName'); return false;}}>Given Name</u>
                         <i class={[
                             'fa', {
-                                'fa-sort': sortBy.column != 'givenName',
-                                'fa-sort-asc': sortBy.column == 'givenName' && sortBy.ascending,
-                                'fa-sort-desc': sortBy.column == 'givenName' && ! sortBy.ascending,
+                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'givenName',
+                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'givenName' && sortBy.ascending,
+                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'givenName' && ! sortBy.ascending,
                             }
                         ]}></i>
                     </th>
@@ -484,9 +584,9 @@
                             onclick={() => {sorting('passportNumber'); return false;}}>Passport Number</u>
                         <i class={[
                             'fa', {
-                                'fa-sort': sortBy.column != 'passportNumber',
-                                'fa-sort-asc': sortBy.column == 'passportNumber' && sortBy.ascending,
-                                'fa-sort-desc': sortBy.column == 'passportNumber' && ! sortBy.ascending,
+                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'passportNumber',
+                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'passportNumber' && sortBy.ascending,
+                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'passportNumber' && ! sortBy.ascending,
                             }
                         ]}></i>
                     </th>
@@ -498,9 +598,9 @@
                             onclick={() => {sorting('seatNumber'); return false;}}>Seat Number</u>
                         <i class={[
                             'fa', {
-                                'fa-sort': sortBy.column != 'seatNumber',
-                                'fa-sort-asc': sortBy.column == 'seatNumber' && sortBy.ascending,
-                                'fa-sort-desc': sortBy.column == 'seatNumber' && ! sortBy.ascending,
+                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'seatNumber',
+                                'fa-sort-asc': sameWithSortOrder && (sortBy.column == 'seatNumber' && sortBy.ascending),
+                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'seatNumber' && ! sortBy.ascending,
                             }
                         ]}></i>
                     </th>
@@ -537,12 +637,18 @@
                     {/if}
                 {/if}
                 {#if can('Edit:Admission Test Candidate')}
-                    <th colspan={new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ? 1 : 2}>Control</th>
+                    <th colspan={new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ? 1 : 2}
+                    >Control</th>
                 {/if}
             </tr>
         </thead>
-        <tbody>
-            {#each candidates as row, index}
+	    <tbody use:dndzone={{
+                items:candidates,flipDurationMs,
+                centreDraggedOnCursor: true,
+                morphDisabled: true,
+                dragDisabled: ! editingSeatNumbers || updatingSeatNumbers,
+            }} onconsider={handleDnd} onfinalize={handleDnd}>
+            {#each candidates as row, index (row.dndShadowID)}
                 {#if
                     ! search.trim() || [
                         row.familyName,
@@ -591,7 +697,7 @@
                         {/if}
                         <td>{row.birthday}</td>
                         {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
-                            <td>{row.seatNumber}</td>
+                            <td>{editingSeatNumbers ? `${index + 1}(${row.seatNumber})` : row.seatNumber}</td>
                         {/if}
                         {#if
                             canAny([
