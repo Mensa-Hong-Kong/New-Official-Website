@@ -2,13 +2,13 @@
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
-	import { dndzone, overrideItemIdKeyNameBeforeInitialisingDndZones } from 'svelte-dnd-action';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
+    import { move } from '@dnd-kit/helpers';
     import { InputGroup, InputGroupText, Input, Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { can, canAny } from "@/gate.ts";
-
-    overrideItemIdKeyNameBeforeInitialisingDndZones('dndShadowID')
 
     let {
         candidates: initCandidates, submitting = $bindable(), test,
@@ -29,7 +29,6 @@
         ) {
             let data = {
                 id: row.id,
-                dndShadowID: row.id,
                 familyName: row.family_name,
                 middleName: row.middle_name,
                 givenName: row.given_name,
@@ -363,6 +362,7 @@
             }
         )
     );
+    let snapshot = [];
 
     function getIndex(id) {
         return candidates.findIndex(
@@ -372,9 +372,17 @@
         );
     }
 
-	function handleDnd(event) {
-        candidates = event.detail.items;
-	}
+    function onDragStart() {
+        snapshot = candidates.slice();
+    }
+
+    function onDragOver(event) {
+        candidates = move(candidates, event);
+    }
+
+    function onDragEnd(event) {
+        if (event.canceled) candidates = snapshot;
+    }
 
     let editingSeatNumbers = $state(false);
 
@@ -535,309 +543,311 @@
                 disabled={editingSeatNumbers || updatingSeatNumbers} />
         </InputGroup>
     {/if}
-    <Table responsive hover class="text-nowrap">
-        <thead>
-            <tr>
-                {#if
-                    canAny([
-                        'View:Admission Test Candidate',
-                        'Edit:Admission Test Candidate',
-                    ]) || test.currentUserIsProctor
-                }
-                    <th style="width: 120ox !important;">User ID</th>
-                    <th>
-                        <u role="button" tabindex=0 onkeydown={sortableKeydown}
-                            onclick={() => {sorting('familyName'); return false;}}>Family Name</u>
-                        <i class={[
-                            'fa', {
-                                'fa-sort': sameWithSortOrder || sortBy.column != 'familyName',
-                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'familyName' && sortBy.ascending,
-                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'familyName' && ! sortBy.ascending,
-                            }
-                        ]}></i>
-                    </th>
-                    <th>
-                        <u role="button" tabindex=0 onkeydown={sortableKeydown}
-                            onclick={() => {sorting('middleName'); return false;}}>Middle Name</u>
-                        <i class={[
-                            'fa', {
-                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'middleName',
-                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'middleName' && sortBy.ascending,
-                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'middleName' && ! sortBy.ascending,
-                            }
-                        ]}></i>
-                    </th>
-                    <th>
-                        <u role="button" tabindex=0 onkeydown={sortableKeydown}
-                            onclick={() => {sorting('givenName'); return false;}}>Given Name</u>
-                        <i class={[
-                            'fa', {
-                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'givenName',
-                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'givenName' && sortBy.ascending,
-                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'givenName' && ! sortBy.ascending,
-                            }
-                        ]}></i>
-                    </th>
-                    <th>Passport Type</th>
-                    <th>
-                        <u role="button" tabindex=0 onkeydown={sortableKeydown}
-                            onclick={() => {sorting('passportNumber'); return false;}}>Passport Number</u>
-                        <i class={[
-                            'fa', {
-                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'passportNumber',
-                                'fa-sort-asc': sameWithSortOrder && sortBy.column == 'passportNumber' && sortBy.ascending,
-                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'passportNumber' && ! sortBy.ascending,
-                            }
-                        ]}></i>
-                    </th>
-                {/if}
-                <th>Birthday</th>
-                {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
-                    <th>
-                        <u role="button" tabindex=0 onkeydown={sortableKeydown}
-                            onclick={() => {sorting('seatNumber'); return false;}}>Seat Number</u>
-                        <i class={[
-                            'fa', {
-                                'fa-sort': ! sameWithSortOrder || sortBy.column != 'seatNumber',
-                                'fa-sort-asc': sameWithSortOrder && (sortBy.column == 'seatNumber' && sortBy.ascending),
-                                'fa-sort-desc': sameWithSortOrder && sortBy.column == 'seatNumber' && ! sortBy.ascending,
-                            }
-                        ]}></i>
-                    </th>
-                {/if}
-                {#if
-                    canAny([
-                        'View:Admission Test Candidate',
-                        'Edit:Admission Test Candidate',
-                    ]) || test.currentUserIsProctor && test.inTestingTimeRange
-                }
-                    <th>Show</th>
-                {/if}
-                {#if
-                    canAny([
-                        'View:Admission Test Candidate',
-                        'Edit:Admission Test Candidate',
-                    ]) || (test.currentUserIsProctor && test.inTestingTimeRange)
-                }
-                    <th>Status</th>
-                {/if}
-                {#if
-                    ! test.isFree && canAny([
-                        'View:Admission Test Candidate',
-                        'Edit:Admission Test Candidate',
-                    ])
-                }
-                    <th>Is Free</th>
-                {/if}
-                {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
-                    {#if can('Edit:Admission Test Result')}
-                        <th colspan=2>Result</th>
-                    {:else if can('View:Admission Test Result')}
-                        <th>Result</th>
+    <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+        <Table responsive hover class="text-nowrap">
+            <thead>
+                <tr>
+                    {#if
+                        canAny([
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                        ]) || test.currentUserIsProctor
+                    }
+                        <th style="width: 120ox !important;">User ID</th>
+                        <th>
+                            <u role="button" tabindex=0 onkeydown={sortableKeydown}
+                                onclick={() => {sorting('familyName'); return false;}}>Family Name</u>
+                            <i class={[
+                                'fa', {
+                                    'fa-sort': sameWithSortOrder || sortBy.column != 'familyName',
+                                    'fa-sort-asc': sameWithSortOrder && sortBy.column == 'familyName' && sortBy.ascending,
+                                    'fa-sort-desc': sameWithSortOrder && sortBy.column == 'familyName' && ! sortBy.ascending,
+                                }
+                            ]}></i>
+                        </th>
+                        <th>
+                            <u role="button" tabindex=0 onkeydown={sortableKeydown}
+                                onclick={() => {sorting('middleName'); return false;}}>Middle Name</u>
+                            <i class={[
+                                'fa', {
+                                    'fa-sort': ! sameWithSortOrder || sortBy.column != 'middleName',
+                                    'fa-sort-asc': sameWithSortOrder && sortBy.column == 'middleName' && sortBy.ascending,
+                                    'fa-sort-desc': sameWithSortOrder && sortBy.column == 'middleName' && ! sortBy.ascending,
+                                }
+                            ]}></i>
+                        </th>
+                        <th>
+                            <u role="button" tabindex=0 onkeydown={sortableKeydown}
+                                onclick={() => {sorting('givenName'); return false;}}>Given Name</u>
+                            <i class={[
+                                'fa', {
+                                    'fa-sort': ! sameWithSortOrder || sortBy.column != 'givenName',
+                                    'fa-sort-asc': sameWithSortOrder && sortBy.column == 'givenName' && sortBy.ascending,
+                                    'fa-sort-desc': sameWithSortOrder && sortBy.column == 'givenName' && ! sortBy.ascending,
+                                }
+                            ]}></i>
+                        </th>
+                        <th>Passport Type</th>
+                        <th>
+                            <u role="button" tabindex=0 onkeydown={sortableKeydown}
+                                onclick={() => {sorting('passportNumber'); return false;}}>Passport Number</u>
+                            <i class={[
+                                'fa', {
+                                    'fa-sort': ! sameWithSortOrder || sortBy.column != 'passportNumber',
+                                    'fa-sort-asc': sameWithSortOrder && sortBy.column == 'passportNumber' && sortBy.ascending,
+                                    'fa-sort-desc': sameWithSortOrder && sortBy.column == 'passportNumber' && ! sortBy.ascending,
+                                }
+                            ]}></i>
+                        </th>
                     {/if}
-                {/if}
-                {#if can('Edit:Admission Test Candidate')}
-                    <th colspan={new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ? 1 : 2}
-                    >Control</th>
-                {/if}
-            </tr>
-        </thead>
-	    <tbody use:dndzone={{
-                items:candidates,flipDurationMs,
-                centreDraggedOnCursor: true,
-                morphDisabled: true,
-                dragDisabled: ! editingSeatNumbers || updatingSeatNumbers,
-            }} onconsider={handleDnd} onfinalize={handleDnd}>
-            {#each candidates as row, index (row.dndShadowID)}
+                    <th>Birthday</th>
+                    {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
+                        <th>
+                            <u role="button" tabindex=0 onkeydown={sortableKeydown}
+                                onclick={() => {sorting('seatNumber'); return false;}}>Seat Number</u>
+                            <i class={[
+                                'fa', {
+                                    'fa-sort': ! sameWithSortOrder || sortBy.column != 'seatNumber',
+                                    'fa-sort-asc': sameWithSortOrder && (sortBy.column == 'seatNumber' && sortBy.ascending),
+                                    'fa-sort-desc': sameWithSortOrder && sortBy.column == 'seatNumber' && ! sortBy.ascending,
+                                }
+                            ]}></i>
+                        </th>
+                    {/if}
+                    {#if
+                        canAny([
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                        ]) || test.currentUserIsProctor && test.inTestingTimeRange
+                    }
+                        <th>Show</th>
+                    {/if}
+                    {#if
+                        canAny([
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                        ]) || (test.currentUserIsProctor && test.inTestingTimeRange)
+                    }
+                        <th>Status</th>
+                    {/if}
+                    {#if
+                        ! test.isFree && canAny([
+                            'View:Admission Test Candidate',
+                            'Edit:Admission Test Candidate',
+                        ])
+                    }
+                        <th>Is Free</th>
+                    {/if}
+                    {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
+                        {#if can('Edit:Admission Test Result')}
+                            <th colspan=2>Result</th>
+                        {:else if can('View:Admission Test Result')}
+                            <th>Result</th>
+                        {/if}
+                    {/if}
+                    {#if can('Edit:Admission Test Candidate')}
+                        <th colspan={new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay() ? 1 : 2}
+                        >Control</th>
+                    {/if}
+                </tr>
+            </thead>
+            <tbody>
+                {#each candidates as row, index}
+                    {#if
+                        ! search.trim() || [
+                            row.familyName,
+                            row.middleName,
+                            row.givenName,
+                            row.passportNumber,
+                            row.birthday,
+                        ].join('|').toLocaleLowerCase().match(searchRexExp)
+                    }
+                        {@const sortable = createSortable({
+                            id: row.id,
+                            index: () => index,
+                            disabled: ! editingSeatNumbers || updatingSeatNumbers
+                        })}
+                        <tr {@attach ! editingSeatNumbers || updatingSeatNumbers ? {} : sortable.attach}>
+                            {#if
+                                canAny([
+                                    'View:Admission Test Candidate',
+                                    'Edit:Admission Test Candidate',
+                                ]) || test.currentUserIsProctor
+                            }
+                                <td>
+                                    {#if can('View:User')}
+                                        <Link href={
+                                            route(
+                                                'admin.users.show',
+                                                {user: row.id}
+                                            )
+                                        }>{row.id}</Link>
+                                    {:else}
+                                        {row.id}
+                                    {/if}
+                                </td>
+                                <td>{row.familyName}</td>
+                                <td>{row.middleName}</td>
+                                <td>{row.givenName}</td>
+                                <td>{row.passportType.name}</td>
+                                <td class={{
+                                    'text-warning': row.hasOtherSamePassportUserJoinedFutureTest,
+                                    'text-danger': row.hasOtherSamePassportUserAttendedAdmissionTest ||
+                                        row.hasSamePassportAlreadyQualificationOfMembership || (
+                                            row.lastAttendedAdmissionTest &&
+                                            row.lastAttendedAdmissionTest.testing_at >= new Date(
+                                                (new Date(row.lastAttendedAdmissionTest.testing_at)).setMonth(
+                                                    (new Date(row.lastAttendedAdmissionTest.testing_at))
+                                                        .getMonth - row.lastAttendedAdmissionTest.type.interval_month
+                                                )
+                                            ) && new Date(lastAttendedAdmissionTest.testing_at) <= new Date
+                                        ),
+                                }}>{row.passportNumber}</td>
+                            {/if}
+                            <td>{row.birthday}</td>
+                            {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
+                                <td>{editingSeatNumbers ? `${index + 1}(${row.seatNumber})` : row.seatNumber}</td>
+                            {/if}
+                            {#if
+                                canAny([
+                                    'View:Admission Test Candidate',
+                                    'Edit:Admission Test Candidate',
+                                ]) || test.inTestingTimeRange
+                            }
+                                <td>
+                                    <Link class="btn btn-primary"
+                                        href={
+                                            route(
+                                                'admin.admission-tests.candidates.show',
+                                                {
+                                                    admission_test: route().params.admission_test,
+                                                    candidate: row.id,
+                                                }
+                                            )
+                                        }>Show</Link>
+                                </td>
+                            {/if}
+                            {#if
+                                can('Edit:Admission Test Candidate') ||
+                                (test.currentUserIsProctor && test.inTestingTimeRange)
+                            }
+                                <td>
+                                    <Button block color={row.isPresent ? 'success' : 'danger'}
+                                        name="status" value={! row.isPresent} style="min-width: 85px !important"
+                                        disabled={
+                                            canAny([
+                                                'View:Admission Test Result',
+                                                'Edit:Admission Test Result',
+                                            ]) ? row.hasResult : row.isPass === null
+                                        }
+                                        onclick={() => updatePresentStatue(index, ! row.isPresent)}>
+                                        {row.isPresent ? 'Present' : 'Absent'}</Button>
+                                </td>
+                            {:else if can('View:Admission Test Candidate')}
+                                <td>{
+                                    new Date(formatToDatetime(test.testingAt)) >= (new Date).addHours(2) ?
+                                        '--' : row.isPresent ? 'Present' : 'Absent'
+                                }</td>
+                            {/if}
+                            {#if
+                                ! test.isFree && canAny([
+                                    'View:Admission Test Candidate',
+                                    'Edit:Admission Test Candidate',
+                                ])
+                            }
+                                <td>{row.isFree ? 'Free' : 'Fee'}</td>
+                            {/if}
+                            {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
+                                {#if can('Edit:Admission Test Result')}
+                                    <td>
+                                        <Button block color="success" name="status" value={true} style="min-width: 85px !important"
+                                            disabled={
+                                                submitting || row.isPass || (
+                                                    canAny([
+                                                        'View:Admission Test Candidate',
+                                                        'Edit:Admission Test Candidate',
+                                                    ]) && ! row.isPresent
+                                                ) || new Date(test.expectEndAt) > new Date
+                                            } onclick={() => updateResult(index, true)}>Pass</Button>
+                                    </td>
+                                    <td>
+                                        <Button block color="danger" name="status" value={false} style="min-width: 85px !important"
+                                            disabled={
+                                                submitting || row.isPass === false || (
+                                                    canAny([
+                                                        'View:Admission Test Candidate',
+                                                        'Edit:Admission Test Candidate',
+                                                    ]) && ! row.isPresent
+                                                ) || new Date(test.expectEndAt) > new Date
+                                            } onclick={() => updateResult(index, false)}>Fail</Button>
+                                    </td>
+                                {:else if can('View:Admission Test Result')}
+                                    <td>{row.isPass === null ? '--' : row.isPass ? 'Pass' : 'Fail'}</td>
+                                {/if}
+                            {/if}
+                            {#if can('Edit:Admission Test Candidate')}
+                                <td colspan={new Date(formatToDatetime(test.testingAt)) > (new Date).addDays(2).endOfDay() ? 2 : 1}>
+                                    <Button block color="danger" disabled={submitting} onclick={() => destroy(index)} style="min-width: 85px !important">
+                                        {#if row.deleting}
+                                            <Spinner type="border" size="sm" />Deleting...
+                                        {:else}
+                                            Delete
+                                        {/if}
+                                    </Button>
+                                </td>
+                            {/if}
+                        </tr>
+                    {/if}
+                {/each}
                 {#if
-                    ! search.trim() || [
-                        row.familyName,
-                        row.middleName,
-                        row.givenName,
-                        row.passportNumber,
-                        row.birthday,
-                    ].join('|').toLocaleLowerCase().match(searchRexExp)
+                    can('Edit:Admission Test Candidate') &&
+                    new Date(formatToDatetime(test.testingAt)) > (new Date).addDays(2).endOfDay()
                 }
                     <tr>
-                        {#if
-                            canAny([
-                                'View:Admission Test Candidate',
-                                'Edit:Admission Test Candidate',
-                            ]) || test.currentUserIsProctor
-                        }
-                            <td>
-                                {#if can('View:User')}
-                                    <Link href={
-                                        route(
-                                            'admin.users.show',
-                                            {user: row.id}
-                                        )
-                                    }>{row.id}</Link>
-                                {:else}
-                                    {row.id}
-                                {/if}
-                            </td>
-                            <td>{row.familyName}</td>
-                            <td>{row.middleName}</td>
-                            <td>{row.givenName}</td>
-                            <td>{row.passportType.name}</td>
-                            <td class={{
-                                'text-warning': row.hasOtherSamePassportUserJoinedFutureTest,
-                                'text-danger': row.hasOtherSamePassportUserAttendedAdmissionTest ||
-                                    row.hasSamePassportAlreadyQualificationOfMembership || (
-                                        row.lastAttendedAdmissionTest &&
-                                        row.lastAttendedAdmissionTest.testing_at >= new Date(
-                                            (new Date(row.lastAttendedAdmissionTest.testing_at)).setMonth(
-                                                (new Date(row.lastAttendedAdmissionTest.testing_at))
-                                                    .getMonth - row.lastAttendedAdmissionTest.type.interval_month
-                                            )
-                                        ) && new Date(lastAttendedAdmissionTest.testing_at) <= new Date
-                                    ),
-                            }}>{row.passportNumber}</td>
-                        {/if}
-                        <td>{row.birthday}</td>
-                        {#if new Date(formatToDatetime(test.testingAt)) < (new Date).addDays(2).endOfDay()}
-                            <td>{editingSeatNumbers ? `${index + 1}(${row.seatNumber})` : row.seatNumber}</td>
-                        {/if}
+                        <td style="width: 150px">
+                            <form method="POST" novalidate onsubmit={create} id="createCandidateForm">
+                                <Input name="user_id" patten="^\+?[1-9][0-9]*" required
+                                    bind:inner={inputs.user} />
+                            </form>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         {#if
                             canAny([
                                 'View:Admission Test Candidate',
                                 'Edit:Admission Test Candidate',
                             ]) || test.inTestingTimeRange
                         }
+                            <td></td>
+                        {/if}
+                        {#if ! test.isFree}
                             <td>
-                                <Link class="btn btn-primary"
-                                    href={
-                                        route(
-                                            'admin.admission-tests.candidates.show',
-                                            {
-                                                admission_test: route().params.admission_test,
-                                                candidate: row.id,
-                                            }
-                                        )
-                                    }>Show</Link>
+                                <input type="checkbox" class="btn-check" name="is_free" id="isFree"
+                                    bind:this={inputs.isFree} disabled={creating} form="createCandidateForm" />
+                                <label class="form-control btn btn-outline-success" for='isFree'>Is Free</label>
                             </td>
                         {/if}
-                        {#if
-                            can('Edit:Admission Test Candidate') ||
-                            (test.currentUserIsProctor && test.inTestingTimeRange)
-                        }
-                            <td>
-                                <Button block color={row.isPresent ? 'success' : 'danger'}
-                                    name="status" value={! row.isPresent} style="min-width: 85px !important"
-                                    disabled={
-                                        canAny([
-                                            'View:Admission Test Result',
-                                            'Edit:Admission Test Result',
-                                        ]) ? row.hasResult : row.isPass === null
-                                    }
-                                    onclick={() => updatePresentStatue(index, ! row.isPresent)}>
-                                    {row.isPresent ? 'Present' : 'Absent'}</Button>
-                            </td>
-                        {:else if can('View:Admission Test Candidate')}
-                            <td>{
-                                new Date(formatToDatetime(test.testingAt)) >= (new Date).addHours(2) ?
-                                    '--' : row.isPresent ? 'Present' : 'Absent'
-                            }</td>
-                        {/if}
-                        {#if
-                            ! test.isFree && canAny([
-                                'View:Admission Test Candidate',
-                                'Edit:Admission Test Candidate',
-                            ])
-                        }
-                            <td>{row.isFree ? 'Free' : 'Fee'}</td>
-                        {/if}
-                        {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
-                            {#if can('Edit:Admission Test Result')}
-                                <td>
-                                    <Button block color="success" name="status" value={true} style="min-width: 85px !important"
-                                        disabled={
-                                            submitting || row.isPass || (
-                                                canAny([
-                                                    'View:Admission Test Candidate',
-                                                    'Edit:Admission Test Candidate',
-                                                ]) && ! row.isPresent
-                                            ) || new Date(test.expectEndAt) > new Date
-                                        } onclick={() => updateResult(index, true)}>Pass</Button>
-                                </td>
-                                <td>
-                                    <Button block color="danger" name="status" value={false} style="min-width: 85px !important"
-                                        disabled={
-                                            submitting || row.isPass === false || (
-                                                canAny([
-                                                    'View:Admission Test Candidate',
-                                                    'Edit:Admission Test Candidate',
-                                                ]) && ! row.isPresent
-                                            ) || new Date(test.expectEndAt) > new Date
-                                        } onclick={() => updateResult(index, false)}>Fail</Button>
-                                </td>
-                            {:else if can('View:Admission Test Result')}
-                                <td>{row.isPass === null ? '--' : row.isPass ? 'Pass' : 'Fail'}</td>
-                            {/if}
-                        {/if}
-                        {#if can('Edit:Admission Test Candidate')}
-                            <td colspan={new Date(formatToDatetime(test.testingAt)) > (new Date).addDays(2).endOfDay() ? 2 : 1}>
-                                <Button block color="danger" disabled={submitting} onclick={() => destroy(index)} style="min-width: 85px !important">
-                                    {#if row.deleting}
-                                        <Spinner type="border" size="sm" />Deleting...
-                                    {:else}
-                                        Delete
-                                    {/if}
-                                </Button>
-                            </td>
-                        {/if}
+                        <td colspan=1 hidden={creating}>
+                            <Button block color="success" disabled={submitting} hidden={creating}
+                                name="function" value="schedule" form="createCandidateForm">Schedule</Button>
+                        </td>
+                        <td colspan=1 hidden={creating}>
+                            <Button block color="success" disabled={submitting} hidden={creating}
+                                name="function" value="reschedule" form="createCandidateForm">Reschedule</Button>
+                        </td>
+                        <td colspan=2 hidden={! creating}>
+                            <Button block color="success" disabled  hidden={! creating}>
+                                <Spinner type="border" size="sm" />Adding...
+                            </Button>
+                        </td>
                     </tr>
                 {/if}
-            {/each}
-            {#if
-                can('Edit:Admission Test Candidate') &&
-                new Date(formatToDatetime(test.testingAt)) > (new Date).addDays(2).endOfDay()
-            }
-                <tr>
-                    <td style="width: 150px">
-                        <form method="POST" novalidate onsubmit={create} id="createCandidateForm">
-                            <Input name="user_id" patten="^\+?[1-9][0-9]*" required
-                                bind:inner={inputs.user} />
-                        </form>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    {#if
-                        canAny([
-                            'View:Admission Test Candidate',
-                            'Edit:Admission Test Candidate',
-                        ]) || test.inTestingTimeRange
-                    }
-                        <td></td>
-                    {/if}
-                    {#if ! test.isFree}
-                        <td>
-                            <input type="checkbox" class="btn-check" name="is_free" id="isFree"
-                                bind:this={inputs.isFree} disabled={creating} form="createCandidateForm" />
-                            <label class="form-control btn btn-outline-success" for='isFree'>Is Free</label>
-                        </td>
-                    {/if}
-                    <td colspan=1 hidden={creating}>
-                        <Button block color="success" disabled={submitting} hidden={creating}
-                            name="function" value="schedule" form="createCandidateForm">Schedule</Button>
-                    </td>
-                    <td colspan=1 hidden={creating}>
-                        <Button block color="success" disabled={submitting} hidden={creating}
-                            name="function" value="reschedule" form="createCandidateForm">Reschedule</Button>
-                    </td>
-                    <td colspan=2 hidden={! creating}>
-                        <Button block color="success" disabled  hidden={! creating}>
-                            <Spinner type="border" size="sm" />Adding...
-                        </Button>
-                    </td>
-                </tr>
-            {/if}
-        </tbody>
-    </Table>
+            </tbody>
+        </Table>
+    </DragDropProvider>
 </article>
