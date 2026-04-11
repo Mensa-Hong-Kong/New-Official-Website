@@ -14,11 +14,8 @@
 	const flipDurationMs = 300;
     let inputNames = $state({});
 
-	function handleDndConsider(e) {
-		moduleNode.children = e.detail.items;
-	}
-	function handleDndFinalize(e) {
-		moduleNode.children = e.detail.items;
+	function handleDnd(event) {
+		moduleNode.children = event.detail.items;
 	}
 
     function nameValidation(input) {
@@ -125,9 +122,9 @@
             items:moduleNode.children, flipDurationMs,
             centreDraggedOnCursor: true,
             dragDisabled: ! editing || updating || submitting,
-        }} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+        }} onconsider={handleDnd} onfinalize={handleDnd}>
         {#each moduleNode.children as item(item.id)}
-            <article animate:flip="{{duration: flipDurationMs}}">
+            <article animate:flip={{duration: flipDurationMs}}>
                 <ModuleItems bind:moduleNodes={moduleNodes} moduleNode={moduleNodes[item.id]}
                     editing={editing} updating={updating} bind:submitting={submitting} />
             </article>

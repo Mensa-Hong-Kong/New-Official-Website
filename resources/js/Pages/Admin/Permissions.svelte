@@ -104,8 +104,8 @@
     function dragOver(event) {
         event.preventDefault();
         if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
+            let children = Array.from(event.target.parentNode.parentNode.children);
+            if(children.indexOf(event.target.parentNode) > children.indexOf(row)) {
                 event.target.parentNode.after(row);
             } else {
                 event.target.parentNode.before(row);

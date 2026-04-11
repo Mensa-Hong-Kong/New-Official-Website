@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin\AdmissionTest\Candidate;
 
-use Illuminate\Contracts\Validation\Validator;
 use App\Models\AdmissionTestHasCandidate;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 

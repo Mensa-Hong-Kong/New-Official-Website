@@ -363,7 +363,7 @@ class PresentTest extends TestCase
             'status' => true,
             'seat_number' => AdmissionTestHasCandidate::where('test_id', $this->test->id)
                 ->where('user_id', $this->user->id)
-                ->value('seat_number')
+                ->value('seat_number'),
         ]);
     }
 
