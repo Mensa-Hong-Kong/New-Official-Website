@@ -170,7 +170,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -239,7 +241,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -411,7 +415,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -483,7 +489,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -661,7 +669,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -736,7 +746,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -811,7 +823,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
@@ -932,7 +946,9 @@ class ShowTest extends TestCase
                                     ->has(
                                         'candidates.0', function (Assert $page) {
                                             $page->has('id')
-                                                ->has('adorned_name')
+                                                ->has('family_name')
+                                                ->has('middle_name')
+                                                ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
                                                         $page->has('name');
