@@ -209,16 +209,16 @@ class Controller extends BaseController implements HasMiddleware
                             )->with('type:id,interval_month')
                                 ->whereNot('test_id', $admissionTest->id);
                         },
-                        'passportType:id,name',
+                        'passportType:id,name,display_order',
                     ]);
                 },
             ]);
             $admissionTest->candidates->append([
-                'adorned_name', 'has_other_same_passport_user_joined_future_test',
+                'has_other_same_passport_user_joined_future_test',
                 'has_other_same_passport_user_attended_admission_test',
                 'has_same_passport_already_qualification_of_membership',
             ]);
-            $admissionTest->candidates->makeHidden(['family_name', 'middle_name', 'given_name', 'passport_type_id', 'member']);
+            $admissionTest->candidates->makeHidden(['passport_type_id', 'member']);
             $pivotHidden = ['test_id', 'user_id', 'order_id'];
             $pivotAppend = [];
             if (

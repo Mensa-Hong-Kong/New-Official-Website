@@ -20,7 +20,6 @@ return new class extends Migration
             $table->boolean('is_present')->default(false);
             $table->boolean('is_pass')->nullable();
             $table->timestamps();
-            $table->unique(['test_id', 'seat_number']);
             $table->foreign('test_id')
                 ->references('id') // admission test id
                 ->on('admission_tests')

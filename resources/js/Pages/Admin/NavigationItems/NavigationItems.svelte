@@ -70,11 +70,8 @@
         confirm(message, confirmedDelete, id);
     }
 
-	function handleDndConsider(e) {
-		navNode.children = e.detail.items;
-	}
-	function handleDndFinalize(e) {
-		navNode.children = e.detail.items;
+	function handleDnd(event) {
+		navNode.children = event.detail.items;
 	}
 </script>
 
@@ -114,9 +111,9 @@
             items:navNode.children, flipDurationMs,
             centreDraggedOnCursor: true,
             dragDisabled: ! editing || updating || submitting,
-        }} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+        }} onconsider={handleDnd} onfinalize={handleDnd}>
         {#each navNode.children as item(item.id)}
-            <article animate:flip="{{duration: flipDurationMs}}">
+            <article animate:flip={{duration: flipDurationMs}}>
                 <NavigationItems bind:navNodes={navNodes} navNode={navNodes[item.id]}
                     editing={editing} updating={updating} bind:submitting={submitting} />
             </article>

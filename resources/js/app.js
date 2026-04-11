@@ -10,8 +10,60 @@ Object.defineProperty(String.prototype, 'ucfirst', {
 });
 
 // add range php function to js
-window.range = function(start, stop, step = 1) {
-    return Array.from({ length: (stop - start) / step + 1 }, (_, index) => start + index * step);
+window.range = function(start, end, step = undefined) {
+    let array = [];
+    let isChar = false;
+
+    if (start === '') start = 0;
+    if (end === '') end = 0;
+
+    if (typeof start === 'string' || typeof end === 'string') {
+        if (typeof start !== 'string') {
+            end = 0;
+        } else if (typeof end !== 'string') {
+            start = 0;
+        } else {
+            if (step !== undefined && ! Number.isInteger(Number(step))) {
+                throw new Error("Invalid value provided");
+            }
+            isChar = true;
+        }
+    }
+
+    let current = isChar ? start.charCodeAt(0) : start;
+    const last = isChar ? end.charCodeAt(0) : end;
+
+    const isDescending = current > last;
+    if (
+        step !== undefined && (
+            ! isChar || (
+                current >= 65 && current <= 90 &&
+                last >= 65 && last <= 90
+            ) || (
+                current >= 97 && current <= 122 &&
+                last >= 97 && last <= 122
+            )
+        ) && (
+            (isDescending && step > 0) ||
+            (! isDescending && step < 0)
+        )
+    ) {
+        throw new Error("Invalid value provided");
+    }
+    if (step === undefined) {
+        step = 1;
+    } else {
+        step = Number(step);
+    }
+    if (step === 0 || Number.isNaN(step) || ! Number.isFinite(step)) {
+        throw new Error("Invalid value provided");
+    }
+
+    while (isDescending ? current >= last : current <= last) {
+        array.push(isChar ? String.fromCharCode(current) : current);
+        current = isDescending ? current - step : current + step;
+    }
+    return array;
 }
 
 Date.prototype.addYear = function() {
@@ -169,6 +221,23 @@ Date.prototype.endOfMinute = function() {
     date.setSeconds(59);
     return date;
 }
+
+Array.prototype.shuffle = function() {
+    let max = this.length;
+    let tempItem;
+    let index;
+    // 當還有元素需要洗牌時
+    while (max) {
+        // 隨機選擇一個剩餘元素
+        index = Math.floor(Math.random() * max--);
+        // 與當前元素交換
+        tempItem = this[max];
+        this[max] = this[index];
+        this[index] = tempItem;
+    }
+
+    return this;
+};
 
 import { createInertiaApp } from '@inertiajs/svelte';
 import { hydrate, mount } from 'svelte';

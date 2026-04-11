@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\AdmissionTest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdmissionTest\Candidate\SeatNumbersRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\StoreRequest;
 use App\Http\Requests\Admin\AdmissionTest\Candidate\UpdateRequest;
 use App\Http\Requests\StatusRequest;
@@ -31,7 +32,7 @@ class CandidateController extends Controller implements HasMiddleware
     {
         return [
             (new Middleware(EncryptHistoryMiddleware::class))->only(['show', 'edit']),
-            (new Middleware('permission:Edit:Admission Test Candidate'))->only(['store', 'destroy']),
+            (new Middleware('permission:Edit:Admission Test Candidate'))->only(['store', 'destroy', 'seatNumbers']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $permissions = ['Edit:Admission Test Candidate'];
@@ -56,7 +57,7 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(403);
                     }
                 }
-            ))->except(['store', 'destroy', 'result']),
+            ))->except(['store', 'destroy', 'seatNumbers', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $test = $request->route('admission_test');
@@ -79,7 +80,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->except(['store', 'result']),
+            ))->except(['store', 'seatNumbers', 'result']),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $user = $request->route('candidate');
@@ -157,9 +158,14 @@ class CandidateController extends Controller implements HasMiddleware
         $return = [
             'success' => 'The candidate create success',
             'user_id' => $request->user->id,
-            'name' => $request->user->adornedName,
+            'family_name' => $request->user->family_name,
+            'middle_name' => $request->user->middle_name,
+            'given_name' => $request->user->given_name,
             'birthday' => $request->user->birthday,
-            'passport_type' => $request->user->passportType->name,
+            'passport_type' => [
+                'name' => $request->user->passportType->name,
+                'display_order' => $request->user->passportType->display_order,
+            ],
             'passport_number' => $request->user->passport_number,
             'has_other_same_passport_user_joined_future_test' => $request->user->hasOtherSamePassportUserJoinedFutureTest,
         ];
@@ -231,13 +237,13 @@ class CandidateController extends Controller implements HasMiddleware
             $candidate->lastAttendedAdmissionTest->type
                 ->makeHidden('id');
         }
+        $candidate->seat_number = $request->pivot->seat_number;
+        $candidate->is_present = $request->pivot->is_present;
+        $candidate->has_result = $request->pivot->is_pass !== null;
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
             ->with('test', $admissionTest)
-            ->with('candidate', $candidate)
-            ->with('seatNumber', $request->pivot->seat_number)
-            ->with('isPresent', $request->pivot->is_present)
-            ->with('hasResult', $request->pivot->is_pass !== null);
+            ->with('candidate', $candidate);
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)
@@ -299,13 +305,51 @@ class CandidateController extends Controller implements HasMiddleware
         return ['success' => 'The candidate delete success!'];
     }
 
+    public function seatNumbers(SeatNumbersRequest $request, AdmissionTest $admissionTest)
+    {
+        $case = [];
+        foreach (array_values($request->seat_numbers) as $index => $id) {
+            $case[] = "WHEN user_id = $id THEN ".$index + 1;
+        }
+        $case = implode(' ', $case);
+        AdmissionTestHasCandidate::where('test_id', $admissionTest->id)
+            ->whereIn('user_id', $request->seat_numbers)
+            ->update(['seat_number' => DB::raw("(CASE $case ELSE seat_number END)")]);
+
+        return [
+            'success' => 'The seat numbers update success!',
+            'seat_numbers' => AdmissionTestHasCandidate::orderBy('seat_number')
+                ->where('test_id', $admissionTest->id)
+                ->whereIn('user_id', $request->seat_numbers)
+                ->get(['user_id', 'seat_number'])
+                ->pluck('user_id', 'seat_number')
+                ->toArray(),
+        ];
+    }
+
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
-        $request->pivot->update(['is_present' => (bool) $request->status]);
+        $update = ['is_present' => (bool) $request->status];
+        DB::beginTransaction();
+        $candidates = AdmissionTestHasCandidate::lockForUpdate()
+            ->where('test_id', $admissionTest->id)
+            ->get(['id', 'seat_number']);
+        if ($update['is_present'] && ! $request->pivot->seat_number) {
+            $seatNumbers = array_diff(
+                range(1, $admissionTest->maximum_candidates),
+                $candidates->whereNotNull('seat_number')
+                    ->pluck('seat_number')
+                    ->toArray()
+            );
+            $update['seat_number'] = $seatNumbers[array_rand($seatNumbers)];
+        }
+        $request->pivot->update($update);
+        DB::commit();
 
         return [
             'success' => "The candidate of $candidate->adornedName changed to be ".($request->pivot->is_present ? 'present.' : 'absent.'),
             'status' => $request->pivot->is_present,
+            'seat_number' => $request->pivot->seat_number,
         ];
     }
 

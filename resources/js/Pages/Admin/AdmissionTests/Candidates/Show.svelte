@@ -9,12 +9,14 @@
 
     seo.title = 'Administration Show Candidate';
 
-    let { test, candidate, isPresent, seatNumber, hasResult } = $props();
+    let { test, candidate: initCandidate } = $props();
+    let candidate = $state(initCandidate);
     let submitting = $state(false);
 
     function updatePresentStatueSuccessCallback(response) {
         alert(response.data.success);
-        isPresent = response.data.status;
+        candidate.is_present = response.data.status;
+        candidate.seat_number = response.data.seat_number;
         submitting = false;
     }
 
@@ -122,7 +124,7 @@
             </tr>
             <tr>
                 <th>Seat Number</th>
-                <td>{seatNumber ?? '--'}</td>
+                <td>{candidate.seat_number ?? '--'}</td>
             </tr>
             <tr>
                 <th>Status</th>
@@ -133,17 +135,17 @@
                     )
                 }
                     <td>
-                        <Button color={isPresent ? 'success' : 'danger'}
-                            onclick={() => updatePresentStatue(! isPresent)}
-                            disabled={hasResult || submitting}>
-                            {isPresent ? 'Present' : 'Absent'}
+                        <Button color={candidate.is_present ? 'success' : 'danger'}
+                            onclick={() => updatePresentStatue(! candidate.is_present)}
+                            disabled={candidate.has_result || submitting}>
+                            {candidate.is_present ? 'Present' : 'Absent'}
                         </Button>
                     </td>
                 {:else}
                     <td>
                         {
                             new Date(formatToDatetime(test.testing_at)) >= (new Date).addHours(2) ?
-                                '--' : isPresent ? 'Present' : 'Absent'
+                                '--' : candidate.is_present ? 'Present' : 'Absent'
                         }
                     </td>
                 {/if}
