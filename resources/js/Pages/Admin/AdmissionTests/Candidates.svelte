@@ -109,58 +109,6 @@
         );
     }
 
-    function updatePresentStatueSuccessCallback(response) {
-        alert(response.data.success);
-        let id = route().match(response.request.responseURL, 'put').params.candidate;
-        let index = getIndexById(id);
-        candidates[index]['isPresent'] = response.data.status;
-        candidates[index]['seatNumber'] = response.data.seat_number;
-        candidates[index]['updatingStatue'] = false;
-        submitting = false;
-    }
-
-    function updatePresentStatueFailCallback(error) {
-        if(error.status == 422) {
-            for(let key in error.response.data.errors) {
-                let value = error.response.data.errors[key];
-                switch(key) {
-                    case 'status':
-                        alert(value);
-                        break;
-                    default:
-                        alert(`Undefine Feedback Key: ${key}\nMessage: ${value}`);
-                        break;
-                }
-            }
-        }
-        let id = route().match(error.request.responseURL, 'put').params.candidate;
-        let index = getIndexById(id);
-        candidates[index]['updatingStatue'] = false;
-        submitting = false;
-    }
-
-    function updatePresentStatue(index, status) {
-        if(! submitting) {
-            let submitAt = Date.now();
-            submitting = 'updatePresentStatue'+submitAt;
-            if(submitting == 'updatePresentStatue'+submitAt) {
-                candidates[index]['updatingStatue'] = false;
-                post(
-                    route(
-                        'admin.admission-tests.candidates.present.update',
-                        {
-                            admission_test: route().params.admission_test,
-                            candidate: candidates[index]['id'],
-                        }
-                    ),
-                    updatePresentStatueSuccessCallback,
-                    updatePresentStatueFailCallback,
-                    'put', {status: status}
-                );
-            }
-        }
-    }
-
     function updateResultSuccessCallback(response) {
         alert(response.data.success);
         let seatNumber = route().match(response.request.responseURL, 'put').params.seat_number;
@@ -353,7 +301,6 @@
         }
     }
 
-	const flipDurationMs = 300;
     let updatingSeatNumbers = $state(false);
     let originCandidateIDs = $state([]);
     let sameWithSortOrder = $derived(
@@ -729,22 +676,12 @@
                                 </td>
                             {/if}
                             {#if
-                                can('Edit:Admission Test Candidate') ||
+                                canAny([
+                                    'View:Admission Test Candidate',
+                                    'Edit:Admission Test Candidate',
+                                ]) ||
                                 (test.currentUserIsProctor && test.inTestingTimeRange)
                             }
-                                <td>
-                                    <Button block color={row.isPresent ? 'success' : 'danger'}
-                                        name="status" value={! row.isPresent} style="min-width: 85px !important"
-                                        disabled={
-                                            canAny([
-                                                'View:Admission Test Result',
-                                                'Edit:Admission Test Result',
-                                            ]) ? row.hasResult : row.isPass === null
-                                        }
-                                        onclick={() => updatePresentStatue(index, ! row.isPresent)}>
-                                        {row.isPresent ? 'Present' : 'Absent'}</Button>
-                                </td>
-                            {:else if can('View:Admission Test Candidate')}
                                 <td>{
                                     new Date(formatToDatetime(test.testingAt)) >= (new Date).addHours(2) ?
                                         '--' : row.isPresent ? 'Present' : 'Absent'
