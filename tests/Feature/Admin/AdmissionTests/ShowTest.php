@@ -175,7 +175,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -246,7 +247,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -420,7 +422,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -494,7 +497,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -674,7 +678,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -751,7 +756,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -828,7 +834,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
@@ -951,7 +958,8 @@ class ShowTest extends TestCase
                                                 ->has('given_name')
                                                 ->has(
                                                     'passport_type', function (Assert $page) {
-                                                        $page->has('name');
+                                                        $page->has('name')
+                                                            ->has('display_order');
                                                     }
                                                 )->has('passport_number')
                                                 ->has('birthday')
