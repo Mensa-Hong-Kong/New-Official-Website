@@ -114,6 +114,7 @@
         let id = route().match(response.request.responseURL, 'put').params.candidate;
         let index = getIndexById(id);
         candidates[index]['isPresent'] = response.data.status;
+        candidates[index]['seatNumber'] = response.data.seat_number;
         candidates[index]['updatingStatue'] = false;
         submitting = false;
     }

@@ -237,13 +237,13 @@ class CandidateController extends Controller implements HasMiddleware
             $candidate->lastAttendedAdmissionTest->type
                 ->makeHidden('id');
         }
+        $candidate->seat_number = $request->pivot->seat_number;
+        $candidate->is_present = $request->pivot->is_present;
+        $candidate->has_result = $request->pivot->is_pass !== null;
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
             ->with('test', $admissionTest)
-            ->with('candidate', $candidate)
-            ->with('seatNumber', $request->pivot->seat_number)
-            ->with('isPresent', $request->pivot->is_present)
-            ->with('hasResult', $request->pivot->is_pass !== null);
+            ->with('candidate', $candidate);
     }
 
     public function edit(AdmissionTest $admissionTest, User $candidate)
@@ -329,11 +329,27 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
-        $request->pivot->update(['is_present' => (bool) $request->status]);
+        $update = ['is_present' => (bool) $request->status];
+        DB::beginTransaction();
+        $candidates = AdmissionTestHasCandidate::lockForUpdate()
+            ->where('test_id', $admissionTest->id)
+            ->get(['id', 'seat_number']);
+        if ($update['is_present'] && ! $request->pivot->seat_number) {
+            $seatNumbers = array_diff(
+                range(1, $admissionTest->maximum_candidates),
+                $candidates->whereNotNull('seat_number')
+                    ->pluck('seat_number')
+                    ->toArray()
+            );
+            $update['seat_number'] = $seatNumbers[array_rand($seatNumbers)];
+        }
+        $request->pivot->update($update);
+        DB::commit();
 
         return [
             'success' => "The candidate of $candidate->adornedName changed to be ".($request->pivot->is_present ? 'present.' : 'absent.'),
             'status' => $request->pivot->is_present,
+            'seat_number' => $request->pivot->seat_number,
         ];
     }
 

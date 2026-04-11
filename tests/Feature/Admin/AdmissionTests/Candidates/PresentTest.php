@@ -344,7 +344,7 @@ class PresentTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_when_type_and_order_have_no_age_limit()
+    public function test_happy_case_when_type_and_order_have_no_age_limit_and_have_no_assigned_seat_number()
     {
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
@@ -361,15 +361,21 @@ class PresentTest extends TestCase
         $response->assertJson([
             'success' => "The candidate of {$this->user->adornedName} changed to be present.",
             'status' => true,
+            'seat_number' => AdmissionTestHasCandidate::where('test_id', $this->test->id)
+                ->where('user_id', $this->user->id)
+                ->value('seat_number')
         ]);
     }
 
-    public function test_happy_case_when_type_and_order_only_has_minimum_age_limit()
+    public function test_happy_case_when_type_and_order_only_has_minimum_age_limit_assigned_seat_number()
     {
         $this->order->update(['minimum_age' => 18]);
         $this->test->type->update(['minimum_age' => 10]);
         $this->user->update(['birthday' => $this->user->hasUnusedQuotaAdmissionTestOrder->created_at->subYears(18)]);
         $this->user = User::find($this->user->id);
+        AdmissionTestHasCandidate::where('test_id', $this->test->id)
+            ->where('user_id', $this->user->id)
+            ->update(['seat_number' => 1]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -384,7 +390,14 @@ class PresentTest extends TestCase
         $response->assertJson([
             'success' => "The candidate of {$this->user->adornedName} changed to be present.",
             'status' => true,
+            'seat_number' => 1,
         ]);
+        $this->assertEquals(
+            1,
+            AdmissionTestHasCandidate::where('test_id', $this->test->id)
+                ->where('user_id', $this->user->id)
+                ->value('seat_number')
+        );
     }
 
     public function test_happy_case_when_type_and_order_only_has_maximum_age_limit()
