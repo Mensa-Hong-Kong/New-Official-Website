@@ -2,7 +2,6 @@
 
 use App\Schedules\ClearUnusedAdminVerifiedRecode;
 use App\Schedules\ClearUnusedUserResetPasswordFailedRecord;
-use App\Schedules\GenerateAdmissionTestSeatNumber;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -24,4 +23,3 @@ Artisan::command('inspire', function () {
 
 Schedule::call(new ClearUnusedAdminVerifiedRecode)->daily();
 Schedule::call(new ClearUnusedUserResetPasswordFailedRecord)->daily();
-Schedule::call(new GenerateAdmissionTestSeatNumber)->daily();
