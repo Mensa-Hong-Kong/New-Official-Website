@@ -69,7 +69,6 @@ Please read laravel official documents:
 
 - move the project checklist to github project or jira
 - change admission test candidate present status to nullable and default to null
-- change all drag and drop to use dnd kit library without navigation-items and modules
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - change quota validity months to inside product and order table
