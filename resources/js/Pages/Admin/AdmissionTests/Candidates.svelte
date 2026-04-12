@@ -1,14 +1,14 @@
 <script>
+    import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+    import { move } from '@dnd-kit/helpers';
+    import { can, canAny } from "@/gate.ts";
+    import { InputGroup, InputGroupText, Input, Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { DragDropProvider } from '@dnd-kit/svelte';
     import { createSortable } from '@dnd-kit/svelte/sortable';
-    import { move } from '@dnd-kit/helpers';
-    import { InputGroup, InputGroupText, Input, Table, Button, Spinner } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
-    import { formatToDate, formatToDatetime } from '@/timeZoneDatetime';
-    import { can, canAny } from "@/gate.ts";
 
     let {
         candidates: initCandidates, submitting = $bindable(), test,
@@ -615,7 +615,7 @@
                             index: () => index,
                             disabled: ! editingSeatNumbers || updatingSeatNumbers
                         })}
-                        <tr {@attach ! editingSeatNumbers || updatingSeatNumbers ? {} : sortable.attach}>
+                        <tr {@attach ! editingSeatNumbers || updatingSeatNumbers ? null : sortable.attach}>
                             {#if
                                 canAny([
                                     'View:Admission Test Candidate',

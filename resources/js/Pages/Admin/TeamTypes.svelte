@@ -2,7 +2,10 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
+    import { move } from '@dnd-kit/helpers';
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
 
     seo.title = 'Administration Team Types';
 
@@ -88,31 +91,19 @@
         );
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
-    function dragEnd(event) {
-        types.splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            types.splice(getIndex(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = types.slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        types = move(types, event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) types = snapshot;
     }
 
     let editingDisplayOrder = $state(false);
@@ -185,46 +176,50 @@
         </Button>
     </h2>
     {#if types.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Display Name</th>
-                    <th scope="col">Control</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each types as row, index}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
-                        class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
-                        <th scope="row">{row.name}</th>
-                        <td>
-                            <span hidden="{row.editing}">{row.title}</span>
-                            <form method="POST" id="updateName{row.id}" hidden="{! row.editing}" novalidate
-                                onsubmit={(event) => updateName(event, index)}>
-                                <Input name="name" maxlength="255"
-                                    value={row.title} disabled={row.updating}
-                                    bind:inner={inputNames[index]} />
-                            </form>
-                        </td>
-                        <td>
-                            <Button color="primary" hidden={row.editing || row.updating}
-                                onclick={() => types[index]['editing'] = true}>Edit</Button>
-                            <Button color="primary" form="updateName{row.id}"
-                                hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
-                            <Button color="danger" hidden={! row.editing || row.updating}
-                                onclick={() => cancelEditName(index)}>Cancel</Button>
-                            <Button color="primary" hidden={! row.updating} disabled>
-                                <Spinner type="border" size="sm" />
-                                Saving...
-                            </Button>
-                        </td>
+        <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Display Name</th>
+                        <th scope="col">Control</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                    {#each types as row, index}
+                        {@const sortable = createSortable({
+                            id: row.id,
+                            index: () => index,
+                            disabled: ! editingDisplayOrder || updatingDisplayOrder
+                        })}
+                        <tr {@attach ! editingDisplayOrder || updatingDisplayOrder ? null : sortable.attach}>
+                            <th scope="row">{row.name}</th>
+                            <td>
+                                <span hidden="{row.editing}">{row.title}</span>
+                                <form method="POST" id="updateName{row.id}" hidden="{! row.editing}" novalidate
+                                    onsubmit={(event) => updateName(event, index)}>
+                                    <Input name="name" maxlength="255"
+                                        value={row.title} disabled={row.updating}
+                                        bind:inner={inputNames[index]} />
+                                </form>
+                            </td>
+                            <td>
+                                <Button color="primary" hidden={row.editing || row.updating}
+                                    onclick={() => types[index]['editing'] = true}>Edit</Button>
+                                <Button color="primary" form="updateName{row.id}"
+                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                                <Button color="danger" hidden={! row.editing || row.updating}
+                                    onclick={() => cancelEditName(index)}>Cancel</Button>
+                                <Button color="primary" hidden={! row.updating} disabled>
+                                    <Spinner type="border" size="sm" />
+                                    Saving...
+                                </Button>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        </DragDropProvider>
     {:else}
         <Alert color="danger">
             No Result

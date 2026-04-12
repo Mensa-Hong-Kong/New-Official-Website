@@ -2,7 +2,10 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
+    import { move } from '@dnd-kit/helpers';
     import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
 
     seo.title = 'Administration Other Payment Gateways';
 
@@ -133,31 +136,19 @@
         );
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
-    function dragEnd(event) {
-        paymentGateways.splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            paymentGateways.splice(getIndex(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = paymentGateways.slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        paymentGateways = move(paymentGateways, event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) paymentGateways = snapshot;
     }
 
     let editingDisplayOrder = $state(false);
@@ -230,59 +221,63 @@
         </Button>
     </h2>
     {#if paymentGateways.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Control</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each paymentGateways as row, index}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
-                        class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
-                        <th>{row.id}</th>
-                        <td>
-                            <span hidden="{row.editing}">{row.name}</span>
-                            <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
-                                onsubmit={(event) => updateName(event, index)}>
-                                <Input name="name" maxlength="255"
-                                    value={row.name} disabled={row.updating}
-                                    bind:inner={inputNames[index]} />
-                            </form>
-                        </td>
-                        <td>
-                            <Button color={row.isActive ? 'success' : 'danger'}
-                                onclick={() => updateAction(index, ! row.isActive)}
-                                disabled={row.updatingActiveStatus}>
-                                {#if row.updatingActiveStatus}
-                                    <Spinner type="border" size="sm" />
-                                    Updating...
-                                {:else}
-                                    {row.isActive ? 'Active' : 'Inactive'}
-                                {/if}
-                            </Button>
-                        </td>
-                        <td>
-                            <Button color="primary" hidden={row.editing || row.updating}
-                                onclick={() => paymentGateways[index]['editing'] = true}>Edit</Button>
-                            <Button color="primary" form="updateName{row.id}"
-                                hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
-                            <Button color="danger" hidden={! row.editing || row.updating}
-                                onclick={() => cancelEditName(index)}>Cancel</Button>
-                            <Button color="primary" hidden={! row.updating} disabled>
-                                <Spinner type="border" size="sm" />
-                                Saving...
-                            </Button>
-                        </td>
+        <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Control</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                    {#each paymentGateways as row, index}
+                        {@const sortable = createSortable({
+                            id: row.id,
+                            index: () => index,
+                            disabled: ! editingDisplayOrder || updatingDisplayOrder
+                        })}
+                        <tr {@attach ! editingDisplayOrder || updatingDisplayOrder ? null : sortable.attach}>
+                            <th>{row.id}</th>
+                            <td>
+                                <span hidden="{row.editing}">{row.name}</span>
+                                <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
+                                    onsubmit={(event) => updateName(event, index)}>
+                                    <Input name="name" maxlength="255"
+                                        value={row.name} disabled={row.updating}
+                                        bind:inner={inputNames[index]} />
+                                </form>
+                            </td>
+                            <td>
+                                <Button color={row.isActive ? 'success' : 'danger'}
+                                    onclick={() => updateAction(index, ! row.isActive)}
+                                    disabled={row.updatingActiveStatus}>
+                                    {#if row.updatingActiveStatus}
+                                        <Spinner type="border" size="sm" />
+                                        Updating...
+                                    {:else}
+                                        {row.isActive ? 'Active' : 'Inactive'}
+                                    {/if}
+                                </Button>
+                            </td>
+                            <td>
+                                <Button color="primary" hidden={row.editing || row.updating}
+                                    onclick={() => paymentGateways[index]['editing'] = true}>Edit</Button>
+                                <Button color="primary" form="updateName{row.id}"
+                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                                <Button color="danger" hidden={! row.editing || row.updating}
+                                    onclick={() => cancelEditName(index)}>Cancel</Button>
+                                <Button color="primary" hidden={! row.updating} disabled>
+                                    <Spinner type="border" size="sm" />
+                                    Saving...
+                                </Button>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        </DragDropProvider>
     {:else}
         <Alert color="danger">
             No Result

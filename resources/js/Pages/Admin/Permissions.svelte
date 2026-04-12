@@ -2,8 +2,11 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { alert } from '@/Pages/Components/Modals/Alert.svelte';
     import { post } from "@/submitForm";
-    import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+    import { move } from '@dnd-kit/helpers';
     import { can } from "@/gate.ts";
+    import { Button, Spinner, Table, Input, Alert } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
 
     seo.title = 'Administration Permissions';
 
@@ -90,31 +93,19 @@
         );
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
-    function dragEnd(event) {
-        permissions.splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            permissions.splice(getIndex(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = permissions.slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children = Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode) > children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        permissions = move(permissions, event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) permissions = snapshot;
     }
 
     let editingDisplayOrder = $state(false);
@@ -189,50 +180,54 @@
         {/if}
     </h2>
     {#if permissions.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Display Name</th>
-                    {#if can('Edit:Permission')}
-                        <th scope="col">Control</th>
-                    {/if}
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                {#each permissions as row, index}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}"
-                        class={{draggable: editingDisplayOrder && ! updatingDisplayOrder}}>
-                        <th scope="row">{row.name}</th>
-                        <td>
-                            <span hidden="{row.editing}">{row.title}</span>
-                            <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
-                                onsubmit={(event) => updateName(event, index)}>
-                                <Input name="name" maxlength="255"
-                                    value={row.title} disabled={row.updating}
-                                    bind:inner={inputNames[index]} />
-                            </form>
-                        </td>
+        <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Display Name</th>
                         {#if can('Edit:Permission')}
-                            <td>
-                                <Button color="primary" hidden={row.editing || row.updating}
-                                    onclick={() => permissions[index]['editing'] = true}>Edit</Button>
-                                <Button color="primary" form="updateName{row.id}"
-                                    hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
-                                <Button color="danger" hidden={! row.editing || row.updating}
-                                    onclick={() => cancelEditName(index)}>Cancel</Button>
-                                <Button color="primary" hidden={! row.updating} disabled>
-                                    <Spinner type="border" size="sm" />
-                                    Saving...
-                                </Button>
-                            </td>
+                            <th scope="col">Control</th>
                         {/if}
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody id="tableBody">
+                    {#each permissions as row, index}
+                        {@const sortable = createSortable({
+                            id: row.id,
+                            index: () => index,
+                            disabled: ! editingDisplayOrder || updatingDisplayOrder
+                        })}
+                        <tr {@attach ! editingDisplayOrder || updatingDisplayOrder ? null : sortable.attach}>
+                            <th scope="row">{row.name}</th>
+                            <td>
+                                <span hidden="{row.editing}">{row.title}</span>
+                                <form id="updateName{row.id}" method="POST" hidden="{! row.editing}" novalidate
+                                    onsubmit={(event) => updateName(event, index)}>
+                                    <Input name="name" maxlength="255"
+                                        value={row.title} disabled={row.updating}
+                                        bind:inner={inputNames[index]} />
+                                </form>
+                            </td>
+                            {#if can('Edit:Permission')}
+                                <td>
+                                    <Button color="primary" hidden={row.editing || row.updating}
+                                        onclick={() => permissions[index]['editing'] = true}>Edit</Button>
+                                    <Button color="primary" form="updateName{row.id}"
+                                        hidden={! row.editing || row.updating} disabled={submitting}>Save</Button>
+                                    <Button color="danger" hidden={! row.editing || row.updating}
+                                        onclick={() => cancelEditName(index)}>Cancel</Button>
+                                    <Button color="primary" hidden={! row.updating} disabled>
+                                        <Spinner type="border" size="sm" />
+                                        Saving...
+                                    </Button>
+                                </td>
+                            {/if}
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        </DragDropProvider>
     {:else}
         <Alert color="danger">
             No Result
