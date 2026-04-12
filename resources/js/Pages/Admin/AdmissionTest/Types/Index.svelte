@@ -1,9 +1,12 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { Button, Spinner, Table, Alert } from '@sveltestrap/sveltestrap';
-    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
+    import { move } from '@dnd-kit/helpers';
+    import { Button, Spinner, Table, Alert } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
+    import { Link } from "@inertiajs/svelte";
 
     seo.title = 'Administration Admission Test Types';
 
@@ -31,31 +34,19 @@
         editingDisplayOrder = false;
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
-    function dragEnd(event) {
-        types.splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            types.splice(getIndexById(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = types.slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        types = move(types, event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) types = snapshot;
     }
 
     function updateDisplayOrderSuccessCallback(response) {
@@ -119,44 +110,47 @@
             onclick={cancelEditDisplay}>Cancel</Button>
     </h2>
     {#if types.length}
-        <Table hover>
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Interval Month</th>
-                    <th scope="col">Minimum Age</th>
-                    <th scope="col">Maximum Age</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each types as row}
-                    <tr data-id="{row.id}"
-                        ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                        draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
-                            draggable: editingDisplayOrder && ! updatingDisplayOrder
-                        }}>
-                        <td>{row.id}</td>
-                        <td>{row.name}</td>
-                        <td>{row.interval_month}</td>
-                        <td>{row.minimum_age}</td>
-                        <td>{row.maximum_age}</td>
-                        <td>{row.is_active ? 'Active' : 'Inactive'}</td>
-                        <td>
-                            <Link class="btn btn-primary"
-                                href={
-                                    route(
-                                        'admin.admission-test.types.edit',
-                                        {type: row.id}
-                                    )
-                                }>Edit</Link>
-                        </td>
+        <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+            <Table hover>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Interval Month</th>
+                        <th scope="col">Minimum Age</th>
+                        <th scope="col">Maximum Age</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Edit</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                    {#each types as row}
+                        {@const sortable = createSortable({
+                            id: row.id,
+                            index: () => index,
+                            disabled: ! editingDisplayOrder || updatingDisplayOrder
+                        })}
+                        <tr {@attach ! editingDisplayOrder || updatingDisplayOrder ? null : sortable.attach}>
+                            <td>{row.id}</td>
+                            <td>{row.name}</td>
+                            <td>{row.interval_month}</td>
+                            <td>{row.minimum_age}</td>
+                            <td>{row.maximum_age}</td>
+                            <td>{row.is_active ? 'Active' : 'Inactive'}</td>
+                            <td>
+                                <Link class="btn btn-primary"
+                                    href={
+                                        route(
+                                            'admin.admission-test.types.edit',
+                                            {type: row.id}
+                                        )
+                                    }>Edit</Link>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        </DragDropProvider>
     {:else}
         <Alert color="danger">
             No Result

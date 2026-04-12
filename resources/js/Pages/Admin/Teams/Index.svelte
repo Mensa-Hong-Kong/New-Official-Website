@@ -1,11 +1,14 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { Button, Spinner, TabContent, TabPane, Table } from '@sveltestrap/sveltestrap';
-    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
+    import { move } from '@dnd-kit/helpers';
     import { can } from "@/gate.ts";
+    import { Button, Spinner, TabContent, TabPane, Table } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
+    import { Link } from "@inertiajs/svelte";
 
     seo.title = 'Administration Teams';
 
@@ -77,7 +80,7 @@
         editingDisplayOrder = false;
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
     function getTeamIndex(id) {
@@ -88,28 +91,16 @@
         );
     }
 
-    function dragEnd(event) {
-        types[currentTypeIndex]["teams"].splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            types[currentTypeIndex]["teams"].splice(getTeamIndex(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = types[currentTypeIndex]["teams"].slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        types[currentTypeIndex]["teams"] = move(types[currentTypeIndex]["teams"], event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) types[currentTypeIndex]["teams"] = snapshot;
     }
 
     function updateDisplayOrderSuccessCallback(response) {
@@ -181,49 +172,46 @@
         {#each types as type, typeIndex}
             <TabPane tabId={typeIndex} tab={type.title ?? type.name}
                 disabled={editingDisplayOrder} active={typeIndex == 0}>
-                <Table hover>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Control</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each type.teams as team, teamIndex}
-                            <tr data-id="{team.id}" ondragstart={dragStart}
-                                ondragover={dragOver} ondragend={dragEnd}
-                                draggable="{
-                                    editingDisplayOrder &&
-                                    ! updatingDisplayOrder &&
-                                    currentTypeIndex == typeIndex
-                                }" class={{
-                                    draggable: editingDisplayOrder &&
-                                        ! updatingDisplayOrder &&
-                                        currentTypeIndex == typeIndex
-                                }}>
-                                <th>{team.name}</th>
-                                <td>
-                                    <Link class="btn btn-primary"
-                                        href={
-                                            route(
-                                                'admin.teams.show',
-                                                {team: team.id}
-                                            )
-                                        }>Show</Link>
-                                    {#if can('Edit:Permission')}
-                                        <Button color="danger" disabled={submitting} onclick={() => destroy(typeIndex, teamIndex)}>
-                                            {#if team.deleting}
-                                                <Spinner type="border" size="sm" />Deleting...
-                                            {:else}
-                                                Delete
-                                            {/if}
-                                        </Button>
-                                    {/if}
-                                </td>
+                <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+                    <Table hover>
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Control</th>
                             </tr>
-                        {/each}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {#each type.teams as team, teamIndex}
+                                {@const sortable = createSortable({
+                                    id: team.id,
+                                    index: () => teamIndex,
+                                    disabled: ! editingDisplayOrder || updatingDisplayOrder || currentTypeIndex != typeIndex
+                                })}
+                                <tr {@attach ! editingDisplayOrder || updatingDisplayOrder || currentTypeIndex != typeIndex ? null : sortable.attach}>
+                                    <th>{team.name}</th>
+                                    <td>
+                                        <Link class="btn btn-primary"
+                                            href={
+                                                route(
+                                                    'admin.teams.show',
+                                                    {team: team.id}
+                                                )
+                                            }>Show</Link>
+                                        {#if can('Edit:Permission')}
+                                            <Button color="danger" disabled={submitting} onclick={() => destroy(typeIndex, teamIndex)}>
+                                                {#if team.deleting}
+                                                    <Spinner type="border" size="sm" />Deleting...
+                                                {:else}
+                                                    Delete
+                                                {/if}
+                                            </Button>
+                                        {/if}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </Table>
+                </DragDropProvider>
             </TabPane>
         {/each}
     </TabContent>

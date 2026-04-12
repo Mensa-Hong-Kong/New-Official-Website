@@ -1,11 +1,14 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { Button, Spinner, Table } from '@sveltestrap/sveltestrap';
-    import { Link } from "@inertiajs/svelte";
     import { post } from "@/submitForm";
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
     import { can } from "@/gate.ts";
+    import { move } from '@dnd-kit/helpers';
+    import { Button, Spinner, Table } from '@sveltestrap/sveltestrap';
+    import { DragDropProvider } from '@dnd-kit/svelte';
+    import { createSortable } from '@dnd-kit/svelte/sortable';
+    import { Link } from "@inertiajs/svelte";
 
     seo.title = 'Administration Show Team';
 
@@ -75,31 +78,19 @@
         editingDisplayOrder = false;
     }
 
-    let row;
+    let snapshot = [];
     let updatingDisplayOrder = $state(false);
 
-    function dragEnd(event) {
-        roles.splice(
-            Array.from(event.target.parentNode.children).indexOf(row),
-            0,
-            roles.splice(getIndexById(row.dataset.id), 1)[0]
-        );
+    function onDragStart() {
+        snapshot = roles.slice();
     }
 
-    function dragOver(event) {
-        event.preventDefault();
-        if(! updatingDisplayOrder) {
-            let children= Array.from(event.target.parentNode.parentNode.children);
-            if(children.indexOf(event.target.parentNode)>children.indexOf(row)) {
-                event.target.parentNode.after(row);
-            } else {
-                event.target.parentNode.before(row);
-            }
-        }
+    function onDragOver(event) {
+        roles = move(roles, event);
     }
 
-    function dragStart(event) {
-        row = event.target;
+    function onDragEnd(event) {
+        if (event.canceled) roles = snapshot;
     }
 
     function updateDisplayOrderSuccessCallback(response) {
@@ -194,46 +185,49 @@
                 onclick={cancelEditDisplay}>Cancel</Button>
         {/if}
     </h3>
-    <Table hover>
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                {#if can('Edit:Permission')}
-                    <th scope="col">Control</th>
-                {/if}
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            {#each roles as row, index}
-                <tr data-id="{row.id}"
-                    ondragstart={dragStart} ondragover={dragOver} ondragend={dragEnd}
-                    draggable="{editingDisplayOrder && ! updatingDisplayOrder}" class={{
-                        draggable: editingDisplayOrder && ! updatingDisplayOrder
-                    }}>
-                    <th>{row.name}</th>
+    <DragDropProvider {onDragStart} {onDragOver} {onDragEnd}>
+        <Table hover>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
                     {#if can('Edit:Permission')}
-                        <td>
-                            <Link class="btn btn-primary editRole"
-                                href={
-                                    route(
-                                        'admin.teams.roles.edit',
-                                        {
-                                            team: team.id,
-                                            role: row.id,
-                                        }
-                                    )
-                                }>Edit</Link>
-                            <Button color="danger" disabled={submitting} onclick={() => destroy(index)}>
-                                {#if row.deleting}
-                                    <Spinner type="border" size="sm" />Deleting...
-                                {:else}
-                                    Delete
-                                {/if}
-                            </Button>
-                        </td>
+                        <th scope="col">Control</th>
                     {/if}
                 </tr>
-            {/each}
-        </tbody>
-    </Table>
+            </thead>
+            <tbody id="tableBody">
+                {#each roles as row, index}
+                    {@const sortable = createSortable({
+                        id: row.id,
+                        index: () => index,
+                        disabled: ! editingDisplayOrder || updatingDisplayOrder
+                    })}
+                    <tr {@attach ! editingDisplayOrder || updatingDisplayOrder ? null : sortable.attach}>
+                        <th>{row.name}</th>
+                        {#if can('Edit:Permission')}
+                            <td>
+                                <Link class="btn btn-primary editRole"
+                                    href={
+                                        route(
+                                            'admin.teams.roles.edit',
+                                            {
+                                                team: team.id,
+                                                role: row.id,
+                                            }
+                                        )
+                                    }>Edit</Link>
+                                <Button color="danger" disabled={submitting} onclick={() => destroy(index)}>
+                                    {#if row.deleting}
+                                        <Spinner type="border" size="sm" />Deleting...
+                                    {:else}
+                                        Delete
+                                    {/if}
+                                </Button>
+                            </td>
+                        {/if}
+                    </tr>
+                {/each}
+            </tbody>
+        </Table>
+    </DragDropProvider>
 </section>
