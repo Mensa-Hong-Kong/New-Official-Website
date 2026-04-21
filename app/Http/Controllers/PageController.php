@@ -49,7 +49,7 @@ class PageController extends Controller
             'default_email' => $request->user()?->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
-            'has_unused_quota_admission_test_order' => $request->user()?->hasUnusedQuotaAdmissionTestOrder()->exists(),
+            'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ?? false,
         ];
         $tests = AdmissionTest::joinRelation('type as type')
             ->withCount('candidates')

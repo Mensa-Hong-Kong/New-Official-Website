@@ -33,7 +33,7 @@ class CandidateController extends Controller implements HasMiddleware
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
-                    if (! $admissionTest->is_free && ! $user->hasUnusedQuotaAdmissionTestOrder && ! $user->stripe) {
+                    if (! $admissionTest->is_free && ! $user->lastAdmissionTestOrder?->hasUnusedQuota && ! $user->stripe) {
                         return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
                     }
                     if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
@@ -64,16 +64,16 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
                     if (! $admissionTest->is_free) {
-                        if ($user->hasUnusedQuotaAdmissionTestOrder) {
+                        if ($user->lastAdmissionTestOrder?->hasUnusedQuota) {
                             if (
-                                $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
-                                $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                                $user->lastAdmissionTestOrder->minimum_age &&
+                                $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
                             }
                             if (
-                                $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
-                                $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                                $user->lastAdmissionTestOrder->maximum_age &&
+                                $user->lastAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
                             }
@@ -107,7 +107,7 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     if (
                         ! $request->route('admission_test')->is_free &&
-                        ! $request->user()->hasUnusedQuotaAdmissionTestOrder
+                        ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota
                     ) {
                         if ($request->price_id) {
                             if (filter_var($request->price_id, FILTER_VALIDATE_INT) === false) {

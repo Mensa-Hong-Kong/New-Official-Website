@@ -296,8 +296,9 @@ class PresentTest extends TestCase
         $this->user->update(['birthday' => $this->order->created_at->subYears(18)->addDay()]);
         $this->assertEquals(
             $this->order->id,
-            $this->user->hasUnusedQuotaAdmissionTestOrder->id
+            $this->user->lastAdmissionTestOrder->id
         );
+        $this->assertTrue($this->user->lastAdmissionTestOrder->hasUnusedQuota);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -371,7 +372,8 @@ class PresentTest extends TestCase
     {
         $this->order->update(['minimum_age' => 18]);
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $this->user->hasUnusedQuotaAdmissionTestOrder->created_at->subYears(18)]);
+        $this->user->update(['birthday' => $this->user->lastAdmissionTestOrder->created_at->subYears(18)]);
+        $this->assertTrue($this->user->lastAdmissionTestOrder->hasUnusedQuota);
         $this->user = User::find($this->user->id);
         AdmissionTestHasCandidate::where('test_id', $this->test->id)
             ->where('user_id', $this->user->id)

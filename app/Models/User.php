@@ -369,38 +369,6 @@ class User extends Authenticatable
             ->latest('id');
     }
 
-    public function hasUnusedQuotaAdmissionTestOrder()
-    {
-        $orderTable = (new AdmissionTestOrder)->getTable();
-        $return = $this->hasOne(AdmissionTestOrder::class)
-            ->where('status', 'succeeded')
-            ->whereHas(
-                'attendedTests', null, '<',
-                DB::raw("$orderTable.quota - $orderTable.returned_quota")
-            );
-        $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
-        if ($quotaValidityMonths) {
-            $return->leftJoinRelation('attendedTests as attendedTests.type as type')
-                ->where(
-                    DB::raw("
-                        if(
-                            attendedTests.testing_at IS NOT NULL,
-                            DATE_ADD(
-                                attendedTests.testing_at,
-                                INTERVAL type.interval_month + $quotaValidityMonths MONTH
-                            ),
-                            DATE_ADD(
-                                $orderTable.created_at,
-                                INTERVAL $quotaValidityMonths MONTH
-                            )
-                        )
-                    "), '>=', now()
-                )->select(["$orderTable.*"]);
-        }
-
-        return $return;
-    }
-
     public function memberTransfers()
     {
         return $this->hasMany(MembershipTransfer::class);

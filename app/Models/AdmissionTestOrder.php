@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -54,5 +55,38 @@ class AdmissionTestOrder extends Model
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'id', 'id', 'test_id')
             ->latest('testing_at');
+    }
+
+    public function lastAttendedTest()
+    {
+        return $this->lastTest()
+            ->where('is_present', true);
+    }
+
+    public function futureTest()
+    {
+        return $this->lastTest()
+            ->whereNull('is_present');
+    }
+
+    public function hasUnusedQuota(): Attribute
+    {
+        $order = $this;
+
+        return Attribute::make(
+            get: function () use ($order) {
+                $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
+                return $order->status === 'succeeded' &&
+                    $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
+                    (
+                        ! $quotaValidityMonths ||
+                        ($order->lastAttendedTest?->testing_at ?? $order->created_at)
+                            ->addMonths(
+                                $quotaValidityMonths +
+                                    $order->lastAttendedTest?->type->interval_month
+                            ) >= now()
+                    );
+            }
+        );
     }
 }

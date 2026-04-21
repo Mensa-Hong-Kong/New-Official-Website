@@ -42,7 +42,7 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id has already qualification for membership.');
                     } elseif ($request->user->futureAdmissionTest) {
                         $fail('The selected user id has been scheduled admission test.');
-                    } elseif ($request->user->hasUnusedQuotaAdmissionTestOrder) {
+                    } elseif ($request->user->lastAdmissionTestOrder?->hasUnusedQuota) {
                         $fail('The selected user has unused quota.');
                     } elseif ($request->user->hasSamePassportAlreadyQualificationOfMembership) {
                         $fail('The selected user id has other same passport user account already been qualification for membership.');

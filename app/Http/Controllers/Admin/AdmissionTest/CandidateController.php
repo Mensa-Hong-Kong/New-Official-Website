@@ -109,17 +109,18 @@ class CandidateController extends Controller implements HasMiddleware
                     ) {
                         abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (
-                        $user->hasUnusedQuotaAdmissionTestOrder &&
-                        $user->hasUnusedQuotaAdmissionTestOrder->lastTest->id == $test->id
+                        $user->lastAdmissionTestOrder &&
+                        $user->lastAdmissionTestOrder->hasUnusedQuota &&
+                        $user->lastAdmissionTestOrder->lastTest->id == $test->id
                     ) {
                         if (
-                            $user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
-                            $user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                            $user->lastAdmissionTestOrder->minimum_age &&
+                            $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                         ) {
                             abort(409, 'The candidate age less than the last order age limit.');
                         } elseif (
-                            $user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
-                            $user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($user->countAge($user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                            $user->lastAdmissionTestOrder->maximum_age &&
+                            $user->lastAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                         ) {
                             abort(409, 'The candidate age greater than the last order age limit.');
                         }
@@ -180,7 +181,7 @@ class CandidateController extends Controller implements HasMiddleware
                 $request->user->id,
                 [
                     'order_id' => $request->user
-                        ->hasUnusedQuotaAdmissionTestOrder
+                        ->lastAdmissionTestOrder
                         ->id,
                 ]
             );
