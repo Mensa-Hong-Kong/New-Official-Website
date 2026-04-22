@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedSmallInteger('seat_number')->nullable();
-            $table->boolean('is_present')->default(false);
+            $table->boolean('is_present')->nullable();
             $table->boolean('is_pass')->nullable();
             $table->timestamps();
             $table->foreign('test_id')

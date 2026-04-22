@@ -44,10 +44,8 @@
             <tr>
                 <th>Is Present</th>
                 <td>
-                    {#if candidate.pivot.is_present}
-                        Yes
-                    {:else if Date(formatToDatetime(test.expect_end_at)) < (new Date).subHour()}
-                        No
+                    {#if candidate.pivot.is_present !== null}
+                        {candidate.pivot.is_present ? 'Yes' : 'No'}
                     {/if}
                 </td>
             </tr>

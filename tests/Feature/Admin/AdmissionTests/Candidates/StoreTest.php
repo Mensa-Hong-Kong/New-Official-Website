@@ -736,7 +736,13 @@ class StoreTest extends TestCase
         ])->create();
         $test = AdmissionTest::factory()->create();
         $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
-        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'order_id' => $order->id,
+                'is_present' => true,
+            ]
+        );
         Notification::fake();
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -782,7 +788,13 @@ class StoreTest extends TestCase
         ])->create();
         $test = AdmissionTest::factory()->create();
         $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
-        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'order_id' => $order->id,
+                'is_present' => true,
+            ]
+        );
         Notification::fake();
         $this->user = User::find($this->user->id);
         $user = User::factory()
@@ -1337,7 +1349,13 @@ class StoreTest extends TestCase
         ])->create();
         $test = AdmissionTest::factory()->create();
         $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
-        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'order_id' => $order->id,
+                'is_present' => true,
+            ]
+        );
         Notification::fake();
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -1381,7 +1399,13 @@ class StoreTest extends TestCase
         ])->create();
         $test = AdmissionTest::factory()->create();
         $test->update(['testing_at' => now()->subMonths($test->type->interval_month)->subSecond()]);
-        $test->candidates()->attach($this->user->id, ['order_id' => $order->id]);
+        $test->candidates()->attach(
+            $this->user->id,
+            [
+                'order_id' => $order->id,
+                'is_present' => true,
+            ]
+        );
         Notification::fake();
         $this->user = User::find($this->user->id);
         $user = User::factory()

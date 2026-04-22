@@ -128,27 +128,35 @@
             </tr>
             <tr>
                 <th>Status</th>
-                {#if
-                    can('Edit:Admission Test Candidate') || (
-                        new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
-                        new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
-                    )
-                }
-                    <td>
-                        <Button color={candidate.is_present ? 'success' : 'danger'}
+                <td>
+                    {#if candidate.is_present === null}
+                        {#if
+                            can('Edit:Admission Test Candidate') || (
+                                new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                                new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
+                            )
+                        }
+                            <Button color='success' disabled={candidate.has_result || submitting}
+                                onclick={() => updatePresentStatue(true)}>Present</Button>
+                        {:else}
+                            --
+                        {/if}
+                    {:else}
+                        {candidate.is_present ? 'Absent' : 'Present'}
+                    {/if}
+                    {#if
+                        can('Edit:Admission Test Candidate') || (
+                            new Date(formatToDatetime(test.testing_at)) < (new Date).addHours(2) &&
+                            new Date(formatToDatetime(test.expect_end_at)) > (new Date).subHour(2)
+                        )
+                    }
+                        <Button color={candidate.is_present ? 'danger' : 'success'}
                             onclick={() => updatePresentStatue(! candidate.is_present)}
                             disabled={candidate.has_result || submitting}>
-                            {candidate.is_present ? 'Present' : 'Absent'}
+                            {candidate.is_present ? 'Absent' : 'Present'}
                         </Button>
-                    </td>
-                {:else}
-                    <td>
-                        {
-                            new Date(formatToDatetime(test.testing_at)) >= (new Date).addHours(2) ?
-                                '--' : candidate.is_present ? 'Present' : 'Absent'
-                        }
-                    </td>
-                {/if}
+                    {/if}
+                </td>
             </tr>
         </tbody>
     </Table>

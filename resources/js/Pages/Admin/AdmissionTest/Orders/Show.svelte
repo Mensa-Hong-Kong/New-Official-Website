@@ -188,9 +188,13 @@
                             <td>{test.type.name}</td>
                             <td>{formatToDatetime(test.testing_at)}</td>
                             <td>{test.location.name}</td>
-                            <td>{test.is_present ? 'Yes' : 'No'}</td>
                             <td>
-                                {#if test.is_present}
+                                {#if test.is_present !== null}
+                                    {test.is_present ? 'Yes' : 'No'}
+                                {/if}
+                            </td>
+                            <td>
+                                {#if test.is_pass !== null}
                                     {test.is_pass ? 'Yes' : 'No'}
                                 {/if}
                             </td>
