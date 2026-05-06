@@ -41,15 +41,16 @@ class PageController extends Controller
                     'interval_month' => $request->user()->lastAttendedAdmissionTest->type->interval_month,
                 ],
             ] : null,
-            'future_admission_test' => $request->user()?->futureAdmissionTest ? [
-                'id' => $request->user()->futureAdmissionTest->id,
-                'is_free' => $request->user()->futureAdmissionTest->is_free,
+            'last_admission_test' => $request->user()?->lastAdmissionTest ? [
+                'id' => $request->user()->lastAdmissionTest->id,
             ] : null,
             'created_stripe_customer' => $request->user()->stripe ?? null,
             'default_email' => $request->user()?->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
-            'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ?? false,
+            'has_unused_quota_admission_test_order' => $request->user()?->lastSucceededAdmissionTestOrder?->hasUnusedQuota ? [
+                'quota_expired_on' => $request->user()->lastSucceededAdmissionTestOrder->quotaExpiredOn,
+            ] : null,
         ];
         $tests = AdmissionTest::joinRelation('type as type')
             ->withCount('candidates')
@@ -104,6 +105,9 @@ class PageController extends Controller
         return Inertia::render('AdmissionTests/Index')
             ->with('user', $user)
             ->with(
+                'isReschedule', $request->user()?->lastAdmissionTest &&
+                    ! $request->user()?->lastAdmissionTest?->pivot_is_present
+            )->with(
                 'contents', SiteContent::whereHas(
                     'page', function ($query) {
                         $query->where('name', 'Admission Test');

@@ -102,6 +102,24 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
     }
 
+    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours()
+    {
+        $newTestingAt = now()->addHours(2)->subSecond();
+        $oldTest = AdmissionTest::factory()->state([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user->refresh())->post(
+            route(
+                'admission-tests.candidates.store',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+    }
+
     public function test_user_already_schedule_this_admission_test()
     {
         $this->test->candidates()->attach($this->user->id);
@@ -161,8 +179,8 @@ class StoreTest extends TestCase
     {
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
@@ -203,12 +221,12 @@ class StoreTest extends TestCase
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
             ])->create();
         $user = User::factory()
             ->state([
@@ -230,12 +248,12 @@ class StoreTest extends TestCase
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->post(
@@ -255,7 +273,7 @@ class StoreTest extends TestCase
             'minimum_age' => 22,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)->addDay()]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)->addDay()]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -273,7 +291,7 @@ class StoreTest extends TestCase
             'maximum_age' => 21,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -288,7 +306,7 @@ class StoreTest extends TestCase
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -316,7 +334,7 @@ class StoreTest extends TestCase
     public function test_user_age_less_than_test_type_minimum_age_limit()
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -329,7 +347,7 @@ class StoreTest extends TestCase
     public function test_user_age_greater_than_test_type_maximum_age_limit()
     {
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -350,7 +368,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
-        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update when have no default contact(s), we are unable to notify you.');
         Notification::assertNothingSent();
     }
 
@@ -379,7 +397,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
-        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $response->assertSessionHas('success', 'Your schedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update when have no default contact(s), we are unable to notify you.');
         Notification::assertNothingSent();
     }
 
@@ -392,19 +410,19 @@ class StoreTest extends TestCase
             'maximum_age' => 21,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDays(3);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'expect_end_at' => (clone $newTestingAt)->addHour(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->post(
@@ -414,7 +432,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
-        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update when have no default contact(s), we are unable to notify you.');
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertNothingSent();
     }
@@ -432,19 +450,19 @@ class StoreTest extends TestCase
             'maximum_age' => 21,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDays(3);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'expect_end_at' => (clone $newTestingAt)->addHour(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()
@@ -460,7 +478,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.candidates.show', ['admission_test' => $this->test]);
-        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.');
+        $response->assertSessionHas('success', 'Your reschedule request successfully, because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update when have no default contact(s), we are unable to notify you.');
         $this->assertEquals(0, $oldTest->candidates()->count());
         Notification::assertNothingSent();
     }
@@ -515,13 +533,13 @@ class StoreTest extends TestCase
         $newTestingAt = now()->addDays(3);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'expect_end_at' => (clone $newTestingAt)->addHour(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->post(
@@ -546,13 +564,13 @@ class StoreTest extends TestCase
         $newTestingAt = now()->addDays(3);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
         $oldTest = AdmissionTest::factory()
             ->state([
                 'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
+                'expect_end_at' => (clone $newTestingAt)->addHour(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id);
         $user = User::factory()

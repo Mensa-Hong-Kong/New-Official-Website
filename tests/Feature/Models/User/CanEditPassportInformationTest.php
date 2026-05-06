@@ -27,7 +27,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_more_than_2_hour()
+    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_more_than_2_hours()
     {
         $test = AdmissionTest::factory()->state([
             'testing_at' => now()->addHours(3),
@@ -38,7 +38,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hour()
+    public function test_user_cannot_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_no_update_present_status()
     {
         $test = AdmissionTest::factory()->state([
             'testing_at' => now()->addHours(1),
@@ -47,6 +47,17 @@ class CanEditPassportInformationTest extends TestCase
         $test->candidates()->attach($this->user);
 
         $this->assertFalse($this->user->canEditPassportInformation);
+    }
+
+    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_update_present_status_to_absent()
+    {
+        $test = AdmissionTest::factory()->state([
+            'testing_at' => now()->addHours(1),
+            'expect_end_at' => now()->addHours(2),
+        ])->create();
+        $test->candidates()->attach($this->user, ['is_present' => false]);
+
+        $this->assertTrue($this->user->canEditPassportInformation);
     }
 
     public function test_user_cannot_edit_passport_information_when_proctor_have_no_update_present_status_and_after_testing_at_before_2_hours()

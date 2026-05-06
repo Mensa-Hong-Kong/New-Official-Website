@@ -33,14 +33,26 @@ class CandidateController extends Controller implements HasMiddleware
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
-                    if (! $admissionTest->is_free && ! $user->lastAdmissionTestOrder?->hasUnusedQuota && ! $user->stripe) {
-                        return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
-                    }
-                    if ($user->futureAdmissionTest && $user->futureAdmissionTest->id == $admissionTest->id) {
+                    if ($user->lastAdmissionTest?->id == $admissionTest->id) {
                         return redirect()->route(
                             'admission-tests.candidates.show',
                             ['admission_test' => $admissionTest]
                         )->withErrors(['message' => 'You has already schedule this admission test.']);
+                    }
+                    if (
+                        ! $admissionTest->is_free && ! $user->stripe && (
+                            ! $user->lastSucceededAdmissionTestOrder?->hasUnusedQuota ||
+                            $user->lastSucceededAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                        )
+                    ) {
+                        return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
+                    }
+                    if (
+                        $user->lastAdmissionTest &&
+                        $user->lastAdmissionTest->pivot_is_present === null &&
+                        $user->lastAdmissionTest->testing_at < now()->addHours(2)
+                    ) {
+                        return $errorReturn->withErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
                     }
                     if ($user->member?->is_active) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
@@ -64,16 +76,16 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
                     if (! $admissionTest->is_free) {
-                        if ($user->lastAdmissionTestOrder?->hasUnusedQuota) {
+                        if ($user->lastSucceededAdmissionTestOrder?->hasUnusedQuota) {
                             if (
-                                $user->lastAdmissionTestOrder->minimum_age &&
-                                $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
+                                $user->lastSucceededAdmissionTestOrder->minimum_age &&
+                                $user->lastSucceededAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
                             }
                             if (
-                                $user->lastAdmissionTestOrder->maximum_age &&
-                                $user->lastAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastAdmissionTestOrder->created_at))
+                                $user->lastSucceededAdmissionTestOrder->maximum_age &&
+                                $user->lastSucceededAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
                             }
@@ -107,7 +119,11 @@ class CandidateController extends Controller implements HasMiddleware
                 function (Request $request, Closure $next) {
                     if (
                         ! $request->route('admission_test')->is_free &&
-                        ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota
+                        (
+                            ! $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota ||
+                            $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota &&
+                            $request->user()->lastSucceededAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                        )
                     ) {
                         if ($request->price_id) {
                             if (filter_var($request->price_id, FILTER_VALIDATE_INT) === false) {
@@ -211,8 +227,8 @@ class CandidateController extends Controller implements HasMiddleware
     public function create(Request $request, AdmissionTest $admissionTest)
     {
         $user = [
-            'future_admission_test' => $request->user()->futureAdmissionTest ? [
-                'id' => $request->user()->futureAdmissionTest->id,
+            'has_unused_quota_admission_test_order' => $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota ? [
+                'quota_expired_on' => $request->user()->lastSucceededAdmissionTestOrder->quotaExpiredOn,
             ] : null,
             'default_email' => $request->user()->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
@@ -227,7 +243,10 @@ class CandidateController extends Controller implements HasMiddleware
         $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
         $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
         $return = Inertia::render('AdmissionTests/Create')
-            ->with('test', $admissionTest)
+            ->with(
+                'isReschedule', $request->user()->lastAdmissionTest &&
+                    ! $request->user()->lastAdmissionTest->pivot_is_present
+            )->with('test', $admissionTest)
             ->with('user', $user);
         if ($request->products) {
             $return = $return->with('products', $request->products);
@@ -250,19 +269,19 @@ class CandidateController extends Controller implements HasMiddleware
         $redirect = redirect()->route('admission-tests.candidates.show', ['admission_test' => $admissionTest]);
         DB::beginTransaction();
         $admissionTest->candidates()->attach($user->id);
-        if ($user->futureAdmissionTest) {
-            $oldTest = clone $user->futureAdmissionTest;
-            $oldTest->delete();
-            $user->notify(new RescheduleAdmissionTest($user->futureAdmissionTest, $admissionTest));
-            $success = 'Your reschedule request successfully, ';
-        } else {
+        if (! $user->lastAdmissionTest || $user->lastAdmissionTest->pivot_is_present) {
             $user->notify(new ScheduleAdmissionTest($admissionTest));
             $success = 'Your schedule request successfully, ';
+        } else {
+            $oldTest = clone $user->lastAdmissionTest;
+            $oldTest->delete();
+            $user->notify(new RescheduleAdmissionTest($user->lastAdmissionTest, $admissionTest));
+            $success = 'Your reschedule request successfully, ';
         }
         if ($user->defaultEmail || $user->defaultMobile) {
             $success .= 'the new ticket will be to your default contact(s), you also can cap screen to save your ticket.';
         } else {
-            $success .= 'because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update that you will missing the notification.';
+            $success .= 'because you have no default contact, please cap screen the ticket for worst case no network on test location of your phone. We suggest you add default contact(s) as soon as possible because if the test has any update when have no default contact(s), we are unable to notify you.';
         }
         DB::commit();
 

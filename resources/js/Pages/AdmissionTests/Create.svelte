@@ -1,18 +1,28 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { formatToDate, formatToTime } from '@/timeZoneDatetime';
-    import { Table, Button, Row, Col } from '@sveltestrap/sveltestrap';
+    import { formatToDate, formatToDatetime, formatToTime } from '@/timeZoneDatetime';
+    import { Alert, Table, Button, Row, Col } from '@sveltestrap/sveltestrap';
 
-    let { test, user, csrf_token, products, price } = $props();
+    let { isReschedule, test, user, products, price } = $props();
 
     seo.title = products ? 'Detail Admission Test' : 'Confirmation Admission Test';
 </script>
 
 <section class="container">
     <h3 class="mb-2 fw-bold">
-        {user.future_admission_test ? 'Reschedule' : 'Schedule'}
+        {isReschedule ? 'Reschedule' : 'Schedule'}
         Admission Test {products ? 'Detail' : 'Confirmation'}
     </h3>
+    {#if
+        user.has_unused_quota_admission_test_order?.quota_expired_on &&
+        formatToDate(user.has_unused_quota_admission_test_order.quota_expired_on).endOfDay < formatToDatetime(test.testing_at)
+    }
+        <Alert color="danger">
+            You have an unused quota that expires on {formatToDate(user.has_unused_quota_admission_test_order?.quota_expired_on)}.
+            If you reschedule to the current admission test, you will need to pay a new admission test fee and forfeit your old admission test quota.
+            If you have a special reason to use the unused spot for reschedule to the current admission test, please contact us to reschedule by manual.
+        </Alert>
+    {/if}
     <Table>
         <tr>
             <th>Date</th>
@@ -82,7 +92,6 @@
                 {admission_test: test.id}
             )
         }>
-            <input type="hidden" name="_token" value={csrf_token} />
             {#if price}
                 <input type="hidden" name="price_id" value={price.id} />
             {/if}

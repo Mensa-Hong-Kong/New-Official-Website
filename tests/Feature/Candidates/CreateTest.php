@@ -82,6 +82,24 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
     }
 
+    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours()
+    {
+        $newTestingAt = now()->addHours(2);
+        $oldTest = AdmissionTest::factory()->state([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ])->create();
+        $oldTest->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertRedirectToRoute('admission-tests.index');
+        $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+    }
+
     public function test_user_already_schedule_this_admission_test()
     {
         $this->test->candidates()->attach($this->user->id);
@@ -143,8 +161,8 @@ class CreateTest extends TestCase
     {
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
@@ -187,12 +205,12 @@ class CreateTest extends TestCase
         $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
             ])->create();
         $user = User::factory()
             ->state([
@@ -215,12 +233,12 @@ class CreateTest extends TestCase
         $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $oldTest = AdmissionTest::factory()
             ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
+                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
             ])->create();
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->get(
@@ -293,7 +311,7 @@ class CreateTest extends TestCase
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -323,7 +341,7 @@ class CreateTest extends TestCase
     public function test_user_age_less_than_test_type_minimum_age_limit()
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -337,7 +355,7 @@ class CreateTest extends TestCase
     public function test_user_age_greater_than_test_type_maximum_age_limit()
     {
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -399,11 +417,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'The selected product is invalid.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
             }
@@ -435,11 +459,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'The price of selected product is not up to date, please try again on this up to date version.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
             }
@@ -472,11 +502,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'The selected product is not yet released, please try again later or select other product.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
             }
@@ -510,11 +546,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'The selected product was taken down, please select other product.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
             }
@@ -548,11 +590,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'Your age less than product minimum age limit.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
             }
@@ -586,11 +634,17 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
                         'flash', function (Assert $page) {
                             $page->where('error', 'Your age greater than product maximum age limit.');
+                        }
+                    )->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
                         }
                     );
 
@@ -622,9 +676,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -635,6 +696,7 @@ class CreateTest extends TestCase
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
         $this->user->update(['birthday' => $order->created_at->subYear(22)]);
@@ -647,9 +709,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -660,9 +729,10 @@ class CreateTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -672,9 +742,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -689,9 +766,10 @@ class CreateTest extends TestCase
             'user_id' => $this->user->id,
             'minimum_age' => 4,
             'maximum_age' => 21,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -701,9 +779,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -714,6 +799,7 @@ class CreateTest extends TestCase
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
         $this->user->update(['birthday' => $order->created_at->subYear(22)->addDay()]);
@@ -726,9 +812,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -739,9 +832,10 @@ class CreateTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'maximum_age' => 8,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -751,9 +845,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -768,9 +869,10 @@ class CreateTest extends TestCase
             'user_id' => $this->user->id,
             'minimum_age' => 10,
             'maximum_age' => 21,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -780,9 +882,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -801,9 +910,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -822,9 +938,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -848,9 +971,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -869,9 +999,10 @@ class CreateTest extends TestCase
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -881,9 +1012,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -902,9 +1040,10 @@ class CreateTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -916,7 +1055,14 @@ class CreateTest extends TestCase
                 $page->component('AdmissionTests/Create')
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->where('isReschedule', false)
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -939,9 +1085,10 @@ class CreateTest extends TestCase
             'user_id' => $this->user->id,
             'minimum_age' => 4,
             'maximum_age' => 21,
+            'quota' => 1,
             'status' => 'succeeded',
         ])->create();
-        $this->user->update(['birthday' => $this->test->testing_at->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -951,9 +1098,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -980,9 +1134,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->has('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->whereNull('has_unused_quota_admission_test_order')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -993,6 +1154,7 @@ class CreateTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
+            'quota' => 1,
         ])->create();
         $product = AdmissionTestProduct::factory()->state([
             'minimum_age' => null,
@@ -1011,9 +1173,16 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
             }
         );
     }
@@ -1023,6 +1192,7 @@ class CreateTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
+            'quota' => 1,
         ])->create();
         $product = AdmissionTestProduct::factory()->state([
             'minimum_age' => null,
@@ -1041,9 +1211,34 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
-                    ->where('flash.error', '');
+                    ->where('flash.error', '')
+                    ->has(
+                        'user', function (Assert $page) {
+                            $page->has('has_unused_quota_admission_test_order.quota_expired_on')
+                                ->etc();
+                        }
+                    );
+            }
+        );
+    }
+
+    public function test_happy_case_when_user_has_scheduled_admission_test()
+    {
+        $test = AdmissionTest::factory()->state(['is_free' => true])->create();
+        $test->candidates()->attach($this->user->id);
+        $response = $this->actingAs($this->user)->get(
+            route(
+                'admission-tests.candidates.create',
+                ['admission_test' => $this->test]
+            ),
+        );
+        $response->assertInertia(
+            function (Assert $page) {
+                $page->component('AdmissionTests/Create')
+                    ->where('isReschedule', true);
             }
         );
     }

@@ -4,11 +4,11 @@
     import { Table, Button } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import "ckeditor5/ckeditor5.css";
-    import { formatToDate, formatToTime } from '@/timeZoneDatetime';
+    import { formatToDate, formatToTime, formatToDateTime } from '@/timeZoneDatetime';
 
     seo.title = 'Admission Tests';
 
-    let { auth, contents, tests, user: initUser } = $props();
+    let { auth, contents, tests, user: initUser, isReschedule } = $props();
     let user = $state(initUser);
 </script>
 
@@ -20,6 +20,18 @@
     <article class="ck-content">
         {@html contents.Info}
     </article>
+    {#if
+        auth.user && user.has_unused_quota_admission_test_order?.quota_expired_on &&
+        tests.filter(
+            test =>formatToDate(user.has_unused_quota_admission_test_order.quota_expired_on).endOfDay < formatToDatetime(test.testing_at)
+        ).length
+    }
+        <Alert color="danger">
+            You have an unused quota that expires on {formatToDate(user.has_unused_quota_admission_test_order?.quota_expired_on)}.
+            If you reschedule to after than quota expired date, you will need to pay a new admission test fee and forfeit your old admission test quota.
+            If you have a special reason to use the unused spot for reschedule to the after than quota expired date admission test, please contact us to reschedule by manual.
+        </Alert>
+    {/if}
     <article>
         <h3 class="mb-2 fw-bold">Upcoming Admission Tests</h3>
         <Table hover>
@@ -46,7 +58,7 @@
                         <td>{test.candidates_count}/{test.maximum_candidates}</td>
                         {#if auth.user && ! user.has_qualification_of_membership}
                             <td>
-                                {#if user.future_admission_test && user.future_admission_test.id == test.id}
+                                {#if user.last_admission_test && user.last_admission_test.id == test.id}
                                     <Link class="btn btn-primary" href={
                                         route(
                                             'admission-tests.candidates.show',
@@ -56,7 +68,10 @@
                                 {:else if
                                     (
                                         test.is_free || user.created_stripe_customer ||
-                                        user.has_unused_quota_admission_test_order
+                                        (
+                                            user.has_unused_quota_admission_test_order &&
+                                            formatToDate(user.has_unused_quota_admission_test_order.quota_expired_on).endOfDay() >= formatToDateTime(test.testing_at)
+                                        )
                                     ) &&
                                     new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
                                         ! user.last_attended_admission_test ||
@@ -68,17 +83,17 @@
                                     <Link class={[
                                         'btn',
                                         {
-                                            'btn-primary': !  user.future_admission_test,
-                                            'btn-danger': user.future_admission_test
+                                            'btn-primary': ! isReschedule,
+                                            'btn-danger': isReschedule
                                         }
                                     ]} href={
                                         route(
                                             'admission-tests.candidates.create',
                                             {admission_test: test.id}
                                         )
-                                    }>{user.future_admission_test ? 'Reschedule' : 'Schedule'}</Link>
+                                    }>{isReschedule ? 'Reschedule' : 'Schedule'}</Link>
                                 {:else}
-                                    <Button color="secondary">{user.future_admission_test ? 'Reschedule' : 'Schedule'}</Button>
+                                    <Button color="secondary">{isReschedule ? 'Reschedule' : 'Schedule'}</Button>
                                 {/if}
                             </td>
                         {:else}
