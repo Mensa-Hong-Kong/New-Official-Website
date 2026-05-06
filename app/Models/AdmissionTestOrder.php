@@ -76,6 +76,7 @@ class AdmissionTestOrder extends Model
         return Attribute::make(
             get: function () use ($order) {
                 $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
+
                 return $order->status === 'succeeded' &&
                     $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
                     (

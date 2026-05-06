@@ -72,8 +72,8 @@ class AdmissionTestTest extends TestCase
                             $page->has('last_admission_test.id')
                                 ->has('has_unused_quota_admission_test_order.quota_expired_on')
                                 ->etc();
-                    }
-                );
+                        }
+                    );
             }
         );
     }
