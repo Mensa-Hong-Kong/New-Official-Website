@@ -4,7 +4,7 @@
     import { Table, Button } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import "ckeditor5/ckeditor5.css";
-    import { formatToDate, formatToTime, formatToDateTime } from '@/timeZoneDatetime';
+    import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 
     seo.title = 'Admission Tests';
 
@@ -70,7 +70,7 @@
                                         test.is_free || user.created_stripe_customer ||
                                         (
                                             user.has_unused_quota_admission_test_order &&
-                                            formatToDate(user.has_unused_quota_admission_test_order.quota_expired_on).endOfDay() >= formatToDateTime(test.testing_at)
+                                            formatToDate(user.has_unused_quota_admission_test_order.quota_expired_on).endOfDay() >= formatToDatetime(test.testing_at)
                                         )
                                     ) &&
                                     new Date(formatToDate(test.testing_at)) > (new Date).addDays(2).endOfDay() && (
