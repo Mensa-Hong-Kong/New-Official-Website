@@ -16,7 +16,7 @@ class ActiveTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Other Payment Gateway');
     }

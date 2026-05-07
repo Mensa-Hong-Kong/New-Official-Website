@@ -19,7 +19,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->contact = UserHasContact::factory()->create();
     }

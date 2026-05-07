@@ -34,7 +34,7 @@ class StoreTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test Order']);
         $this->happyCase['user_id'] = $this->user->id;

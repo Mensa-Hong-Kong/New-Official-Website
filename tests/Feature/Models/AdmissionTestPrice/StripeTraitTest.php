@@ -19,7 +19,7 @@ class StripeTraitTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->price = AdmissionTestPrice::find(AdmissionTestPrice::factory()->create()->id);
     }
 

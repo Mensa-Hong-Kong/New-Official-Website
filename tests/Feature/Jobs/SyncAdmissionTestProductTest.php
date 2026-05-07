@@ -20,7 +20,7 @@ class SyncAdmissionTestProductTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         Queue::fake();
         $this->product = AdmissionTestProduct::factory()->create();
     }

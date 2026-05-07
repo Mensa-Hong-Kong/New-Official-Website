@@ -26,7 +26,7 @@ class StoreTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->stripe()->create(['id' => 123]);
         $this->test = AdmissionTest::factory()->state([

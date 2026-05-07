@@ -19,7 +19,7 @@ class RequestVerifyCodeTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         Notification::fake();
         $this->user = User::factory()->create();
         $this->contact = UserHasContact::factory()->create();

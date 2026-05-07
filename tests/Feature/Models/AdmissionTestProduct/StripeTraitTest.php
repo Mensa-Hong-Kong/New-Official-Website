@@ -18,7 +18,7 @@ class StripeTraitTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->product = AdmissionTestProduct::factory()->create();
     }
 

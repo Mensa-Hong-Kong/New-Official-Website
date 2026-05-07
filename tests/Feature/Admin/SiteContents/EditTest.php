@@ -16,7 +16,7 @@ class EditTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->content = SiteContent::inRandomOrder()->first();
     }
 

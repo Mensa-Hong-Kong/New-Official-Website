@@ -18,7 +18,7 @@ class EditTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->test = AdmissionTest::factory()
             ->state([
                 'testing_at' => now(),

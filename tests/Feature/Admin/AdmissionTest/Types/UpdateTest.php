@@ -25,7 +25,7 @@ class UpdateTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test');
         $this->type = AdmissionTestType::factory()->create();

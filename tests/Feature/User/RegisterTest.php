@@ -29,7 +29,7 @@ class RegisterTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         Queue::fake();
     }
 

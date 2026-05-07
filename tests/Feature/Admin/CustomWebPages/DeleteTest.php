@@ -16,7 +16,7 @@ class DeleteTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->page = CustomWebPage::factory()->create();
     }
 
