@@ -432,7 +432,7 @@ class StoreTest extends TestCase
     public function test_user_id_have_unused_admission_test_quota_but_quota_expired_before_testing_time_of_this_admission_test_when_is_not_free()
     {
         config(['app.admissionTestQuotaValidityMonths' => 12]);
-        $order = AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
             'quota' => 1,
             'status' => 'succeeded',
