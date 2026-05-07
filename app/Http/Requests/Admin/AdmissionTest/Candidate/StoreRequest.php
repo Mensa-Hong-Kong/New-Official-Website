@@ -33,12 +33,23 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id age less than test minimum age limit.');
                     } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($request->user->countAgeForPsychology($test->testing_at))) {
                         $fail('The selected user id age greater than test maximum age limit.');
-                    } elseif ($request->user->admissionTests()->where('test_id', $test->id)->exists()) {
+                    } elseif ($request->user->lastAdmissionTest?->id == $test->id) {
                         $fail('The selected user id has already schedule this admission test.');
-                    } elseif ($request->function == 'schedule' && $request->user->futureAdmissionTest) {
+                    } elseif ($request->function == 'schedule' && $request->user->lastAdmissionTest && $request->user->lastAdmissionTest->pivot_is_present === null) {
                         $fail('The selected user id has already schedule other admission test.');
-                    } elseif ($request->function == 'reschedule' && ! $request->user->futureAdmissionTest) {
+                    } elseif (
+                        $request->function == 'reschedule' && (
+                            ! $request->user->lastAdmissionTest ||
+                            $request->user->lastAdmissionTest->pivot_is_present !== null
+                        )
+                    ) {
                         $fail('The selected user id have no scheduled other admission test after than now.');
+                    } elseif (
+                        $request->function == 'reschedule' &&
+                        $request->user->lastAdmissionTest?->pivot_is_present === null &&
+                        $request->user->lastAdmissionTest->testing_at < now()->addHours(2)
+                    ) {
+                        $fail('The selected user id scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.');
                     } elseif ($request->user->hasSamePassportAlreadyQualificationOfMembership) {
                         $fail('The selected user id has other same passport user account already been qualification for membership.');
                     } elseif ($request->user->hasOtherSamePassportUserAttendedAdmissionTest) {
@@ -53,22 +64,33 @@ class StoreRequest extends FormRequest
                         $fail("The selected user id has admission test record within {$request->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$request->user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (
                         ! $test->is_free &&
-                        ! $request->is_free &&
-                        ! $request->user->hasUnusedQuotaAdmissionTestOrder
+                        ! $request->is_free && (
+                            ! $request->user->lastAdmissionTestOrder ||
+                            ! $request->user->lastAdmissionTestOrder?->hasUnusedQuota
+                        )
                     ) {
                         $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age &&
-                        $request->user->hasUnusedQuotaAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                        $request->user->lastAdmissionTestOrder->quotaExpiredOn &&
+                        $request->user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                    ) {
+                        $fail('The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.');
+                    } elseif (
+                        ! $test->is_free &&
+                        ! $request->is_free &&
+                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                        $request->user->lastAdmissionTestOrder->minimum_age &&
+                        $request->user->lastAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {
                         $fail('The selected user id age less than the last order age limit.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age &&
-                        $request->user->hasUnusedQuotaAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->hasUnusedQuotaAdmissionTestOrder->created_at))
+                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                        $request->user->lastAdmissionTestOrder->maximum_age &&
+                        $request->user->lastAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {
                         $fail('The selected user id age greater than the last order age limit.');
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {

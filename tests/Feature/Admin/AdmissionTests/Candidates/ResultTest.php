@@ -122,7 +122,7 @@ class ResultTest extends TestCase
 
     public function test_before_than_expect_end_at()
     {
-        $this->test->update(['expect_end_at' => now()->addSecond()]);
+        $this->test->update(['expect_end_at' => now()->addSeconds(5)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.result.update',

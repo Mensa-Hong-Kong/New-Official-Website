@@ -590,12 +590,14 @@
                         <tr>
                             <th>{formatToDate(test.testing_at)}</th>
                             <td>
-                                <i class={[
-                                    'bi', {
-                                        'bi-check': test.pivot.is_present,
-                                        'bi-x': ! test.pivot.is_present,
-                                    }
-                                ]}></i>
+                                {#if test.pivot.is_pass !== null}
+                                    <i class={[
+                                        'bi', {
+                                            'bi-check': test.pivot.is_present,
+                                            'bi-x': ! test.pivot.is_present,
+                                        }
+                                    ]}></i>
+                                {/if}
                             </td>
                             <td>
                                 {#if test.pivot.is_pass !== null}

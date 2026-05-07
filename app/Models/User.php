@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Kyslik\ColumnSortable\Sortable;
 use Laravel\Sanctum\HasApiTokens;
@@ -171,7 +170,7 @@ class User extends Authenticatable
                     ->where('passport_number', $attributes['passport_number'])
                     ->whereHas(
                         'admissionTests', function ($query) {
-                            $query->where('testing_at', '>', now());
+                            $query->whereNull('is_present');
                         }
                     )->exists();
             }
@@ -338,24 +337,31 @@ class User extends Authenticatable
             ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass']);
     }
 
-    public function futureAdmissionTest()
-    {
-        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->where('testing_at', '>', now());
-    }
-
     public function lastAdmissionTest()
     {
+        $table = (new AdmissionTestHasCandidate)->getTable();
+
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->where('expect_end_at', '>', now()->subHour())
+            ->addSelect([
+                (new AdmissionTest)->getTable().'.*',
+                ...array_map(
+                    fn ($column) => "$table.$column as pivot_$column",
+                    ['order_id', 'seat_number', 'is_present', 'is_pass']
+                ),
+            ])
             ->latest('testing_at');
     }
 
     public function lastAttendedAdmissionTest()
     {
-        return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->where('is_present', true)
-            ->latest('testing_at');
+        return $this->lastAdmissionTest()
+            ->where('is_present', true);
+    }
+
+    public function futureAdmissionTest()
+    {
+        return $this->lastAdmissionTest()
+            ->whereNull('is_present');
     }
 
     public function admissionTestOrders()
@@ -367,38 +373,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(AdmissionTestOrder::class)
             ->latest('id');
-    }
-
-    public function hasUnusedQuotaAdmissionTestOrder()
-    {
-        $orderTable = (new AdmissionTestOrder)->getTable();
-        $return = $this->hasOne(AdmissionTestOrder::class)
-            ->where('status', 'succeeded')
-            ->whereHas(
-                'attendedTests', null, '<',
-                DB::raw("$orderTable.quota - $orderTable.returned_quota")
-            );
-        $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths');
-        if ($quotaValidityMonths) {
-            $return->leftJoinRelation('attendedTests as attendedTests.type as type')
-                ->where(
-                    DB::raw("
-                        if(
-                            attendedTests.testing_at IS NOT NULL,
-                            DATE_ADD(
-                                attendedTests.testing_at,
-                                INTERVAL type.interval_month + $quotaValidityMonths MONTH
-                            ),
-                            DATE_ADD(
-                                $orderTable.created_at,
-                                INTERVAL $quotaValidityMonths MONTH
-                            )
-                        )
-                    "), '>=', now()
-                )->select(["$orderTable.*"]);
-        }
-
-        return $return;
     }
 
     public function memberTransfers()
@@ -469,11 +443,17 @@ class User extends Authenticatable
 
         return Attribute::make(
             get: function (mixed $value, array $attributes) use ($user) {
-                return ! $user->lastAttendedAdmissionTest && // proctor will update on admission test
-                    ( // avoid user update overwrite proctor updated data
-                        ! $user->lastAdmissionTest ||
-                        $user->lastAdmissionTest->testing_at > now()->addHours(2)
-                    ) &&
+                return ! $user->lastAdmissionTest()
+                    ->where(
+                        function ($query) {
+                            $query->where('is_present', true)
+                                ->whereNull('is_pass')
+                                ->orWhere('is_pass', true);
+                        }
+                    )->orWhere(function ($query) {
+                        $query->whereNull('is_present')
+                            ->where('testing_at', '<=', now()->addHours(2));
+                    })->exists() &&
                     ! $user->memberTransfers()
                         ->where('is_accepted', true)
                         ->orWhereNull('is_accepted')

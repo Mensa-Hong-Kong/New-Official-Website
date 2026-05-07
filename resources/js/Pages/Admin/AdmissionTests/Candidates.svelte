@@ -682,10 +682,7 @@
                                 ]) ||
                                 (test.currentUserIsProctor && test.inTestingTimeRange)
                             }
-                                <td>{
-                                    new Date(formatToDatetime(test.testingAt)) >= (new Date).addHours(2) ?
-                                        '--' : row.isPresent ? 'Present' : 'Absent'
-                                }</td>
+                                <td>{ row.isPresent === null ? '--' : row.isPresent ? 'Present' : 'Absent'}</td>
                             {/if}
                             {#if
                                 ! test.isFree && canAny([
