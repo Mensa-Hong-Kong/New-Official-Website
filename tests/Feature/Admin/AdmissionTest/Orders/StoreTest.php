@@ -197,9 +197,8 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has been scheduled admission test.']);
     }
 
-    public function test_user_id_of_user_has_unused_quota_when_quota_validity_months_config_is_null()
+    public function test_user_id_of_user_has_unused_quota_when_quota_validity_months_is_null()
     {
-        config(['app.admissionTestQuotaValidityMonths' => null]);
         AdmissionTestOrder::factory()->state([
             'status' => 'succeeded',
             'created_at' => '1970-01-01 00:00:01',
@@ -211,11 +210,11 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
     }
 
-    public function test_user_id_of_user_has_unused_quota_when_quota_within_validity_months_config()
+    public function test_user_id_of_user_has_unused_quota_when_quota_within_quota_validity_months()
     {
-        config(['app.admissionTestQuotaValidityMonths' => 1]);
         AdmissionTestOrder::factory()->state([
             'status' => 'succeeded',
+            'quota_validity_months' => 1,
             'created_at' => now()->subMonth()->addSecond(),
         ])->create();
         $response = $this->actingAs($this->user)->postJson(
@@ -225,11 +224,11 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
     }
 
-    public function test_user_id_of_user_has_unused_quota_and_has_tested_record_order_when_unused_quota_within_validity_months_config()
+    public function test_user_id_of_user_has_unused_quota_and_has_tested_record_order_when_unused_quota_within_quota_validity_months()
     {
-        config(['app.admissionTestQuotaValidityMonths' => 1]);
         $order = AdmissionTestOrder::factory()->state([
             'quota' => 2,
+            'quota_validity_months' => 1,
             'status' => 'succeeded',
             'created_at' => now()->subMonths(3)->addSecond(),
         ])->create();
@@ -251,7 +250,6 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota_when_have_no_attended_record()
     {
-        config(['app.admissionTestQuotaValidityMonths' => null]);
         AdmissionTestOrder::factory()->state([
             'status' => 'succeeded',
             'created_at' => now()->subMonths(),
@@ -760,10 +758,9 @@ class StoreTest extends TestCase
         $response->assertInvalid(['test_id' => 'The selected user age greater than test maximum age limit.']);
     }
 
-    public function test_happy_case_when_status_is_pending_with_minimum_age_without_maximum_age_and_test_and_quota_validity_months_config_is_null()
+    public function test_happy_case_when_status_is_pending_with_minimum_age_without_maximum_age_and_test_and_quota_validity_months_is_null()
     {
         Queue::fake();
-        config(['app.admissionTestQuotaValidityMonths' => null]);
         $data = $this->happyCase;
         $this->user->update(['birthday' => now()->subYears(22)]);
         $data['minimum_age'] = 22;
@@ -782,11 +779,11 @@ class StoreTest extends TestCase
         Queue::assertPushed(AdmissionTestOrderExpiredHandle::class);
     }
 
-    public function test_happy_case_when_status_is_succeeded_and_with_minimum_age_without_maximum_age_and_expired_at_and_test_and_has_unused_quota_order_without_validity_months_config()
+    public function test_happy_case_when_status_is_succeeded_and_with_minimum_age_without_maximum_age_and_expired_at_and_test_and_has_unused_quota_order_but_out_of_quota_validity_months()
     {
         Queue::fake();
-        config(['app.admissionTestQuotaValidityMonths' => 1]);
         AdmissionTestOrder::factory()->state([
+            'quota_validity_months' => 1,
             'status' => 'succeeded',
             'created_at' => now()->subMonth()->subSecond(),
         ])->create();
@@ -805,16 +802,17 @@ class StoreTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_status_is_succeeded_with_minimum_age_and_maximum_age_and_expired_at_and_without_test_and_has_tested_record_order_when_unused_quota_within_validity_months_config()
+    public function test_happy_case_when_status_is_succeeded_with_minimum_age_and_maximum_age_and_expired_at_and_without_test_and_has_tested_record_order_when_unused_quota_within_validity_months()
     {
         Queue::fake();
-        config(['app.admissionTestQuotaValidityMonths' => 1]);
         AdmissionTestOrder::factory()->state([
+            'quota_validity_months' => 1,
             'status' => 'succeeded',
             'created_at' => now()->subMonth()->subSecond(),
         ])->create();
         $order = AdmissionTestOrder::factory()->state([
             'quota' => 2,
+            'quota_validity_months' => 1,
             'status' => 'succeeded',
             'created_at' => now()->subMonths(3)->subSecond(),
         ])->create();
