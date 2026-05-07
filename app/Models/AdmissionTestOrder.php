@@ -63,10 +63,22 @@ class AdmissionTestOrder extends Model
             ->where('is_present', true);
     }
 
-    public function futureTest()
+    public function quotaExpiredOn(): Attribute
     {
-        return $this->lastTest()
-            ->whereNull('is_present');
+        $order = $this;
+
+        return Attribute::make(
+            get: function () use ($order) {
+                $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
+
+                return $quotaValidityMonths ?
+                    ($order->lastAttendedTest?->testing_at ?? $order->created_at)
+                        ->addMonths(
+                            $quotaValidityMonths +
+                                $order->lastAttendedTest?->type->interval_month
+                        ) : null;
+            }
+        );
     }
 
     public function hasUnusedQuota(): Attribute
@@ -75,17 +87,11 @@ class AdmissionTestOrder extends Model
 
         return Attribute::make(
             get: function () use ($order) {
-                $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
-
                 return $order->status === 'succeeded' &&
                     $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
                     (
-                        ! $quotaValidityMonths ||
-                        ($order->lastAttendedTest?->testing_at ?? $order->created_at)
-                            ->addMonths(
-                                $quotaValidityMonths +
-                                    $order->lastAttendedTest?->type->interval_month
-                            ) >= now()
+                        ! $order->quotaExpiredOn ||
+                        $order->quotaExpiredOn >= now()
                     );
             }
         );
