@@ -383,6 +383,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -414,6 +415,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -456,6 +458,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -499,6 +502,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -673,6 +677,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -706,6 +711,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -739,6 +745,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -776,6 +783,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -809,6 +817,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -842,6 +851,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -879,6 +889,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -907,6 +918,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -935,6 +947,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -968,6 +981,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1009,6 +1023,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1050,6 +1065,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1095,6 +1111,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1131,6 +1148,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1170,6 +1188,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1208,6 +1227,7 @@ class CreateTest extends TestCase
                 ]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
@@ -1235,6 +1255,7 @@ class CreateTest extends TestCase
                 ['admission_test' => $this->test]
             ),
         );
+        $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')

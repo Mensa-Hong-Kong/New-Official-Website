@@ -41,8 +41,10 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     if (
                         ! $admissionTest->is_free && ! $user->stripe && (
-                            ! $user->lastAdmissionTestOrder?->hasUnusedQuota ||
-                            $user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                            ! $user->lastAdmissionTestOrder?->hasUnusedQuota || (
+                                $user->lastAdmissionTestOrder->quotaExpiredOn &&
+                                $user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                            )
                         )
                     ) {
                         return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
@@ -122,6 +124,7 @@ class CandidateController extends Controller implements HasMiddleware
                         (
                             ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ||
                             $request->user()->lastAdmissionTestOrder?->hasUnusedQuota &&
+                            $request->user()->lastAdmissionTestOrder->quotaExpiredOn &&
                             $request->user()->lastAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
                         )
                     ) {

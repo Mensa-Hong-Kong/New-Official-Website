@@ -64,13 +64,16 @@ class StoreRequest extends FormRequest
                         $fail("The selected user id has admission test record within {$request->user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$request->user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (
                         ! $test->is_free &&
-                        ! $request->is_free &&
-                        ! $request->user->lastAdmissionTestOrder?->hasUnusedQuota
+                        ! $request->is_free && (
+                            ! $request->user->lastAdmissionTestOrder ||
+                            ! $request->user->lastAdmissionTestOrder?->hasUnusedQuota
+                        )
                     ) {
                         $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
+                        $request->user->lastAdmissionTestOrder->quotaExpiredOn &&
                         $request->user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
                     ) {
                         $fail('The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.');
