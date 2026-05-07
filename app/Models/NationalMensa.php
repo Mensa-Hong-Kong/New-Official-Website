@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa query()
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa whereUrl($value)
+ *
  * @mixin \Eloquent
  */
 class NationalMensa extends Model

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Model|\Eloquent $gateway
  * @property-read \App\Models\Member|null $member
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder query()
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder whereToYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class MembershipOrder extends Model

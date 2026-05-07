@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $middleware_should_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification query()
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereVerifiedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ContactHasVerification extends Model

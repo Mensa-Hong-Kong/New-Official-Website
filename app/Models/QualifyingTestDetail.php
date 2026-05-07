@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\QualifyingTest|null $test
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail query()
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail whereTakenTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail whereTestId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class QualifyingTestDetail extends Model

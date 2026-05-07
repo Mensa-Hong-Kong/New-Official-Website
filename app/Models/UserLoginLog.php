@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property int $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog query()
@@ -19,6 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserLoginLog extends Authenticatable

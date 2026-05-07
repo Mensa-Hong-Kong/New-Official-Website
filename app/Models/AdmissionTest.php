@@ -30,6 +30,7 @@ use Kyslik\ColumnSortable\Sortable;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $proctors
  * @property-read int|null $proctors_count
  * @property-read \App\Models\AdmissionTestType|null $type
+ *
  * @method static \Database\Factories\AdmissionTestFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest newQuery()
@@ -47,6 +48,7 @@ use Kyslik\ColumnSortable\Sortable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereTestingAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AdmissionTest extends Model

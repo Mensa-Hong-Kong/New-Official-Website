@@ -15,6 +15,7 @@ use Kyslik\ColumnSortable\Sortable;
  * @property string|null $content
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Database\Factories\CustomWebPageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage newQuery()
@@ -28,6 +29,7 @@ use Kyslik\ColumnSortable\Sortable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage wherePathname($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CustomWebPage extends Model

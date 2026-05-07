@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User|null $creator
  * @property-read \App\Models\PassportType|null $passportType
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog query()
@@ -32,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog wherePassportTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class ResetPasswordLog extends Model

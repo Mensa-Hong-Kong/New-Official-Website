@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QualifyingTestDetail> $details
  * @property-read int|null $details_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class QualifyingTest extends Model

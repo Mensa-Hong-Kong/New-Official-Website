@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Area|null $area
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District query()
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class District extends Model

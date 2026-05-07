@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $test
  * @property-read int|null $test_count
+ *
  * @method static \Database\Factories\AdmissionTestTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType newQuery()
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType whereMinimumAge($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AdmissionTestType extends Model

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SiteContent> $contents
  * @property-read int|null $contents_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class SitePage extends Model

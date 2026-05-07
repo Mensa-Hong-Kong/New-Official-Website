@@ -18,6 +18,7 @@ use Spatie\Permission\Models\Role as Model;
  * @property-read int|null $permissions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole permission($permissions, $without = false)
@@ -31,6 +32,7 @@ use Spatie\Permission\Models\Role as Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole whereTeamId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole withoutPermission($permissions)
+ *
  * @mixin \Eloquent
  */
 class TeamRole extends Model

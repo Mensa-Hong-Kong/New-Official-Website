@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Module|null $parent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $permissions
  * @property-read int|null $permissions_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module query()
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Module extends Model

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
  * @property-read int|null $admission_test_orders_count
  * @property-read mixed $type
+ *
  * @method static \Database\Factories\OtherPaymentGatewayFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway newQuery()
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class OtherPaymentGateway extends Model

@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
  * @property-read int|null $tests_count
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Database\Factories\AdmissionTestOrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder newQuery()
@@ -53,6 +54,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class AdmissionTestOrder extends Model

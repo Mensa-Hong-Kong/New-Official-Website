@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\NationalMensa|null $nationalMensa
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer query()
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class MembershipTransfer extends Model

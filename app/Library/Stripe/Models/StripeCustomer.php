@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Model|\Eloquent $customerable
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer query()
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer whereCustomerableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class StripeCustomer extends Model

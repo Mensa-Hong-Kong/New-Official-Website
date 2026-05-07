@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\PriorEvidenceOrder|null $order
  * @property-read \App\Models\QualifyingTest|null $test
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult query()
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult whereTakenOn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult whereTestId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PriorEvidenceResult extends Model

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Gender extends Model

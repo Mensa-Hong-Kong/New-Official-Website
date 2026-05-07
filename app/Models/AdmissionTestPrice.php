@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\AdmissionTestProduct|null $product
+ *
  * @method static \Database\Factories\AdmissionTestPriceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice newQuery()
@@ -32,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice whereSyncedOneTimeTypeToStripe($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class AdmissionTestPrice extends Model

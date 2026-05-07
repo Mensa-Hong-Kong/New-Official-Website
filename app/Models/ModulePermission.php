@@ -19,6 +19,7 @@ use Spatie\Permission\Models\Permission as Model;
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission permission($permissions, $without = false)
@@ -33,6 +34,7 @@ use Spatie\Permission\Models\Permission as Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission withoutPermission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission withoutRole($roles, $guard = null)
+ *
  * @mixin \Eloquent
  */
 class ModulePermission extends Model

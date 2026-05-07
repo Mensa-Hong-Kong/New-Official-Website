@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Model|\Eloquent $gateway
  * @property-read \App\Models\PriorEvidenceResult|null $result
  * @property-read \App\Models\User|null $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder query()
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class PriorEvidenceOrder extends Model

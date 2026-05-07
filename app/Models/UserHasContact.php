@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
  * @property-read \App\Models\User|null $user
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $verifications
  * @property-read int|null $verifications_count
+ *
  * @method static \Database\Factories\UserHasContactFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact newQuery()
@@ -38,6 +39,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserHasContact extends Model

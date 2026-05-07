@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\AdmissionTestPrice|null $price
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestPrice> $prices
  * @property-read int|null $prices_count
+ *
  * @method static \Database\Factories\AdmissionTestProductFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdmissionTestProduct newModelQuery()
  * @method static Builder<static>|AdmissionTestProduct newQuery()
@@ -43,6 +44,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder<static>|AdmissionTestProduct whereStripeId($value)
  * @method static Builder<static>|AdmissionTestProduct whereSyncedToStripe($value)
  * @method static Builder<static>|AdmissionTestProduct whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AdmissionTestProduct extends Model
