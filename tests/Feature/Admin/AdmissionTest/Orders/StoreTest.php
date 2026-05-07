@@ -230,10 +230,10 @@ class StoreTest extends TestCase
             'quota' => 2,
             'quota_validity_months' => 1,
             'status' => 'succeeded',
-            'created_at' => now()->subMonths(3)->addSecond(),
+            'created_at' => now()->subMonths(3)->addDay(),
         ])->create();
         AdmissionTestType::factory()->state(['interval_month' => 1])->create();
-        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->addSecond()])->create();
+        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->addDay()])->create();
         $test->candidates()->attach(
             $this->user->id,
             [
@@ -785,7 +785,7 @@ class StoreTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'quota_validity_months' => 1,
             'status' => 'succeeded',
-            'created_at' => now()->subMonth()->subSecond(),
+            'created_at' => now()->subMonth()->subDay()->startOfDay(),
         ])->create();
         $this->user->update(['birthday' => now()->subYears(18)]);
         $data = $this->happyCase;
@@ -808,16 +808,16 @@ class StoreTest extends TestCase
         AdmissionTestOrder::factory()->state([
             'quota_validity_months' => 1,
             'status' => 'succeeded',
-            'created_at' => now()->subMonth()->subSecond(),
+            'created_at' => now()->subMonth()->subDay(),
         ])->create();
         $order = AdmissionTestOrder::factory()->state([
             'quota' => 2,
             'quota_validity_months' => 1,
             'status' => 'succeeded',
-            'created_at' => now()->subMonths(3)->subSecond(),
+            'created_at' => now()->subMonths(3)->subDay(),
         ])->create();
         AdmissionTestType::factory()->state(['interval_month' => 1])->create();
-        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->subSecond()])->create();
+        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->subDay()])->create();
         $test->candidates()->attach(
             $this->user->id,
             [
@@ -945,4 +945,6 @@ class StoreTest extends TestCase
             [$this->user], ScheduleAdmissionTest::class
         );
     }
+
+    // test extend expired date function
 }

@@ -931,7 +931,8 @@ namespace PHPSTORM_META {
             'app.aliases.Validator' => 'string',
             'app.aliases.View' => 'string',
             'app.aliases.Vite' => 'string',
-            'app.admissionTestQuotaValidityMonths' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.whenAfterThan' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.to' => 'string',
             'auth.defaults.guard' => 'string',
             'auth.defaults.passwords' => 'string',
             'auth.guards.web.driver' => 'string',
@@ -1419,7 +1420,8 @@ namespace PHPSTORM_META {
             'app.aliases.Validator' => 'string',
             'app.aliases.View' => 'string',
             'app.aliases.Vite' => 'string',
-            'app.admissionTestQuotaValidityMonths' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.whenAfterThan' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.to' => 'string',
             'auth.defaults.guard' => 'string',
             'auth.defaults.passwords' => 'string',
             'auth.guards.web.driver' => 'string',
@@ -1907,7 +1909,8 @@ namespace PHPSTORM_META {
             'app.aliases.Validator' => 'string',
             'app.aliases.View' => 'string',
             'app.aliases.Vite' => 'string',
-            'app.admissionTestQuotaValidityMonths' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.whenAfterThan' => 'string',
+            'app.extendAdmissionTestQuotaExpiredDate.to' => 'string',
             'auth.defaults.guard' => 'string',
             'auth.defaults.passwords' => 'string',
             'auth.guards.web.driver' => 'string',
@@ -2324,7 +2327,7 @@ namespace PHPSTORM_META {
     override(\optional(0), type(0));
 
             registerArgumentsSet('auth', );
-        registerArgumentsSet('configs', 
+        registerArgumentsSet('configs',
 'hashing.driver','hashing.bcrypt.rounds','hashing.bcrypt.verify','hashing.bcrypt.limit','hashing.argon.memory',
 'hashing.argon.threads','hashing.argon.time','hashing.argon.verify','hashing.rehash_on_login','concurrency.default',
 'broadcasting.default','broadcasting.connections.reverb.driver','broadcasting.connections.reverb.key','broadcasting.connections.reverb.secret','broadcasting.connections.reverb.app_id',
@@ -2346,7 +2349,7 @@ namespace PHPSTORM_META {
 'app.aliases.Process','app.aliases.Queue','app.aliases.RateLimiter','app.aliases.Redirect','app.aliases.Request',
 'app.aliases.Response','app.aliases.Route','app.aliases.Schedule','app.aliases.Schema','app.aliases.Session',
 'app.aliases.Storage','app.aliases.Str','app.aliases.Uri','app.aliases.URL','app.aliases.Validator',
-'app.aliases.View','app.aliases.Vite','app.admissionTestQuotaValidityMonths','auth.defaults.guard','auth.defaults.passwords',
+'app.aliases.View','app.aliases.Vite','app.extendAdmissionTestQuotaExpiredDate.whenAfterThan','app.extendAdmissionTestQuotaExpiredDate.to','auth.defaults.guard','auth.defaults.passwords',
 'auth.guards.web.driver','auth.guards.web.provider','auth.guards.sanctum.driver','auth.guards.sanctum.provider','auth.providers.users.driver',
 'auth.providers.users.model','auth.passwords.users.provider','auth.passwords.users.table','auth.passwords.users.expire','auth.passwords.users.throttle',
 'auth.password_timeout','boost.enabled','boost.browser_logs_watcher','cache.default','cache.stores.array.driver',
@@ -2423,12 +2426,12 @@ namespace PHPSTORM_META {
 'ide-helper.force_fqn','ide-helper.use_generics_annotations','ide-helper.macro_default_return_types.Illuminate\\Http\\Client\\Factory','ide-helper.additional_relation_types','ide-helper.additional_relation_return_types',
 'ide-helper.enforce_nullable_relationships','ide-helper.soft_deletes_force_nullable','ide-helper.post_migrate','tinker.commands','tinker.alias',
 'tinker.dont_alias',);
-        registerArgumentsSet('middleware', 
+        registerArgumentsSet('middleware',
 'web','api','auth','auth.basic','auth.session',
 'cache.headers','can','guest','password.confirm','precognitive',
 'signed','throttle','verified','role','permission',
 'role_or_permission',);
-        registerArgumentsSet('routes', 
+        registerArgumentsSet('routes',
 'sanctum.csrf-cookie','index','register','login','forget-password','reset-password',
 'admission-tests.index','other-mensa-websites','logout','profile.show','profile.update',
 'profile.created-stripe-customer','contacts.send-verify-code','contacts.verify','contacts.set-default','contacts.store',
@@ -2452,7 +2455,7 @@ namespace PHPSTORM_META {
 'admin.navigation-items.store','admin.navigation-items.edit','admin.navigation-items.update','admin.navigation-items.destroy','admin.navigation-items.display-order.update',
 'admin.other-payment-gateways.index','admin.other-payment-gateways.update','admin.other-payment-gateways.active.update','admin.other-payment-gateways.display-order.update','custom-web-page',
 'webhooks.stripe','storage.local',);
-        registerArgumentsSet('views', 
+        registerArgumentsSet('views',
 'app','laravel-exceptions-renderer::components.badge','laravel-exceptions-renderer::components.empty-state','laravel-exceptions-renderer::components.file-with-line','laravel-exceptions-renderer::components.formatted-source',
 'laravel-exceptions-renderer::components.frame','laravel-exceptions-renderer::components.frame-code','laravel-exceptions-renderer::components.header','laravel-exceptions-renderer::components.http-method','laravel-exceptions-renderer::components.icons.alert',
 'laravel-exceptions-renderer::components.icons.check','laravel-exceptions-renderer::components.icons.chevron-left','laravel-exceptions-renderer::components.icons.chevron-right','laravel-exceptions-renderer::components.icons.chevrons-down-up','laravel-exceptions-renderer::components.icons.chevrons-left',
@@ -2466,7 +2469,7 @@ namespace PHPSTORM_META {
 'laravel-exceptions::minimal','notifications::email','pagination::bootstrap-4','pagination::bootstrap-5','pagination::default',
 'pagination::semantic-ui','pagination::simple-bootstrap-4','pagination::simple-bootstrap-5','pagination::simple-default','pagination::simple-tailwind',
 'pagination::tailwind',);
-        registerArgumentsSet('translations', 
+        registerArgumentsSet('translations',
 'auth.failed','auth.password','auth.throttle','pagination.previous','pagination.next',
 'passwords.reset','passwords.sent','passwords.throttled','passwords.token','passwords.user',
 'validation.accepted','validation.accepted_if','validation.active_url','validation.after','validation.after_or_equal',
@@ -2497,7 +2500,7 @@ namespace PHPSTORM_META {
 'validation.size.string','validation.starts_with','validation.string','validation.timezone','validation.unique',
 'validation.uploaded','validation.uppercase','validation.url','validation.ulid','validation.uuid',
 'validation.custom.attribute-name.rule-name',);
-        registerArgumentsSet('env', 
+        registerArgumentsSet('env',
 'APP_NAME','APP_ENV','APP_KEY','APP_DEBUG','APP_TIMEZONE',
 'APP_PORT','APP_URL','APP_LOCALE','APP_FALLBACK_LOCALE','APP_FAKER_LOCALE',
 'APP_MAINTENANCE_DRIVER','PHP_CLI_SERVER_WORKERS','BCRYPT_ROUNDS','LOG_CHANNEL','LOG_STACK',
@@ -2507,12 +2510,12 @@ namespace PHPSTORM_META {
 'QUEUE_CONNECTION','CACHE_STORE','CACHE_PREFIX','MEMCACHED_HOST','REDIS_CLIENT',
 'REDIS_HOST','REDIS_PASSWORD','REDIS_PORT','MAIL_MAILER','MAIL_HOST',
 'MAIL_PORT','MAIL_USERNAME','MAIL_PASSWORD','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS',
-'MAIL_FROM_NAME','ADMISSION_TEST_QUOTA_VALIDITY_MONTHS','TWILIO_AUTH_SID','TWILIO_AUTH_TOKEN','TWILIO_WHATSAPP_FROM',
+'MAIL_FROM_NAME','EXTEND_ADMISSION_TEST_QUOTA_EXPIRED_DATE_WHEN_AFTER_THAN', 'EXTEND_ADMISSION_TEST_QUOTA_EXPIRED_DATE_TO','TWILIO_AUTH_SID','TWILIO_AUTH_TOKEN','TWILIO_WHATSAPP_FROM',
 'TWILIO_WHATSAPP_VERIFICATION_CODE_TEMPLATE_ID','TWILIO_WHATSAPP_NEW_PASSWORD_TEMPLATE_ID','STRIPE_PUBLIC_KEY','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_KEY',
 'STRIPE_TRANSACTION_LIFETIME','STRIPE_WEBHOOK_LIFETIME','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY','AWS_DEFAULT_REGION',
 'AWS_BUCKET','AWS_USE_PATH_STYLE_ENDPOINT','VITE_APP_NAME','VITE_APP_DESCRIPTION','VITE_SESSION_LIFETIME',
 'VITE_APP_URL','VITE_APP_TIMEZONE',);
-        
+
                 expectedArguments(\Illuminate\Support\Facades\Gate::has(), 0, argumentsSet('auth'));
     expectedArguments(\Illuminate\Support\Facades\Gate::allows(), 0, argumentsSet('auth'));
     expectedArguments(\Illuminate\Support\Facades\Gate::denies(), 0, argumentsSet('auth'));
@@ -2576,5 +2579,5 @@ namespace PHPSTORM_META {
                 expectedArguments(\Illuminate\Contracts\Translation\Translator::get(), 0, argumentsSet('translations'));
                 expectedArguments(\env(), 0, argumentsSet('env'));
                 expectedArguments(\Illuminate\Support\Env::get(), 0, argumentsSet('env'));
-            
+
 }
