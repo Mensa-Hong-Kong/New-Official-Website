@@ -68,7 +68,6 @@ Please read laravel official documents:
 #### stage 1 permission system, nav, custom web page and admission test
 
 - move the project checklist to github project or jira
-- install laravel-ide-helper
 - fix wrong type 'parent::setUp()' to 'parent::setup()'
 - change admission test quota validity months from config to inside product table and order table and add extend admission test quota time config
 - admission test order show add schedule and reschedule function, add bypass expired function and add unit tests
