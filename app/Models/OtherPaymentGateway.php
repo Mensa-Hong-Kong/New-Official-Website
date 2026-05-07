@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
  * @property-read int|null $admission_test_orders_count
- * @property-read mixed $type
+ * @property-read string $type
  *
  * @method static \Database\Factories\OtherPaymentGatewayFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway newModelQuery()
@@ -52,7 +52,7 @@ class OtherPaymentGateway extends Model
     protected function type(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): string {
                 return 'Manual Handling';
             }
         );

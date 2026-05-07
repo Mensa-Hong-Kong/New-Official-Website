@@ -40,10 +40,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
- * @property-read mixed $adorned_name
- * @property-read mixed $age
- * @property-read mixed $age_for_psychology
- * @property-read mixed $can_edit_passport_information
+ * @property-read string $adorned_name
+ * @property-read int|float $age
+ * @property-read int|float $age_for_psychology
+ * @property-read bool $can_edit_passport_information
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $contactVerifications
  * @property-read int|null $contact_verifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $contacts
@@ -53,13 +53,13 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $emails
  * @property-read int|null $emails_count
  * @property-read \App\Models\Gender|null $gender
- * @property-read mixed $has_other_same_passport_user_attended_admission_test
- * @property-read mixed $has_other_same_passport_user_joined_future_test
- * @property-read mixed $has_qualification_of_membership
- * @property-read mixed $has_same_passport_already_qualification_of_membership
+ * @property-read bool $has_other_same_passport_user_attended_admission_test
+ * @property-read bool $has_other_same_passport_user_joined_future_test
+ * @property-read bool $has_qualification_of_membership
+ * @property-read bool $has_same_passport_already_qualification_of_membership
  * @property-read \App\Models\AdmissionTest|null $lastAdmissionTest
  * @property-read \App\Models\AdmissionTestOrder|null $lastAdmissionTestOrder
- * @property-read mixed $last_attended_admission_test_of_other_same_passport_user
+ * @property-read \App\Models\AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
  * @property-read \App\Models\UserLoginLog|null $lastLoginLog
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserLoginLog> $loginLogs
  * @property-read int|null $login_logs_count
@@ -76,7 +76,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read \App\Models\PassportType|null $passportType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ModulePermission> $permissions
  * @property-read int|null $permissions_count
- * @property-read mixed $preferred_name
+ * @property-read string $preferred_name
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PriorEvidenceOrder> $priorEvidenceOrders
  * @property-read int|null $prior_evidence_orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $proctorTests
@@ -170,10 +170,11 @@ class User extends Authenticatable
 
     protected function adornedName(): Attribute
     {
-        $member = $this->member;
+        $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($member) {
+            get: function (mixed $value, array $attributes) use ($user): string {
+                $member = $user->member;
                 $name = [
                     '1' => $attributes['given_name'],
                     '4' => $attributes['family_name'],
@@ -202,7 +203,7 @@ class User extends Authenticatable
     protected function preferredName(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): string {
                 $name = [
                     '1' => $attributes['given_name'],
                     '3' => $attributes['family_name'],
@@ -227,7 +228,7 @@ class User extends Authenticatable
         $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
+            get: function (mixed $value, array $attributes) use ($user): float|int {
                 return $user->countAge(now());
             }
         );
@@ -252,7 +253,7 @@ class User extends Authenticatable
         $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
+            get: function (mixed $value, array $attributes) use ($user): float|int {
                 return $user->countAgeForPsychology(now());
             }
         );
@@ -261,7 +262,7 @@ class User extends Authenticatable
     public function hasOtherSamePassportUserJoinedFutureTest(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): bool {
                 return User::whereNot('id', $this->id)
                     ->where('passport_type_id', $attributes['passport_type_id'])
                     ->where('passport_number', $attributes['passport_number'])
@@ -279,7 +280,7 @@ class User extends Authenticatable
         $table = $this->getTable();
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($table) {
+            get: function (mixed $value, array $attributes) use ($table): ?AdmissionTest {
                 return AdmissionTest::whereHas(
                     'candidates', function ($query) use ($attributes, $table) {
                         $query->where('passport_number', $attributes['passport_number'])
@@ -298,7 +299,7 @@ class User extends Authenticatable
         $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
+            get: function (mixed $value, array $attributes) use ($user): bool {
                 return (bool) $user->lastAttendedAdmissionTestOfOtherSamePassportUser;
             }
         );
@@ -498,7 +499,7 @@ class User extends Authenticatable
         $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
+            get: function (mixed $value, array $attributes) use ($user): bool {
                 return $user->member || $user->passedAdmissionTest ||
                     $user->acceptedPriorEvidence || $user->memberTransfers()
                         ->where('is_accepted', true)
@@ -510,7 +511,7 @@ class User extends Authenticatable
     public function hasSamePassportAlreadyQualificationOfMembership(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): bool {
                 return User::where('passport_type_id', $attributes['passport_type_id'])
                     ->where('passport_number', $attributes['passport_number'])
                     ->where(
@@ -539,7 +540,7 @@ class User extends Authenticatable
         $user = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($user) {
+            get: function (mixed $value, array $attributes) use ($user): bool {
                 return ! $user->lastAdmissionTest()
                     ->where(
                         function ($query) {
