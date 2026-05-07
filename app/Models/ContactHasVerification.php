@@ -5,6 +5,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $contact_id
+ * @property \App\Models\UserHasContact|null $contact
+ * @property string $type
+ * @property string|null $code
+ * @property int $tried_time
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property \Illuminate\Support\Carbon|null $verified_at
+ * @property \Illuminate\Support\Carbon|null $expired_at
+ * @property int $creator_id
+ * @property string $creator_ip
+ * @property int $middleware_should_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereContact($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereCreatorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereCreatorIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereExpiredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereMiddlewareShouldCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereTriedTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereVerifiedAt($value)
+ * @mixin \Eloquent
+ */
 class ContactHasVerification extends Model
 {
     use HasFactory;

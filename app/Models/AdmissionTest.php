@@ -8,6 +8,47 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Kyslik\ColumnSortable\Sortable;
 
+/**
+ * @property int $id
+ * @property int $type_id
+ * @property \Illuminate\Support\Carbon $testing_at
+ * @property \Illuminate\Support\Carbon|null $expect_end_at
+ * @property int|null $location_id
+ * @property int|null $address_id
+ * @property int|null $maximum_candidates
+ * @property bool $is_free
+ * @property bool $is_public
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Address|null $address
+ * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $candidates
+ * @property-read int|null $candidates_count
+ * @property-read mixed $current_user_is_proctor
+ * @property-read mixed $in_testing_time_range
+ * @property-read \App\Models\Location|null $location
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $proctors
+ * @property-read int|null $proctors_count
+ * @property-read \App\Models\AdmissionTestType|null $type
+ * @method static \Database\Factories\AdmissionTestFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest sortable($defaultParameters = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereAddressId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereAvailable()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereExpectEndAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereIsFree($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereIsPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereMaximumCandidates($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereTestingAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTest whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AdmissionTest extends Model
 {
     use HasFactory, Sortable;

@@ -17,6 +17,101 @@ use Kyslik\ColumnSortable\Sortable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string|null $username
+ * @property string|null $password
+ * @property string|null $family_name
+ * @property string|null $middle_name
+ * @property string|null $given_name
+ * @property int $gender_id
+ * @property int $passport_type_id
+ * @property string|null $passport_number
+ * @property \Illuminate\Support\Carbon $birthday
+ * @property bool $synced_to_stripe
+ * @property int|null $address_id
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\PriorEvidenceResult|null $acceptedPriorEvidence
+ * @property-read \App\Models\Address|null $address
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
+ * @property-read int|null $admission_test_orders_count
+ * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
+ * @property-read int|null $admission_tests_count
+ * @property-read mixed $adorned_name
+ * @property-read mixed $age
+ * @property-read mixed $age_for_psychology
+ * @property-read mixed $can_edit_passport_information
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $contactVerifications
+ * @property-read int|null $contact_verifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $contacts
+ * @property-read int|null $contacts_count
+ * @property-read \App\Models\UserHasContact|null $defaultEmail
+ * @property-read \App\Models\UserHasContact|null $defaultMobile
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $emails
+ * @property-read int|null $emails_count
+ * @property-read \App\Models\Gender|null $gender
+ * @property-read mixed $has_other_same_passport_user_attended_admission_test
+ * @property-read mixed $has_other_same_passport_user_joined_future_test
+ * @property-read mixed $has_qualification_of_membership
+ * @property-read mixed $has_same_passport_already_qualification_of_membership
+ * @property-read \App\Models\AdmissionTest|null $lastAdmissionTest
+ * @property-read \App\Models\AdmissionTestOrder|null $lastAdmissionTestOrder
+ * @property-read mixed $last_attended_admission_test_of_other_same_passport_user
+ * @property-read \App\Models\UserLoginLog|null $lastLoginLog
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserLoginLog> $loginLogs
+ * @property-read int|null $login_logs_count
+ * @property-read \App\Models\Member|null $member
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $memberTransfers
+ * @property-read int|null $member_transfers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $membershipOrders
+ * @property-read int|null $membership_orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $mobiles
+ * @property-read int|null $mobiles_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \App\Models\AdmissionTest|null $passedAdmissionTest
+ * @property-read \App\Models\PassportType|null $passportType
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ModulePermission> $permissions
+ * @property-read int|null $permissions_count
+ * @property-read mixed $preferred_name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PriorEvidenceOrder> $priorEvidenceOrders
+ * @property-read int|null $prior_evidence_orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $proctorTests
+ * @property-read int|null $proctor_tests_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TeamRole> $roles
+ * @property-read int|null $roles_count
+ * @property-read \App\Library\Stripe\Models\StripeCustomer|null $stripe
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User permission($permissions, $without = false)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User role($roles, $guard = null, $without = false)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User sortable($defaultParameters = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAddressId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereBirthday($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFamilyName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGenderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGivenName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereMiddleName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassportNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassportTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSyncedToStripe($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutRole($roles, $guard = null)
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, HasStripeCustomer, Notifiable, Sortable;

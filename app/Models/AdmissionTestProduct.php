@@ -9,6 +9,42 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $option_name
+ * @property int|null $minimum_age
+ * @property int|null $maximum_age
+ * @property string|null $start_at
+ * @property string|null $end_at
+ * @property int $quota
+ * @property string|null $stripe_id
+ * @property bool $synced_to_stripe
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AdmissionTestPrice|null $price
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestPrice> $prices
+ * @property-read int|null $prices_count
+ * @method static \Database\Factories\AdmissionTestProductFactory factory($count = null, $state = [])
+ * @method static Builder<static>|AdmissionTestProduct newModelQuery()
+ * @method static Builder<static>|AdmissionTestProduct newQuery()
+ * @method static Builder<static>|AdmissionTestProduct query()
+ * @method static Builder<static>|AdmissionTestProduct whereCreatedAt($value)
+ * @method static Builder<static>|AdmissionTestProduct whereEndAt($value)
+ * @method static Builder<static>|AdmissionTestProduct whereId($value)
+ * @method static Builder<static>|AdmissionTestProduct whereInAgeRange(int|float $age)
+ * @method static Builder<static>|AdmissionTestProduct whereInDateRange(\Carbon\Carbon $date)
+ * @method static Builder<static>|AdmissionTestProduct whereMaximumAge($value)
+ * @method static Builder<static>|AdmissionTestProduct whereMinimumAge($value)
+ * @method static Builder<static>|AdmissionTestProduct whereName($value)
+ * @method static Builder<static>|AdmissionTestProduct whereOptionName($value)
+ * @method static Builder<static>|AdmissionTestProduct whereQuota($value)
+ * @method static Builder<static>|AdmissionTestProduct whereStartAt($value)
+ * @method static Builder<static>|AdmissionTestProduct whereStripeId($value)
+ * @method static Builder<static>|AdmissionTestProduct whereSyncedToStripe($value)
+ * @method static Builder<static>|AdmissionTestProduct whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AdmissionTestProduct extends Model
 {
     use HasFactory, HasStripeProduct;
