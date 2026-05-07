@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property numeric $price
  * @property int|null $minimum_age
  * @property int|null $maximum_age
+ * @property int|null $quota_validity_months
  * @property int $quota
  * @property string $status
  * @property \Illuminate\Support\Carbon $expired_at
@@ -25,9 +26,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read mixed $has_unused_quota
+ * @property-read bool $has_unused_quota
  * @property-read \App\Models\AdmissionTest|null $lastTest
- * @property-read mixed $quota_expired_on
+ * @property-read \Illuminate\Support\Carbon|null $quota_expired_on
  * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
  * @property-read int|null $tests_count
@@ -69,6 +70,7 @@ class AdmissionTestOrder extends Model
         'minimum_age',
         'maximum_age',
         'quota',
+        'quota_validity_months',
         'status',
         'expired_at',
         'gateway_type',
@@ -119,13 +121,11 @@ class AdmissionTestOrder extends Model
         $order = $this;
 
         return Attribute::make(
-            get: function () use ($order) {
-                $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
-
-                return $quotaValidityMonths ?
+            get: function () use ($order): ?\Illuminate\Support\Carbon {
+                return $order->quota_validity_months ?
                     ($order->lastAttendedTest?->testing_at ?? $order->created_at)
                         ->addMonths(
-                            $quotaValidityMonths +
+                            $order->quota_validity_months +
                                 $order->lastAttendedTest?->type->interval_month
                         ) : null;
             }
@@ -137,7 +137,7 @@ class AdmissionTestOrder extends Model
         $order = $this;
 
         return Attribute::make(
-            get: function () use ($order) {
+            get: function () use ($order): bool {
                 return $order->status === 'succeeded' &&
                     $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
                     (
