@@ -21,6 +21,7 @@
         "twilio/sdk": "^8.3"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^1.1",
         "laravel/pail": "^1.2.2",

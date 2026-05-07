@@ -7,6 +7,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property int $user_id
+ * @property int $number
+ * @property string|null $prefix_name
+ * @property string|null $nickname
+ * @property string|null $suffix_name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $is_active
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $orders
+ * @property-read int|null $orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $transfers
+ * @property-read int|null $transfers_count
+ * @property-read \App\Models\User|null $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereNickname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member wherePrefixName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereSuffixName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Member whereUserId($value)
+ *
+ * @mixin \Eloquent
+ */
 class Member extends Model
 {
     use HasFactory;
