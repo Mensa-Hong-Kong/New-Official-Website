@@ -20,7 +20,7 @@ class SyncAdmissionTestPriceTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         Queue::fake();
         $this->price = AdmissionTestPrice::factory()->create();
         $this->price->product->update(['stripe_id' => 'prod_NZOkxQ8eTZEHwN']);

@@ -25,7 +25,7 @@ class UpdateTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Custom Web Page');
         $this->page = CustomWebPage::factory()->state(['og_image_url' => null])->create();

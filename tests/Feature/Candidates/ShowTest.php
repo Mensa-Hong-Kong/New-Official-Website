@@ -20,7 +20,7 @@ class ShowTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->test = AdmissionTest::factory()->state(['is_public' => true])->create();
     }

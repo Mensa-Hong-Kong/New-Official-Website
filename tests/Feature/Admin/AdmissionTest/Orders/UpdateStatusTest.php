@@ -23,7 +23,7 @@ class UpdateStatusTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->order = AdmissionTestOrder::factory()->state(['status' => 'pending'])->create();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test Order');

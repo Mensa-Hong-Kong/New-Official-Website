@@ -16,7 +16,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         User::factory()->create();
         Notification::fake();
     }

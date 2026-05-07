@@ -16,7 +16,7 @@ class ShowTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->order = AdmissionTestOrder::factory()->create();
     }
 

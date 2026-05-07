@@ -19,7 +19,7 @@ class DeleteTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test Proctor');
         $this->test = AdmissionTest::factory()->create();
