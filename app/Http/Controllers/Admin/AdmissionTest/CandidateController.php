@@ -109,17 +109,17 @@ class CandidateController extends Controller implements HasMiddleware
                     ) {
                         abort(409, "The candidate has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now).");
                     } elseif (
-                        $user->lastSucceededAdmissionTestOrder &&
-                        $user->lastSucceededAdmissionTestOrder->tests()->where('test_id', $test->id)->exists()
+                        $user->lastAdmissionTestOrder &&
+                        $user->lastAdmissionTestOrder->tests()->where('test_id', $test->id)->exists()
                     ) {
                         if (
-                            $user->lastSucceededAdmissionTestOrder->minimum_age &&
-                            $user->lastSucceededAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
+                            $user->lastAdmissionTestOrder->minimum_age &&
+                            $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                         ) {
                             abort(409, 'The candidate age less than the last order age limit.');
                         } elseif (
-                            $user->lastSucceededAdmissionTestOrder->maximum_age &&
-                            $user->lastSucceededAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
+                            $user->lastAdmissionTestOrder->maximum_age &&
+                            $user->lastAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                         ) {
                             abort(409, 'The candidate age greater than the last order age limit.');
                         }
@@ -178,7 +178,7 @@ class CandidateController extends Controller implements HasMiddleware
             $return['is_free'] = false;
             $admissionTest->candidates()->attach(
                 $request->user->id,
-                ['order_id' => $request->user->lastSucceededAdmissionTestOrder->id]
+                ['order_id' => $request->user->lastAdmissionTestOrder->id]
             );
         }
         switch ($request->function) {

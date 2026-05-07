@@ -41,8 +41,8 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     if (
                         ! $admissionTest->is_free && ! $user->stripe && (
-                            ! $user->lastSucceededAdmissionTestOrder?->hasUnusedQuota ||
-                            $user->lastSucceededAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                            ! $user->lastAdmissionTestOrder?->hasUnusedQuota ||
+                            $user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
                         )
                     ) {
                         return $errorReturn->withErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
@@ -76,16 +76,16 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
                     if (! $admissionTest->is_free) {
-                        if ($user->lastSucceededAdmissionTestOrder?->hasUnusedQuota) {
+                        if ($user->lastAdmissionTestOrder?->hasUnusedQuota) {
                             if (
-                                $user->lastSucceededAdmissionTestOrder->minimum_age &&
-                                $user->lastSucceededAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
+                                $user->lastAdmissionTestOrder->minimum_age &&
+                                $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
                             }
                             if (
-                                $user->lastSucceededAdmissionTestOrder->maximum_age &&
-                                $user->lastSucceededAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastSucceededAdmissionTestOrder->created_at))
+                                $user->lastAdmissionTestOrder->maximum_age &&
+                                $user->lastAdmissionTestOrder->maximum_age < floor($user->countAge($user->lastAdmissionTestOrder->created_at))
                             ) {
                                 return $errorReturn->withErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
                             }
@@ -120,9 +120,9 @@ class CandidateController extends Controller implements HasMiddleware
                     if (
                         ! $request->route('admission_test')->is_free &&
                         (
-                            ! $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota ||
-                            $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota &&
-                            $request->user()->lastSucceededAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                            ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ||
+                            $request->user()->lastAdmissionTestOrder?->hasUnusedQuota &&
+                            $request->user()->lastAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
                         )
                     ) {
                         if ($request->price_id) {
@@ -227,8 +227,8 @@ class CandidateController extends Controller implements HasMiddleware
     public function create(Request $request, AdmissionTest $admissionTest)
     {
         $user = [
-            'has_unused_quota_admission_test_order' => $request->user()->lastSucceededAdmissionTestOrder?->hasUnusedQuota ? [
-                'quota_expired_on' => $request->user()->lastSucceededAdmissionTestOrder->quotaExpiredOn,
+            'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ? [
+                'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
             ] : null,
             'default_email' => $request->user()->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,

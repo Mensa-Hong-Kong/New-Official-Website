@@ -48,8 +48,8 @@ class PageController extends Controller
             'default_email' => $request->user()?->defaultEmail ? [
                 'contact' => $request->user()->defaultEmail->contact,
             ] : null,
-            'has_unused_quota_admission_test_order' => $request->user()?->lastSucceededAdmissionTestOrder?->hasUnusedQuota ? [
-                'quota_expired_on' => $request->user()->lastSucceededAdmissionTestOrder->quotaExpiredOn,
+            'has_unused_quota_admission_test_order' => $request->user()?->lastAdmissionTestOrder?->hasUnusedQuota ? [
+                'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
             ] : null,
         ];
         $tests = AdmissionTest::joinRelation('type as type')

@@ -65,29 +65,29 @@ class StoreRequest extends FormRequest
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        ! $request->user->lastSucceededAdmissionTestOrder?->hasUnusedQuota
+                        ! $request->user->lastAdmissionTestOrder?->hasUnusedQuota
                     ) {
                         $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->lastSucceededAdmissionTestOrder->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                        $request->user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
                     ) {
                         $fail('The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->lastSucceededAdmissionTestOrder?->hasUnusedQuota &&
-                        $request->user->lastSucceededAdmissionTestOrder->minimum_age &&
-                        $request->user->lastSucceededAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->lastSucceededAdmissionTestOrder->created_at))
+                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                        $request->user->lastAdmissionTestOrder->minimum_age &&
+                        $request->user->lastAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {
                         $fail('The selected user id age less than the last order age limit.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->lastSucceededAdmissionTestOrder?->hasUnusedQuota &&
-                        $request->user->lastSucceededAdmissionTestOrder->maximum_age &&
-                        $request->user->lastSucceededAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->lastSucceededAdmissionTestOrder->created_at))
+                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                        $request->user->lastAdmissionTestOrder->maximum_age &&
+                        $request->user->lastAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {
                         $fail('The selected user id age greater than the last order age limit.');
                     } elseif (! $request->user->defaultEmail && ! $request->user->defaultMobile) {
