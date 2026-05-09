@@ -141,6 +141,7 @@ class OrderController extends BaseController implements HasMiddleware
             'minimum_age' => $request->minimum_age,
             'maximum_age' => $request->maximum_age,
             'quota' => $request->quota,
+            'quota_validity_months' => $request->quota_validity_months,
             'status' => $request->status,
             'expired_at' => $request->status == 'pending' && $request->expired_at ? $request->expired_at : now(),
             'gateway_type' => OtherPaymentGateway::class,

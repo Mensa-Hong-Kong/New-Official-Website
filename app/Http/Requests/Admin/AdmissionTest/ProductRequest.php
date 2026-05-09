@@ -22,6 +22,7 @@ class ProductRequest extends FormRequest
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date',
             'quota' => 'required|integer|min:1|max:255',
+            'quota_validity_months' => 'nullable|integer|min:0|max:255',
         ];
         if ($this->minimum_age && $this->maximum_age) {
             $return['minimum_age'] .= '|lt:maximum_age';
