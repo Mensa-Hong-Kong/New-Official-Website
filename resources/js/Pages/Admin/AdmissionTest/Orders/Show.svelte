@@ -126,6 +126,10 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Quota Validity Months</th>
+                    <td>{order.quota_validity_months ? order.quota_validity_months : 'Infinite'}</td>
+                </tr>
+                <tr>
                     <th>Status</th>
                     <td>
                         {order.status.ucfirst()}

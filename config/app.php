@@ -123,5 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'admissionTestQuotaValidityMonths' => env('ADMISSION_TEST_QUOTA_VALIDITY_MONTHS'),
+    'extendAdmissionTestQuotaExpiredDate' => [
+        'whenAfterThan' => env('EXTEND_ADMISSION_TEST_QUOTA_EXPIRED_DATE_WHEN_AFTER_THAN'),
+        'to' => env('EXTEND_ADMISSION_TEST_QUOTA_EXPIRED_DATE_TO'),
+    ],
 ];

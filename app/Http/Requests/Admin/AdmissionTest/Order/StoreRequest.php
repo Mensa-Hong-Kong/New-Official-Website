@@ -57,6 +57,7 @@ class StoreRequest extends FormRequest
             'minimum_age' => 'nullable|integer|min:1|max:255',
             'maximum_age' => 'nullable|integer|min:1|max:255',
             'quota' => 'required|integer|min:1|max:255',
+            'quota_validity_months' => 'nullable|integer|min:0|max:255',
             'status' => 'required|string|in:pending,succeeded',
             'expired_at' => [
                 'required_if:status,pending', 'date',

@@ -68,7 +68,8 @@ Please read laravel official documents:
 #### stage 1 permission system, nav, custom web page and admission test
 
 - move the project checklist to github project or jira
-- change admission test quota validity months from config to inside product table and order table and add extend admission test quota time config
+- move is admin from user model yo is admin middleware
+- fix unit test coding style
 - admission test order show add schedule and reschedule function, add bypass expired function and add unit tests
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle

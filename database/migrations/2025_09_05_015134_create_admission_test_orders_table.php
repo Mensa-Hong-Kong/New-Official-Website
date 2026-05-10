@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('minimum_age')->nullable();
             $table->unsignedTinyInteger('maximum_age')->nullable();
             $table->unsignedTinyInteger('quota')->default(2);
+            $table->unsignedTinyInteger('quota_validity_months')->nullable();
             $table->enum('status', ['pending', 'canceled', 'failed', 'expired', 'succeeded', 'partial refunded', 'full refunded']);
             $table->dateTime('expired_at')->useCurrent();
             $table->string('gateway_type');

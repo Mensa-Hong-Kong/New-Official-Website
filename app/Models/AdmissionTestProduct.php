@@ -59,6 +59,7 @@ class AdmissionTestProduct extends Model
         'start_at',
         'end_at',
         'quota',
+        'quota_validity_months',
         'stripe_id',
         'synced_to_stripe',
     ];

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property numeric $price
  * @property int|null $minimum_age
  * @property int|null $maximum_age
+ * @property int|null $quota_validity_months
  * @property int $quota
  * @property string $status
  * @property \Illuminate\Support\Carbon $expired_at
@@ -25,9 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read mixed $has_unused_quota
+ * @property-read bool $has_unused_quota
  * @property-read \App\Models\AdmissionTest|null $lastTest
- * @property-read mixed $quota_expired_on
+ * @property-read \Carbon\Carbon|null $quota_expired_on
  * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
  * @property-read int|null $tests_count
@@ -69,6 +71,7 @@ class AdmissionTestOrder extends Model
         'minimum_age',
         'maximum_age',
         'quota',
+        'quota_validity_months',
         'status',
         'expired_at',
         'gateway_type',
@@ -119,15 +122,28 @@ class AdmissionTestOrder extends Model
         $order = $this;
 
         return Attribute::make(
-            get: function () use ($order) {
-                $quotaValidityMonths = config('app.admissionTestQuotaValidityMonths', 0);
-
-                return $quotaValidityMonths ?
-                    ($order->lastAttendedTest?->testing_at ?? $order->created_at)
+            get: function () use ($order): ?Carbon {
+                if ($order->quota_validity_months) {
+                    $date = ($order->lastAttendedTest->testing_at ?? $order->created_at)
                         ->addMonths(
-                            $quotaValidityMonths +
-                                $order->lastAttendedTest?->type->interval_month
-                        ) : null;
+                            $order->quota_validity_months +
+                                ($order->lastAttendedTest->type->interval_month ?? 0)
+                        )->endOfDay();
+                    $extendConfig = config('app.extendAdmissionTestQuotaExpiredDate');
+                    if (
+                        $extendConfig['whenAfterThan'] &&
+                        $extendConfig['to']
+                    ) {
+                        $to = new Carbon($extendConfig['to'])->endOfDay();
+                        if ($date->between(new Carbon($extendConfig['whenAfterThan'])->startOfDay(), $to)) {
+                            return $to;
+                        }
+                    }
+
+                    return $date;
+                }
+
+                return null;
             }
         );
     }
@@ -137,8 +153,8 @@ class AdmissionTestOrder extends Model
         $order = $this;
 
         return Attribute::make(
-            get: function () use ($order) {
-                return $order->status === 'succeeded' &&
+            get: function () use ($order): bool {
+                return in_array($order->status, ['succeeded', 'partial refunded', 'full refunded']) &&
                     $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
                     (
                         ! $order->quotaExpiredOn ||

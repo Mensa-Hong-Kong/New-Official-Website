@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
  * @property bool $is_default
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read mixed $is_verified
+ * @property-read bool $is_verified
  * @property-read \App\Models\ContactHasVerification|null $lastVerification
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
@@ -124,7 +124,7 @@ class UserHasContact extends Model
         $lastVerification = $this->lastVerification;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($lastVerification) {
+            get: function (mixed $value, array $attributes) use ($lastVerification): bool {
                 return $lastVerification &&
                     $lastVerification->verified_at &&
                     ! $lastVerification->expired_at;

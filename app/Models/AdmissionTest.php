@@ -24,8 +24,8 @@ use Kyslik\ColumnSortable\Sortable;
  * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $candidates
  * @property-read int|null $candidates_count
- * @property-read mixed $current_user_is_proctor
- * @property-read mixed $in_testing_time_range
+ * @property-read bool $current_user_is_proctor
+ * @property-read bool $in_testing_time_range
  * @property-read \App\Models\Location|null $location
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $proctors
  * @property-read int|null $proctors_count
@@ -107,7 +107,7 @@ class AdmissionTest extends Model
     protected function inTestingTimeRange(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): bool {
                 return $attributes['testing_at'] <= now()->addHours(2) &&
                     $attributes['expect_end_at'] >= now()->subHour();
             }
@@ -129,7 +129,7 @@ class AdmissionTest extends Model
         $test = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($test) {
+            get: function (mixed $value, array $attributes) use ($test): bool {
                 return $test->proctors()
                     ->where('user_id', request()->user()->id)
                     ->exists();

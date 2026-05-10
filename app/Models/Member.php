@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $suffix_name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read mixed $is_active
+ * @property-read bool $is_active
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $orders
  * @property-read int|null $orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $transfers
@@ -83,7 +83,7 @@ class Member extends Model
         $member = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($member) {
+            get: function (mixed $value, array $attributes) use ($member): bool {
                 $thisYear = now()->year;
 
                 return $member->orders()

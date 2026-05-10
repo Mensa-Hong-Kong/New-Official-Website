@@ -44,6 +44,7 @@ class ProductController extends Controller implements HasMiddleware
             'start_at' => $request->start_at,
             'end_at' => $request->end_at,
             'quota' => $request->quota,
+            'quota_validity_months' => $request->quota_validity_months,
         ]);
         AdmissionTestPrice::create([
             'product_id' => $product->id,
@@ -87,6 +88,7 @@ class ProductController extends Controller implements HasMiddleware
             'start_at' => $request->start_at,
             'end_at' => $request->end_at,
             'quota' => $request->quota,
+            'quota_validity_months' => $request->quota_validity_months,
         ]);
 
         return [
@@ -98,6 +100,7 @@ class ProductController extends Controller implements HasMiddleware
             'start_at' => $product->start_at,
             'end_at' => $product->end_at,
             'quota' => $product->quota,
+            'quota_validity_months' => $product->quota_validity_months,
         ];
     }
 }

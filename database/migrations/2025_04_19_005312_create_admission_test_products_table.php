@@ -20,6 +20,7 @@ return new class extends Migration
             $table->dateTime('start_at')->nullable();
             $table->dateTime('end_at')->nullable();
             $table->unsignedTinyInteger('quota')->default(2);
+            $table->unsignedTinyInteger('quota_validity_months')->nullable();
             $table->string('stripe_id')->nullable();
             $table->boolean('synced_to_stripe')->default(false);
             $table->timestamps();

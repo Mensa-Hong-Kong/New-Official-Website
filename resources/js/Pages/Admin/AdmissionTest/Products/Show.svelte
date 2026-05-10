@@ -19,6 +19,7 @@
         startAt: initProduct.start_at ?? '',
         endAt: initProduct.end_at ?? '',
         quota: initProduct.quota,
+        quotaValidityMonths: initProduct.quota_validity_months,
     });
     let inputs = $state({});
     let feedbacks = $state({
@@ -29,6 +30,7 @@
         startAt: '',
         endAt: '',
         quota: '',
+        quotaValidityMonths: '',
     });
 
     function close() {
@@ -40,6 +42,7 @@
         inputs.startAt.value = product.startAt;
         inputs.endAt.value = product.endAt;
         inputs.quota.value = product.quota;
+        inputs.quotaValidityMonths.value = product.quotaValidityMonths;
         for(let key in feedbacks) {
             feedbacks[key] = '';
         }
@@ -102,6 +105,13 @@
         } else if(inputs.quota.validity.rangeOverflow) {
             feedbacks.quota = `The quota field must not be greater than ${inputs.quota.max}.`;
         }
+        if(inputs.quotaValidityMonths.value) {
+            if(inputs.quotaValidityMonths.validity.rangeUnderflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must be at least ${inputs.quotaValidityMonths.min}.`;
+            } else if(inputs.quotaValidityMonths.validity.rangeOverflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must not be greater than ${inputs.quotaValidityMonths.max}.`;
+            }
+        }
         return hasError();
     }
 
@@ -114,6 +124,7 @@
         product.startAt = response.data.start_at ?? '';
         product.endAt = response.data.end_at ?? '';
         product.quota = response.data.quota;
+        product.quotaValidityMonths = response.data.quota_validity_months;
         close();
         updating = false;
         submitting = false;
@@ -144,6 +155,9 @@
                         break;
                     case 'quota':
                         feedbacks.quota = message;
+                        break;
+                    case 'quota_validity_months':
+                        feedbacks.quotaValidityMonths = message;
                         break;
                     default:
                         alert(`Undefine Feedback Key: ${key}\nMessage: ${message}`);
@@ -178,6 +192,9 @@
                     }
                     if(inputs.endAt.value) {
                         data['end_at'] = inputs.endAt.value;
+                    }
+                    if(inputs.quotaValidityMonths.value) {
+                        data['quota_validity_months'] = inputs.quotaValidityMonths.value;
                     }
                     post(
                         route(
@@ -287,12 +304,23 @@
                     <tr>
                         <th>Quota</th>
                         <td>
-                            <span  hidden="{editing}">{product.quota}</span>
+                            <span hidden="{editing}">{product.quota}</span>
                             <Input type="number-local" name="quota" placeholder="quota"
                                 step="1" min="1" max="255" required disabled={updating} hidden={! editing}
                                 feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
                                 invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
                                 bind:inner={inputs.quota} value={product.quota} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Quota Validity Months</th>
+                        <td>
+                            <span hidden="{editing}">{product.quotaValidityMonths ? product.quotaValidityMonths : 'Infinite'}</span>
+                            <Input type="number-local" name="quota_validity_months" placeholder="quota validity months"
+                                step="1" min="0" max="255" disabled={updating} hidden={! editing}
+                                feedback={feedbacks.quotaValidityMonths} valid={feedbacks.quotaValidityMonths == 'Looks good!'}
+                                invalid={feedbacks.quotaValidityMonths != '' && feedbacks.quotaValidityMonths != 'Looks good!'}
+                                bind:inner={inputs.quotaValidityMonths} value={product.quotaValidityMonths} />
                         </td>
                     </tr>
                 </tbody>

@@ -17,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $candidate
- * @property-read mixed $has_result
- * @property-read mixed $is_free
+ * @property-read bool $has_result
+ * @property-read bool $is_free
  * @property-read \App\Models\AdmissionTest $test
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate newModelQuery()
@@ -67,7 +67,7 @@ class AdmissionTestHasCandidate extends Pivot
     public function isFree(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): bool {
                 return ! $attributes['order_id'];
             }
         );
@@ -76,7 +76,7 @@ class AdmissionTestHasCandidate extends Pivot
     public function hasResult(): Attribute
     {
         return Attribute::make(
-            get: function (mixed $value, array $attributes) {
+            get: function (mixed $value, array $attributes): bool {
                 return $attributes['is_pass'] !== null;
             }
         );
