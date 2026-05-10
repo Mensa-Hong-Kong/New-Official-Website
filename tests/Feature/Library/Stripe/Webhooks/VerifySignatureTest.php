@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Library\Stripe\Webhooks;
 
-use App\Library\Stripe\Http\Middleware\Webhocks\VerifySignature;
+use App\Library\Stripe\Http\Middleware\Webhooks\VerifySignature;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -23,26 +23,25 @@ class VerifySignatureTest extends TestCase
         $this->request = new Request(content: 'Signed Body');
     }
 
-    public function withTimestamp($timestamp)
+    // string just for testing fail case
+    public function withTimestamp(int|string $timestamp): void
     {
         $this->timestamp = $timestamp;
     }
 
-    public function withSignature($signature)
+    public function withSignature(string $signature): void
     {
         $this->request->headers->set('Stripe-Signature', "t={$this->timestamp},v1=$signature");
-
-        return $this;
     }
 
-    private function sign($payload, $secret)
+    private function sign(string $payload, string $secret): string
     {
         return hash_hmac('sha256', "{$this->timestamp}.$payload", $secret);
     }
 
-    public function withSignedSignature($secret)
+    public function withSignedSignature(string $secret): void
     {
-        return $this->withSignature(
+        $this->withSignature(
             $this->sign(
                 $this->request->getContent(),
                 $secret
@@ -50,7 +49,7 @@ class VerifySignatureTest extends TestCase
         );
     }
 
-    public function test_response_is_received_when_secret_matches()
+    public function test_response_is_received_when_secret_matches(): void
     {
         $this->withTimestamp(time());
         $this->withSignedSignature('secret');
@@ -66,7 +65,7 @@ class VerifySignatureTest extends TestCase
         $this->assertEquals('OK', $response->content());
     }
 
-    public function test_response_is_received_when_timestamp_is_within_tolerance_zone()
+    public function test_response_is_received_when_timestamp_is_within_tolerance_zone(): void
     {
         $this->withTimestamp(time() - 300);
         $this->withSignedSignature('secret');
@@ -82,7 +81,7 @@ class VerifySignatureTest extends TestCase
         $this->assertEquals('OK', $response->content());
     }
 
-    public function test_app_aborts_when_timestamp_is_too_old()
+    public function test_app_aborts_when_timestamp_is_too_old(): void
     {
         $this->withTimestamp(time() - 301);
         $this->withSignedSignature('secret');
@@ -96,7 +95,7 @@ class VerifySignatureTest extends TestCase
         );
     }
 
-    public function test_app_aborts_when_timestamp_is_invalid()
+    public function test_app_aborts_when_timestamp_is_invalid(): void
     {
         $this->withTimestamp('invalid');
         $this->withSignedSignature('secret');
@@ -110,7 +109,7 @@ class VerifySignatureTest extends TestCase
         );
     }
 
-    public function test_app_aborts_when_secret_does_not_match()
+    public function test_app_aborts_when_secret_does_not_match(): void
     {
         $this->withTimestamp(time());
         $this->withSignature('fail');
@@ -124,7 +123,7 @@ class VerifySignatureTest extends TestCase
         );
     }
 
-    public function test_app_aborts_when_no_secret_was_provided()
+    public function test_app_aborts_when_no_secret_was_provided(): void
     {
         $this->withTimestamp(time());
         $this->withSignedSignature('');
