@@ -139,8 +139,10 @@ class AdmissionTestOrder extends Model
                             return $to;
                         }
                     }
+
                     return $date;
                 }
+
                 return null;
             }
         );
