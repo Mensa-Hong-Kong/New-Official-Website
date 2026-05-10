@@ -6,7 +6,7 @@ use App\Models\NavigationItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\NavigationItem>
  */
 class NavigationItemFactory extends Factory
 {

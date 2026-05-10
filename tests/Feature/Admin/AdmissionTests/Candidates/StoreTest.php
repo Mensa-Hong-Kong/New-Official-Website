@@ -21,9 +21,9 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
