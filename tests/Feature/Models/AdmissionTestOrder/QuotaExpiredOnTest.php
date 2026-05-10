@@ -5,24 +5,27 @@ namespace Tests\Feature\Models\AdmissionTestOrder;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class QuotaExpiredOnTest extends TestCase
 {
-    public function test_quota_validity_months_is_null()
+    use RefreshDatabase;
+
+    public function test_quota_validity_months_is_null(): void
     {
         $order = AdmissionTestOrder::factory()->state(['quota_validity_months' => null])->create();
         $this->assertNull($order->quota_expired_on);
     }
 
-    public function test_order_have_no_attended_tests_and_extend_expired_date_config_is_null()
+    public function test_order_have_no_attended_tests_and_extend_expired_date_config_is_null(): void
     {
         $order = AdmissionTestOrder::factory()->state(['quota_validity_months' => 3])->create();
         $expectedExpiredDate = $order->created_at->addMonths(3)->endOfDay();
         $this->assertTrue($order->quota_expired_on->equalTo($expectedExpiredDate));
     }
 
-    public function test_order_has_attended_tests_and_extend_expired_date_config_is_null()
+    public function test_order_has_attended_tests_and_extend_expired_date_config_is_null(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'quota_validity_months' => 3,
@@ -42,7 +45,7 @@ class QuotaExpiredOnTest extends TestCase
         $this->assertTrue($order->quota_expired_on->equalTo($expectedExpiredDate));
     }
 
-    public function test_expired_date_config_is_between_extend_expired_date_config_when_after_than_and_to()
+    public function test_expired_date_config_is_between_extend_expired_date_config_when_after_than_and_to(): void
     {
         $expectedExpiredDate = now()->addDays(20);
         config()->set('app.extendAdmissionTestQuotaExpiredDate', [
@@ -59,7 +62,7 @@ class QuotaExpiredOnTest extends TestCase
         );
     }
 
-    public function test_calculated_expired_date_is_not_between_extend_expired_date_config_when_after_than_and_to()
+    public function test_calculated_expired_date_is_not_between_extend_expired_date_config_when_after_than_and_to(): void
     {
         config()->set('app.extendAdmissionTestQuotaExpiredDate', [
             'whenAfterThan' => now()->addDays(10)->toDateString(),
