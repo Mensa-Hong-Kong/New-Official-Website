@@ -14,7 +14,7 @@ class HasUnusedQuotaTest extends TestCase
     public function test_order_status_is_not_paid(): void
     {
         $order = AdmissionTestOrder::factory()->create([
-            'status' => fake()->randomElement(['pending', 'failed', 'cancelled', 'expired']),
+            'status' => fake()->randomElement(['pending', 'failed', 'canceled', 'expired']),
         ]);
 
         $this->assertFalse($order->has_unused_quota);
