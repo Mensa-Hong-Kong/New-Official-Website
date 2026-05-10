@@ -68,7 +68,7 @@ Please read laravel official documents:
 #### stage 1 permission system, nav, custom web page and admission test
 
 - move the project checklist to github project or jira
-- fix unit test coding style
+- fix calling model calculate date have no clone than pollute the origin data
 - admission test order show add schedule and reschedule function, add bypass expired function and add unit tests
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
