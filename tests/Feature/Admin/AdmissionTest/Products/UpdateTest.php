@@ -16,7 +16,7 @@ class UpdateTest extends TestCase
 
     private User $user;
 
-    private AdmissionTestProduct $product;
+    private Model $product;
 
     private array $happyCase = [
         'name' => 'Admission Test',
