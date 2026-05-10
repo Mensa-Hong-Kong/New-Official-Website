@@ -16,6 +16,7 @@
         startAt: '',
         endAt: '',
         quota: '',
+        quotaValidityMonths: '',
         priceName: '',
         price: '',
     });
@@ -73,6 +74,13 @@
         } else if(inputs.quota.validity.rangeOverflow) {
             feedbacks.quota = `The quota field must not be greater than ${inputs.quota.max}.`;
         }
+        if(inputs.quotaValidityMonths.value) {
+            if(inputs.quotaValidityMonths.validity.rangeUnderflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must be at least ${inputs.quotaValidityMonths.min}.`;
+            } else if(inputs.quotaValidityMonths.validity.rangeOverflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must not be greater than ${inputs.quotaValidityMonths.max}.`;
+            }
+        }
         if(inputs.priceName.validity.valueMissing) {
             feedbacks.priceName = 'The price name field is required.';
         } else if(inputs.priceName.validity.tooLong) {
@@ -120,6 +128,9 @@
                     case 'quota':
                         feedbacks.quota = value;
                         break;
+                    case 'quota_validity_months':
+                        feedbacks.quotaValidityMonths = value;
+                        break;
                     case 'price_name':
                         feedbacks.priceName = value;
                         break;
@@ -161,6 +172,9 @@
                     }
                     if(inputs.endAt.value) {
                         data['end_at'] = inputs.endAt.value;
+                    }
+                    if(inputs.quotaValidityMonths.value) {
+                        data['quota_validity_months'] = inputs.quotaValidityMonths.value;
                     }
                     if(inputs.priceName.value) {
                         data['price_name'] = inputs.priceName.value;
@@ -241,6 +255,15 @@
                     feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
                     invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
                     bind:inner={inputs.quota} />
+            </FormGroup>
+        </div>
+        <div class="mb-4 form-outline">
+            <FormGroup floating label="Quota Validity Months">
+                <Input type="number-local" name="quota_validity_months" placeholder="quota validity months"
+                    step=1 min=0 max=255 disabled={creating}
+                    feedback={feedbacks.quotaValidityMonths} valid={feedbacks.quotaValidityMonths == 'Looks good!'}
+                    invalid={feedbacks.quotaValidityMonths != '' && feedbacks.quotaValidityMonths != 'Looks good!'}
+                    bind:inner={inputs.quotaValidityMonths} />
             </FormGroup>
         </div>
         <div class="mb-4 form-outline">

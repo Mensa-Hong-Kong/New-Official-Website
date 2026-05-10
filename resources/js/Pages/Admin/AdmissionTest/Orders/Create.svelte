@@ -15,6 +15,7 @@
         priceName: '',
         price: '',
         quota: '',
+        quotaValidityMonths: '',
         minimumAge: '',
         maximumAge: '',
         status: '',
@@ -39,6 +40,7 @@
             inputs.priceName.value = product.price.name;
             inputs.price.value = product.price.value;
             inputs.quota.value = product.quota;
+            inputs.quotaValidityMonths.value = product.quota_validity_months;
             inputs.minimumAge.value = product.minimum_age;
             inputs.maximumAge.value = product.maximum_age;
         }
@@ -115,6 +117,13 @@
         } else if(inputs.quota.validity.rangeOverflow) {
             feedbacks.quota = `The quota field must not be greater than ${inputs.quota.max}.`;
         }
+        if(inputs.quotaValidityMonths.value) {
+            if(inputs.quotaValidityMonths.validity.rangeUnderflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must be at least ${inputs.quotaValidityMonths.min}.`;
+            } else if(inputs.quotaValidityMonths.validity.rangeOverflow) {
+                feedbacks.quotaValidityMonths = `The quota validity months field must not be greater than ${inputs.quotaValidityMonths.max}.`;
+            }
+        }
         if(inputs.status.validity.valueMissing) {
             feedbacks.status = 'The quota field is required.';
         }
@@ -165,6 +174,9 @@
                     case 'quota':
                         feedbacks.quota = message;
                         break;
+                    case 'quota_validity_months':
+                        feedbacks.quotaValidityMonths = message;
+                        break;
                     case 'expired_at':
                         feedbacks.expiredAt = message;
                         break;
@@ -213,6 +225,9 @@
                     }
                     if(inputs.maximumAge.value) {
                         data['maximum_age'] = inputs.maximumAge.value;
+                    }
+                    if(inputs.quotaValidityMonths.value) {
+                        data['quota_validity_months'] = inputs.quotaValidityMonths.value;
                     }
                     if(statusValue == 'pending') {
                         data['expired_at'] = inputs.expiredAt.value;
@@ -314,6 +329,15 @@
                     feedback={feedbacks.quota} valid={feedbacks.quota == 'Looks good!'}
                     invalid={feedbacks.quota != '' && feedbacks.quota != 'Looks good!'}
                     bind:inner={inputs.quota} />
+            </FormGroup>
+        </div>
+        <div>
+            <FormGroup floating label="Quota Validity Months">
+                <Input type="number" name="quota_validity_months" placeholder="quota validity months"
+                    step=1 min=0 max=255 disabled={creating} readonly={productIDValue !== ''}
+                    feedback={feedbacks.quotaValidityMonths} valid={feedbacks.quotaValidityMonths == 'Looks good!'}
+                    invalid={feedbacks.quotaValidityMonths != '' && feedbacks.quotaValidityMonths != 'Looks good!'}
+                    bind:inner={inputs.quotaValidityMonths} />
             </FormGroup>
         </div>
         <div class="mb-4 form-outline">
