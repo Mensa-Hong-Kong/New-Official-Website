@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
 use App\Notifications\AdmissionTest\Admin\RescheduleAdmissionTest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -21,9 +22,9 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
@@ -31,10 +32,10 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test Candidate');
         $testingAt = now()->addDays(3)->startOfDay();
-        $this->test = AdmissionTest::factory()->state([
+        $this->test = AdmissionTest::factory()->create([
             'testing_at' => $testingAt,
             'expect_end_at' => (clone $testingAt)->addHour(),
-        ])->create();
+        ]);
         $this->test->type->update(['interval_month' => 6]);
         $contact = UserHasContact::factory()
             ->state([
@@ -51,7 +52,7 @@ class StoreTest extends TestCase
         ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route(
@@ -67,7 +68,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_candidate_permission()
+    public function test_have_no_edit_admission_test_candidate_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -90,7 +91,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -106,7 +107,7 @@ class StoreTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_admission_test_testing_date_less_than_2_days()
+    public function test_before_admission_test_testing_date_less_than_2_days(): void
     {
         $this->test->update(['testing_at' => now()->addDays(2)->endOfDay()]);
         $response = $this->actingAs($this->user)->postJson(
@@ -124,7 +125,7 @@ class StoreTest extends TestCase
         $response->assertJson(['message' => 'Cannot add candidate after than before testing date two days.']);
     }
 
-    public function test_missing_user_id()
+    public function test_missing_user_id(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -139,7 +140,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The user id field is required.']);
     }
 
-    public function test_user_id_is_not_integer()
+    public function test_user_id_is_not_integer(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -155,7 +156,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The user id field must be an integer.']);
     }
 
-    public function test_user_id_is_not_exists_on_database()
+    public function test_user_id_is_not_exists_on_database(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -171,7 +172,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
     }
 
-    public function test_user_id_has_already_member()
+    public function test_user_id_has_already_member(): void
     {
         $member = Member::create([
             'user_id' => $this->user->id,
@@ -199,7 +200,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already member.']);
     }
 
-    public function test_user_id_has_already_qualification_for_membership()
+    public function test_user_id_has_already_qualification_for_membership(): void
     {
         Member::create([
             'user_id' => $this->user->id,
@@ -220,7 +221,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
     }
 
-    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
+    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
         $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
@@ -238,7 +239,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id age less than test minimum age limit.']);
     }
 
-    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
+    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
         $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)]);
@@ -256,7 +257,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id age greater than test maximum age limit.']);
     }
 
-    public function test_user_id_already_schedule_this_admission_test()
+    public function test_user_id_already_schedule_this_admission_test(): void
     {
         $this->test->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -273,7 +274,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already schedule this admission test.']);
     }
 
-    public function test_schedule_function_but_user_has_other_admission_test_on_future()
+    public function test_schedule_function_but_user_has_other_admission_test_on_future(): void
     {
         $newTestTestingAt = now()->addDay();
         $test = AdmissionTest::factory()
@@ -296,7 +297,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has already schedule other admission test.']);
     }
 
-    public function test_reschedule_function_but_user_not_have_no_other_admission_test_on_future()
+    public function test_reschedule_function_but_user_not_have_no_other_admission_test_on_future(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -312,7 +313,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id have no scheduled other admission test after than now.']);
     }
 
-    public function test_reschedule_function_but_user_have_other_admission_test_and_after_than_before_testing_time_2_hours_and_have_no_update_present_status()
+    public function test_reschedule_function_but_user_have_other_admission_test_and_after_than_before_testing_time_2_hours_and_have_no_update_present_status(): void
     {
         $newTestTestingAt = now()->addHours(2);
         $test = AdmissionTest::factory()
@@ -335,7 +336,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
     }
 
-    public function test_user_id_of_user_of_passport_has_already_been_qualification_for_membership()
+    public function test_user_id_of_user_of_passport_has_already_been_qualification_for_membership(): void
     {
         $oldTest = AdmissionTest::factory()
             ->state([
@@ -365,7 +366,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account already been qualification for membership.']);
     }
 
-    public function test_user_id_has_other_same_passport_user_account_tested()
+    public function test_user_id_has_other_same_passport_user_account_tested(): void
     {
         $oldTest = AdmissionTest::factory()
             ->state([
@@ -392,7 +393,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id has other same passport user account attended admission test.']);
     }
 
-    public function test_user_id_has_already_been_taken_within_latest_test_interval_months()
+    public function test_user_id_has_already_been_taken_within_latest_test_interval_months(): void
     {
         $oldTest = AdmissionTest::factory()
             ->state([
@@ -414,7 +415,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => "The selected user id has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_user_id_have_no_unused_admission_test_quota_when_is_not_free()
+    public function test_user_id_have_no_unused_admission_test_quota_when_is_not_free(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -429,7 +430,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.']);
     }
 
-    public function test_user_id_have_unused_admission_test_quota_but_quota_expired_before_testing_time_of_this_admission_test_when_is_not_free()
+    public function test_user_id_have_unused_admission_test_quota_but_quota_expired_before_testing_time_of_this_admission_test_when_is_not_free(): void
     {
         AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -451,7 +452,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.']);
     }
 
-    public function test_user_id_unused_quota_admission_test_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age_limit_when_is_not_free()
+    public function test_user_id_unused_quota_admission_test_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age_limit_when_is_not_free(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -473,7 +474,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id age less than the last order age limit.']);
     }
 
-    public function test_user_id_unused_quota_admission_test_order_has_maximum_age_limit_and_user_age_less_than_order_maximum_age_limit_when_is_not_free()
+    public function test_user_id_unused_quota_admission_test_order_has_maximum_age_limit_and_user_age_less_than_order_maximum_age_limit_when_is_not_free(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -495,7 +496,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id age greater than the last order age limit.']);
     }
 
-    public function test_user_id_of_user_have_no_any_default_contact()
+    public function test_user_id_of_user_have_no_any_default_contact(): void
     {
         UserHasContact::first()->delete();
         $response = $this->actingAs($this->user)->postJson(
@@ -512,7 +513,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user must at least has one default contact.']);
     }
 
-    public function test_is_free_field_is_not_boolean()
+    public function test_is_free_field_is_not_boolean(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -528,7 +529,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['is_free' => 'The is free field must be true or false.']);
     }
 
-    public function test_missing_function()
+    public function test_missing_function(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -543,7 +544,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['function' => 'The function field is required.']);
     }
 
-    public function test_function_is_not_string()
+    public function test_function_is_not_string(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -559,7 +560,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['function' => 'The function field must be a string.']);
     }
 
-    public function test_function_is_invalid()
+    public function test_function_is_invalid(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -575,7 +576,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['function' => 'The function field does not exist in schedule, reschedule.']);
     }
 
-    public function test_admission_test_is_fulled()
+    public function test_admission_test_is_fulled(): void
     {
         $user = User::factory()->create();
         $this->test->update(['maximum_candidates' => 1]);
@@ -594,7 +595,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The admission test is fulled.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_have_no_order_and_type_has_minimum_age_limit_and_have_no_maximum_age_limit()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_have_no_order_and_type_has_minimum_age_limit_and_have_no_maximum_age_limit(): void
     {
         Notification::fake();
         $this->test->type->update(['minimum_age' => 20]);
@@ -632,7 +633,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order_type_and_type_has_maximum_age_limit_and_have_no_minimum_age_limit()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_have_no_order_type_and_type_has_maximum_age_limit_and_have_no_minimum_age_limit(): void
     {
         Notification::fake();
         $this->test->type->update(['maximum_age' => 9]);
@@ -675,7 +676,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_have_no_order_and_has_minimum_and_maximum_age_limit()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_have_no_order_and_has_minimum_and_maximum_age_limit(): void
     {
         Notification::fake();
         $this->test->type->update([
@@ -723,7 +724,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_have_no_order()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_have_no_order(): void
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -772,7 +773,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_only_has_all_quota_used_order()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_only_has_all_quota_used_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -824,7 +825,7 @@ class StoreTest extends TestCase
         $this->assertEquals($test->id, $order->tests()->first()->id);
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_only_has_all_quota_used_order()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_only_has_all_quota_used_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -882,7 +883,7 @@ class StoreTest extends TestCase
         $this->assertEquals($test->id, $order->tests()->first()->id);
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -935,7 +936,7 @@ class StoreTest extends TestCase
         $this->assertEquals($test->id, $order->tests()->first()->id);
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_only_has_all_quota_used_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -994,7 +995,7 @@ class StoreTest extends TestCase
         $this->assertEquals($test->id, $order->tests()->first()->id);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_has_unused_quota_order()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_free_and_has_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1036,7 +1037,7 @@ class StoreTest extends TestCase
         $this->assertEquals(0, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_has_unused_quota_order()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_free_and_has_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1084,7 +1085,7 @@ class StoreTest extends TestCase
         $this->assertEquals(0, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_has_unused_quota_order()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_free_and_has_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1133,7 +1134,7 @@ class StoreTest extends TestCase
         $this->assertEquals(0, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_has_unused_quota_order()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_free_and_has_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1188,7 +1189,7 @@ class StoreTest extends TestCase
         $this->assertEquals(0, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_have_no_any_age_limit()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_have_no_any_age_limit(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1229,7 +1230,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_only_has_minimum_age_limit()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_have_no_used_record_order_and_order_only_has_minimum_age_limit(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1278,7 +1279,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_only_has_maximum_age_limit()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_only_has_maximum_age_limit(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1328,7 +1329,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_has_minimum_and_maximum_age_limit()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_have_no_used_record_order_and_order_has_minimum_and_maximum_age_limit(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1385,7 +1386,7 @@ class StoreTest extends TestCase
         $this->assertEquals(1, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1435,7 +1436,7 @@ class StoreTest extends TestCase
         $this->assertEquals(2, $order->tests()->count());
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_is_not_free_and_has_used_record_and_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1491,7 +1492,7 @@ class StoreTest extends TestCase
         $this->assertEquals(2, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
@@ -1542,7 +1543,7 @@ class StoreTest extends TestCase
         $this->assertEquals(2, $order->tests()->count());
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_is_not_free_and_has_used_record_and_unused_quota_order(): void
     {
         $order = AdmissionTestOrder::factory()->state([
             'user_id' => $this->user->id,
