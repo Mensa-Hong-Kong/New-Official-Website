@@ -414,11 +414,6 @@ class User extends Authenticatable
             ->count() >= 5;
     }
 
-    public function isAdmin()
-    {
-        return $this->getAllPermissions()->count() || $this->hasRole('Super Administrator');
-    }
-
     public function member()
     {
         return $this->hasOne(Member::class);

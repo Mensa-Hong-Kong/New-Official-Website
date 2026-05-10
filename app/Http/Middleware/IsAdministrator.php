@@ -15,7 +15,10 @@ class IsAdministrator
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->isAdmin()) {
+        if (
+            $request->user()->getAllPermissions()->count() > 0 ||
+            $request->user()->hasRole('Super Administrator')
+        ) {
             return $next($request);
         }
         abort(403);
