@@ -15,7 +15,7 @@ class ForgetPasswordTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function verified(UserHasContact $contact)
+    private function verified(UserHasContact $contact): void
     {
         ContactHasVerification::create([
             'contact_id' => $contact->id,
@@ -52,7 +52,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertRedirectToRoute('index');
     }
 
-    public function test_missing_passport_type_id()
+    public function test_missing_passport_type_id(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -76,7 +76,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type field is required.']);
     }
 
-    public function test_passport_type_id_is_not_integer()
+    public function test_passport_type_id_is_not_integer(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -101,7 +101,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type id field must be an integer.']);
     }
 
-    public function test_passport_type_id_is_not_exist()
+    public function test_passport_type_id_is_not_exist(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -126,7 +126,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The selected passport type is invalid.']);
     }
 
-    public function test_missing_passport_number()
+    public function test_missing_passport_number(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -150,7 +150,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field is required.']);
     }
 
-    public function test_passport_number_format_not_match()
+    public function test_passport_number_format_not_match(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -175,7 +175,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field format is invalid.']);
     }
 
-    public function test_passport_number_too_short()
+    public function test_passport_number_too_short(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -200,7 +200,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must be at least 8 characters.']);
     }
 
-    public function test_passport_number_too_long()
+    public function test_passport_number_too_long(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -225,7 +225,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must not be greater than 18 characters.']);
     }
 
-    public function test_missing_birthday()
+    public function test_missing_birthday(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -249,7 +249,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['birthday' => 'The birthday field is required.']);
     }
 
-    public function test_birthday_is_not_date()
+    public function test_birthday_is_not_date(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -274,7 +274,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['birthday' => 'The birthday field must be a valid date.']);
     }
 
-    public function test_birthday_too_close()
+    public function test_birthday_too_close(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -300,7 +300,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function test_missing_verified_contact_type()
+    public function test_missing_verified_contact_type(): void
     {
         $contact = '';
         switch (fake()->randomElement(['email', 'mobile'])) {
@@ -323,7 +323,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact_type' => 'The verified contact type field is required.']);
     }
 
-    public function test_verified_contact_type_is_not_string()
+    public function test_verified_contact_type_is_not_string(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -348,7 +348,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact_type' => 'The verified contact type field must be a string.']);
     }
 
-    public function test_verified_contact_type_is_not_in_list()
+    public function test_verified_contact_type_is_not_in_list(): void
     {
         $contact = '';
         switch (fake()->randomElement(['email', 'mobile'])) {
@@ -372,7 +372,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact_type' => 'The selected verified contact type is invalid.']);
     }
 
-    public function test_missing_contact()
+    public function test_missing_contact(): void
     {
         $response = $this->putJson(
             route('reset-password'),
@@ -386,7 +386,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact' => 'The verified contact field is required.']);
     }
 
-    public function test_email_invalid()
+    public function test_email_invalid(): void
     {
         $response = $this->putJson(
             route('reset-password'),
@@ -401,7 +401,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact' => 'The verified contact of email must be a valid email address.']);
     }
 
-    public function test_mobile_not_integer()
+    public function test_mobile_not_integer(): void
     {
         $response = $this->putJson(
             route('reset-password'),
@@ -416,7 +416,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact' => 'The verified contact of mobile must be an integer.']);
     }
 
-    public function test_mobile_too_short()
+    public function test_mobile_too_short(): void
     {
         $response = $this->putJson(
             route('reset-password'),
@@ -431,7 +431,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact' => 'The verified contact of mobile must have at least 5 digits.']);
     }
 
-    public function test_mobile_too_long()
+    public function test_mobile_too_long(): void
     {
         $response = $this->putJson(
             route('reset-password'),
@@ -446,7 +446,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertInvalid(['verified_contact' => 'The verified contact of mobile must not have more than 15 digits.']);
     }
 
-    public function test_account_not_found()
+    public function test_account_not_found(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -477,7 +477,7 @@ class ForgetPasswordTest extends TestCase
         );
     }
 
-    public function test_reset_password_failed_too_many_time_within_24_hours()
+    public function test_reset_password_failed_too_many_time_within_24_hours(): void
     {
         $user = User::factory()->create();
         $contact = UserHasContact::factory()->create();
@@ -505,7 +505,7 @@ class ForgetPasswordTest extends TestCase
         $response->assertJson(['message' => "Too many failed reset password attempts. Please try again later than $failedAt."]);
     }
 
-    public function test_happy_case_when_have_no_failed_record()
+    public function test_happy_case_when_have_no_failed_record(): void
     {
         Notification::fake();
         $user = User::factory()->create();
@@ -528,12 +528,10 @@ class ForgetPasswordTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_reset_password_have_a_lot_of_failed_but_under_limit_within_24_hours()
+    public function test_happy_case_when_reset_password_have_a_lot_of_failed_but_under_limit_within_24_hours(): void
     {
         Notification::fake();
-        $user = User::factory()
-            ->state(['birthday' => now()->subYears(2)->format('Y-m-d')])
-            ->create();
+        $user = User::factory()->create(['birthday' => now()->subYears(2)->format('Y-m-d')]);
         $contact = UserHasContact::factory()->create();
         $this->verified($contact);
         $insert = array_fill(
@@ -563,7 +561,7 @@ class ForgetPasswordTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_reset_password_have_number_of_limit_failed_but_has_one_without_24_hours()
+    public function test_happy_case_when_reset_password_have_number_of_limit_failed_but_has_one_without_24_hours(): void
     {
         Notification::fake();
         $user = User::factory()->create();

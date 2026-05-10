@@ -12,7 +12,7 @@ class EditTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $page;
+    private CustomWebPage $page;
 
     protected function setUp(): void
     {
@@ -20,7 +20,7 @@ class EditTest extends TestCase
         $this->page = CustomWebPage::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -31,7 +31,7 @@ class EditTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_custom_web_page()
+    public function test_have_no_edit_custom_web_page(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -50,7 +50,7 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_custom_web_page_is_not_exist()
+    public function test_custom_web_page_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Custom Web Page');
@@ -63,7 +63,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Custom Web Page');

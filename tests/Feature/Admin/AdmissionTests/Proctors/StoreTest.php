@@ -12,9 +12,9 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
@@ -24,7 +24,7 @@ class StoreTest extends TestCase
         $this->test = AdmissionTest::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route(
@@ -36,7 +36,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_proctor_permission()
+    public function test_have_no_edit_admission_test_proctor_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -55,7 +55,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -67,7 +67,7 @@ class StoreTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_missing_user_id()
+    public function test_missing_user_id(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -78,7 +78,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The user id field is required.']);
     }
 
-    public function test_user_id_is_not_integer()
+    public function test_user_id_is_not_integer(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -90,7 +90,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The user id field must be an integer.']);
     }
 
-    public function test_user_id_is_exists_proctor_for_this_admission_test()
+    public function test_user_id_is_exists_proctor_for_this_admission_test(): void
     {
         $this->test->proctors()->attach($this->user->id);
         $response = $this->actingAs($this->user)->postJson(
@@ -103,7 +103,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The user id has already been taken.']);
     }
 
-    public function test_user_id_is_not_exists_on_database()
+    public function test_user_id_is_not_exists_on_database(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route(
@@ -115,7 +115,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user id is invalid.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->postJson(

@@ -21,7 +21,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         Notification::fake();
     }
 
-    private function verified(UserHasContact $contact)
+    private function verified(UserHasContact $contact): void
     {
         ContactHasVerification::create([
             'contact_id' => $contact->id,
@@ -34,13 +34,13 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         ]);
     }
 
-    public function test_have_no_verify_record()
+    public function test_have_no_verify_record(): void
     {
         $this->assertEquals(0, ContactHasVerification::count());
         (new ClearUnusedAdminVerifiedRecode)();
     }
 
-    private function create_using_user_verify_record()
+    private function create_using_user_verify_record(): void
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
@@ -49,7 +49,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         }
     }
 
-    private function create_unused_user_verify_record()
+    private function create_unused_user_verify_record(): void
     {
         $contact = UserHasContact::factory()->create();
         $contact->sendVerifyCode();
@@ -64,47 +64,50 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         );
     }
 
-    private function create_using_admin_verify_record()
+    private function create_using_admin_verify_record(): UserHasContact
     {
         $contact = UserHasContact::factory()->create();
         $this->verified($contact);
+
+        return $contact;
     }
 
-    private function create_unused_admin_verify_record()
+    private function create_unused_admin_verify_record(): UserHasContact
     {
-        $contact = UserHasContact::factory()->create();
-        $this->verified($contact);
+        $contact = $this->create_using_admin_verify_record();
         $contact->lastVerification()->update(['expired_at' => now()]);
+
+        return $contact;
     }
 
-    public function test_only_has_using_user_verify_record()
+    public function test_only_has_using_user_verify_record(): void
     {
         $this->create_using_user_verify_record();
         (new ClearUnusedAdminVerifiedRecode)();
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_has_unused_user_verify_record()
+    public function test_only_has_unused_user_verify_record(): void
     {
         $this->create_unused_user_verify_record();
         (new ClearUnusedAdminVerifiedRecode)();
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_has_using_admin_verify_record()
+    public function test_only_has_using_admin_verify_record(): void
     {
         $this->create_using_admin_verify_record();
         (new ClearUnusedAdminVerifiedRecode)();
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_has_unused_admin_verify_record()
+    public function test_only_has_unused_admin_verify_record(): void
     {
         (new ClearUnusedAdminVerifiedRecode)();
         $this->assertEquals(0, ContactHasVerification::count());
     }
 
-    public function test_only_has_using_user_verify_record_and_unused_user_verify_record()
+    public function test_only_has_using_user_verify_record_and_unused_user_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_unused_user_verify_record();
@@ -112,7 +115,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_has_using_user_verify_record_and_using_admin_verify_record()
+    public function test_only_has_using_user_verify_record_and_using_admin_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_using_admin_verify_record();
@@ -120,7 +123,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_has_using_user_verify_record_and_unused_admin_verify_record()
+    public function test_only_has_using_user_verify_record_and_unused_admin_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_unused_admin_verify_record();
@@ -128,7 +131,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_has_unused_user_verify_record_and_using_admin_verify_record()
+    public function test_only_has_unused_user_verify_record_and_using_admin_verify_record(): void
     {
         $this->create_unused_user_verify_record();
         $this->create_using_admin_verify_record();
@@ -136,7 +139,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_has_unused_user_verify_record_and_unused_admin_verify_record()
+    public function test_only_has_unused_user_verify_record_and_unused_admin_verify_record(): void
     {
         $this->create_unused_user_verify_record();
         $this->create_unused_admin_verify_record();
@@ -144,7 +147,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_has_using_admin_verify_record_and_unused_admin_verify_record()
+    public function test_only_has_using_admin_verify_record_and_unused_admin_verify_record(): void
     {
         $this->create_using_admin_verify_record();
         $this->create_unused_admin_verify_record();
@@ -152,7 +155,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(1, ContactHasVerification::count());
     }
 
-    public function test_only_have_no_using_user_verify_record()
+    public function test_only_have_no_using_user_verify_record(): void
     {
         $this->create_unused_user_verify_record();
         $this->create_using_admin_verify_record();
@@ -161,7 +164,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_have_no_unused_user_verify_record()
+    public function test_only_have_no_unused_user_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_using_admin_verify_record();
@@ -170,7 +173,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_have_no_using_admin_verify_record()
+    public function test_only_have_no_using_admin_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_unused_user_verify_record();
@@ -179,7 +182,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(2, ContactHasVerification::count());
     }
 
-    public function test_only_have_no_unused_admin_verify_record()
+    public function test_only_have_no_unused_admin_verify_record(): void
     {
         $this->create_using_user_verify_record();
         $this->create_unused_user_verify_record();
@@ -188,7 +191,7 @@ class ClearUnusedAdminVerifiedRecodeTest extends TestCase
         $this->assertEquals(3, ContactHasVerification::count());
     }
 
-    public function test_have_all()
+    public function test_have_all(): void
     {
         $this->create_using_user_verify_record();
         $this->create_unused_user_verify_record();

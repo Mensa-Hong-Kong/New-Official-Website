@@ -17,26 +17,24 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test', 'View:User']);
-        $this->test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now()->subSecond()->subHour(),
-                'expect_end_at' => now()->subSecond(),
-            ])->create();
+        $this->test = AdmissionTest::factory()->create([
+            'testing_at' => now()->subSecond()->subHour(),
+            'expect_end_at' => now()->subSecond(),
+        ]);
         $this->test->candidates()->attach($this->user->id, ['is_present' => true]);
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $this->user->id,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => true,
+        ]);
         ContactHasVerification::create([
             'contact_id' => $contact->id,
             'contact' => $contact->contact,
@@ -47,7 +45,7 @@ class DeleteTest extends TestCase
         ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(
             route(
@@ -58,7 +56,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -76,7 +74,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->deleteJson(
             route(
@@ -87,7 +85,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case_when_before_testing_time()
+    public function test_happy_case_when_before_testing_time(): void
     {
         Notification::fake();
         $this->test->update([
@@ -107,7 +105,7 @@ class DeleteTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_after_testing_time()
+    public function test_happy_case_when_after_testing_time(): void
     {
         Notification::fake();
         $response = $this->actingAs($this->user)->deleteJson(

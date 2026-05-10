@@ -12,7 +12,7 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $page;
+    private CustomWebPage $page;
 
     protected function setUp(): void
     {
@@ -20,7 +20,7 @@ class DeleteTest extends TestCase
         $this->page = CustomWebPage::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(
             route(
@@ -31,7 +31,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -49,7 +49,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Custom Web Page');
@@ -62,7 +62,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Custom Web Page');

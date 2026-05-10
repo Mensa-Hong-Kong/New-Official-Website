@@ -11,7 +11,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -19,7 +19,7 @@ class StoreTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -42,7 +42,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_missing_type()
+    public function test_missing_type(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -62,7 +62,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_is_not_string()
+    public function test_type_is_not_string(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -85,7 +85,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_is_not_in_list()
+    public function test_type_is_not_in_list(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -108,7 +108,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_missing_contact()
+    public function test_missing_contact(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $response = $this->actingAs($this->user)
@@ -119,7 +119,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => "The contact of $type is required."]);
     }
 
-    public function test_email_invalid()
+    public function test_email_invalid(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -132,7 +132,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of email must be a valid email address.']);
     }
 
-    public function test_mobile_not_integer()
+    public function test_mobile_not_integer(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -145,7 +145,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must be an integer.']);
     }
 
-    public function test_mobile_too_short()
+    public function test_mobile_too_short(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -158,7 +158,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must have at least 5 digits.']);
     }
 
-    public function test_mobile_too_long()
+    public function test_mobile_too_long(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -171,11 +171,9 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must not have more than 15 digits.']);
     }
 
-    public function test_contact_exist_with_same_user()
+    public function test_contact_exist_with_same_user(): void
     {
-        $contact = UserHasContact::factory()
-            ->{fake()->randomElement(['email', 'mobile'])}()
-            ->create();
+        $contact = UserHasContact::factory()->{fake()->randomElement(['email', 'mobile'])}()->create();
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.store'),
@@ -187,7 +185,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => "The contact of {$contact->type} has already been taken."]);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';

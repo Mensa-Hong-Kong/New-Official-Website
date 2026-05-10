@@ -14,9 +14,9 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $happyCase = [
+    private array $happyCase = [
         'name' => 'abc',
         'type_id' => 1,
         'display_order' => 0,
@@ -29,7 +29,7 @@ class UpdateTest extends TestCase
         $this->user->givePermissionTo('Edit:Permission');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -41,7 +41,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -60,7 +60,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
@@ -74,7 +74,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_missing_name()
+    public function test_missing_name(): void
     {
         $data = $this->happyCase;
         unset($data['name']);
@@ -88,7 +88,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field is required.']);
     }
 
-    public function test_name_is_not_string()
+    public function test_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['name'] = ['abc'];
@@ -104,7 +104,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_too_long()
+    public function test_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 171);
@@ -120,7 +120,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 170 characters.']);
     }
 
-    public function test_name_has_colon()
+    public function test_name_has_colon(): void
     {
         $data = $this->happyCase;
         $data['name'] = 'abc:efg';
@@ -134,7 +134,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field cannot has ":".']);
     }
 
-    public function test_name_is_exist_for_type()
+    public function test_name_is_exist_for_type(): void
     {
         $data = $this->happyCase;
         $team = Team::inRandomOrder()
@@ -155,7 +155,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name of team in this type has already been taken.']);
     }
 
-    public function test_missing_type_id()
+    public function test_missing_type_id(): void
     {
         $data = $this->happyCase;
         unset($data['type_id']);
@@ -169,7 +169,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field is required.']);
     }
 
-    public function test_type_id_is_not_integer()
+    public function test_type_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = 'abc';
@@ -183,7 +183,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field must be an integer.']);
     }
 
-    public function test_type_id_is_not_exists()
+    public function test_type_id_is_not_exists(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = '0';
@@ -197,7 +197,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The selected type is invalid.']);
     }
 
-    public function test_missing_display_order()
+    public function test_missing_display_order(): void
     {
         $data = $this->happyCase;
         unset($data['display_order']);
@@ -211,7 +211,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_is_not_integer()
+    public function test_display_order_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = 'abc';
@@ -225,7 +225,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be an integer.']);
     }
 
-    public function test_display_order_less_than_zero()
+    public function test_display_order_less_than_zero(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = '-1';
@@ -239,7 +239,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_max_plus_one()
+    public function test_display_order_more_than_max_plus_one(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = Team::where('type_id', $data['type_id'])
@@ -256,7 +256,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
     }
 
-    public function test_happy_case_when_nothing_in_change()
+    public function test_happy_case_when_nothing_in_change(): void
     {
         $team = Team::inRandomOrder()->first();
         $response = $this->actingAs($this->user)->putJson(
@@ -286,7 +286,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
 
-    public function test_happy_case_when_only_change_name()
+    public function test_happy_case_when_only_change_name(): void
     {
         $team = Team::inRandomOrder()->first();
         $response = $this->actingAs($this->user)->putJson(
@@ -316,7 +316,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
 
-    public function test_happy_case_when_only_change_display_order()
+    public function test_happy_case_when_only_change_display_order(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('id', 1)
@@ -359,7 +359,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
 
-    public function test_happy_case_when_only_have_no_change_name()
+    public function test_happy_case_when_only_have_no_change_name(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('id', 1)
@@ -405,7 +405,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
 
-    public function test_happy_case_when_only_have_no_change_type()
+    public function test_happy_case_when_only_have_no_change_type(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('id', 1)
@@ -448,7 +448,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($expectedTeamRoles, $newTeamRoles);
     }
 
-    public function test_happy_case_when_change_all()
+    public function test_happy_case_when_change_all(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('id', 1)

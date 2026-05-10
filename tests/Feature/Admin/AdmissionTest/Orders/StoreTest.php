@@ -39,11 +39,10 @@ class StoreTest extends TestCase
         $this->user->givePermissionTo(['Edit:Admission Test Order']);
         $this->happyCase['user_id'] = $this->user->id;
         $this->happyCase['price'] = 1 * 10 ** (-Amount::getValidationDecimal());
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $this->user->id,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => true,
+        ]);
         ContactHasVerification::create([
             'contact_id' => $contact->id,
             'contact' => $contact->contact,
@@ -199,10 +198,10 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota_when_quota_validity_months_is_null(): void
     {
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
             'created_at' => '1970-01-01 00:00:01',
-        ])->create();
+        ]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $this->happyCase
@@ -212,11 +211,11 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota_when_quota_within_quota_validity_months(): void
     {
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
             'quota_validity_months' => 1,
             'created_at' => now()->subMonth()->addSecond(),
-        ])->create();
+        ]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $this->happyCase
@@ -226,14 +225,14 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota_and_has_tested_record_order_when_unused_quota_within_quota_validity_months(): void
     {
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'quota' => 2,
             'quota_validity_months' => 1,
             'status' => 'succeeded',
             'created_at' => now()->subMonths(3)->addDay(),
-        ])->create();
-        AdmissionTestType::factory()->state(['interval_month' => 1])->create();
-        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)->addDay()])->create();
+        ]);
+        AdmissionTestType::factory()->create(['interval_month' => 1]);
+        $test = AdmissionTest::factory()->create(['testing_at' => now()->subMonths(2)->addDay()]);
         $test->candidates()->attach(
             $this->user->id,
             [
@@ -250,10 +249,10 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_unused_quota_when_have_no_attended_record(): void
     {
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
             'created_at' => now()->subMonths(),
-        ])->create();
+        ]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $this->happyCase
@@ -263,11 +262,10 @@ class StoreTest extends TestCase
 
     public function test_user_id_of_user_has_other_same_passport_user_already_membership_qualification(): void
     {
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         Member::create([
             'user_id' => $user->id,
             'expired_on' => now()->subYears(2)->endOfYear(),
@@ -282,16 +280,14 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_other_same_passport_user_account_tested(): void
     {
-        $test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now()->subSecond(),
-                'expect_end_at' => now()->subSecond()->addHour(),
-            ])->create();
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => now()->subSecond(),
+            'expect_end_at' => now()->subSecond()->addHour(),
+        ]);
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $test->candidates()->attach($user->id, ['is_present' => 1]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -712,9 +708,7 @@ class StoreTest extends TestCase
     public function test_test_is_free(): void
     {
         $data = $this->happyCase;
-        $test = AdmissionTest::factory()
-            ->state(['is_free' => true])
-            ->create();
+        $test = AdmissionTest::factory()->create(['is_free' => true]);
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
@@ -726,9 +720,7 @@ class StoreTest extends TestCase
     public function test_test_is_full(): void
     {
         $data = $this->happyCase;
-        $test = AdmissionTest::factory()
-            ->state(['maximum_candidates' => 1])
-            ->create();
+        $test = AdmissionTest::factory()->create(['maximum_candidates' => 1]);
         $user = User::factory()->create();
         $test->candidates()->attach($user->id);
         $data['test_id'] = $test->id;
@@ -742,16 +734,14 @@ class StoreTest extends TestCase
     public function test_user_id_has_already_been_taken_within_latest_test_interval_months(): void
     {
         $newTestingAt = now()->addDay();
-        $test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => $newTestingAt->addHour(),
-            ])->create();
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $test->testing_at->subMonths($test->type->interval_month)->addDay(),
-                'expect_end_at' => $test->expect_end_at->subMonths($test->type->interval_month)->addDay(),
-            ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => $newTestingAt->addHour(),
+        ]);
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $test->testing_at)->subMonths($test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $test->expect_end_at)->subMonths($test->type->interval_month)->addDay(),
+        ]);
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
@@ -766,7 +756,7 @@ class StoreTest extends TestCase
     {
         $test = AdmissionTest::factory()->create();
         $test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $test->testing_at->subYears(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $test->testing_at)->subYears(10)->addDays(2)]);
         $this->assertTrue($this->user->age < 22);
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
@@ -781,7 +771,7 @@ class StoreTest extends TestCase
     {
         $test = AdmissionTest::factory()->create();
         $test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => $test->testing_at->subYears(10)]);
+        $this->user->update(['birthday' => (clone $test->testing_at)->subYears(10)]);
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
         $response = $this->actingAs($this->user)->postJson(
@@ -843,11 +833,11 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         Queue::fake();
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
             'quota_validity_months' => 1,
             'created_at' => now()->subMonths(2),
-        ])->create();
+        ]);
         $test = AdmissionTest::factory()->create();
         $data = $this->happyCase;
         $data['status'] = 'pending';
@@ -856,7 +846,7 @@ class StoreTest extends TestCase
         $data['minimum_age'] = 10;
         $data['maximum_age'] = 17;
         $data['quota_validity_months'] = 1;
-        $this->user->update(['birthday' => $test->testing_at->subYears(15)]);
+        $this->user->update(['birthday' => (clone $test->testing_at)->subYears(15)]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
@@ -879,18 +869,18 @@ class StoreTest extends TestCase
     {
         Notification::fake();
         Queue::fake();
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
             'quota_validity_months' => 1,
             'created_at' => now()->subMonths(2),
-        ])->create();
+        ]);
         $test = AdmissionTest::factory()->create();
         $data = $this->happyCase;
         $data['test_id'] = $test->id;
         $data['minimum_age'] = 10;
         $data['maximum_age'] = 17;
         $data['quota_validity_months'] = 1;
-        $this->user->update(['birthday' => $test->testing_at->subYears(15)]);
+        $this->user->update(['birthday' => (clone $test->testing_at)->subYears(15)]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.orders.store'),
             $data
@@ -934,7 +924,7 @@ class StoreTest extends TestCase
         Queue::fake();
         $test = AdmissionTest::factory()->create();
         $test->type->update(['minimum_age' => 10, 'maximum_age' => 17]);
-        $this->user->update(['birthday' => $test->testing_at->subYears(15)]);
+        $this->user->update(['birthday' => (clone $test->testing_at)->subYears(15)]);
         $data = $this->happyCase;
         $data['status'] = 'pending';
         $data['expired_at'] = now()->addMinutes(5)->format('Y-m-d H:i');

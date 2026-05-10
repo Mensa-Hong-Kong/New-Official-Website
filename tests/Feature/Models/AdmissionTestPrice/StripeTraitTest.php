@@ -15,7 +15,7 @@ class StripeTraitTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $price;
+    private AdmissionTestPrice $price;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class StripeTraitTest extends TestCase
         $this->price = AdmissionTestPrice::find(AdmissionTestPrice::factory()->create()->id);
     }
 
-    public function test_get_stripe_data_but_stripe_under_maintenance()
+    public function test_get_stripe_data_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
@@ -32,7 +32,7 @@ class StripeTraitTest extends TestCase
         $this->price->getStripe('one_time');
     }
 
-    public function test_get_stripe_data_happy_case_when_user_have_no_stripe_id_and_no_result()
+    public function test_get_stripe_data_happy_case_when_user_have_no_stripe_id_and_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response([
@@ -47,7 +47,7 @@ class StripeTraitTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_get_stripe_data_happy_case_when_user_have_no_stripe_id_and_have_result()
+    public function test_get_stripe_data_happy_case_when_user_have_no_stripe_id_and_have_result(): void
     {
         $data = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -84,7 +84,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($data['id'], $this->price->stripe_one_time_type_id);
     }
 
-    public function test_get_stripe_data_happy_case_when_user_has_stripe_id()
+    public function test_get_stripe_data_happy_case_when_user_has_stripe_id(): void
     {
         $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         $response = [
@@ -116,7 +116,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_create_stripe_price_but_stripe_id_already()
+    public function test_create_stripe_price_but_stripe_id_already(): void
     {
         $this->price->update(['stripe_one_time_type_id' => 'abc']);
         $this->expectException(AlreadyCreatedPrice::class);
@@ -124,7 +124,7 @@ class StripeTraitTest extends TestCase
         $this->price->stripeCreate('one_time');
     }
 
-    public function test_create_exists_stripe_price_just_missing_save_stripe_id()
+    public function test_create_exists_stripe_price_just_missing_save_stripe_id(): void
     {
         $data = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -161,7 +161,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($data['id'], $this->price->stripe_one_time_type_id);
     }
 
-    public function test_get_stripe_price_not_found_and_product_stripe_not_yet_created()
+    public function test_get_stripe_price_not_found_and_product_stripe_not_yet_created(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::sequence()
@@ -177,7 +177,7 @@ class StripeTraitTest extends TestCase
         $this->expectExceptionMessage('Product of AdmissionTestPrice is not a Stripe product yet. See the stripeCreate method.');
     }
 
-    public function test_get_stripe_price_not_found_and_create_price_that_stripe_under_maintenance()
+    public function test_get_stripe_price_not_found_and_create_price_that_stripe_under_maintenance(): void
     {
         $this->price->product->update(['stripe_id' => 'prod_NWjs8kKbJWmuuc']);
         Http::fake([
@@ -193,7 +193,7 @@ class StripeTraitTest extends TestCase
         $this->price->stripeCreate('one_time');
     }
 
-    public function test_create_stripe_price_happy_case()
+    public function test_create_stripe_price_happy_case(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -234,14 +234,14 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_update_stripe_price_but_have_no_stripe_id()
+    public function test_update_stripe_price_but_have_no_stripe_id(): void
     {
         $this->expectException(NotYetCreated::class);
         $this->expectExceptionMessage('AdmissionTestPrice is not a Stripe price yet. See the stripeUpdate method.');
         $this->price->stripeUpdate('one_time');
     }
 
-    public function test_update_stripe_price_but_stripe_under_maintenance()
+    public function test_update_stripe_price_but_stripe_under_maintenance(): void
     {
         $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         Http::fake([
@@ -251,7 +251,7 @@ class StripeTraitTest extends TestCase
         $this->price->stripeUpdate('one_time');
     }
 
-    public function test_update_stripe_price_happy_case()
+    public function test_update_stripe_price_happy_case(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -287,7 +287,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_update_or_create_price_when_have_no_stripe_id()
+    public function test_update_or_create_price_when_have_no_stripe_id(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -328,7 +328,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_update_or_create_price_when_has_stripe_id_and_not_synced_to_stripe()
+    public function test_update_or_create_price_when_has_stripe_id_and_not_synced_to_stripe(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -364,7 +364,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_update_or_create_price_when_has_stripe_id_and_synced_to_stripe()
+    public function test_update_or_create_price_when_has_stripe_id_and_synced_to_stripe(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',

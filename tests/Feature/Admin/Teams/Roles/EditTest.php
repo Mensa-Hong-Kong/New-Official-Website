@@ -13,7 +13,7 @@ class EditTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $team = Team::first();
         $role = $team->roles()->first();
@@ -29,7 +29,7 @@ class EditTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $team = Team::first();
         $role = $team->roles()->first();
@@ -53,7 +53,7 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
@@ -70,7 +70,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_role_is_not_exist()
+    public function test_role_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
@@ -87,7 +87,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $team = Team::first();
         $role = $team->roles()->first();

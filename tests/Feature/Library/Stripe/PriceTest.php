@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class PriceTest extends TestCase
 {
-    public function test_search_price_but_stripe_under_maintenance()
+    public function test_search_price_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
@@ -23,7 +23,7 @@ class PriceTest extends TestCase
         ]);
     }
 
-    public function test_search_price_happy_case()
+    public function test_search_price_happy_case(): void
     {
         $data = [
             [
@@ -78,7 +78,7 @@ class PriceTest extends TestCase
         );
     }
 
-    public function test_search_price_first_happy_case_has_result()
+    public function test_search_price_first_happy_case_has_result(): void
     {
         $data = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -121,7 +121,7 @@ class PriceTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function test_search_price_first_happy_case_have_no_result()
+    public function test_search_price_first_happy_case_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response([
@@ -138,7 +138,7 @@ class PriceTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_create_price_happy_case()
+    public function test_create_price_happy_case(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -186,7 +186,7 @@ class PriceTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_find_price_have_no_result()
+    public function test_find_price_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
@@ -203,7 +203,7 @@ class PriceTest extends TestCase
         );
     }
 
-    public function test_find_price_has_result()
+    public function test_find_price_has_result(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -238,7 +238,7 @@ class PriceTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_update_price_happy_case()
+    public function test_update_price_happy_case(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',

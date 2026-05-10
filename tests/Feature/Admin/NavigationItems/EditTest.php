@@ -12,7 +12,7 @@ class EditTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $item;
+    private NavigationItem $item;
 
     protected function setUp(): void
     {
@@ -20,7 +20,7 @@ class EditTest extends TestCase
         $this->item = NavigationItem::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -31,7 +31,7 @@ class EditTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_navigation_item()
+    public function test_have_no_edit_navigation_item(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -50,7 +50,7 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_navigation_item_is_not_exist()
+    public function test_navigation_item_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Navigation Item');
@@ -63,7 +63,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Navigation Item');

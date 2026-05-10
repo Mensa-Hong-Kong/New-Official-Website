@@ -20,29 +20,28 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
         $this->user->stripe()->create(['id' => 123]);
-        $this->test = AdmissionTest::factory()->state([
+        $this->test = AdmissionTest::factory()->create([
             'is_free' => true,
             'is_public' => true,
-        ])->create();
+        ]);
         $this->test->type->update(['interval_month' => 6]);
     }
 
-    private function addVerifyContact()
+    private function addVerifyContact(): void
     {
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $this->user->id,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => true,
+        ]);
         ContactHasVerification::create([
             'contact_id' => $contact->id,
             'contact' => $contact->contact,
@@ -53,7 +52,7 @@ class StoreTest extends TestCase
         ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->post(
             route(
@@ -64,7 +63,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->post(
             route(
@@ -75,7 +74,7 @@ class StoreTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_admission_test_is_private()
+    public function test_admission_test_is_private(): void
     {
         $this->test->update(['is_public' => false]);
         $response = $this->actingAs($this->user)->post(
@@ -88,7 +87,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
     }
 
-    public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
         $this->user->stripe->delete();
         $this->test->update(['is_free' => false]);
@@ -102,13 +101,13 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
     }
 
-    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours()
+    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours(): void
     {
         $newTestingAt = now()->addHours(2)->subSecond();
-        $oldTest = AdmissionTest::factory()->state([
+        $oldTest = AdmissionTest::factory()->create([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
-        ])->create();
+        ]);
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user->refresh())->post(
             route(
@@ -120,7 +119,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
     }
 
-    public function test_user_already_schedule_this_admission_test()
+    public function test_user_already_schedule_this_admission_test(): void
     {
         $this->test->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->post(
@@ -136,7 +135,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
     }
 
-    public function test_user_already_member()
+    public function test_user_already_member(): void
     {
         $member = Member::create([
             'user_id' => $this->user->id,
@@ -159,7 +158,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been member.']);
     }
 
-    public function test_user_is_inactive_member()
+    public function test_user_is_inactive_member(): void
     {
         Member::create([
             'user_id' => $this->user->id,
@@ -175,13 +174,12 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been qualification for membership.']);
     }
 
-    public function test_user_passed_admission_test()
+    public function test_user_passed_admission_test(): void
     {
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
+        ]);
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
             'is_pass' => 1,
@@ -195,13 +193,12 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been qualification for membership.']);
     }
 
-    public function test_user_of_passport_has_already_been_qualification_for_membership()
+    public function test_user_of_passport_has_already_been_qualification_for_membership(): void
     {
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         Member::create([
             'user_id' => $user->id,
             'expired_on' => now()->endOfYear(),
@@ -216,23 +213,21 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You have other same passport user account already been qualification for membership.']);
     }
 
-    public function test_user_has_other_same_passport_user_account_tested()
+    public function test_user_has_other_same_passport_user_account_tested(): void
     {
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
-            ])->create();
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
+        ]);
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $oldTest->candidates()->attach($user->id, ['is_present' => 1]);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -243,18 +238,17 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You have other same passport user account attended other admission test, if you forgot account, please contact us.']);
     }
 
-    public function test_user_has_already_been_taken_within_latest_test_interval_months()
+    public function test_user_has_already_been_taken_within_latest_test_interval_months(): void
     {
         $newTestingAt = now()->addDay();
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
+        ]);
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -265,15 +259,15 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free()
+    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free(): void
     {
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)->addDay()]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)->addDay()]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -283,15 +277,15 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
     }
 
-    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free()
+    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free(): void
     {
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -301,7 +295,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
     }
 
-    public function test_after_than_deadline()
+    public function test_after_than_deadline(): void
     {
         $newTestingAt = now()->addDay();
         $this->test->update([
@@ -317,7 +311,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Cannot register after than before testing date two days.']);
     }
 
-    public function test_admission_test_is_fulled()
+    public function test_admission_test_is_fulled(): void
     {
         $user = User::factory()->create();
         $this->test->update(['maximum_candidates' => 1]);
@@ -331,10 +325,10 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is fulled.']);
     }
 
-    public function test_user_age_less_than_test_type_minimum_age_limit()
+    public function test_user_age_less_than_test_type_minimum_age_limit(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -344,10 +338,10 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than test minimum age limit.']);
     }
 
-    public function test_user_age_greater_than_test_type_maximum_age_limit()
+    public function test_user_age_greater_than_test_type_maximum_age_limit(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)]);
         $response = $this->actingAs($this->user)->post(
             route(
                 'admission-tests.candidates.store',
@@ -357,7 +351,7 @@ class StoreTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_default_contact_when_test_type_and_order_have_no_any_age_limit_and_test_is_free()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_default_contact_when_test_type_and_order_have_no_any_age_limit_and_test_is_free(): void
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -372,23 +366,22 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_have_no_default_contact_when_test_type_and_order_only_has_minimum_age_limit_and_test_is_not_free()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_have_no_default_contact_when_test_type_and_order_only_has_minimum_age_limit_and_test_is_not_free(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)]);
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -401,16 +394,16 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_default_contact_when_test_type_and_order_only_has_maximum_age_limit_and_test_is_not_free()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_default_contact_when_test_type_and_order_only_has_maximum_age_limit_and_test_is_not_free(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDays(3);
@@ -419,11 +412,10 @@ class StoreTest extends TestCase
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => (clone $newTestingAt)->addHour(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ]);
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -437,20 +429,20 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_have_no_default_contact_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_test_is_not_free()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_have_no_default_contact_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_test_is_not_free(): void
     {
         $this->test->type->update([
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 4,
             'maximum_age' => 21,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         Notification::fake();
         $this->user = User::find($this->user->id);
         $newTestingAt = now()->addDays(3);
@@ -459,17 +451,15 @@ class StoreTest extends TestCase
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => (clone $newTestingAt)->addHour(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ]);
         $oldTest->candidates()->attach($this->user->id);
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -483,7 +473,7 @@ class StoreTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function test_schedule_happy_case_when_have_no_other_same_passport_and_has_default_contact()
+    public function test_schedule_happy_case_when_have_no_other_same_passport_and_has_default_contact(): void
     {
         $this->addVerifyContact();
         Notification::fake();
@@ -501,16 +491,15 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_schedule_happy_case_when_has_other_same_passport_and_default_contact()
+    public function test_schedule_happy_case_when_has_other_same_passport_and_default_contact(): void
     {
         $this->addVerifyContact();
         Notification::fake();
         $this->user = User::find($this->user->id);
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -525,7 +514,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_has_default_contact()
+    public function test_reschedule_happy_case_when_have_no_other_same_passport_user_and_has_default_contact(): void
     {
         $this->addVerifyContact();
         Notification::fake();
@@ -536,11 +525,10 @@ class StoreTest extends TestCase
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => (clone $newTestingAt)->addHour(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ]);
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->post(
             route(
@@ -556,7 +544,7 @@ class StoreTest extends TestCase
         );
     }
 
-    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_default_contact()
+    public function test_reschedule_happy_case_when_has_other_same_passport_user_and_default_contact(): void
     {
         $this->addVerifyContact();
         Notification::fake();
@@ -567,17 +555,15 @@ class StoreTest extends TestCase
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $newTestingAt = now()->addDay();
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $newTestingAt,
-                'expect_end_at' => (clone $newTestingAt)->addHour(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => $newTestingAt,
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
+        ]);
         $oldTest->candidates()->attach($this->user->id);
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $this->test->candidates()->attach($user->id);
         $response = $this->actingAs($this->user)->post(
             route(

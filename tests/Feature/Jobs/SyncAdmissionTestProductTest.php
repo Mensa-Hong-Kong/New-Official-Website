@@ -16,7 +16,7 @@ class SyncAdmissionTestProductTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $product;
+    private AdmissionTestProduct $product;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
-    public function test_synced_admission_test_product()
+    public function test_synced_admission_test_product(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response([
@@ -56,7 +56,7 @@ class SyncAdmissionTestProductTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_search_first_stripe_product_for_admission_test_product_but_stripe_under_maintenance()
+    public function test_search_first_stripe_product_for_admission_test_product_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
@@ -65,7 +65,7 @@ class SyncAdmissionTestProductTest extends TestCase
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
     }
 
-    public function test_stripe_created_and_product_update_to_date_just_missing_save_stripe_id()
+    public function test_stripe_created_and_product_update_to_date_just_missing_save_stripe_id(): void
     {
         $data = [
             'id' => 'prod_NZOkxQ8eTZEHwN',
@@ -114,7 +114,7 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->assertTrue((bool) $this->product->synced_to_stripe);
     }
 
-    public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
+    public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
@@ -124,7 +124,7 @@ class SyncAdmissionTestProductTest extends TestCase
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
     }
 
-    public function test_happy_case_has_stripe_id_just_data_not_update_to_date()
+    public function test_happy_case_has_stripe_id_just_data_not_update_to_date(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -168,7 +168,7 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->assertTrue((bool) $this->product->refresh()->synced_to_stripe);
     }
 
-    public function test_stripe_first_not_found_and_create_stripe_product_but_stripe_under_maintenance()
+    public function test_stripe_first_not_found_and_create_stripe_product_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::sequence()
@@ -183,7 +183,7 @@ class SyncAdmissionTestProductTest extends TestCase
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
     }
 
-    public function test_happy_case_stripe_first_not_found_and_create_stripe_product()
+    public function test_happy_case_stripe_first_not_found_and_create_stripe_product(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -245,7 +245,7 @@ class SyncAdmissionTestProductTest extends TestCase
         $this->assertTrue((bool) $this->product->synced_to_stripe);
     }
 
-    public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
+    public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::sequence()
@@ -281,7 +281,7 @@ class SyncAdmissionTestProductTest extends TestCase
         app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
     }
 
-    public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date()
+    public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',

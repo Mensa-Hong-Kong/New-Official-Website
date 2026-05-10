@@ -12,7 +12,7 @@ class ShowTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $product;
+    private AdmissionTestProduct $product;
 
     protected function setUp(): void
     {
@@ -20,7 +20,7 @@ class ShowTest extends TestCase
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -31,7 +31,7 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -49,7 +49,7 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_product_not_exists()
+    public function test_product_not_exists(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -62,7 +62,7 @@ class ShowTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');

@@ -12,7 +12,7 @@ class ActiveTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -21,7 +21,7 @@ class ActiveTest extends TestCase
         $this->user->givePermissionTo('Edit:Other Payment Gateway');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -32,7 +32,7 @@ class ActiveTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -50,7 +50,7 @@ class ActiveTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_payment_gateway_is_not_exist()
+    public function test_payment_gateway_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -61,7 +61,7 @@ class ActiveTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_status_is_not_boolean()
+    public function test_status_is_not_boolean(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -73,7 +73,7 @@ class ActiveTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $otherPaymentGateway = OtherPaymentGateway::inRandomOrder()->first();
         $this->user = User::find($this->user->id);

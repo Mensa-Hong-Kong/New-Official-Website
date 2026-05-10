@@ -12,7 +12,7 @@ class ShowTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $order;
+    private AdmissionTestOrder $order;
 
     protected function setUp(): void
     {
@@ -20,7 +20,7 @@ class ShowTest extends TestCase
         $this->order = AdmissionTestOrder::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(route(
             'admin.admission-test.orders.show',
@@ -29,7 +29,7 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_view_and_edit_permission()
+    public function test_have_no_view_and_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -46,7 +46,7 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case_when_user_only_has_view_permission()
+    public function test_happy_case_when_user_only_has_view_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('View:Admission Test Order');
@@ -58,7 +58,7 @@ class ShowTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_edit_permission()
+    public function test_happy_case_when_user_only_has_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test Order');
@@ -70,7 +70,7 @@ class ShowTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_have_view_and_edit_permission()
+    public function test_happy_case_when_user_have_view_and_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(['View:Admission Test Order', 'Edit:Admission Test Order']);

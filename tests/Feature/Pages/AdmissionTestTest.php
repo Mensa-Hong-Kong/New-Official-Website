@@ -13,7 +13,7 @@ class AdmissionTestTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_happy_case_when_user_have_no_login()
+    public function test_happy_case_when_user_have_no_login(): void
     {
         $response = $this->get(route('admission-tests.index'));
         $response->assertSuccessful();
@@ -32,7 +32,7 @@ class AdmissionTestTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_user_have_no_scheduled_admission_test_and_unused_quota_admission_test_order()
+    public function test_happy_case_when_user_have_no_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('admission-tests.index'));
@@ -52,14 +52,14 @@ class AdmissionTestTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_user_have_scheduled_admission_test_and_unused_quota_admission_test_order()
+    public function test_happy_case_when_user_have_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
         $user = User::factory()->create();
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $user->id,
             'status' => 'succeeded',
-        ])->create();
-        $test = AdmissionTest::factory()->state(['is_free' => true])->create();
+        ]);
+        $test = AdmissionTest::factory()->create(['is_free' => true]);
         $test->candidates()->attach($user->id);
         $response = $this->actingAs($user)->get(route('admission-tests.index'));
         $response->assertSuccessful();

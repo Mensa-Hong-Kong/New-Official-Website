@@ -14,12 +14,12 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $happyCase = [
+    private array $happyCase = [
         'name' => 'abc',
         'display_order' => 0,
     ];
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -28,7 +28,7 @@ class UpdateTest extends TestCase
         $this->user->givePermissionTo('Edit:Permission');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -47,7 +47,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -73,7 +73,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -88,7 +88,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_role_is_not_exist()
+    public function test_role_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -105,7 +105,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_missing_name()
+    public function test_missing_name(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -126,7 +126,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field is required.']);
     }
 
-    public function test_name_is_not_string()
+    public function test_name_is_not_string(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -147,7 +147,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_too_long()
+    public function test_name_too_long(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -168,7 +168,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 170 characters.']);
     }
 
-    public function test_name_has_colon()
+    public function test_name_has_colon(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -189,7 +189,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field cannot has ":".']);
     }
 
-    public function test_name_is_exist_for_team()
+    public function test_name_is_exist_for_team(): void
     {
         $team = Team::inRandomOrder()
             ->has('roles', '>', 1)
@@ -215,7 +215,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name of role in this team has already been taken.']);
     }
 
-    public function test_missing_display_order()
+    public function test_missing_display_order(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -236,7 +236,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_is_not_integer()
+    public function test_display_order_is_not_integer(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -257,7 +257,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be an integer.']);
     }
 
-    public function test_display_order_less_than_zero()
+    public function test_display_order_less_than_zero(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -278,7 +278,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_max_plus_one()
+    public function test_display_order_more_than_max_plus_one(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -303,7 +303,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
     }
 
-    public function test_module_permissions_is_not_array()
+    public function test_module_permissions_is_not_array(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -324,7 +324,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['message' => 'The permissions field must be an array, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_module_permissions_value_is_not_integer()
+    public function test_module_permissions_value_is_not_integer(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -345,7 +345,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['message' => 'The value of permissions must be an integer, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_module_permissions_value_is_duplicate()
+    public function test_module_permissions_value_is_duplicate(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -367,7 +367,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['message' => 'The permissions has a duplicate value, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_module_permissions_value_is_exist_on_database()
+    public function test_module_permissions_value_is_exist_on_database(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)
@@ -388,7 +388,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['message' => 'The permissions not up to date, if you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $team = Team::inRandomOrder()
             ->whereNot('type_id', 1)

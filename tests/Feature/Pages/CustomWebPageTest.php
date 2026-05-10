@@ -10,7 +10,7 @@ class CustomWebPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_page_is_not_exist()
+    public function test_page_is_not_exist(): void
     {
         $response = $this->get(
             route(
@@ -21,9 +21,9 @@ class CustomWebPageTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
-        CustomWebPage::factory()->state(['pathname' => 'abc/xyz'])->create();
+        CustomWebPage::factory()->create(['pathname' => 'abc/xyz']);
         $response = $this->get(
             route(
                 'custom-web-page',

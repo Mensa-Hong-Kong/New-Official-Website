@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class ClientTest extends TestCase
 {
-    public function test_customers_statice_function()
+    public function test_customers_statice_function(): void
     {
         $this->assertEquals(
             new Customer,
@@ -19,7 +19,7 @@ class ClientTest extends TestCase
         );
     }
 
-    public function test_products_statice_function()
+    public function test_products_statice_function(): void
     {
         $this->assertEquals(
             new Product,
@@ -27,7 +27,7 @@ class ClientTest extends TestCase
         );
     }
 
-    public function test_prices_statice_function()
+    public function test_prices_statice_function(): void
     {
         $this->assertEquals(
             new Price,
@@ -35,7 +35,7 @@ class ClientTest extends TestCase
         );
     }
 
-    public function test_checkouts_statice_function()
+    public function test_checkouts_statice_function(): void
     {
         $this->assertEquals(
             new Checkout,

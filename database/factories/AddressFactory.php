@@ -6,7 +6,7 @@ use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Address>
  */
 class AddressFactory extends Factory
 {
@@ -14,7 +14,7 @@ class AddressFactory extends Factory
     {
         return [
             'district_id' => District::inRandomOrder()->first()->id,
-            'value' => fake()->streetAddress(),
+            'value' => fake()->unique()->streetAddress(),
         ];
     }
 }

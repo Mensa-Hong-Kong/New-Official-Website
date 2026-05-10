@@ -13,7 +13,7 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -22,7 +22,7 @@ class DeleteTest extends TestCase
         $this->user->givePermissionTo('Edit:Permission');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(
             route(
@@ -33,7 +33,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -51,7 +51,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
@@ -63,7 +63,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case_when_have_no_unnecessary_role()
+    public function test_happy_case_when_have_no_unnecessary_role(): void
     {
         $team = Team::whereDoesntHave(
             'roles', function ($query) {
@@ -90,7 +90,7 @@ class DeleteTest extends TestCase
         $this->assertNull(Team::find(($team->id)));
     }
 
-    public function test_happy_case_when_has_unnecessary_roles()
+    public function test_happy_case_when_has_unnecessary_roles(): void
     {
         $team = Team::whereHas(
             'roles', function ($query) {

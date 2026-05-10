@@ -12,13 +12,13 @@ class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(route('admin.admission-tests.index'));
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_any_permission_to_view_admission_tests_and_proctor_tests()
+    public function test_have_no_any_permission_to_view_admission_tests_and_proctor_tests(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -41,7 +41,7 @@ class IndexTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -50,7 +50,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_proctor_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_proctor_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test Proctor');
@@ -59,7 +59,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_candidate_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('View:Admission Test Candidate');
@@ -68,7 +68,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_candidate_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test Candidate');
@@ -77,7 +77,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_result_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('View:Admission Test Result');
@@ -86,7 +86,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_result_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test Result');
@@ -95,7 +95,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_has_proctor_tests()
+    public function test_happy_case_when_user_only_has_proctor_tests(): void
     {
         $user = User::factory()->create();
         $test = AdmissionTest::factory()->create();
@@ -105,7 +105,7 @@ class IndexTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_has_permission_and_proctor_tests()
+    public function test_happy_case_when_user_has_permission_and_proctor_tests(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(

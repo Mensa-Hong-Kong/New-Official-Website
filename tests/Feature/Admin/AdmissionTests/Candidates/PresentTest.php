@@ -14,30 +14,29 @@ class PresentTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
-    private $order;
+    private AdmissionTestOrder $order;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now(),
-                'expect_end_at' => now()->addHour(),
-            ])->create();
+        $this->test = AdmissionTest::factory()->create([
+            'testing_at' => now(),
+            'expect_end_at' => now()->addHour(),
+        ]);
         $this->test->proctors()->attach($this->user->id);
-        $this->order = AdmissionTestOrder::factory()->state([
+        $this->order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
-        ])->create();
+        ]);
         $this->test->candidates()->attach($this->user->id, ['order_id' => $this->order->id]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -51,7 +50,7 @@ class PresentTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -72,7 +71,7 @@ class PresentTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -86,7 +85,7 @@ class PresentTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_candidate_is_not_exists()
+    public function test_candidate_is_not_exists(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
@@ -101,7 +100,7 @@ class PresentTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only(): void
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -118,7 +117,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'Could not access before than testing time 2 hours.']);
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only(): void
     {
         $this->test->update(['expect_end_at' => now()->subHour()->subSecond()]);
         $response = $this->actingAs($this->user)->putJson(
@@ -134,10 +133,10 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'Could not access after than expect end time 1 hour.']);
     }
 
-    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age()
+    public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -151,10 +150,10 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate age less than test minimum age limit.']);
     }
 
-    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age()
+    public function test_when_type_has_minimum_age_and_user_age_greater_than_test_type_maximum_age(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -168,7 +167,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate age greater than test maximum age limit.']);
     }
 
-    public function test_candidate_result_exists()
+    public function test_candidate_result_exists(): void
     {
         $this->test->update([
             'testing_at' => now()->subHour()->subSecond(),
@@ -194,14 +193,13 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'Cannot change exists result candidate present status.']);
     }
 
-    public function test_has_same_passport_already_qualification_of_membership()
+    public function test_has_same_passport_already_qualification_of_membership(): void
     {
         $test = AdmissionTest::factory()->create();
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $test->candidates()->attach($user->id, ['is_pass' => true]);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -217,18 +215,16 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate has already been qualification for membership.']);
     }
 
-    public function test_has_other_same_passport_user_account_attended_admission_test()
+    public function test_has_other_same_passport_user_account_attended_admission_test(): void
     {
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->subDay(),
-            ])->create();
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
+        ]);
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $oldTest->candidates()->attach($user->id, [
             'is_present' => 1,
             'is_pass' => 0,
@@ -246,13 +242,12 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate has other same passport user account attended admission test.']);
     }
 
-    public function test_has_other_same_passport_user_account_attended_this_test()
+    public function test_has_other_same_passport_user_account_attended_this_test(): void
     {
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $this->test->candidates()->attach(
             $user->id, ['is_present' => true]
         );
@@ -269,13 +264,12 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate has other same passport user account attended this test.']);
     }
 
-    public function test_has_same_passport_tested_within_date_range()
+    public function test_has_same_passport_tested_within_date_range(): void
     {
-        $test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month)->addDay(),
-            ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
+        ]);
         $test->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -290,10 +284,10 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => "The candidate has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_test_is_not_free_and_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age()
+    public function test_test_is_not_free_and_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age(): void
     {
         $this->order->update(['minimum_age' => 18]);
-        $this->user->update(['birthday' => $this->order->created_at->subYears(18)->addDay()]);
+        $this->user->update(['birthday' => (clone $this->order->created_at)->subYears(18)->addDay()]);
         $this->assertEquals(
             $this->order->id,
             $this->user->lastAdmissionTestOrder->id
@@ -312,10 +306,10 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate age less than the last order age limit.']);
     }
 
-    public function test_test_is_not_free_and_order_has_maximum_age_limit_and_user_age_greater_than_order_maximum_age()
+    public function test_test_is_not_free_and_order_has_maximum_age_limit_and_user_age_greater_than_order_maximum_age(): void
     {
         $this->order->update(['maximum_age' => 17]);
-        $this->user->update(['birthday' => $this->order->created_at->subYears(18)]);
+        $this->user->update(['birthday' => (clone $this->order->created_at)->subYears(18)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
 
@@ -330,7 +324,7 @@ class PresentTest extends TestCase
         $response->assertJson(['message' => 'The candidate age greater than the last order age limit.']);
     }
 
-    public function test_status_is_not_boolean()
+    public function test_status_is_not_boolean(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -345,7 +339,7 @@ class PresentTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_when_type_and_order_have_no_age_limit_and_have_no_assigned_seat_number()
+    public function test_happy_case_when_type_and_order_have_no_age_limit_and_have_no_assigned_seat_number(): void
     {
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
@@ -368,11 +362,11 @@ class PresentTest extends TestCase
         ]);
     }
 
-    public function test_happy_case_when_type_and_order_only_has_minimum_age_limit_assigned_seat_number()
+    public function test_happy_case_when_type_and_order_only_has_minimum_age_limit_assigned_seat_number(): void
     {
         $this->order->update(['minimum_age' => 18]);
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => $this->user->lastAdmissionTestOrder->created_at->subYears(18)]);
+        $this->user->update(['birthday' => (clone $this->user->lastAdmissionTestOrder->created_at)->subYears(18)]);
         $this->assertTrue($this->user->lastAdmissionTestOrder->hasUnusedQuota);
         $this->user = User::find($this->user->id);
         AdmissionTestHasCandidate::where('test_id', $this->test->id)
@@ -402,11 +396,11 @@ class PresentTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_type_and_order_only_has_maximum_age_limit()
+    public function test_happy_case_when_type_and_order_only_has_maximum_age_limit(): void
     {
         $this->order->update(['maximum_age' => 17]);
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -425,7 +419,7 @@ class PresentTest extends TestCase
         ]);
     }
 
-    public function test_happy_case_when_type_and_order_has_minimum_and_maximum_age_limit()
+    public function test_happy_case_when_type_and_order_has_minimum_and_maximum_age_limit(): void
     {
         $this->order->update([
             'minimum_age' => 4,
@@ -435,7 +429,7 @@ class PresentTest extends TestCase
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
-        $this->user->update(['birthday' => $this->test->testing_at->subYears(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(

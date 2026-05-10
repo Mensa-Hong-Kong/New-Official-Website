@@ -13,7 +13,7 @@ class ShowTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
@@ -21,7 +21,7 @@ class ShowTest extends TestCase
         $this->test = AdmissionTest::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -32,7 +32,7 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_any_permission_to_view_admission_tests_and_user_is_not_proctor()
+    public function test_have_no_any_permission_to_view_admission_tests_and_user_is_not_proctor(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -60,7 +60,7 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_user_have_no_any_permission_and_is_proctor_but_no_in_testing_time_range()
+    public function test_user_have_no_any_permission_and_is_proctor_but_no_in_testing_time_range(): void
     {
         $user = User::factory()->create();
         $this->test->update([
@@ -78,7 +78,7 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -105,7 +105,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_proctor_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_proctor_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -137,16 +137,16 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_candidate_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -209,16 +209,16 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_candidate_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -281,7 +281,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -290,10 +290,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -331,7 +331,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -340,10 +340,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -381,16 +381,16 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_and_view_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_and_view_admission_test_candidate_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -456,16 +456,16 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_and_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_and_admission_test_candidate_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -531,7 +531,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_and_view_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_and_view_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -540,10 +540,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -584,7 +584,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_edit_admission_test_and_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_edit_admission_test_and_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -593,10 +593,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -637,16 +637,16 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_and_edit_admission_test_candidate_permission()
+    public function test_happy_case_when_user_only_has_view_and_edit_admission_test_candidate_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -712,7 +712,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_candidate_and_result_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_candidate_and_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -721,10 +721,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -790,7 +790,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_admission_test_candidate_and_edit_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_view_admission_test_candidate_and_edit_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -799,10 +799,10 @@ class ShowTest extends TestCase
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
@@ -868,7 +868,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_has_view_and_edit_admission_test_result_permission()
+    public function test_happy_case_when_user_only_has_view_and_edit_admission_test_result_permission(): void
     {
         $proctor = User::factory()->create();
         $this->test->proctors()->attach($proctor->id);
@@ -913,7 +913,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_only_is_proctor_and_in_testing_time_range()
+    public function test_happy_case_when_user_only_is_proctor_and_in_testing_time_range(): void
     {
         $user = User::factory()->create();
         $this->test->update([
@@ -923,18 +923,18 @@ class ShowTest extends TestCase
         $this->test->proctors()->attach($user->id);
         $candidate = User::factory()->create();
         $this->test->candidates()->attach($candidate->id);
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach(
             $candidate->id,
             ['is_present' => true]
         );
-        $test = AdmissionTest::factory()->state([
-            'testing_at' => $this->test->testing_at->subMonths($this->test->type->interval_month),
-            'expect_end_at' => $this->test->expect_end_at->subMonths($this->test->type->interval_month),
-        ])->create();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month),
+        ]);
         $test->candidates()->attach($candidate->id);
         $response = $this->actingAs($user)
             ->get(
@@ -991,7 +991,7 @@ class ShowTest extends TestCase
             );
     }
 
-    public function test_happy_case_when_user_has_permission_and_is_proctor()
+    public function test_happy_case_when_user_has_permission_and_is_proctor(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo([
