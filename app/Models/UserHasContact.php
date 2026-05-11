@@ -172,12 +172,17 @@ class UserHasContact extends Model
         );
     }
 
-    public function isRequestTooManyTime(): bool
+    public function isRequestTooManyTime(): Attribute
     {
-        return ContactHasVerification::where('type', $this->type)
-            ->where('contact', $this->contact)
-            ->where('created_at', '>=', now()->subDay())
-            ->where('middleware_should_count', true)
-            ->count() >= 5;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes): bool {
+                return ContactHasVerification::where('type', $attributes['type'])
+                    ->where('contact', $attributes['contact'])
+                    ->where('created_at', '>=', now()->subDay())
+                    ->where('middleware_should_count', true)
+                    ->count() >= 5;
+            }
+        );
     }
 }
