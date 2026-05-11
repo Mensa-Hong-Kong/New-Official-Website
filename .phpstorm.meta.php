@@ -2448,7 +2448,7 @@ namespace PHPSTORM_META {
 'admin.admission-test.types.update','admin.admission-test.types.display-order.update','admin.admission-test.orders.index','admin.admission-test.orders.create','admin.admission-test.orders.store',
 'admin.admission-test.orders.show','admin.admission-test.orders.status.update','admin.admission-tests.index','admin.admission-tests.create','admin.admission-tests.store',
 'admin.admission-tests.show','admin.admission-tests.update','admin.admission-tests.destroy','admin.admission-tests.proctors.store','admin.admission-tests.proctors.update',
-'admin.admission-tests.proctors.destroy','admin.admission-tests.candidates.seat-numbers.update','admin.admission-tests.candidates.present.update','admin.admission-tests.candidates.result.update','admin.admission-tests.candidates.store',
+'admin.admission-tests.proctors.destroy','admin.admission-tests.candidates.seat-numbers.update','admin.admission-tests.candidates.status.update','admin.admission-tests.candidates.result.update','admin.admission-tests.candidates.store',
 'admin.admission-tests.candidates.show','admin.admission-tests.candidates.edit','admin.admission-tests.candidates.update','admin.admission-tests.candidates.destroy','admin.site-contents.index',
 'admin.site-contents.edit','admin.site-contents.update','admin.custom-web-pages.index','admin.custom-web-pages.create','admin.custom-web-pages.store',
 'admin.custom-web-pages.edit','admin.custom-web-pages.update','admin.custom-web-pages.destroy','admin.navigation-items.index','admin.navigation-items.create',

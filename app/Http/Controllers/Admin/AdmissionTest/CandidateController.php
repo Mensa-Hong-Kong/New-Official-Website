@@ -127,7 +127,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->only('present'),
+            ))->only('status'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (! $request->user()->can('Edit:Admission Test Result')) {
@@ -323,7 +323,7 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
-    public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
+    public function status(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
         $update = ['is_present' => (bool) $request->status];
         DB::beginTransaction();

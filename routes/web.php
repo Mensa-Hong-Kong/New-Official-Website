@@ -157,8 +157,8 @@ Route::middleware('auth')->group(function () {
                         ->whereNumber('proctor');
                     Route::match(['put', 'patch'], 'candidates/seat-numbers', [AdminCandidateController::class, 'seatNumbers'])
                         ->name('candidates.seat-numbers.update');
-                    Route::match(['put', 'patch'], '/candidates/{candidate}/present', [AdminCandidateController::class, 'present'])
-                        ->name('candidates.present.update')
+                    Route::match(['put', 'patch'], '/candidates/{candidate}/status', [AdminCandidateController::class, 'status'])
+                        ->name('candidates.status.update')
                         ->whereNumber('candidate');
                     Route::match(['put', 'patch'], '/candidates/{seat_number}/result', [AdminCandidateController::class, 'result'])
                         ->name('candidates.result.update')

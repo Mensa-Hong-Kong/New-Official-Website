@@ -40,7 +40,7 @@ class PresentTest extends TestCase
     {
         $response = $this->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -61,7 +61,7 @@ class PresentTest extends TestCase
         );
         $response = $this->actingAs($user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -75,7 +75,7 @@ class PresentTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => 0,
                     'candidate' => $this->user,
@@ -90,7 +90,7 @@ class PresentTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $user,
@@ -106,7 +106,7 @@ class PresentTest extends TestCase
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
-                    'admin.admission-tests.candidates.present.update',
+                    'admin.admission-tests.candidates.status.update',
                     [
                         'admission_test' => $this->test,
                         'candidate' => $this->user,
@@ -122,7 +122,7 @@ class PresentTest extends TestCase
         $this->test->update(['expect_end_at' => now()->subHour()->subSecond()]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -139,7 +139,7 @@ class PresentTest extends TestCase
         $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -156,7 +156,7 @@ class PresentTest extends TestCase
         $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -181,7 +181,7 @@ class PresentTest extends TestCase
             ]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -203,7 +203,7 @@ class PresentTest extends TestCase
         $test->candidates()->attach($user->id, ['is_passed' => true]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -231,7 +231,7 @@ class PresentTest extends TestCase
         ]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -253,7 +253,7 @@ class PresentTest extends TestCase
         );
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -273,7 +273,7 @@ class PresentTest extends TestCase
         $test->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -295,7 +295,7 @@ class PresentTest extends TestCase
         $this->assertTrue($this->user->lastAdmissionTestOrder->hasUnusedQuota);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -313,7 +313,7 @@ class PresentTest extends TestCase
         $response = $this->actingAs($this->user)->putJson(
             route(
 
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -328,7 +328,7 @@ class PresentTest extends TestCase
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -344,7 +344,7 @@ class PresentTest extends TestCase
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -374,7 +374,7 @@ class PresentTest extends TestCase
             ->update(['seat_number' => 1]);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -404,7 +404,7 @@ class PresentTest extends TestCase
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,
@@ -433,7 +433,7 @@ class PresentTest extends TestCase
         $this->user = User::find($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
             route(
-                'admin.admission-tests.candidates.present.update',
+                'admin.admission-tests.candidates.status.update',
                 [
                     'admission_test' => $this->test,
                     'candidate' => $this->user,

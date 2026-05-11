@@ -580,8 +580,8 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Is Present</th>
-                        <th>Is Pass</th>
+                        <th>Status</th>
+                        <th>Result</th>
                         <th>Show</th>
                     </tr>
                 </thead>

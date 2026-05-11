@@ -42,7 +42,7 @@
             </tr>
         {:else}
             <tr>
-                <th>Is Present</th>
+                <th>Status</th>
                 <td>
                     {#if candidate.pivot.is_present !== null}
                         {candidate.pivot.is_present ? 'Yes' : 'No'}
@@ -51,7 +51,7 @@
             </tr>
             {#if candidate.pivot.is_passed !== null}
                 <tr>
-                    <th>Is Pass</th>
+                    <th>Result</th>
                     <td>{candidate.pivot.is_passed ? 'Yes' : 'No'}</td>
                 </tr>
             {/if}

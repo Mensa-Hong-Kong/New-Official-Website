@@ -174,7 +174,7 @@
                         <th>Type</th>
                         <th>Testing At</th>
                         <th>Location</th>
-                        <th>Is Present</th>
+                        <th>Status</th>
                         <th>Result</th>
                     </tr>
                 </thead>
