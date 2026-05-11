@@ -89,7 +89,7 @@ class CandidateController extends Controller implements HasMiddleware
                         abort(410, 'The candidate age less than test minimum age limit.');
                     } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($user->ageForPsychology)) {
                         abort(410, 'The candidate age greater than test maximum age limit.');
-                    } elseif ($request->pivot->is_pass !== null) {
+                    } elseif ($request->pivot->is_passed !== null) {
                         abort(410, 'Cannot change exists result candidate present status.');
                     } elseif ($user->hasSamePassportAlreadyQualificationOfMembership) {
                         abort(409, 'The candidate has already been qualification for membership.');
@@ -127,7 +127,7 @@ class CandidateController extends Controller implements HasMiddleware
 
                     return $next($request);
                 }
-            ))->only('present'),
+            ))->only('status'),
             (new Middleware(
                 function (Request $request, Closure $next) {
                     if (! $request->user()->can('Edit:Admission Test Result')) {
@@ -235,7 +235,7 @@ class CandidateController extends Controller implements HasMiddleware
         }
         $candidate->seat_number = $request->pivot->seat_number;
         $candidate->is_present = $request->pivot->is_present;
-        $candidate->has_result = $request->pivot->is_pass !== null;
+        $candidate->has_result = $request->pivot->is_passed !== null;
 
         return Inertia::render('Admin/AdmissionTests/Candidates/Show')
             ->with('test', $admissionTest)
@@ -291,7 +291,7 @@ class CandidateController extends Controller implements HasMiddleware
     {
         DB::beginTransaction();
         $admissionTest->candidates()->detach($candidate->id);
-        if ($request->pivot->is_pass === null) {
+        if ($request->pivot->is_passed === null) {
             $candidate->notify(new CanceledAdmissionTestAppointment($admissionTest));
         } else {
             $candidate->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
@@ -323,7 +323,7 @@ class CandidateController extends Controller implements HasMiddleware
         ];
     }
 
-    public function present(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
+    public function status(StatusRequest $request, AdmissionTest $admissionTest, User $candidate)
     {
         $update = ['is_present' => (bool) $request->status];
         DB::beginTransaction();
@@ -352,8 +352,8 @@ class CandidateController extends Controller implements HasMiddleware
     public function result(StatusRequest $request, AdmissionTest $admissionTest, int $seatNumber)
     {
         DB::beginTransaction();
-        $request->pivot->update(['is_pass' => (bool) $request->status]);
-        if ($request->pivot->is_pass) {
+        $request->pivot->update(['is_passed' => (bool) $request->status]);
+        if ($request->pivot->is_passed) {
             $request->pivot->candidate->notify(new PassAdmissionTest($admissionTest));
         } else {
             $request->pivot->candidate->notify(new FailAdmissionTest($admissionTest));
@@ -361,8 +361,8 @@ class CandidateController extends Controller implements HasMiddleware
         DB::commit();
 
         return [
-            'success' => "The candidate of {$request->pivot->candidate->adornedName} changed to be ".($request->pivot->is_pass ? 'pass.' : 'fail.'),
-            'status' => $request->pivot->is_pass,
+            'success' => "The candidate of {$request->pivot->candidate->adornedName} changed to be ".($request->pivot->is_passed ? 'pass.' : 'fail.'),
+            'status' => $request->pivot->is_passed,
         ];
     }
 }

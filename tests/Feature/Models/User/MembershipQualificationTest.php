@@ -41,7 +41,7 @@ class MembershipQualificationTest extends TestCase
             $this->user->id,
             [
                 'is_present' => true,
-                'is_pass' => true,
+                'is_passed' => true,
             ]
         );
         $this->assertTrue($this->user->hasQualificationOfMembership);

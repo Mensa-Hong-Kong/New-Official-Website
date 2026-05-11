@@ -44,7 +44,7 @@
             if(submitting == 'updatePresentStatue'+submitAt) {
                 post(
                     route(
-                        'admin.admission-tests.candidates.present.update',
+                        'admin.admission-tests.candidates.status.update',
                         {
                             admission_test: route().params.admission_test,
                             candidate: candidate.id,

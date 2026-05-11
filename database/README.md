@@ -236,7 +236,7 @@ erDiagram
         date token_on
         string score
         decimal percent_of_group
-        boolean is_pass
+        boolean is_passed
         timestamp created_at
         timestamp updated_at
     }
@@ -337,7 +337,7 @@ erDiagram
         bigint user_id FK
         bigint order_id FK
         boolean is_present
-        boolean is_pass
+        boolean is_passed
         timestamp created_at
         timestamp updated_at
     }
@@ -721,7 +721,7 @@ Pivot table linking users as test candidates.
 **Columns:**
 
 -   `is_present` - Attendance tracking
--   `is_pass` - Test result (nullable until graded)
+-   `is_passed` - Test result (nullable until graded)
 -   `order_id` - Link to payment order
 
 **Foreign Key Constraint:** `ON DELETE CASCADE` for `test_id`
@@ -1381,7 +1381,7 @@ $orders = AdmissionTestOrder::with('gateway')
 // Get test candidates
 $candidates = AdmissionTest::find($testId)
     ->candidates()
-    ->withPivot(['is_present', 'is_pass'])
+    ->withPivot(['is_present', 'is_passed'])
     ->get();
 ```
 

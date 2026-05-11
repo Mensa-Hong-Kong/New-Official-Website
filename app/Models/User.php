@@ -311,7 +311,7 @@ class User extends Authenticatable
     public function passedAdmissionTest(): HasOneThrough
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
-            ->where('is_pass', true);
+            ->where('is_passed', true);
     }
 
     protected function stripeName(): string
@@ -430,7 +430,7 @@ class User extends Authenticatable
     public function admissionTests(): BelongsToMany
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'test_id')
-            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass']);
+            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_passed']);
     }
 
     public function lastAdmissionTest(): HasOneThrough
@@ -442,7 +442,7 @@ class User extends Authenticatable
                 (new AdmissionTest)->getTable().'.*',
                 ...array_map(
                     fn ($column) => "$table.$column as pivot_$column",
-                    ['order_id', 'seat_number', 'is_present', 'is_pass']
+                    ['order_id', 'seat_number', 'is_present', 'is_passed']
                 ),
             ])
             ->latest('testing_at');
@@ -537,8 +537,8 @@ class User extends Authenticatable
                     ->where(
                         function ($query) {
                             $query->where('is_present', true)
-                                ->whereNull('is_pass')
-                                ->orWhere('is_pass', true);
+                                ->whereNull('is_passed')
+                                ->orWhere('is_passed', true);
                         }
                     )->orWhere(function ($query) {
                         $query->whereNull('is_present')

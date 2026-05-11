@@ -174,7 +174,7 @@
                         <th>Type</th>
                         <th>Testing At</th>
                         <th>Location</th>
-                        <th>Is Present</th>
+                        <th>Status</th>
                         <th>Result</th>
                     </tr>
                 </thead>
@@ -198,8 +198,8 @@
                                 {/if}
                             </td>
                             <td>
-                                {#if test.is_pass !== null}
-                                    {test.is_pass ? 'Yes' : 'No'}
+                                {#if test.is_passed !== null}
+                                    {test.is_passed ? 'Yes' : 'No'}
                                 {/if}
                             </td>
                         </tr>

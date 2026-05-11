@@ -343,7 +343,7 @@ class CandidateController extends Controller implements HasMiddleware
                 'candidate', [
                     'pivot' => [
                         'is_present' => $candidate->pivot->is_present,
-                        'is_pass' => $candidate->pivot->is_pass,
+                        'is_passed' => $candidate->pivot->is_passed,
                     ],
                 ]
             );

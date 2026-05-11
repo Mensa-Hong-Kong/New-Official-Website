@@ -237,7 +237,7 @@ class Controller extends BaseController implements HasMiddleware
                 ])
             ) {
                 $pivotAppend[] = 'has_result';
-                $pivotHidden[] = 'is_pass';
+                $pivotHidden[] = 'is_passed';
             }
             $admissionTest->candidates->each(
                 function ($candidate) use ($pivotHidden, $pivotAppend) {

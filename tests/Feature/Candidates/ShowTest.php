@@ -109,7 +109,7 @@ class ShowTest extends TestCase
         ]);
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
-            'is_pass' => 1,
+            'is_passed' => 1,
         ]);
         $response = $this->actingAs($this->user)->get(
             route(

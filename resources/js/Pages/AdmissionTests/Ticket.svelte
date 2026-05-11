@@ -42,17 +42,17 @@
             </tr>
         {:else}
             <tr>
-                <th>Is Present</th>
+                <th>Status</th>
                 <td>
                     {#if candidate.pivot.is_present !== null}
                         {candidate.pivot.is_present ? 'Yes' : 'No'}
                     {/if}
                 </td>
             </tr>
-            {#if candidate.pivot.is_pass !== null}
+            {#if candidate.pivot.is_passed !== null}
                 <tr>
-                    <th>Is Pass</th>
-                    <td>{candidate.pivot.is_pass ? 'Yes' : 'No'}</td>
+                    <th>Result</th>
+                    <td>{candidate.pivot.is_passed ? 'Yes' : 'No'}</td>
                 </tr>
             {/if}
         {/if}
