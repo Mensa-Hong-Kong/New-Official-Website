@@ -344,7 +344,7 @@ class StoreTest extends TestCase
         ]);
         $oldTest->candidates()->attach($user->id, [
             'is_present' => 1,
-            'is_pass' => 1,
+            'is_passed' => 1,
         ]);
         $response = $this->actingAs($this->user)->postJson(
             route(

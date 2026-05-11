@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property int|null $order_id
  * @property int|null $seat_number
  * @property bool|null $is_present
- * @property bool|null $is_pass
+ * @property bool|null $is_passed
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $candidate
@@ -47,12 +47,12 @@ class AdmissionTestHasCandidate extends Pivot
         'order_id',
         'seat_number',
         'is_present',
-        'is_pass',
+        'is_passed',
     ];
 
     protected $casts = [
         'is_present' => 'boolean',
-        'is_pass' => 'boolean',
+        'is_passed' => 'boolean',
     ];
 
     public function test(): BelongsTo
@@ -78,7 +78,7 @@ class AdmissionTestHasCandidate extends Pivot
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes): bool {
-                return $attributes['is_pass'] !== null;
+                return $attributes['is_passed'] !== null;
             }
         );
     }

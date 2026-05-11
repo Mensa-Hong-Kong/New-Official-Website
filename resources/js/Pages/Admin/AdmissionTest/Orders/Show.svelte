@@ -198,8 +198,8 @@
                                 {/if}
                             </td>
                             <td>
-                                {#if test.is_pass !== null}
-                                    {test.is_pass ? 'Yes' : 'No'}
+                                {#if test.is_passed !== null}
+                                    {test.is_passed ? 'Yes' : 'No'}
                                 {/if}
                             </td>
                         </tr>

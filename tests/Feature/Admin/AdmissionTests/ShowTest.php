@@ -320,7 +320,7 @@ class ShowTest extends TestCase
                                                 ->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -370,7 +370,7 @@ class ShowTest extends TestCase
                                                 ->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -573,7 +573,7 @@ class ShowTest extends TestCase
                                                 ->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -626,7 +626,7 @@ class ShowTest extends TestCase
                                                 ->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -779,7 +779,7 @@ class ShowTest extends TestCase
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -857,7 +857,7 @@ class ShowTest extends TestCase
                                                         $page->has('seat_number')
                                                             ->has('is_present')
                                                             ->has('is_free')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }
@@ -902,7 +902,7 @@ class ShowTest extends TestCase
                                                 ->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_pass');
+                                                            ->has('is_passed');
                                                     }
                                                 );
                                         }

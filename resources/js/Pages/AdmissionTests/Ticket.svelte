@@ -49,10 +49,10 @@
                     {/if}
                 </td>
             </tr>
-            {#if candidate.pivot.is_pass !== null}
+            {#if candidate.pivot.is_passed !== null}
                 <tr>
                     <th>Is Pass</th>
-                    <td>{candidate.pivot.is_pass ? 'Yes' : 'No'}</td>
+                    <td>{candidate.pivot.is_passed ? 'Yes' : 'No'}</td>
                 </tr>
             {/if}
         {/if}

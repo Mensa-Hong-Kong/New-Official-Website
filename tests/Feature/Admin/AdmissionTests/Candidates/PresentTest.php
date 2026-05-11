@@ -177,7 +177,7 @@ class PresentTest extends TestCase
             ->where('user_id', $this->user->id)
             ->update([
                 'is_present' => true,
-                'is_pass' => true,
+                'is_passed' => true,
             ]);
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -200,7 +200,7 @@ class PresentTest extends TestCase
             'passport_type_id' => $this->user->passport_type_id,
             'passport_number' => $this->user->passport_number,
         ]);
-        $test->candidates()->attach($user->id, ['is_pass' => true]);
+        $test->candidates()->attach($user->id, ['is_passed' => true]);
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.admission-tests.candidates.present.update',
@@ -227,7 +227,7 @@ class PresentTest extends TestCase
         ]);
         $oldTest->candidates()->attach($user->id, [
             'is_present' => 1,
-            'is_pass' => 0,
+            'is_passed' => 0,
         ]);
         $response = $this->actingAs($this->user)->putJson(
             route(

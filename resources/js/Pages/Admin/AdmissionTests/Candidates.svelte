@@ -62,7 +62,7 @@
                     'Edit:Admission Test Result',
                 ])
             ) {
-                data['isPass'] = row.pivot.is_pass;
+                data['isPassed'] = row.pivot.is_passed;
             } else {
                 data['hasResult'] = row.pivot.has_result;
             }
@@ -70,7 +70,7 @@
         } else {
             candidates.push({
                 seatNumber: row.pivot.seat_number,
-                isPass: row.pivot.is_pass,
+                isPassed: row.pivot.is_passed,
             });
         }
     }
@@ -113,7 +113,7 @@
         alert(response.data.success);
         let seatNumber = route().match(response.request.responseURL, 'put').params.seat_number;
         let index = getIndexBySeatNumber(seatNumber);
-        candidates[index]['isPass'] = response.data.status;
+        candidates[index]['isPassed'] = response.data.status;
         candidates[index]['updatingStatue'] = false;
         submitting = false;
     }
@@ -244,7 +244,7 @@
                 'Edit:Admission Test Result',
             ])
         ) {
-            data['isPass'] = false;
+            data['isPassed'] = false;
         } else {
             data['hasResult'] = false;
         }
@@ -697,7 +697,7 @@
                                     <td>
                                         <Button block color="success" name="status" value={true} style="min-width: 85px !important"
                                             disabled={
-                                                submitting || row.isPass || (
+                                                submitting || row.isPassed || (
                                                     canAny([
                                                         'View:Admission Test Candidate',
                                                         'Edit:Admission Test Candidate',
@@ -708,7 +708,7 @@
                                     <td>
                                         <Button block color="danger" name="status" value={false} style="min-width: 85px !important"
                                             disabled={
-                                                submitting || row.isPass === false || (
+                                                submitting || row.isPassed === false || (
                                                     canAny([
                                                         'View:Admission Test Candidate',
                                                         'Edit:Admission Test Candidate',
@@ -717,7 +717,7 @@
                                             } onclick={() => updateResult(index, false)}>Fail</Button>
                                     </td>
                                 {:else if can('View:Admission Test Result')}
-                                    <td>{row.isPass === null ? '--' : row.isPass ? 'Pass' : 'Fail'}</td>
+                                    <td>{row.isPassed === null ? '--' : row.isPassed ? 'Pass' : 'Fail'}</td>
                                 {/if}
                             {/if}
                             {#if can('Edit:Admission Test Candidate')}

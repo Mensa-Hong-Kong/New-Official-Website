@@ -239,7 +239,7 @@ erDiagram
         date token_on
         string score
         decimal percent_of_group
-        boolean is_pass
+        boolean is_passed
         timestamp created_at
         timestamp updated_at
     }
@@ -339,7 +339,7 @@ erDiagram
         bigint user_id FK
         bigint order_id FK
         boolean is_present
-        boolean is_pass
+        boolean is_passed
         timestamp created_at
         timestamp updated_at
     }
@@ -719,7 +719,7 @@ Laravel 會話存儲。
 **列：**
 
 -   `is_present` - 出席情況跟蹤
--   `is_pass` - 考試結果（通過分級前為空）
+-   `is_passed` - 考試結果（通過分級前為空）
 -   `order_id` - 鏈接到支付訂單
 
 **外鍵約束：** `test_id` 使用 `ON DELETE CASCADE`
@@ -1380,7 +1380,7 @@ $orders = AdmissionTestOrder::with('gateway')
 // 獲取考試考生
 $candidates = AdmissionTest::find($testId)
     ->candidates()
-    ->withPivot(['is_present', 'is_pass'])
+    ->withPivot(['is_present', 'is_passed'])
     ->get();
 ```
 

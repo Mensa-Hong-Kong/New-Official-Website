@@ -134,7 +134,7 @@ class DeleteTest extends TestCase
         Notification::fake();
         AdmissionTestHasCandidate::where('test_id', $this->test->id)
             ->where('user_id', $this->user->id)
-            ->update(['is_pass' => true]);
+            ->update(['is_passed' => true]);
         $response = $this->actingAs($this->user)->deleteJson(
             route(
                 'admin.admission-tests.candidates.destroy',

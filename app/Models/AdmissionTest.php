@@ -104,7 +104,7 @@ class AdmissionTest extends Model
     public function candidates(): BelongsToMany
     {
         return $this->belongsToMany(User::class, AdmissionTestHasCandidate::class, 'test_id')
-            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass']);
+            ->withPivot(['order_id', 'seat_number', 'is_present', 'is_passed']);
     }
 
     protected function inTestingTimeRange(): Attribute
