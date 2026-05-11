@@ -43,7 +43,7 @@ class ContactController extends Controller implements HasMiddleware
             (new Middleware(
                 function (Request $request, Closure $next) {
                     $contact = $request->route('contact');
-                    if ($contact->isRequestTooFast()) {
+                    if ($contact->isRequestTooFast) {
                         abort(429, 'For each contact each minute only can get 1 time verify code, please try again later.');
                     }
                     if ($contact->isRequestTooManyTime()) {

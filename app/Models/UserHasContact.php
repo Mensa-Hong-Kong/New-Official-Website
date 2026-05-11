@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
  * @property-read \App\Models\User|null $user
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $verifications
  * @property-read int|null $verifications_count
+ * @property-read bool $is_request_too_fast
  *
  * @method static \Database\Factories\UserHasContactFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact newModelQuery()
@@ -159,9 +160,16 @@ class UserHasContact extends Model
         $this->notify(new VerifyContact($this->type, $this->newVerifyCode()));
     }
 
-    public function isRequestTooFast(): bool
+    public function isRequestTooFast(): Attribute
     {
-        return $this->lastVerification && $this->lastVerification->created_at > now()->subMinute();
+        $contact = $this;
+
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) use($contact): bool {
+                return $contact->lastVerification &&
+                    $contact->lastVerification->created_at > now()->subMinute();
+            }
+        );
     }
 
     public function isRequestTooManyTime(): bool
