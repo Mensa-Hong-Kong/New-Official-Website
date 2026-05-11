@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read bool $is_closed
+ * @property-read bool $is_tried_too_many_time
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newQuery()
@@ -77,8 +78,12 @@ class ContactHasVerification extends Model
         );
     }
 
-    public function isTriedTooManyTime(): bool
+    public function isTriedTooManyTime(): Attribute
     {
-        return $this->tried_time >= 5;
+        return Attribute::make(
+            get: function (mixed $value, array $attributes): bool {
+                return $attributes['tried_time'] >= 5;
+            }
+        );
     }
 }

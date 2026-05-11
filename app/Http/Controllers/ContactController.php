@@ -67,7 +67,7 @@ class ContactController extends Controller implements HasMiddleware
                     if ($contact->lastVerification->isClosed) {
                         $error = 'The verify code expired';
                     }
-                    if ($contact->lastVerification->isTriedTooManyTime()) {
+                    if ($contact->lastVerification->isTriedTooManyTime) {
                         $error = 'The verify code tried more than 5 times';
                     }
                     if ($error != '') {
@@ -118,7 +118,7 @@ class ContactController extends Controller implements HasMiddleware
             $isFailedTooMany = false;
             $contact->lastVerification->increment('tried_time');
             $error = 'The verify code is incorrect';
-            if ($contact->lastVerification->isTriedTooManyTime()) {
+            if ($contact->lastVerification->isTriedTooManyTime) {
                 $error .= ', the verify code tried 5 time';
                 if ($contact->isRequestTooManyTime()) {
                     $error .= ", include other user(s), this {$contact->type} have sent 5 times verify code and each {$contact->type} each day only can send 5 verify code, please try again on tomorrow or contact us to verify by manual";
