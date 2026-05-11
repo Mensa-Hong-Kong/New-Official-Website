@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $middleware_should_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read bool $is_closed
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newQuery()
@@ -66,9 +68,13 @@ class ContactHasVerification extends Model
         'middleware_should_count' => 'boolean',
     ];
 
-    public function isClosed(): bool
+    public function isClosed(): Attribute
     {
-        return now() > $this->closed_at;
+        return Attribute::make(
+            get: function (mixed $value, array $attributes): bool {
+                return now() > $attributes['closed_at'];
+            }
+        );
     }
 
     public function isTriedTooManyTime(): bool

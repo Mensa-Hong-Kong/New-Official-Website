@@ -64,7 +64,7 @@ class ContactController extends Controller implements HasMiddleware
                         abort(404, 'The verify request record is not found, the new verify code sent.');
                     }
                     $error = '';
-                    if ($contact->lastVerification->isClosed()) {
+                    if ($contact->lastVerification->isClosed) {
                         $error = 'The verify code expired';
                     }
                     if ($contact->lastVerification->isTriedTooManyTime()) {
