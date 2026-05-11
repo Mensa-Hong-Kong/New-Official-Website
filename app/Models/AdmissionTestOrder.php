@@ -124,7 +124,7 @@ class AdmissionTestOrder extends Model
         return Attribute::make(
             get: function () use ($order): ?Carbon {
                 if ($order->quota_validity_months) {
-                    $date = ($order->lastAttendedTest->testing_at ?? $order->created_at)
+                    $date = (clone ($order->lastAttendedTest->testing_at ?? $order->created_at))
                         ->addMonths(
                             $order->quota_validity_months +
                                 ($order->lastAttendedTest->type->interval_month ?? 0)
