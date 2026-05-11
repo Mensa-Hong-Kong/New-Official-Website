@@ -8,8 +8,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -59,6 +61,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read bool $has_same_passport_already_qualification_of_membership
  * @property-read \App\Models\AdmissionTest|null $lastAdmissionTest
  * @property-read \App\Models\AdmissionTestOrder|null $lastAdmissionTestOrder
+ * @property-read \App\Models\AdmissionTest|null $lastAttendedAdmissionTest
  * @property-read \App\Models\AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
  * @property-read \App\Models\UserLoginLog|null $lastLoginLog
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserLoginLog> $loginLogs
@@ -155,12 +158,12 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::created(
-            function (User $user) {
+            function (User $user): void {
                 CreateUser::dispatch($user->id);
             }
         );
         static::updating(
-            function (User $user) {
+            function (User $user): void {
                 if ($user->isDirty(['family_name', 'middle_name', 'given_name'])) {
                     $user->synced_to_stripe = false;
                 }
@@ -305,7 +308,7 @@ class User extends Authenticatable
         );
     }
 
-    public function passedAdmissionTest()
+    public function passedAdmissionTest(): HasOneThrough
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'id', 'id', 'test_id')
             ->where('is_pass', true);
@@ -348,7 +351,7 @@ class User extends Authenticatable
             ->where('type', 'mobile');
     }
 
-    public function checkPassword($password): bool
+    public function checkPassword(string $password): bool
     {
         return Hash::check($password, $this->password);
     }
@@ -405,7 +408,7 @@ class User extends Authenticatable
         return $this->hasMany(ContactHasVerification::class, 'creator_id');
     }
 
-    public function isRequestTooManyTimeVerifyCode($contactType): bool
+    public function isRequestTooManyTimeVerifyCode(string $contactType): bool
     {
         return $this->contactVerifications()
             ->where('type', $contactType)
@@ -414,23 +417,23 @@ class User extends Authenticatable
             ->count() >= 5;
     }
 
-    public function member()
+    public function member(): HasOne
     {
         return $this->hasOne(Member::class);
     }
 
-    public function proctorTests()
+    public function proctorTests(): BelongsToMany
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasProctor::class, 'user_id', 'test_id');
     }
 
-    public function admissionTests()
+    public function admissionTests(): BelongsToMany
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'user_id', 'test_id')
             ->withPivot(['order_id', 'seat_number', 'is_present', 'is_pass']);
     }
 
-    public function lastAdmissionTest()
+    public function lastAdmissionTest(): HasOneThrough
     {
         $table = (new AdmissionTestHasCandidate)->getTable();
 
@@ -445,46 +448,40 @@ class User extends Authenticatable
             ->latest('testing_at');
     }
 
-    public function lastAttendedAdmissionTest()
+    public function lastAttendedAdmissionTest(): HasOneThrough
     {
         return $this->lastAdmissionTest()
             ->where('is_present', true);
     }
 
-    public function futureAdmissionTest()
-    {
-        return $this->lastAdmissionTest()
-            ->whereNull('is_present');
-    }
-
-    public function admissionTestOrders()
+    public function admissionTestOrders(): HasMany
     {
         return $this->hasMany(AdmissionTestOrder::class);
     }
 
-    public function lastAdmissionTestOrder()
+    public function lastAdmissionTestOrder(): HasOne
     {
         return $this->hasOne(AdmissionTestOrder::class)
             ->latest('id');
     }
 
-    public function memberTransfers()
+    public function memberTransfers(): HasMany
     {
         return $this->hasMany(MembershipTransfer::class);
     }
 
-    public function priorEvidenceOrders()
+    public function priorEvidenceOrders(): HasMany
     {
         return $this->hasMany(PriorEvidenceOrder::class);
     }
 
-    public function acceptedPriorEvidence()
+    public function acceptedPriorEvidence(): HasOneThrough
     {
         return $this->hasOneThrough(PriorEvidenceResult::class, PriorEvidenceOrder::class, 'user_id', 'order_id', 'id', 'id')
             ->where('is_accepted', true);
     }
 
-    public function membershipOrders()
+    public function membershipOrders(): HasMany
     {
         return $this->hasMany(MembershipOrder::class);
     }
@@ -525,7 +522,7 @@ class User extends Authenticatable
         );
     }
 
-    public function address()
+    public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
     }

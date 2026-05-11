@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property int $contact_id
- * @property \App\Models\UserHasContact|null $contact
+ * @property string $contact
  * @property string $type
  * @property string|null $code
  * @property int $tried_time
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $expired_at
  * @property int $creator_id
  * @property string $creator_ip
- * @property int $middleware_should_count
+ * @property bool $middleware_should_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
@@ -63,19 +63,15 @@ class ContactHasVerification extends Model
         'closed_at' => 'datetime',
         'verified_at' => 'datetime',
         'expired_at' => 'datetime',
+        'middleware_should_count' => 'boolean',
     ];
 
-    public function contact()
-    {
-        return $this->belongsTo(UserHasContact::class, 'contact_id');
-    }
-
-    public function isClosed()
+    public function isClosed(): bool
     {
         return now() > $this->closed_at;
     }
 
-    public function isTriedTooManyTime()
+    public function isTriedTooManyTime(): bool
     {
         return $this->tried_time >= 5;
     }

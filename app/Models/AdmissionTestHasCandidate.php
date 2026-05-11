@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
@@ -54,12 +55,12 @@ class AdmissionTestHasCandidate extends Pivot
         'is_pass' => 'boolean',
     ];
 
-    public function test()
+    public function test(): BelongsTo
     {
         return $this->belongsTo(AdmissionTest::class, 'test_id');
     }
 
-    public function candidate()
+    public function candidate(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

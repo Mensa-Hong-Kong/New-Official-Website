@@ -45,5 +45,6 @@ class ModulePermission extends Model
         'name',
         'module_id',
         'permission_id',
+        'guard_name',
     ];
 }

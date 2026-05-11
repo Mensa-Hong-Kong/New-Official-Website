@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreign('test_id')
                 ->references('id') // admission test id
                 ->on('admission_tests')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
         });
     }
 

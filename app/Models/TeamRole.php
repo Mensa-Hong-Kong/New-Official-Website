@@ -46,5 +46,6 @@ class TeamRole extends Model
         'team_id',
         'role_id',
         'display_order',
+        'guard_name',
     ];
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -37,7 +38,7 @@ class Permission extends Model
         'display_order',
     ];
 
-    public function modules()
+    public function modules(): BelongsToMany
     {
         return $this->belongsToMany(Module::class, ModulePermission::class);
     }

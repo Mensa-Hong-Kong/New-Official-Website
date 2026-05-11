@@ -6,6 +6,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property int $id
@@ -15,8 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property numeric $price
  * @property int|null $minimum_age
  * @property int|null $maximum_age
- * @property int|null $quota_validity_months
  * @property int $quota
+ * @property int|null $quota_validity_months
  * @property string $status
  * @property \Illuminate\Support\Carbon $expired_at
  * @property string $gateway_type
@@ -26,11 +30,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $returned_quota
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $attendedTests
+ * @property-read int|null $attended_tests_count
  * @property-read Model|\Eloquent $gateway
  * @property-read bool $has_unused_quota
+ * @property-read \App\Models\AdmissionTest|null $lastAttendedTest
  * @property-read \App\Models\AdmissionTest|null $lastTest
  * @property-read \Carbon\Carbon|null $quota_expired_on
- * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
  * @property-read int|null $tests_count
  * @property-read \App\Models\User|null $user
@@ -51,6 +58,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder wherePriceName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereProductName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereQuota($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereQuotaValidityMonths($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereReferenceNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereReturnedQuota($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder whereStatus($value)
@@ -82,36 +90,38 @@ class AdmissionTestOrder extends Model
     ];
 
     protected $casts = [
+        'price' => 'decimal:2',
         'expired_at' => 'datetime',
+        'gateway_payment_fee' => 'decimal:2',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function gateway()
+    public function gateway(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function tests()
+    public function tests(): BelongsToMany
     {
         return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id');
     }
 
-    public function attendedTests()
+    public function attendedTests(): BelongsToMany
     {
         return $this->tests()->where('is_present', true);
     }
 
-    public function lastTest()
+    public function lastTest(): HasOneThrough
     {
         return $this->hasOneThrough(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'id', 'id', 'test_id')
             ->latest('testing_at');
     }
 
-    public function lastAttendedTest()
+    public function lastAttendedTest(): HasOneThrough
     {
         return $this->lastTest()
             ->where('is_present', true);

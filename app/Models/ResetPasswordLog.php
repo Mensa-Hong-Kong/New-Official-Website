@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $contact_type
  * @property int|null $creator_id
  * @property string $creator_ip
- * @property int $middleware_should_count
+ * @property bool $middleware_should_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $creator
@@ -50,17 +51,21 @@ class ResetPasswordLog extends Model
         'middleware_should_count',
     ];
 
-    public function passportType()
+    protected $casts = [
+        'middleware_should_count' => 'boolean',
+    ];
+
+    public function passportType(): BelongsTo
     {
         return $this->belongsTo(PassportType::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

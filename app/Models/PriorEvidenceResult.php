@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property int $order_id
  * @property int $test_id
- * @property string $taken_on
+ * @property \Illuminate\Support\Carbon $taken_on
  * @property string $score
  * @property numeric|null $percent_of_group
  * @property bool|null $is_accepted
@@ -50,20 +52,22 @@ class PriorEvidenceResult extends Model
     ];
 
     protected $casts = [
+        'taken_on' => 'date',
+        'percent_of_group' => 'decimal:2',
         'is_accepted' => 'boolean',
     ];
 
-    public function order()
+    public function order(): BelongsTo
     {
         return $this->belongsTo(PriorEvidenceOrder::class, 'order_id');
     }
 
-    public function test()
+    public function test(): BelongsTo
     {
         return $this->belongsTo(QualifyingTest::class, 'test_id');
     }
 
-    public function user()
+    public function user(): HasOneThrough
     {
         return $this->hasOneThrough(User::class, PriorEvidenceOrder::class, 'id', 'id', 'order_id', 'user_id');
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -32,7 +33,7 @@ class Location extends Model
         'name',
     ];
 
-    public function admissionTests()
+    public function admissionTests(): HasMany
     {
         return $this->hasMany(AdmissionTest::class);
     }

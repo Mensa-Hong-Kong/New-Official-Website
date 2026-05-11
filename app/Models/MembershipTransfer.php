@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $membership_number
  * @property int|null $membership_ended_in
  * @property string|null $remark
- * @property int|null $is_accepted
+ * @property bool|null $is_accepted
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\NationalMensa|null $nationalMensa
@@ -49,12 +50,16 @@ class MembershipTransfer extends Model
         'is_accepted',
     ];
 
-    public function user()
+    protected $casts = [
+        'is_accepted' => 'boolean',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function nationalMensa()
+    public function nationalMensa(): BelongsTo
     {
         return $this->belongsTo(NationalMensa::class);
     }

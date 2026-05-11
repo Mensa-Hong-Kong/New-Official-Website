@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -32,10 +33,11 @@ class District extends Model
 
     protected $fillable = [
         'area_id',
+        'display_order',
         'name',
     ];
 
-    public function area()
+    public function area(): BelongsTo
     {
         return $this->belongsTo(Area::class);
     }

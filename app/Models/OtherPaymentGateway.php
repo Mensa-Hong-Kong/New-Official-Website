@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -44,7 +45,7 @@ class OtherPaymentGateway extends Model
         'is_active' => 'boolean',
     ];
 
-    public function admissionTestOrders()
+    public function admissionTestOrders(): MorphMany
     {
         return $this->morphMany(AdmissionTestOrder::class, 'gateway');
     }
