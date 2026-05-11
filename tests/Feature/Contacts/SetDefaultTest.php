@@ -12,9 +12,9 @@ class SetDefaultTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $contact;
+    private UserHasContact $contact;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class SetDefaultTest extends TestCase
         $this->contact->sendVerifyCode();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(route(
             'contacts.set-default', ['contact' => $this->contact]
@@ -33,7 +33,7 @@ class SetDefaultTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_user_contact_is_not_zirself()
+    public function test_user_contact_is_not_zirself(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
@@ -43,7 +43,7 @@ class SetDefaultTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_the_contact_is_not_verified()
+    public function test_the_contact_is_not_verified(): void
     {
         $response = $this->actingAs($this->user)
             ->patchJson(route(
@@ -53,7 +53,7 @@ class SetDefaultTest extends TestCase
         $response->assertJson(['message' => "The {$this->contact->type} is not verified, cannot set this contact to default, please verify first."]);
     }
 
-    public function test_the_contact_already_is_default()
+    public function test_the_contact_already_is_default(): void
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $this->contact->update(['is_default' => true]);
@@ -64,7 +64,7 @@ class SetDefaultTest extends TestCase
         $response->assertCreated();
     }
 
-    public function test_happy_case_user_have_no_default_contact()
+    public function test_happy_case_user_have_no_default_contact(): void
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -76,13 +76,12 @@ class SetDefaultTest extends TestCase
         $this->assertTrue($this->contact->refresh()->is_default);
     }
 
-    public function test_happy_case_user_has_default_contact()
+    public function test_happy_case_user_has_default_contact(): void
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $contact = UserHasContact::factory()
             ->{$this->contact->type}()
-            ->state(['is_default' => true])
-            ->create();
+            ->create(['is_default' => true]);
         $contact->sendVerifyCode();
         $contact->lastVerification->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)

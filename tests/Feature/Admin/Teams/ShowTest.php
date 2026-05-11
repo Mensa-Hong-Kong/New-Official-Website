@@ -11,7 +11,7 @@ class ShowTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -22,7 +22,7 @@ class ShowTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_is_not_admin()
+    public function test_is_not_admin(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
@@ -35,7 +35,7 @@ class ShowTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
@@ -48,7 +48,7 @@ class ShowTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');

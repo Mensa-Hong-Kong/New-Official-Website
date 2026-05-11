@@ -11,13 +11,13 @@ class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(route('admin.admission-test.products.index'));
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -31,7 +31,7 @@ class IndexTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class CheckoutTest extends TestCase
 {
-    public function test_create_checkout_but_stripe_under_maintenance()
+    public function test_create_checkout_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/checkout/sessions/*' => Http::response(status: 503),
@@ -28,7 +28,7 @@ class CheckoutTest extends TestCase
         ]);
     }
 
-    public function test_create_checkout_happy_case()
+    public function test_create_checkout_happy_case(): void
     {
         $response = [
             'id' => 'cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u',
@@ -124,7 +124,7 @@ class CheckoutTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_find_checkout_have_no_result()
+    public function test_find_checkout_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/checkout/sessions/*' => Http::response(status: 404),
@@ -141,7 +141,7 @@ class CheckoutTest extends TestCase
         );
     }
 
-    public function test_find_checkout_has_result()
+    public function test_find_checkout_has_result(): void
     {
         $response = [
             'id' => 'cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u',
@@ -220,7 +220,7 @@ class CheckoutTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_update_checkout_happy_case()
+    public function test_update_checkout_happy_case(): void
     {
         $response = [
             'id' => 'cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u',
@@ -310,7 +310,7 @@ class CheckoutTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_expire_checkout_happy_case()
+    public function test_expire_checkout_happy_case(): void
     {
         $response = [
             'id' => 'cs_test_a11YYufWQzNY63zpQ6QSNRQhkUpVph4WRmzW0zWJO2znZKdVujZ0N0S22u',

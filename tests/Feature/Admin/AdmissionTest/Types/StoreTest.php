@@ -12,7 +12,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     private $happyCase = [
         'name' => 'abc',
@@ -28,7 +28,7 @@ class StoreTest extends TestCase
         $this->user->givePermissionTo('Edit:Admission Test');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route('admin.admission-test.types.store'),
@@ -37,7 +37,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -53,7 +53,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_name()
+    public function test_missing_name(): void
     {
         $data = $this->happyCase;
         unset($data['name']);
@@ -64,7 +64,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field is required.']);
     }
 
-    public function test_name_is_not_string()
+    public function test_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['name'] = ['abc'];
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_too_long()
+    public function test_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
@@ -86,10 +86,10 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
     }
 
-    public function test_name_is_used()
+    public function test_name_is_used(): void
     {
         $data = $this->happyCase;
-        AdmissionTestType::factory()->state(['name' => $data['name']])->create();
+        AdmissionTestType::factory()->create(['name' => $data['name']]);
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.types.store'),
             $data
@@ -97,7 +97,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name has already been taken.']);
     }
 
-    public function test_missing_interval_month()
+    public function test_missing_interval_month(): void
     {
         $data = $this->happyCase;
         unset($data['interval_month']);
@@ -108,7 +108,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['interval_month' => 'The interval month field is required.']);
     }
 
-    public function test_interval_month_is_not_integer()
+    public function test_interval_month_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['interval_month'] = 'abc';
@@ -119,7 +119,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['interval_month' => 'The interval month field must be an integer.']);
     }
 
-    public function test_interval_month_less_than_zero()
+    public function test_interval_month_less_than_zero(): void
     {
         $data = $this->happyCase;
         $data['interval_month'] = -1;
@@ -130,7 +130,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['interval_month' => 'The interval month field must be at least 0.']);
     }
 
-    public function test_interval_month_more_than_60()
+    public function test_interval_month_more_than_60(): void
     {
         $data = $this->happyCase;
         $data['interval_month'] = 61;
@@ -141,7 +141,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['interval_month' => 'The interval month field must not be greater than 60.']);
     }
 
-    public function test_minimum_age_is_not_integer()
+    public function test_minimum_age_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = 'abc';
@@ -152,7 +152,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['minimum_age' => 'The minimum age field must be an integer.']);
     }
 
-    public function test_minimum_age_less_than_1()
+    public function test_minimum_age_less_than_1(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = -1;
@@ -163,7 +163,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['minimum_age' => 'The minimum age field must be at least 1.']);
     }
 
-    public function test_minimum_age_greater_than_255()
+    public function test_minimum_age_greater_than_255(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = 256;
@@ -174,7 +174,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['minimum_age' => 'The minimum age field must not be greater than 255.']);
     }
 
-    public function test_minimum_age_greater_than_maximum_age()
+    public function test_minimum_age_greater_than_maximum_age(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = 14;
@@ -189,7 +189,7 @@ class StoreTest extends TestCase
         ]);
     }
 
-    public function test_maximum_age_is_not_integer()
+    public function test_maximum_age_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['maximum_age'] = 'abc';
@@ -200,7 +200,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_age' => 'The maximum age field must be an integer.']);
     }
 
-    public function test_maximum_age_less_than_1()
+    public function test_maximum_age_less_than_1(): void
     {
         $data = $this->happyCase;
         $data['maximum_age'] = -1;
@@ -211,7 +211,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_age' => 'The maximum age field must be at least 1.']);
     }
 
-    public function test_maximum_age_greater_than_255()
+    public function test_maximum_age_greater_than_255(): void
     {
         $data = $this->happyCase;
         $data['maximum_age'] = 256;
@@ -222,7 +222,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_age' => 'The maximum age field must not be greater than 255.']);
     }
 
-    public function test_missing_is_active()
+    public function test_missing_is_active(): void
     {
         $data = $this->happyCase;
         unset($data['is_active']);
@@ -233,7 +233,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['is_active' => 'The is active field is required.']);
     }
 
-    public function test_is_active_not_boolean()
+    public function test_is_active_not_boolean(): void
     {
         $data = $this->happyCase;
         $data['is_active'] = 'abc';
@@ -244,7 +244,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['is_active' => 'The is active field must be true or false.']);
     }
 
-    public function test_missing_display_order()
+    public function test_missing_display_order(): void
     {
         $data = $this->happyCase;
         unset($data['display_order']);
@@ -255,7 +255,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_is_not_integer()
+    public function test_display_order_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = 'abc';
@@ -266,7 +266,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be an integer.']);
     }
 
-    public function test_display_order_less_than_zero()
+    public function test_display_order_less_than_zero(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = '-1';
@@ -277,7 +277,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be at least 0.']);
     }
 
-    public function test_display_order_more_than_zero_when_have_no_types_on_database()
+    public function test_display_order_more_than_zero_when_have_no_types_on_database(): void
     {
         $data = $this->happyCase;
         $data['display_order'] = 1;
@@ -288,7 +288,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than 0.']);
     }
 
-    public function test_display_order_more_than_max_plus_one_when_has_type_on_database()
+    public function test_display_order_more_than_max_plus_one_when_has_type_on_database(): void
     {
         $data = $this->happyCase;
         AdmissionTestType::factory()->create();
@@ -300,7 +300,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must not be greater than '.$data['display_order'] - 1 .'.']);
     }
 
-    public function test_happy_case_without_minimum_and_maximum_age()
+    public function test_happy_case_without_minimum_and_maximum_age(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-test.types.store'),
@@ -309,7 +309,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('admin.admission-test.types.index');
     }
 
-    public function test_happy_case_with_minimum_age_and_without_maximum_age()
+    public function test_happy_case_with_minimum_age_and_without_maximum_age(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = 22;
@@ -320,7 +320,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('admin.admission-test.types.index');
     }
 
-    public function test_happy_case_with_maximum_age_and_without_minimum_age()
+    public function test_happy_case_with_maximum_age_and_without_minimum_age(): void
     {
         $data = $this->happyCase;
         $data['maximum_age'] = 22;
@@ -331,7 +331,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('admin.admission-test.types.index');
     }
 
-    public function test_happy_case_with_minimum_and_maximum_age()
+    public function test_happy_case_with_minimum_and_maximum_age(): void
     {
         $data = $this->happyCase;
         $data['minimum_age'] = 2;

@@ -12,7 +12,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -21,7 +21,7 @@ class StoreTest extends TestCase
         $this->user->givePermissionTo('Edit:User');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -45,7 +45,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_user_permission()
+    public function test_have_no_edit_user_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_user_id()
+    public function test_missing_user_id(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -98,7 +98,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The user field is required, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_user_id_is_not_integer()
+    public function test_user_id_is_not_integer(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -122,7 +122,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The user field must be an integer, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_user_id_is_not_exists()
+    public function test_user_id_is_not_exists(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -146,7 +146,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'User is ont found, may be deleted, if you are using our CMS, please refresh. Than, if refresh is not show 404, please contact I.T. officer.']);
     }
 
-    public function test_missing_type()
+    public function test_missing_type(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -169,7 +169,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_is_not_string()
+    public function test_type_is_not_string(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -193,7 +193,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The type field must be a string, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_is_not_in_list()
+    public function test_type_is_not_in_list(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -217,7 +217,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_missing_contact()
+    public function test_missing_contact(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $response = $this->actingAs($this->user)
@@ -231,7 +231,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => "The contact of $type is required."]);
     }
 
-    public function test_email_invalid()
+    public function test_email_invalid(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -245,7 +245,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of email must be a valid email address.']);
     }
 
-    public function test_mobile_not_integer()
+    public function test_mobile_not_integer(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -259,7 +259,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must be an integer.']);
     }
 
-    public function test_mobile_too_short()
+    public function test_mobile_too_short(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -273,7 +273,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must have at least 5 digits.']);
     }
 
-    public function test_mobile_too_long()
+    public function test_mobile_too_long(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -287,11 +287,9 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => 'The contact of mobile must not have more than 15 digits.']);
     }
 
-    public function test_contact_exist_with_same_user()
+    public function test_contact_exist_with_same_user(): void
     {
-        $contact = UserHasContact::factory()
-            ->{fake()->randomElement(['email', 'mobile'])}()
-            ->create();
+        $contact = UserHasContact::factory()->{fake()->randomElement(['email', 'mobile'])}()->create();
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('admin.contacts.store'),
@@ -304,7 +302,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['contact' => "The contact of {$contact->type} has already been taken."]);
     }
 
-    public function test_with_is_verified_and_is_verified_is_not_boolean()
+    public function test_with_is_verified_and_is_verified_is_not_boolean(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -329,7 +327,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The verified field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_with_is_default_and_is_default_is_not_boolean()
+    public function test_with_is_default_and_is_default_is_not_boolean(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -355,7 +353,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['message' => 'The default field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_for_new_not_verified_contact()
+    public function test_happy_case_for_new_not_verified_contact(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -393,7 +391,7 @@ class StoreTest extends TestCase
         ]);
     }
 
-    public function test_happy_case_for_new_verified_contact()
+    public function test_happy_case_for_new_verified_contact(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
@@ -432,7 +430,7 @@ class StoreTest extends TestCase
         ]);
     }
 
-    public function test_happy_case_for_new_default_contact()
+    public function test_happy_case_for_new_default_contact(): void
     {
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';

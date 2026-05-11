@@ -11,9 +11,9 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $contact;
+    private UserHasContact $contact;
 
     protected function setUp(): void
     {
@@ -22,7 +22,7 @@ class DeleteTest extends TestCase
         $this->contact = UserHasContact::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(route(
             'contacts.destroy',
@@ -31,7 +31,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_user_contact_is_not_zirself()
+    public function test_user_contact_is_not_zirself(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
@@ -42,7 +42,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $response = $this->actingAs($this->user)
             ->deleteJson(route(

@@ -14,24 +14,24 @@ class QuotaExpiredOnTest extends TestCase
 
     public function test_quota_validity_months_is_null(): void
     {
-        $order = AdmissionTestOrder::factory()->state(['quota_validity_months' => null])->create();
+        $order = AdmissionTestOrder::factory()->create(['quota_validity_months' => null]);
         $this->assertNull($order->quota_expired_on);
     }
 
     public function test_order_have_no_attended_tests_and_extend_expired_date_config_is_null(): void
     {
-        $order = AdmissionTestOrder::factory()->state(['quota_validity_months' => 3])->create();
-        $expectedExpiredDate = $order->created_at->addMonths(3)->endOfDay();
+        $order = AdmissionTestOrder::factory()->create(['quota_validity_months' => 3]);
+        $expectedExpiredDate = (clone $order->created_at)->addMonths(3)->endOfDay();
         $this->assertTrue($order->quota_expired_on->equalTo($expectedExpiredDate));
     }
 
     public function test_order_has_attended_tests_and_extend_expired_date_config_is_null(): void
     {
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'quota_validity_months' => 3,
             'created_at' => now()->subMonths(3),
-        ])->create();
-        $test = AdmissionTest::factory()->state(['testing_at' => now()->subMonths(2)])->create();
+        ]);
+        $test = AdmissionTest::factory()->create(['testing_at' => now()->subMonths(2)]);
         $test->type->update(['interval_month' => 2]);
         $user = User::factory()->create();
         $test->candidates()->attach(
@@ -41,7 +41,7 @@ class QuotaExpiredOnTest extends TestCase
                 'is_present' => true,
             ]
         );
-        $expectedExpiredDate = $test->testing_at->addMonths(5)->endOfDay();
+        $expectedExpiredDate = (clone $test->testing_at)->addMonths(5)->endOfDay();
         $this->assertTrue($order->quota_expired_on->equalTo($expectedExpiredDate));
     }
 
@@ -52,10 +52,10 @@ class QuotaExpiredOnTest extends TestCase
             'whenAfterThan' => now()->subDay()->toDateString(),
             'to' => $expectedExpiredDate->toDateString(),
         ]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'quota_validity_months' => 1,
             'created_at' => now()->subMonth()->subDay(),
-        ])->create();
+        ]);
         $this->assertEquals(
             $expectedExpiredDate->endOfDay()->toDateString(),
             $order->quota_expired_on->toDateString()
@@ -69,9 +69,9 @@ class QuotaExpiredOnTest extends TestCase
             'to' => now()->addDays(20)->toDateString(),
         ]);
 
-        $order = AdmissionTestOrder::factory()->state(['quota_validity_months' => 1])->create();
+        $order = AdmissionTestOrder::factory()->create(['quota_validity_months' => 1]);
 
-        $expectedExpiredDate = $order->created_at->addMonths(1)->endOfDay();
+        $expectedExpiredDate = (clone $order->created_at)->addMonths(1)->endOfDay();
 
         $this->assertTrue($order->quota_expired_on->equalTo($expectedExpiredDate));
     }

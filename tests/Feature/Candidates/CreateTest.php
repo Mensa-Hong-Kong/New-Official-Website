@@ -18,22 +18,22 @@ class CreateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
         $this->user->stripe()->create(['id' => 123]);
-        $this->test = AdmissionTest::factory()->state([
+        $this->test = AdmissionTest::factory()->create([
             'is_free' => true,
             'is_public' => true,
-        ])->create();
+        ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -44,7 +44,7 @@ class CreateTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->get(
             route(
@@ -55,7 +55,7 @@ class CreateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_admission_test_is_private()
+    public function test_admission_test_is_private(): void
     {
         $this->test->update(['is_public' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -68,7 +68,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is private.']);
     }
 
-    public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
         $this->user->stripe->delete();
         $this->test->update(['is_free' => false]);
@@ -82,13 +82,13 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'We are creating you customer account on stripe, please try again in a few minutes.']);
     }
 
-    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours()
+    public function test_user_scheduled_other_admission_test_testing_time_less_than_before_2_hours(): void
     {
         $newTestingAt = now()->addHours(2);
-        $oldTest = AdmissionTest::factory()->state([
+        $oldTest = AdmissionTest::factory()->create([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
-        ])->create();
+        ]);
         $oldTest->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -100,7 +100,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
     }
 
-    public function test_user_already_schedule_this_admission_test()
+    public function test_user_already_schedule_this_admission_test(): void
     {
         $this->test->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->get(
@@ -116,7 +116,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
     }
 
-    public function test_user_already_member()
+    public function test_user_already_member(): void
     {
         $member = Member::create([
             'user_id' => $this->user->id,
@@ -140,7 +140,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been member.']);
     }
 
-    public function test_user_is_inactive_member()
+    public function test_user_is_inactive_member(): void
     {
         Member::create([
             'user_id' => $this->user->id,
@@ -157,13 +157,12 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been qualification for membership.']);
     }
 
-    public function test_user_passed_admission_test()
+    public function test_user_passed_admission_test(): void
     {
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
+        ]);
         $oldTest->candidates()->attach($this->user->id, [
             'is_present' => 1,
             'is_pass' => 1,
@@ -178,13 +177,12 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You has already been qualification for membership.']);
     }
 
-    public function test_user_of_passport_has_already_been_qualification_for_membership()
+    public function test_user_of_passport_has_already_been_qualification_for_membership(): void
     {
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         Member::create([
             'user_id' => $user->id,
             'expired_on' => now()->endOfYear(),
@@ -200,23 +198,21 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You have other same passport user account already been qualification for membership.']);
     }
 
-    public function test_user_has_other_same_passport_user_account_tested()
+    public function test_user_has_other_same_passport_user_account_tested(): void
     {
         $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
-            ])->create();
-        $user = User::factory()
-            ->state([
-                'passport_type_id' => $this->user->passport_type_id,
-                'passport_number' => $this->user->passport_number,
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->subDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->subDay(),
+        ]);
+        $user = User::factory()->create([
+            'passport_type_id' => $this->user->passport_type_id,
+            'passport_number' => $this->user->passport_number,
+        ]);
         $oldTest->candidates()->attach($user->id, ['is_present' => 1]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -228,18 +224,17 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'You have other same passport user account attended other admission test, if you forgot account, please contact us.']);
     }
 
-    public function test_user_has_already_been_taken_within_interval_months()
+    public function test_user_has_already_been_taken_within_interval_months(): void
     {
         $newTestingAt = now()->addDays(2);
         $this->test->update([
             'testing_at' => $newTestingAt,
             'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
-        $oldTest = AdmissionTest::factory()
-            ->state([
-                'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
-                'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
-            ])->create();
+        $oldTest = AdmissionTest::factory()->create([
+            'testing_at' => (clone $this->test->testing_at)->subMonths($this->test->type->interval_month)->addDay(),
+            'expect_end_at' => (clone $this->test->expect_end_at)->subMonths($this->test->type->interval_month)->addDay(),
+        ]);
         $oldTest->candidates()->attach($this->user->id, ['is_present' => true]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -251,15 +246,15 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => "You has admission test record within {$this->test->type->interval_month} months(count from testing at of this test sub {$this->test->type->interval_month} months to now)."]);
     }
 
-    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free()
+    public function test_user_age_less_than_last_order_minimum_age_limit_when_test_is_not_free(): void
     {
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)->addDay()]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)->addDay()]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -270,15 +265,15 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than the last order minimum age limit, please contact us.']);
     }
 
-    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free()
+    public function test_user_age_greater_than_last_order_maximum_age_limit_when_test_is_not_free(): void
     {
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -289,13 +284,13 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age greater than the last order maximum age limit, please contact us.']);
     }
 
-    public function test_last_order_in_progress_when_order_handle_by_manual_and_test_is_not_free()
+    public function test_last_order_in_progress_when_order_handle_by_manual_and_test_is_not_free(): void
     {
         $this->test->update(['is_free' => false]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'pending',
-        ])->create();
+        ]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -306,7 +301,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your last admission test order in progress by manual, please wait a few minutes.']);
     }
 
-    public function test_after_than_deadline()
+    public function test_after_than_deadline(): void
     {
         $newTestingAt = now()->addDay();
         $this->test->update([
@@ -323,7 +318,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Cannot register after than before testing date two days.']);
     }
 
-    public function test_admission_test_is_fulled()
+    public function test_admission_test_is_fulled(): void
     {
         $user = User::factory()->create();
         $this->test->update(['maximum_candidates' => 1]);
@@ -338,10 +333,10 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'The admission test is fulled.']);
     }
 
-    public function test_user_age_less_than_test_type_minimum_age_limit()
+    public function test_user_age_less_than_test_type_minimum_age_limit(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -352,10 +347,10 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age less than test minimum age limit.']);
     }
 
-    public function test_user_age_greater_than_test_type_maximum_age_limit()
+    public function test_user_age_greater_than_test_type_maximum_age_limit(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -366,12 +361,12 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Your age greater than test maximum age limit.']);
     }
 
-    public function test_price_id_is_not_integer_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_price_id_is_not_integer_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        AdmissionTestProduct::factory()->state([
+        AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
+        ]);
         AdmissionTestPrice::factory()->create();
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -398,12 +393,12 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_price_id_of_product_is_not_exist_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_price_id_of_product_is_not_exist_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        AdmissionTestProduct::factory()->state([
+        AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
+        ]);
         AdmissionTestPrice::factory()->create();
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -436,18 +431,18 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_price_id_of_product_is_not_update_to_date_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_price_id_of_product_is_not_update_to_date_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        AdmissionTestProduct::factory()->state([
+        AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['value' => 200])->create();
-        AdmissionTestPrice::factory()->state([
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['value' => 200]);
+        AdmissionTestPrice::factory()->create([
             'product_id' => $price->product->id,
             'value' => 300,
             'start_at' => now(),
-        ])->create();
+        ]);
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -479,19 +474,19 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_price_id_of_product_is_not_yet_released_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_price_id_of_product_is_not_yet_released_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        $product = AdmissionTestProduct::factory()->state([
+        $product = AdmissionTestProduct::factory()->create([
             'start_at' => now()->addSeconds(5),
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -523,19 +518,19 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_price_id_of_product_was_taken_down_when_test_is_not_free_and_user_have_no_unused_quota_order()
+    public function test_price_id_of_product_was_taken_down_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        $product = AdmissionTestProduct::factory()->state([
+        $product = AdmissionTestProduct::factory()->create([
             'end_at' => now()->subSecond(),
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
             route(
@@ -567,18 +562,18 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_user_age_less_than_price_id_of_product_minimum_age_limit_and_user_have_no_unused_quota_order()
+    public function test_user_age_less_than_price_id_of_product_minimum_age_limit_and_user_have_no_unused_quota_order(): void
     {
-        $product = AdmissionTestProduct::factory()->state([
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => 22,
             'maximum_age' => null,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => 21,
             'maximum_age' => null,
-        ])->create();
-        AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $this->user->update(['birthday' => now()->subYears(22)->addDay()]);
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -611,18 +606,18 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_user_age_greater_than_price_id_of_product_maximum_age_limit_and_user_have_no_unused_quota_order()
+    public function test_user_age_greater_than_price_id_of_product_maximum_age_limit_and_user_have_no_unused_quota_order(): void
     {
-        $product = AdmissionTestProduct::factory()->state([
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => 21,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => 22,
-        ])->create();
-        AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $this->user->update(['birthday' => now()->subYears(22)]);
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -656,7 +651,7 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_have_no_product_when_test_is_not_free_and_user_have_no_unused_quota_order_and_have_no_selected_product()
+    public function test_have_no_product_when_test_is_not_free_and_user_have_no_unused_quota_order_and_have_no_selected_product(): void
     {
         $this->test->update(['is_free' => false]);
         $response = $this->actingAs($this->user)->get(
@@ -669,7 +664,7 @@ class CreateTest extends TestCase
         $response->assertSessionHasErrors(['message' => 'Sorry, admission test product(s) is not yet ready, please try again later.']);
     }
 
-    public function test_happy_case_when_test_type_and_order_have_no_any_age_limit_and_test_and_test_is_free_and_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_have_no_any_age_limit_and_test_and_test_is_free_and_have_no_selected_product(): void
     {
         $response = $this->actingAs($this->user)->get(
             route(
@@ -695,16 +690,16 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -729,16 +724,16 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -763,20 +758,20 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_user_match_the_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update([
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 4,
             'maximum_age' => 21,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -801,16 +796,16 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update(['minimum_age' => 10]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => $order->created_at->subYear(22)->addDay()]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)->addDay()]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -835,16 +830,16 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update(['maximum_age' => 9]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 8,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -869,20 +864,20 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_user_not_match_the_order_age_limit_and_test_is_free_have_no_selected_product(): void
     {
         $this->test->type->update([
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 10,
             'maximum_age' => 21,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -907,7 +902,7 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_is_free_and_selected_not_exist_product()
+    public function test_happy_case_when_test_is_free_and_selected_not_exist_product(): void
     {
         $response = $this->actingAs($this->user)->get(
             route(
@@ -936,7 +931,7 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_is_free_and_selected_exist_product()
+    public function test_happy_case_when_test_is_free_and_selected_exist_product(): void
     {
         $response = $this->actingAs($this->user)->get(
             route(
@@ -965,14 +960,13 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_have_no_any_age_limit_and_test_and_test_is_not_free_have_no_selected_product()
+    public function test_happy_case_when_test_type_and_order_have_no_any_age_limit_and_test_and_test_is_not_free_have_no_selected_product(): void
     {
         $this->test->update(['is_free' => false]);
-        $product = AdmissionTestProduct::factory()
-            ->state([
-                'minimum_age' => null,
-                'maximum_age' => null,
-            ])->create();
+        $product = AdmissionTestProduct::factory()->create([
+            'minimum_age' => null,
+            'maximum_age' => null,
+        ]);
         $product = AdmissionTestProduct::find($product->id);
         AdmissionTestPrice::factory()->create();
         $response = $this->actingAs($this->user)->get(
@@ -999,24 +993,23 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_test_is_not_free_have_no_selected_price()
+    public function test_happy_case_when_test_type_and_order_only_has_minimum_age_limit_and_test_is_not_free_have_no_selected_price(): void
     {
         $this->test->update(['is_free' => false]);
-        AdmissionTestProduct::factory()
-            ->state([
-                'minimum_age' => null,
-                'maximum_age' => null,
-                'synced_to_stripe' => true,
-            ])->create();
+        AdmissionTestProduct::factory()->create([
+            'minimum_age' => null,
+            'maximum_age' => null,
+            'synced_to_stripe' => true,
+        ]);
         AdmissionTestPrice::factory()->create();
         $this->test->type->update(['minimum_age' => 10]);
-        $order = AdmissionTestOrder::factory()->state([
+        $order = AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 22,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $order->created_at)->subYear(22)]);
+        ]);
+        $this->user->update(['birthday' => (clone $order->created_at)->subYears(22)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -1041,24 +1034,23 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_test_is_not_free_have_no_selected_price()
+    public function test_happy_case_when_test_type_and_order_only_has_maximum_age_limit_and_test_is_not_free_have_no_selected_price(): void
     {
         $this->test->update(['is_free' => false]);
-        AdmissionTestProduct::factory()
-            ->state([
-                'minimum_age' => null,
-                'maximum_age' => null,
-                'synced_to_stripe' => true,
-            ])->create();
+        AdmissionTestProduct::factory()->create([
+            'minimum_age' => null,
+            'maximum_age' => null,
+            'synced_to_stripe' => true,
+        ]);
         AdmissionTestPrice::factory()->create();
         $this->test->type->update(['maximum_age' => 9]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'maximum_age' => 21,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -1083,28 +1075,27 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_test_is_not_free_and_have_no_selected_price()
+    public function test_happy_case_when_test_type_and_order_has_minimum_and_maximum_age_limit_and_test_is_not_free_and_have_no_selected_price(): void
     {
         $this->test->update(['is_free' => false]);
-        AdmissionTestProduct::factory()
-            ->state([
-                'minimum_age' => null,
-                'maximum_age' => null,
-                'synced_to_stripe' => true,
-            ])->create();
+        AdmissionTestProduct::factory()->create([
+            'minimum_age' => null,
+            'maximum_age' => null,
+            'synced_to_stripe' => true,
+        ]);
         AdmissionTestPrice::factory()->create();
         $this->test->type->update([
             'minimum_age' => 4,
             'maximum_age' => 9,
         ]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'minimum_age' => 4,
             'maximum_age' => 21,
             'quota' => 1,
             'status' => 'succeeded',
-        ])->create();
-        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYear(10)->addDays(2)]);
+        ]);
+        $this->user->update(['birthday' => (clone $this->test->testing_at)->subYears(10)->addDays(2)]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -1129,14 +1120,13 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_test_is_not_free_and_selected_price()
+    public function test_happy_case_when_test_is_not_free_and_selected_price(): void
     {
         $this->test->update(['is_free' => false]);
-        $product = AdmissionTestProduct::factory()
-            ->state([
-                'minimum_age' => null,
-                'maximum_age' => null,
-            ])->create();
+        $product = AdmissionTestProduct::factory()->create([
+            'minimum_age' => null,
+            'maximum_age' => null,
+        ]);
         $product = AdmissionTestProduct::find($product->id);
         $price = AdmissionTestPrice::factory()->create();
         $response = $this->actingAs($this->user)->get(
@@ -1166,19 +1156,19 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_user_has_unused_quota_and_selected_not_exist_product()
+    public function test_happy_case_when_user_has_unused_quota_and_selected_not_exist_product(): void
     {
         $this->test->update(['is_free' => false]);
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
             'quota' => 1,
-        ])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -1206,18 +1196,18 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_user_has_unused_quota_and_selected_exist_product()
+    public function test_happy_case_when_user_has_unused_quota_and_selected_exist_product(): void
     {
-        AdmissionTestOrder::factory()->state([
+        AdmissionTestOrder::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'succeeded',
             'quota' => 1,
-        ])->create();
-        $product = AdmissionTestProduct::factory()->state([
+        ]);
+        $product = AdmissionTestProduct::factory()->create([
             'minimum_age' => null,
             'maximum_age' => null,
-        ])->create();
-        $price = AdmissionTestPrice::factory()->state(['product_id' => $product->id])->create();
+        ]);
+        $price = AdmissionTestPrice::factory()->create(['product_id' => $product->id]);
         $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
@@ -1245,9 +1235,9 @@ class CreateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_user_has_scheduled_admission_test()
+    public function test_happy_case_when_user_has_scheduled_admission_test(): void
     {
-        $test = AdmissionTest::factory()->state(['is_free' => true])->create();
+        $test = AdmissionTest::factory()->create(['is_free' => true]);
         $test->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->get(
             route(

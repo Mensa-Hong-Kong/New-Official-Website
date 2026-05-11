@@ -13,9 +13,9 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $happyCase = [
+    private array $happyCase = [
         'district_id' => 1,
         'address' => 'abc',
         'location' => 'xyz',
@@ -33,7 +33,7 @@ class StoreTest extends TestCase
         $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route('admin.admission-tests.store'),
@@ -42,7 +42,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -58,7 +58,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_type_id()
+    public function test_missing_type_id(): void
     {
         $data = $this->happyCase;
         unset($data['type_id']);
@@ -69,7 +69,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field is required.']);
     }
 
-    public function test_type_id_is_not_integer()
+    public function test_type_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = 'abc';
@@ -80,7 +80,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field must be an integer.']);
     }
 
-    public function test_type_id_is_not_exists_on_database()
+    public function test_type_id_is_not_exists_on_database(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = 0;
@@ -91,7 +91,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['type_id' => 'The selected type is invalid.']);
     }
 
-    public function test_missing_district_id()
+    public function test_missing_district_id(): void
     {
         $data = $this->happyCase;
         unset($data['district_id']);
@@ -102,7 +102,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['district_id' => 'The district field is required.']);
     }
 
-    public function test_district_id_is_not_integer()
+    public function test_district_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['district_id'] = 'abc';
@@ -113,7 +113,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['district_id' => 'The district field must be an integer.']);
     }
 
-    public function test_district_id_is_not_exists_on_database()
+    public function test_district_id_is_not_exists_on_database(): void
     {
         $data = $this->happyCase;
         $data['district_id'] = 0;
@@ -124,7 +124,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
     }
 
-    public function test_missing_address()
+    public function test_missing_address(): void
     {
         $data = $this->happyCase;
         unset($data['address']);
@@ -135,7 +135,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['address' => 'The address field is required.']);
     }
 
-    public function test_address_is_not_string()
+    public function test_address_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['address'] = ['abc'];
@@ -146,7 +146,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must be a string.']);
     }
 
-    public function test_address_too_long()
+    public function test_address_too_long(): void
     {
         $data = $this->happyCase;
         $data['address'] = str_repeat('a', 256);
@@ -157,7 +157,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_location()
+    public function test_missing_location(): void
     {
         $data = $this->happyCase;
         unset($data['location']);
@@ -168,7 +168,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['location' => 'The location field is required.']);
     }
 
-    public function test_location_is_not_string()
+    public function test_location_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['location'] = ['abc'];
@@ -179,7 +179,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['location' => 'The location field must be a string.']);
     }
 
-    public function test_location_too_long()
+    public function test_location_too_long(): void
     {
         $data = $this->happyCase;
         $data['location'] = str_repeat('a', 256);
@@ -190,7 +190,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['location' => 'The location field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_testing_at()
+    public function test_missing_testing_at(): void
     {
         $data = $this->happyCase;
         unset($data['testing_at']);
@@ -201,7 +201,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field is required.']);
     }
 
-    public function test_testing_at_is_not_date()
+    public function test_testing_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['testing_at'] = 'abc';
@@ -212,7 +212,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field must be a valid date.']);
     }
 
-    public function test_missing_expect_end_at()
+    public function test_missing_expect_end_at(): void
     {
         $data = $this->happyCase;
         unset($data['expect_end_at']);
@@ -223,7 +223,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field is required.']);
     }
 
-    public function test_expect_end_at_is_not_date()
+    public function test_expect_end_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['expect_end_at'] = 'abc';
@@ -234,7 +234,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a valid date.']);
     }
 
-    public function test_expect_end_at_before_testing_at()
+    public function test_expect_end_at_before_testing_at(): void
     {
         $data = $this->happyCase;
         $data['expect_end_at'] = now()->subMinute()->format('Y-m-d H:i');
@@ -245,7 +245,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a date after than testing at.']);
     }
 
-    public function test_missing_maximum_candidates()
+    public function test_missing_maximum_candidates(): void
     {
         $data = $this->happyCase;
         unset($data['maximum_candidates']);
@@ -256,7 +256,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field is required.']);
     }
 
-    public function test_maximum_candidates_is_not_integer()
+    public function test_maximum_candidates_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 'abc';
@@ -267,7 +267,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be an integer.']);
     }
 
-    public function test_maximum_candidates_less_than_one()
+    public function test_maximum_candidates_less_than_one(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 0;
@@ -278,7 +278,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
     }
 
-    public function test_maximum_candidates_greater_than_65535()
+    public function test_maximum_candidates_greater_than_65535(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 65536;
@@ -289,7 +289,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must not be greater than 65535.']);
     }
 
-    public function test_is_free_is_not_boolean()
+    public function test_is_free_is_not_boolean(): void
     {
         $data = $this->happyCase;
         $data['is_free'] = 'abc';
@@ -300,7 +300,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['is_free' => 'The is free field must be true or false.']);
     }
 
-    public function test_is_public_is_not_boolean()
+    public function test_is_public_is_not_boolean(): void
     {
         $data = $this->happyCase;
         $data['is_public'] = 'abc';
@@ -311,7 +311,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['is_public' => 'The is public field must be true or false.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route('admin.admission-tests.store'),

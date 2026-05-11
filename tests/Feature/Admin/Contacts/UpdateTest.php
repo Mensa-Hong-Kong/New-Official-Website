@@ -12,7 +12,7 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -21,7 +21,7 @@ class UpdateTest extends TestCase
         $this->user->givePermissionTo('Edit:User');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->putJson(
@@ -33,7 +33,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_user_permission()
+    public function test_have_no_edit_user_permission(): void
     {
         $contact = UserHasContact::factory()->create();
         $user = User::factory()->create();
@@ -52,7 +52,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_contact()
+    public function test_missing_contact(): void
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
@@ -65,11 +65,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid([$contact->type => "The {$contact->type} field is required."]);
     }
 
-    public function test_email_invalid()
+    public function test_email_invalid(): void
     {
-        $contact = UserHasContact::factory()
-            ->email()
-            ->create();
+        $contact = UserHasContact::factory()->email()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -80,11 +78,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['email' => 'The email field must be a valid email address']);
     }
 
-    public function test_mobile_not_integer()
+    public function test_mobile_not_integer(): void
     {
-        $contact = UserHasContact::factory()
-            ->mobile()
-            ->create();
+        $contact = UserHasContact::factory()->mobile()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -95,11 +91,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['mobile' => 'The mobile field must be an integer.']);
     }
 
-    public function test_mobile_too_short()
+    public function test_mobile_too_short(): void
     {
-        $contact = UserHasContact::factory()
-            ->mobile()
-            ->create();
+        $contact = UserHasContact::factory()->mobile()->create();
         $response = $this->actingAs($this->user)
             ->patch(
                 route(
@@ -110,11 +104,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['mobile' => 'The mobile field must have at least 5 digits.']);
     }
 
-    public function test_mobile_too_long()
+    public function test_mobile_too_long(): void
     {
-        $contact = UserHasContact::factory()
-            ->mobile()
-            ->create();
+        $contact = UserHasContact::factory()->mobile()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -125,13 +117,10 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['mobile' => 'The mobile field must not have more than 15 digits.']);
     }
 
-    public function test_contact_exist_with_same_user()
+    public function test_contact_exist_with_same_user(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
-        $newContact = UserHasContact::factory()
-            ->{$contact->type}()
-            ->create();
+        $contact = UserHasContact::factory()->create();
+        $newContact = UserHasContact::factory()->{$contact->type}()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -142,10 +131,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid([$contact->type => "The {$contact->type} has already been taken."]);
     }
 
-    public function test_with_is_verified_and_verified_field_is_not_boolean()
+    public function test_with_is_verified_and_verified_field_is_not_boolean(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -159,10 +147,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['is_verified' => 'The verified field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_with_is_verified_and_default_field_is_not_boolean()
+    public function test_with_is_verified_and_default_field_is_not_boolean(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -176,13 +163,12 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['is_default' => 'The default field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_for_not_verified_email_only_change_contact()
+    public function test_happy_case_for_not_verified_email_only_change_contact(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -203,13 +189,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_not_verified_mobile_only_change_contact()
+    public function test_happy_case_for_not_verified_mobile_only_change_contact(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -230,7 +215,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_not_verified_contact_only_change_to_is_verified()
+    public function test_happy_case_for_not_verified_contact_only_change_to_is_verified(): void
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
@@ -256,7 +241,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($contactModel->is_default);
     }
 
-    public function test_happy_case_for_not_verified_contact_only_change_to_is_default()
+    public function test_happy_case_for_not_verified_contact_only_change_to_is_default(): void
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
@@ -282,13 +267,12 @@ class UpdateTest extends TestCase
         $this->assertTrue($contactModel->is_default);
     }
 
-    public function test_happy_case_for_not_verified_email_change_contact_and_is_verified()
+    public function test_happy_case_for_not_verified_email_change_contact_and_is_verified(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -312,13 +296,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_not_verified_email_change_contact_and_is_default()
+    public function test_happy_case_for_not_verified_email_change_contact_and_is_default(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -342,13 +325,12 @@ class UpdateTest extends TestCase
         $this->assertTrue($email->is_default);
     }
 
-    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_verified()
+    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_verified(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -372,13 +354,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_default()
+    public function test_happy_case_for_not_verified_mobile_change_contact_and_is_default(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -402,13 +383,12 @@ class UpdateTest extends TestCase
         $this->assertTrue($mobile->is_default);
     }
 
-    public function test_happy_case_for_verified_email_only_change_contact()
+    public function test_happy_case_for_verified_email_only_change_contact(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -434,13 +414,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_verified_mobile_only_change_contact()
+    public function test_happy_case_for_verified_mobile_only_change_contact(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -466,7 +445,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_verified_contact_only_change_to_is_not_verified()
+    public function test_happy_case_for_verified_contact_only_change_to_is_not_verified(): void
     {
         $contact = UserHasContact::factory()->create();
         $contact->newVerifyCode();
@@ -491,7 +470,7 @@ class UpdateTest extends TestCase
         $this->assertFalse($contactModel->is_default);
     }
 
-    public function test_happy_case_for_verified_contact_only_change_to_is_default()
+    public function test_happy_case_for_verified_contact_only_change_to_is_default(): void
     {
         $contact = UserHasContact::factory()->create();
         $contact->newVerifyCode();
@@ -519,13 +498,12 @@ class UpdateTest extends TestCase
         $this->assertTrue($contactModel->is_default);
     }
 
-    public function test_happy_case_for_verified_email_change_contact_and_is_not_verified()
+    public function test_happy_case_for_verified_email_change_contact_and_is_not_verified(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -548,13 +526,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_verified_email_change_contact_and_is_default()
+    public function test_happy_case_for_verified_email_change_contact_and_is_default(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -580,13 +557,12 @@ class UpdateTest extends TestCase
         $this->assertTrue($email->is_default);
     }
 
-    public function test_happy_case_for_verified_mobile_change_contact_and_is_not_verified()
+    public function test_happy_case_for_verified_mobile_change_contact_and_is_not_verified(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -609,13 +585,12 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_verified_mobile_change_contact_and_is_default()
+    public function test_happy_case_for_verified_mobile_change_contact_and_is_default(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -641,14 +616,13 @@ class UpdateTest extends TestCase
         $this->assertTrue($mobile->is_default);
     }
 
-    public function test_happy_case_for_default_email_only_change_contact()
+    public function test_happy_case_for_default_email_only_change_contact(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-                'is_default' => true,
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+            'is_default' => true,
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -674,14 +648,13 @@ class UpdateTest extends TestCase
         $this->assertTrue($email->is_default);
     }
 
-    public function test_happy_case_for_default_mobile_only_change_contact()
+    public function test_happy_case_for_default_mobile_only_change_contact(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-                'is_default' => true,
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+            'is_default' => true,
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -707,11 +680,9 @@ class UpdateTest extends TestCase
         $this->assertTrue($mobile->is_default);
     }
 
-    public function test_happy_case_for_default_contact_only_change_to_is_not_verified()
+    public function test_happy_case_for_default_contact_only_change_to_is_not_verified(): void
     {
-        $contact = UserHasContact::factory()
-            ->state(['is_default' => true])
-            ->create();
+        $contact = UserHasContact::factory()->create(['is_default' => true]);
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -732,11 +703,9 @@ class UpdateTest extends TestCase
         $this->assertFalse($contactModel->is_default);
     }
 
-    public function test_happy_case_for_default_contact_only_change_to_is_not_default()
+    public function test_happy_case_for_default_contact_only_change_to_is_not_default(): void
     {
-        $contact = UserHasContact::factory()
-            ->state(['is_default' => true])
-            ->create();
+        $contact = UserHasContact::factory()->create(['is_default' => true]);
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -762,14 +731,13 @@ class UpdateTest extends TestCase
         $this->assertFalse($contactModel->is_default);
     }
 
-    public function test_happy_case_for_default_email_change_contact_and_is_not_verified()
+    public function test_happy_case_for_default_email_change_contact_and_is_not_verified(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-                'is_default' => true,
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+            'is_default' => true,
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -792,14 +760,13 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_default_email_change_contact_and_is_not_default()
+    public function test_happy_case_for_default_email_change_contact_and_is_not_default(): void
     {
-        $email = UserHasContact::factory()
-            ->state([
-                'type' => 'email',
-                'contact' => 'example@gamil.com',
-                'is_default' => true,
-            ])->create();
+        $email = UserHasContact::factory()->create([
+            'type' => 'email',
+            'contact' => 'example@gamil.com',
+            'is_default' => true,
+        ]);
         $email->newVerifyCode();
         $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -825,14 +792,13 @@ class UpdateTest extends TestCase
         $this->assertFalse($email->is_default);
     }
 
-    public function test_happy_case_for_default_mobile_change_contact_and_is_not_verified()
+    public function test_happy_case_for_default_mobile_change_contact_and_is_not_verified(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-                'is_default' => true,
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+            'is_default' => true,
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -855,14 +821,13 @@ class UpdateTest extends TestCase
         $this->assertFalse($mobile->is_default);
     }
 
-    public function test_happy_case_for_default_mobile_only_change_contact_and_is_not_default()
+    public function test_happy_case_for_default_mobile_only_change_contact_and_is_not_default(): void
     {
-        $mobile = UserHasContact::factory()
-            ->state([
-                'type' => 'mobile',
-                'contact' => '12345678',
-                'is_default' => true,
-            ])->create();
+        $mobile = UserHasContact::factory()->create([
+            'type' => 'mobile',
+            'contact' => '12345678',
+            'is_default' => true,
+        ]);
         $mobile->newVerifyCode();
         $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)

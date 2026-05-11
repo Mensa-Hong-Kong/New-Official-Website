@@ -12,9 +12,9 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $happyCase = ['content' => 'abc'];
+    private array $happyCase = ['content' => 'abc'];
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class UpdateTest extends TestCase
         $this->user->givePermissionTo('Edit:Site Content');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -35,7 +35,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_site_content_permission()
+    public function test_have_no_edit_site_content_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -54,7 +54,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_content_is_not_string()
+    public function test_content_is_not_string(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -66,7 +66,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['content' => 'The content field must be a string.']);
     }
 
-    public function test_content_too_long()
+    public function test_content_too_long(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -78,7 +78,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['content' => 'The content field must not be greater than 65535 characters.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $content = SiteContent::inRandomOrder()->first();
         $response = $this->actingAs($this->user)->putJson(

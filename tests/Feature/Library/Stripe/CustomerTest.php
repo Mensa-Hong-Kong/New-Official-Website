@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class CustomerTest extends TestCase
 {
-    public function test_search_customer_but_stripe_under_maintenance()
+    public function test_search_customer_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
@@ -23,7 +23,7 @@ class CustomerTest extends TestCase
         ]);
     }
 
-    public function test_search_customer_happy_case()
+    public function test_search_customer_happy_case(): void
     {
         $data = [
             [
@@ -80,7 +80,7 @@ class CustomerTest extends TestCase
         );
     }
 
-    public function test_search_customer_first_happy_case_has_result()
+    public function test_search_customer_first_happy_case_has_result(): void
     {
         $data = [
             'id' => 'cus_NeGfPRiPKxeBi1',
@@ -125,7 +125,7 @@ class CustomerTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function test_search_customer_first_happy_case_have_no_result()
+    public function test_search_customer_first_happy_case_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
@@ -142,7 +142,7 @@ class CustomerTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_create_customer_happy_case()
+    public function test_create_customer_happy_case(): void
     {
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',
@@ -190,7 +190,7 @@ class CustomerTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_find_customer_have_no_result()
+    public function test_find_customer_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
@@ -207,7 +207,7 @@ class CustomerTest extends TestCase
         );
     }
 
-    public function test_find_customer_has_result()
+    public function test_find_customer_has_result(): void
     {
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',
@@ -244,7 +244,7 @@ class CustomerTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_update_customer_happy_case()
+    public function test_update_customer_happy_case(): void
     {
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',

@@ -12,24 +12,23 @@ class EditTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $test;
+    private AdmissionTest $test;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now(),
-                'expect_end_at' => now()->addHour(),
-            ])->create();
+        $this->test = AdmissionTest::factory()->create([
+            'testing_at' => now(),
+            'expect_end_at' => now()->addHour(),
+        ]);
         $this->user = User::factory()->create();
         $this->test->proctors()->attach($this->user->id);
         $this->test->candidates()->attach($this->user->id);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(
             route(
@@ -43,7 +42,7 @@ class EditTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -65,7 +64,7 @@ class EditTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exists()
+    public function test_admission_test_is_not_exists(): void
     {
         $response = $this->actingAs($this->user)
             ->get(
@@ -80,7 +79,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_candidate_is_not_exists()
+    public function test_candidate_is_not_exists(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)
@@ -96,7 +95,7 @@ class EditTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only(): void
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -112,7 +111,7 @@ class EditTest extends TestCase
         $response->assertConflict();
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only(): void
     {
         $this->test->update(['expect_end_at' => now()->subHours(2)]);
         $response = $this->actingAs($this->user)
@@ -128,7 +127,7 @@ class EditTest extends TestCase
         $response->assertGone();
     }
 
-    public function test_happy_case_when_user_only_has_permission()
+    public function test_happy_case_when_user_only_has_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test Candidate');
@@ -145,7 +144,7 @@ class EditTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_only_is_proctor()
+    public function test_happy_case_when_user_only_is_proctor(): void
     {
         $response = $this->actingAs($this->user)
             ->get(
@@ -160,7 +159,7 @@ class EditTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_happy_case_when_user_has_permission_and_is_proctor()
+    public function test_happy_case_when_user_has_permission_and_is_proctor(): void
     {
         $this->user->givePermissionTo('Edit:Admission Test Candidate');
         $response = $this->actingAs($this->user)

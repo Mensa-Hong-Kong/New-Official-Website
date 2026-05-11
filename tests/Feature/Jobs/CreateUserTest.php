@@ -15,7 +15,7 @@ class CreateUserTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class CreateUserTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_user_exist_stripe_customer()
+    public function test_user_exist_stripe_customer(): void
     {
         Http::fake();
         $this->user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
@@ -31,7 +31,7 @@ class CreateUserTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_search_first_stripe_customer_for_user_but_stripe_under_maintenance()
+    public function test_search_first_stripe_customer_for_user_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
@@ -40,7 +40,7 @@ class CreateUserTest extends TestCase
         app()->call([new CreateUser($this->user->id), 'handle']);
     }
 
-    public function test_already_stripe_user_just_missing_save_stripe_id()
+    public function test_already_stripe_user_just_missing_save_stripe_id(): void
     {
         $data = [
             'id' => 'cus_NeGfPRiPKxeBi1',
@@ -102,7 +102,7 @@ class CreateUserTest extends TestCase
         $this->assertTrue((bool) $this->user->synced_to_stripe);
     }
 
-    public function test_not_found_stripe_customer_and_create_customer_but_stripe_under_maintenance()
+    public function test_not_found_stripe_customer_and_create_customer_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
@@ -117,7 +117,7 @@ class CreateUserTest extends TestCase
         app()->call([new CreateUser($this->user->id), 'handle']);
     }
 
-    public function test_create_stripe_customer_happy_case()
+    public function test_create_stripe_customer_happy_case(): void
     {
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',

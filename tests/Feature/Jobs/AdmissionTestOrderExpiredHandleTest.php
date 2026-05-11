@@ -12,15 +12,12 @@ class AdmissionTestOrderExpiredHandleTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $order;
-
-    public function test_pending_order()
+    public function test_pending_order(): void
     {
-        $order = AdmissionTestOrder::factory()
-            ->state([
-                'status' => 'pending',
-                'expired_at' => now()->subSecond(),
-            ])->create();
+        $order = AdmissionTestOrder::factory()->create([
+            'status' => 'pending',
+            'expired_at' => now()->subSecond(),
+        ]);
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new AdmissionTestOrderExpiredHandle($order->id), 'handle']);
@@ -28,28 +25,26 @@ class AdmissionTestOrderExpiredHandleTest extends TestCase
         $this->assertEquals('expired', $order->fresh()->status);
     }
 
-    public function test_non_pending_and_non_succeeded_order()
+    public function test_non_pending_and_non_succeeded_order(): void
     {
-        $status = fake()->randomElement(['canceled', 'succeeded']);
-        $order = AdmissionTestOrder::factory()
-            ->state([
-                'status' => 'canceled',
-                'expired_at' => now()->subSecond(),
-            ])->create();
+        $status = fake()->randomElement(['canceled', 'failed']);
+        $order = AdmissionTestOrder::factory()->create([
+            'status' => $status,
+            'expired_at' => now()->subSecond(),
+        ]);
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new AdmissionTestOrderExpiredHandle($order->id), 'handle']);
         $this->assertEquals(0, $test->candidates()->count());
-        $this->assertEquals('canceled', $order->fresh()->status);
+        $this->assertEquals($status, $order->fresh()->status);
     }
 
-    public function test_succeeded_order()
+    public function test_succeeded_order(): void
     {
-        $order = AdmissionTestOrder::factory()
-            ->state([
-                'status' => 'succeeded',
-                'expired_at' => now()->subSecond(),
-            ])->create();
+        $order = AdmissionTestOrder::factory()->create([
+            'status' => 'succeeded',
+            'expired_at' => now()->subSecond(),
+        ]);
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach($order->user_id, ['order_id' => $order->id]);
         app()->call([new AdmissionTestOrderExpiredHandle($order->id), 'handle']);

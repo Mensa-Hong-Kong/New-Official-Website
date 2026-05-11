@@ -5,7 +5,6 @@ namespace Tests\Feature\Admin\AdmissionTest\Products;
 use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Models\AdmissionTestProduct;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -16,7 +15,7 @@ class UpdateTest extends TestCase
 
     private User $user;
 
-    private Model $product;
+    private AdmissionTestProduct $product;
 
     private array $happyCase = [
         'name' => 'Admission Test',
@@ -29,9 +28,7 @@ class UpdateTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo(['Edit:Admission Test']);
-        $this->product = AdmissionTestProduct::factory()
-            ->state(['synced_to_stripe' => true])
-            ->create();
+        $this->product = AdmissionTestProduct::factory()->create(['synced_to_stripe' => true]);
     }
 
     public function test_have_no_login(): void

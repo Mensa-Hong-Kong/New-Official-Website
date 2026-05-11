@@ -13,13 +13,13 @@ class UpdateSeatNumbersTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
-    private $candidate1;
+    private User $candidate1;
 
-    private $candidate2;
+    private User $candidate2;
 
     protected function setUp(): void
     {
@@ -32,7 +32,7 @@ class UpdateSeatNumbersTest extends TestCase
         $this->test->candidates()->attach([$this->candidate1->id, $this->candidate2->id]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -49,7 +49,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_permission()
+    public function test_have_no_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -73,7 +73,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_seat_numbers()
+    public function test_missing_seat_numbers(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -84,7 +84,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['seat_numbers' => 'The seat numbers field is required.']);
     }
 
-    public function test_seat_numbers_is_not_array()
+    public function test_seat_numbers_is_not_array(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -96,7 +96,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['seat_numbers' => 'The seat numbers field must be an array.']);
     }
 
-    public function test_seat_numbers_size_is_not_match()
+    public function test_seat_numbers_size_is_not_match(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -108,7 +108,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['message' => 'The ID(s) of seat numbers field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_seat_numbers_have_no_value()
+    public function test_seat_numbers_have_no_value(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -120,7 +120,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['seat_numbers' => 'The seat numbers field is required.']);
     }
 
-    public function test_seat_numbers_value_is_not_integer()
+    public function test_seat_numbers_value_is_not_integer(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -134,7 +134,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['seat_numbers.0' => 'The seat_numbers.0 field must be an integer.']);
     }
 
-    public function test_seat_numbers_value_is_duplicate()
+    public function test_seat_numbers_value_is_duplicate(): void
     {
         $this->test->candidates()->attach($this->user->id);
         $response = $this->actingAs($this->user)->putJson(
@@ -153,7 +153,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['seat_numbers.0' => 'The seat_numbers.0 field has a duplicate value.']);
     }
 
-    public function test_seat_numbers_value_is_not_exists_on_database()
+    public function test_seat_numbers_value_is_not_exists_on_database(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -167,7 +167,7 @@ class UpdateSeatNumbersTest extends TestCase
         $response->assertInvalid(['message' => 'The ID(s) of seat numbers field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(

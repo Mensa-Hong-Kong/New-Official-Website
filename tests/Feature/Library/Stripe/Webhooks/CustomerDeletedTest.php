@@ -12,7 +12,7 @@ class CustomerDeletedTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function sign($timestamp, $payload)
+    protected function sign(int $timestamp, string $payload): string
     {
         return hash_hmac(
             'sha256',
@@ -21,12 +21,7 @@ class CustomerDeletedTest extends TestCase
         );
     }
 
-    protected function signature($timestamp, $signature)
-    {
-        return "t=$timestamp,v1=$signature";
-    }
-
-    protected function signatureHeader($payload)
+    protected function signatureHeader(array $payload): array
     {
         $timestamp = time();
         $signature = $this->sign(
@@ -37,7 +32,7 @@ class CustomerDeletedTest extends TestCase
         return ['Stripe-Signature' => "t=$timestamp,v1=$signature"];
     }
 
-    public function test_missing_data_object_id()
+    public function test_missing_data_object_id(): void
     {
         $data = ['type' => 'customer.deleted'];
         $response = $this->postJson(
@@ -48,7 +43,7 @@ class CustomerDeletedTest extends TestCase
         $response->assertInvalid(['data.object.id' => 'The data.object.id field is required.']);
     }
 
-    public function test_customer_is_not_exists()
+    public function test_customer_is_not_exists(): void
     {
         $data = [
             'type' => 'customer.deleted',
@@ -65,7 +60,7 @@ class CustomerDeletedTest extends TestCase
         $response->assertSee('Webhook Handled');
     }
 
-    public function test_customer_exist_and_customer_is_user_and_search_first_stripe_customer_for_user_but_stripe_under_maintenance()
+    public function test_customer_exist_and_customer_is_user_and_search_first_stripe_customer_for_user_but_stripe_under_maintenance(): void
     {
         Queue::fake();
         $user = User::factory()->create();
@@ -87,7 +82,7 @@ class CustomerDeletedTest extends TestCase
         $response->assertStatus(500);
     }
 
-    public function test_customer_exist_and_customer_is_user_and_create_customer_but_stripe_under_maintenance()
+    public function test_customer_exist_and_customer_is_user_and_create_customer_but_stripe_under_maintenance(): void
     {
         Queue::fake();
         $user = User::factory()->create();
@@ -115,7 +110,7 @@ class CustomerDeletedTest extends TestCase
         $response->assertStatus(500);
     }
 
-    public function test_customer_exist_and_customer_is_user_and_create_customer_happy_case()
+    public function test_customer_exist_and_customer_is_user_and_create_customer_happy_case(): void
     {
         Queue::fake();
         $user = User::factory()->create();

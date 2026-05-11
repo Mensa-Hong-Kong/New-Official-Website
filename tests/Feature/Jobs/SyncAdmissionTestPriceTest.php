@@ -16,7 +16,7 @@ class SyncAdmissionTestPriceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $price;
+    private AdmissionTestPrice $price;
 
     protected function setUp(): void
     {
@@ -26,7 +26,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         $this->price->product->update(['stripe_id' => 'prod_NZOkxQ8eTZEHwN']);
     }
 
-    public function test_price_have_no_stripe_id()
+    public function test_price_have_no_stripe_id(): void
     {
         $this->price->product->update(['stripe_id' => null]);
         Http::fake();
@@ -36,7 +36,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_synced_admission_test_price()
+    public function test_synced_admission_test_price(): void
     {
         $data = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -70,7 +70,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_search_first_stripe_price_for_admission_test_price_but_stripe_under_maintenance()
+    public function test_search_first_stripe_price_for_admission_test_price_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
@@ -79,7 +79,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
     }
 
-    public function test_stripe_created_and_price_update_to_date_just_missing_save_stripe_id()
+    public function test_stripe_created_and_price_update_to_date_just_missing_save_stripe_id(): void
     {
         $data = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -130,7 +130,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         $this->assertTrue((bool) $this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
+    public function test_has_stripe_id_just_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
@@ -140,7 +140,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
     }
 
-    public function test_happy_case_has_stripe_id_just_data_not_update_to_date()
+    public function test_happy_case_has_stripe_id_just_data_not_update_to_date(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -185,7 +185,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         $this->assertTrue((bool) $this->price->refresh()->synced_one_time_type_to_stripe);
     }
 
-    public function test_stripe_first_not_found_and_create_stripe_price_but_stripe_under_maintenance()
+    public function test_stripe_first_not_found_and_create_stripe_price_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::sequence()
@@ -200,7 +200,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
     }
 
-    public function test_happy_case_stripe_first_not_found_and_create_stripe_price()
+    public function test_happy_case_stripe_first_not_found_and_create_stripe_price(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',
@@ -254,7 +254,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         $this->assertTrue((bool) $this->price->synced_one_time_type_to_stripe);
     }
 
-    public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance()
+    public function test_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date_and_updata_stripe_that_strip_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/prices/*' => Http::sequence()
@@ -292,7 +292,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
     }
 
-    public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date()
+    public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date(): void
     {
         $response = [
             'id' => 'price_1MoBy5LkdIwHu7ixZhnattbh',

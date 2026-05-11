@@ -12,7 +12,7 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(
             route(
@@ -23,7 +23,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -41,7 +41,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Navigation Item');
@@ -54,12 +54,10 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $item1 = NavigationItem::factory()->create();
-        $item1point1 = NavigationItem::factory()
-            ->state(['master_id' => $item1->id])
-            ->create();
+        $item1point1 = NavigationItem::factory()->create(['master_id' => $item1->id]);
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Navigation Item');
         $response = $this->actingAs($user)->deleteJson(

@@ -14,7 +14,7 @@ class ResetPasswordTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class ResetPasswordTest extends TestCase
         $this->user->givePermissionTo('Edit:User');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -34,7 +34,7 @@ class ResetPasswordTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_view_user_permission()
+    public function test_have_no_view_user_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -53,7 +53,7 @@ class ResetPasswordTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_not_exists_user()
+    public function test_not_exists_user(): void
     {
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -65,7 +65,7 @@ class ResetPasswordTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_missing_contact_type()
+    public function test_missing_contact_type(): void
     {
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -77,7 +77,7 @@ class ResetPasswordTest extends TestCase
         $response->assertInvalid(['contact_type' => 'The contact type field is required, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_contact_type_is_not_string()
+    public function test_contact_type_is_not_string(): void
     {
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -89,7 +89,7 @@ class ResetPasswordTest extends TestCase
         $response->assertInvalid(['contact_type' => 'The contact type field must be a string, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_contact_type_is_not_in_list()
+    public function test_contact_type_is_not_in_list(): void
     {
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -101,7 +101,7 @@ class ResetPasswordTest extends TestCase
         $response->assertInvalid(['contact_type' => 'The selected contact type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_user_have_no_default_contact_of_contact_type()
+    public function test_user_have_no_default_contact_of_contact_type(): void
     {
         $contactType = fake()->randomElement(['email', 'mobile']);
         $response = $this->actingAs($this->user)
@@ -119,12 +119,10 @@ class ResetPasswordTest extends TestCase
         $response->assertInvalid(['contact_type' => "This user have no default $contactType, cannot reset password by $contactType."]);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         Notification::fake();
-        $contact = UserHasContact::factory()
-            ->state(['is_default' => true])
-            ->create();
+        $contact = UserHasContact::factory()->create(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(

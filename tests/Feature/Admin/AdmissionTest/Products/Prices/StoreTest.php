@@ -16,11 +16,11 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $product;
+    private AdmissionTestProduct $product;
 
-    private $happyCase = [
+    private array $happyCase = [
         'name' => 'abc',
         'price' => 1,
     ];
@@ -35,7 +35,7 @@ class StoreTest extends TestCase
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route(
@@ -47,7 +47,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -66,7 +66,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_product_not_exists()
+    public function test_product_not_exists(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -79,7 +79,7 @@ class StoreTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_name_is_not_string()
+    public function test_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['name'] = ['abc'];
@@ -93,7 +93,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_too_long()
+    public function test_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
@@ -107,7 +107,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_price()
+    public function test_missing_price(): void
     {
         $data = $this->happyCase;
         unset($data['price']);
@@ -121,7 +121,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['price' => 'The price field is required.']);
     }
 
-    public function test_price_is_not_numeric()
+    public function test_price_is_not_numeric(): void
     {
         $data = $this->happyCase;
         $data['price'] = 'abc';
@@ -139,7 +139,7 @@ class StoreTest extends TestCase
         }
     }
 
-    public function test_price_less_than_minimum_limit()
+    public function test_price_less_than_minimum_limit(): void
     {
         $data = $this->happyCase;
         $minimum = config('stripe.minimum_amount', 4);
@@ -154,7 +154,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['price' => "The price field must be at least $minimum."]);
     }
 
-    public function test_price_greater_than_maximum_limit()
+    public function test_price_greater_than_maximum_limit(): void
     {
         $data = $this->happyCase;
         $maximum = Amount::getMaximumValidation();
@@ -169,7 +169,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['price' => "The price field must not be greater than $maximum."]);
     }
 
-    public function test_start_at_is_not_date()
+    public function test_start_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['start_at'] = 'abc';
@@ -180,7 +180,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['start_at' => 'The start at field must be a valid date.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->postJson(

@@ -12,9 +12,9 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $happyCase = [
+    private array $happyCase = [
         'pathname' => 'abc/EFG-123',
         'title' => 'abc',
         'description' => 'abc',
@@ -28,7 +28,7 @@ class StoreTest extends TestCase
         $this->user->givePermissionTo('Edit:Custom Web Page');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route('admin.custom-web-pages.store'),
@@ -37,7 +37,7 @@ class StoreTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_custom_web_page_permission()
+    public function test_have_no_edit_custom_web_page_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -53,7 +53,7 @@ class StoreTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_pathname()
+    public function test_missing_pathname(): void
     {
         $data = $this->happyCase;
         unset($data['pathname']);
@@ -64,7 +64,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['pathname' => 'The pathname field is required.']);
     }
 
-    public function test_pathname_is_not_string()
+    public function test_pathname_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['pathname'] = ['abc'];
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['pathname' => 'The pathname field must be a string.']);
     }
 
-    public function test_pathname_too_long()
+    public function test_pathname_too_long(): void
     {
         $data = $this->happyCase;
         $data['pathname'] = str_repeat('a', 769);
@@ -86,7 +86,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['pathname' => 'The pathname field must not be greater than 768 characters.']);
     }
 
-    public function test_pathname_format_not_match()
+    public function test_pathname_format_not_match(): void
     {
         $data = $this->happyCase;
         $data['pathname'] = 'abc\\xyz';
@@ -97,11 +97,9 @@ class StoreTest extends TestCase
         $response->assertInvalid(['pathname' => 'The pathname field must only contain letters, numbers, dashes and slash.']);
     }
 
-    public function test_pathname_is_exist()
+    public function test_pathname_is_exist(): void
     {
-        CustomWebPage::factory()
-            ->state(['pathname' => $this->happyCase['pathname']])
-            ->create();
+        CustomWebPage::factory()->create(['pathname' => $this->happyCase['pathname']]);
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-web-pages.store'),
@@ -110,7 +108,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['pathname' => 'The pathname has already been taken.']);
     }
 
-    public function test_missing_title()
+    public function test_missing_title(): void
     {
         $data = $this->happyCase;
         unset($data['title']);
@@ -121,7 +119,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['title' => 'The title field is required.']);
     }
 
-    public function test_title_is_not_string()
+    public function test_title_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['title'] = ['abc'];
@@ -132,7 +130,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['title' => 'The title field must be a string.']);
     }
 
-    public function test_title_too_long()
+    public function test_title_too_long(): void
     {
         $data = $this->happyCase;
         $data['title'] = str_repeat('a', 61);
@@ -143,7 +141,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['title' => 'The title field must not be greater than 60 characters.']);
     }
 
-    public function test_open_graph_image_url_is_not_string()
+    public function test_open_graph_image_url_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['og_image_url'] = ['abc'];
@@ -154,7 +152,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['og_image_url' => 'The open graph image url field must be a string.']);
     }
 
-    public function test_open_graph_image_url_too_long()
+    public function test_open_graph_image_url_too_long(): void
     {
         $data = $this->happyCase;
         $data['og_image_url'] = str_repeat('a', 8001);
@@ -165,7 +163,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['og_image_url' => 'The open graph image url field must not be greater than 8000 characters.']);
     }
 
-    public function test_open_graph_image_url_is_not_a_valid()
+    public function test_open_graph_image_url_is_not_a_valid(): void
     {
         $data = $this->happyCase;
         $data['og_image_url'] = 'abc';
@@ -176,7 +174,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['og_image_url' => 'The open graph image url field is not a valid URL.']);
     }
 
-    public function test_missing_description()
+    public function test_missing_description(): void
     {
         $data = $this->happyCase;
         unset($data['description']);
@@ -187,7 +185,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['description' => 'The description field is required.']);
     }
 
-    public function test_description_is_not_string()
+    public function test_description_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['description'] = ['abc'];
@@ -198,7 +196,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['description' => 'The description field must be a string.']);
     }
 
-    public function test_description_too_long()
+    public function test_description_too_long(): void
     {
         $data = $this->happyCase;
         $data['description'] = str_repeat('a', 66);
@@ -209,7 +207,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['description' => 'The description field must not be greater than 65 characters.']);
     }
 
-    public function test_content_is_not_string()
+    public function test_content_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['content'] = ['abc'];
@@ -220,7 +218,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['content' => 'The content field must be a string.']);
     }
 
-    public function test_content_too_long()
+    public function test_content_too_long(): void
     {
         $data = $this->happyCase;
         $data['content'] = str_repeat('a', 4194304);
@@ -231,7 +229,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['content' => 'The content field must not be greater than 4194303 characters.']);
     }
 
-    public function test_happy_case_when_have_no_og_image_url()
+    public function test_happy_case_when_have_no_og_image_url(): void
     {
         $response = $this->actingAs($this->user)->postJson(
             route('admin.custom-web-pages.store'),
@@ -240,7 +238,7 @@ class StoreTest extends TestCase
         $response->assertRedirectToRoute('admin.custom-web-pages.index');
     }
 
-    public function test_happy_case_when_has_og_image_url()
+    public function test_happy_case_when_has_og_image_url(): void
     {
         $data = $this->happyCase;
         $data['og_image_url'] = 'https://google.com';

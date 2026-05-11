@@ -14,7 +14,7 @@ class CanEditPassportInformationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -22,68 +22,68 @@ class CanEditPassportInformationTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_user_can_edit_passport_information_when_user_have_no_any_admission_test_and_prior_evidence_order_and_member_transfer()
+    public function test_user_can_edit_passport_information_when_user_have_no_any_admission_test_and_prior_evidence_order_and_member_transfer(): void
     {
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_more_than_2_hours()
+    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_more_than_2_hours(): void
     {
-        $test = AdmissionTest::factory()->state([
+        $test = AdmissionTest::factory()->create([
             'testing_at' => now()->addHours(3),
             'expect_end_at' => now()->addHours(4),
-        ])->create();
+        ]);
         $test->candidates()->attach($this->user);
 
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_no_update_present_status()
+    public function test_user_cannot_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_no_update_present_status(): void
     {
-        $test = AdmissionTest::factory()->state([
+        $test = AdmissionTest::factory()->create([
             'testing_at' => now()->addHours(1),
             'expect_end_at' => now()->addHours(2),
-        ])->create();
+        ]);
         $test->candidates()->attach($this->user);
 
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_update_present_status_to_absent()
+    public function test_user_can_edit_passport_information_when_user_has_future_admission_test_before_less_than_2_hours_and_update_present_status_to_absent(): void
     {
-        $test = AdmissionTest::factory()->state([
+        $test = AdmissionTest::factory()->create([
             'testing_at' => now()->addHours(1),
             'expect_end_at' => now()->addHours(2),
-        ])->create();
+        ]);
         $test->candidates()->attach($this->user, ['is_present' => false]);
 
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_proctor_have_no_update_present_status_and_after_testing_at_before_2_hours()
+    public function test_user_cannot_edit_passport_information_when_proctor_have_no_update_present_status_and_after_testing_at_before_2_hours(): void
     {
-        $test = AdmissionTest::factory()->state([
+        $test = AdmissionTest::factory()->create([
             'testing_at' => now()->subHours(2)->subMinutes(30),
             'expect_end_at' => now()->subMinutes(30),
-        ])->create();
+        ]);
         $test->candidates()->attach($this->user);
 
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_absent_admission_test()
+    public function test_user_can_edit_passport_information_when_user_only_has_absent_admission_test(): void
     {
-        $test = AdmissionTest::factory()->state([
+        $test = AdmissionTest::factory()->create([
             'testing_at' => now()->subHours(3),
             'expect_end_at' => now()->subHour(),
-        ])->create();
+        ]);
         $test->candidates()->attach($this->user, ['is_present' => false]);
         $this->assertTrue($this->user->canEditPassportInformation);
 
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_in_progress_prior_evidence_order()
+    public function test_user_can_edit_passport_information_when_user_only_has_in_progress_prior_evidence_order(): void
     {
         $this->user->priorEvidenceOrders()->create([
             'status' => 'pending',
@@ -96,7 +96,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_expired_prior_evidence_order()
+    public function test_user_can_edit_passport_information_when_user_only_has_expired_prior_evidence_order(): void
     {
         $this->user->priorEvidenceOrders()->create([
             'status' => fake()->randomElement(['pending', 'canceled', 'failed']),
@@ -109,7 +109,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_no_result_and_does_not_refund_and_return()
+    public function test_user_cannot_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_no_result_and_does_not_refund_and_return(): void
     {
         $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
@@ -122,7 +122,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_no_result_and_the_order_returned()
+    public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_no_result_and_the_order_returned(): void
     {
         $this->user->priorEvidenceOrders()->create([
             'status' => 'full refunded',
@@ -136,7 +136,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_has_result_but_in_progress_and_does_not_refund_and_return()
+    public function test_user_cannot_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_has_result_but_in_progress_and_does_not_refund_and_return(): void
     {
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
@@ -156,7 +156,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_has_result_but_in_progress_and_the_order_returned()
+    public function test_user_can_edit_passport_information_when_user_has_prior_evidence_order_with_succeeded_status_and_has_result_but_in_progress_and_the_order_returned(): void
     {
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'full refunded',
@@ -177,7 +177,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_rejected_prior_evidence()
+    public function test_user_can_edit_passport_information_when_user_only_has_rejected_prior_evidence(): void
     {
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
@@ -198,7 +198,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_only_has_accepted_prior_evidence_and_have_no_return_the_order()
+    public function test_user_cannot_edit_passport_information_when_user_only_has_accepted_prior_evidence_and_have_no_return_the_order(): void
     {
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'succeeded',
@@ -219,7 +219,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_accepted_prior_evidence_and_the_order_is_returned()
+    public function test_user_can_edit_passport_information_when_user_only_has_accepted_prior_evidence_and_the_order_is_returned(): void
     {
         $order = $this->user->priorEvidenceOrders()->create([
             'status' => 'full refunded',
@@ -241,7 +241,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_has_member_transfer_in_progress()
+    public function test_user_cannot_edit_passport_information_when_user_has_member_transfer_in_progress(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -252,7 +252,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_can_edit_passport_information_when_user_only_has_rejected_member_transfer()
+    public function test_user_can_edit_passport_information_when_user_only_has_rejected_member_transfer(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -264,7 +264,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertTrue($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_only_has_accepted_member_transfer()
+    public function test_user_cannot_edit_passport_information_when_user_only_has_accepted_member_transfer(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -276,7 +276,7 @@ class CanEditPassportInformationTest extends TestCase
         $this->assertFalse($this->user->canEditPassportInformation);
     }
 
-    public function test_user_cannot_edit_passport_information_when_user_is_member()
+    public function test_user_cannot_edit_passport_information_when_user_is_member(): void
     {
         $this->user->member()->create();
 

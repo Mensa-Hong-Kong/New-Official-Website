@@ -13,9 +13,9 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $contact;
+    private UserHasContact $contact;
 
     protected function setUp(): void
     {
@@ -24,13 +24,13 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->contact = UserHasContact::factory()->create();
     }
 
-    public function test_have_no_verify_record()
+    public function test_have_no_verify_record(): void
     {
         $this->assertEquals(0, ResetPasswordLog::count());
         (new ClearUnusedUserResetPasswordFailedRecord)();
     }
 
-    private function create_admin_reset_password_record_within_pass_24_hours()
+    private function create_admin_reset_password_record_within_pass_24_hours(): void
     {
         ResetPasswordLog::create([
             'passport_type_id' => $this->user->passport_type_id,
@@ -43,7 +43,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         ]);
     }
 
-    private function create_success_user_reset_password_record_within_pass_24_hours()
+    private function create_success_user_reset_password_record_within_pass_24_hours(): void
     {
         ResetPasswordLog::create([
             'passport_type_id' => $this->user->passport_type_id,
@@ -55,7 +55,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         ]);
     }
 
-    private function create_failed_user_reset_password_record_within_pass_24_hours()
+    private function create_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         ResetPasswordLog::create([
             'passport_type_id' => $this->user->passport_type_id,
@@ -65,7 +65,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         ]);
     }
 
-    private function create_admin_reset_password_record_without_pass_24_hours()
+    private function create_admin_reset_password_record_without_pass_24_hours(): void
     {
         $log = new ResetPasswordLog;
         $log->timestamps = false;
@@ -80,7 +80,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $log->save();
     }
 
-    private function create_success_user_reset_password_record_without_pass_24_hours()
+    private function create_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $log = new ResetPasswordLog;
         $log->timestamps = false;
@@ -94,7 +94,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $log->save();
     }
 
-    private function create_failed_user_reset_password_record_without_pass_24_hours()
+    private function create_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $log = new ResetPasswordLog;
         $log->timestamps = false;
@@ -106,49 +106,49 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $log->save();
     }
 
-    public function test_only_has_admin_reset_password_record_within_pass_24_hours()
+    public function test_only_has_admin_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_has_success_user_reset_password_record_within_pass_24_hours()
+    public function test_only_has_success_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_has_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_has_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_has_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_has_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_without_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_has_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_has_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_without_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_has_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_has_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
         (new ClearUnusedUserResetPasswordFailedRecord)();
         $this->assertEquals(0, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -156,7 +156,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -164,7 +164,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -172,7 +172,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_within_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_within_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -180,7 +180,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_within_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_within_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
@@ -188,7 +188,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -196,7 +196,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -204,7 +204,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -212,7 +212,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
@@ -220,7 +220,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -228,7 +228,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -236,7 +236,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
@@ -244,7 +244,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_without_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -252,7 +252,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_without_pass_24_hours();
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
@@ -260,7 +260,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_without_pass_24_hours();
         $this->create_failed_user_reset_password_record_without_pass_24_hours();
@@ -268,7 +268,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(1, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -277,7 +277,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -286,7 +286,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -295,7 +295,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -304,7 +304,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -313,7 +313,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -322,7 +322,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -331,7 +331,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -340,7 +340,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -349,7 +349,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -358,7 +358,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -367,7 +367,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -376,7 +376,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -385,7 +385,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -394,7 +394,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -403,7 +403,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -412,7 +412,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -421,7 +421,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -430,7 +430,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -439,7 +439,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_admin_reset_password_record_and_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_without_pass_24_hours();
         $this->create_success_user_reset_password_record_without_pass_24_hours();
@@ -448,7 +448,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(2, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_and_success_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -458,7 +458,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -468,7 +468,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_and_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_and_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -478,7 +478,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_within_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_within_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -488,7 +488,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_within_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_within_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -498,7 +498,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_and_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_admin_reset_password_record_without_pass_24_hours();
@@ -508,7 +508,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -518,7 +518,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -528,7 +528,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -538,7 +538,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -548,7 +548,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -558,7 +558,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -568,7 +568,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_and_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -578,7 +578,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(3, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -588,7 +588,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_and_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -598,7 +598,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_success_user_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -609,7 +609,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_failed_user_reset_password_record_within_pass_24_hours();
@@ -620,7 +620,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours()
+    public function test_only_have_no_failed_user_reset_password_record_within_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -631,7 +631,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_admin_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_admin_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -642,7 +642,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_success_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_success_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -653,7 +653,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(4, ResetPasswordLog::count());
     }
 
-    public function test_only_have_no_failed_user_reset_password_record_without_pass_24_hours()
+    public function test_only_have_no_failed_user_reset_password_record_without_pass_24_hours(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();
@@ -664,7 +664,7 @@ class ClearUnusedUserResetPasswordFailedRecordTest extends TestCase
         $this->assertEquals(5, ResetPasswordLog::count());
     }
 
-    public function test_have_all()
+    public function test_have_all(): void
     {
         $this->create_admin_reset_password_record_within_pass_24_hours();
         $this->create_success_user_reset_password_record_within_pass_24_hours();

@@ -12,11 +12,11 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
-    private $happyCase = [
+    private array $happyCase = [
         'family_name' => 'LEE',
         'given_name' => 'Chi Nan',
         'passport_type_id' => 2,
@@ -29,16 +29,15 @@ class UpdateTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now(),
-                'expect_end_at' => now()->addHour(),
-            ])->create();
+        $this->test = AdmissionTest::factory()->create([
+            'testing_at' => now(),
+            'expect_end_at' => now()->addHour(),
+        ]);
         $this->test->proctors()->attach($this->user->id);
         $this->test->candidates()->attach($this->user->id);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -53,7 +52,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor()
+    public function test_have_no_edit_admission_test_candidate_permission_and_user_is_not_proctor(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -75,7 +74,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -90,7 +89,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_candidate_is_not_exists()
+    public function test_candidate_is_not_exists(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
@@ -106,7 +105,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only()
+    public function test_before_testing_at_more_than_2_hours_when_user_is_proctor_only(): void
     {
         $this->test->update(['testing_at' => now()->addHours(3)]);
         $response = $this->actingAs($this->user)
@@ -123,7 +122,7 @@ class UpdateTest extends TestCase
         $response->assertJson(['message' => 'Could not access before than testing time 2 hours.']);
     }
 
-    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only()
+    public function test_after_than_expect_end_at_more_than_1_hour_when_user_is_proctor_only(): void
     {
         $this->test->update(['expect_end_at' => now()->subHour()->subSecond()]);
         $response = $this->actingAs($this->user)->putJson(
@@ -140,7 +139,7 @@ class UpdateTest extends TestCase
         $response->assertJson(['message' => 'Could not access after than expect end time 1 hour.']);
     }
 
-    public function test_missing_family_name()
+    public function test_missing_family_name(): void
     {
         $data = $this->happyCase;
         unset($data['family_name']);
@@ -158,7 +157,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field is required.']);
     }
 
-    public function test_family_name_is_not_string()
+    public function test_family_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['family_name'] = ['Chan'];
@@ -176,7 +175,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field must be a string.']);
     }
 
-    public function test_family_name_too_long()
+    public function test_family_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['family_name'] = str_repeat('a', 256);
@@ -194,7 +193,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['family_name' => 'The family name field must not be greater than 255 characters.']);
     }
 
-    public function test_middle_name_is_not_string()
+    public function test_middle_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['middle_name'] = ['Chan'];
@@ -212,7 +211,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['middle_name' => 'The middle name field must be a string.']);
     }
 
-    public function test_middle_name_too_long()
+    public function test_middle_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['middle_name'] = str_repeat('a', 256);
@@ -230,7 +229,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['middle_name' => 'The middle name field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_given_name()
+    public function test_missing_given_name(): void
     {
         $data = $this->happyCase;
         unset($data['given_name']);
@@ -248,7 +247,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field is required.']);
     }
 
-    public function test_given_name_is_not_string()
+    public function test_given_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['given_name'] = ['Diamond'];
@@ -266,7 +265,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field must be a string.']);
     }
 
-    public function test_given_name_too_long()
+    public function test_given_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['given_name'] = str_repeat('a', 256);
@@ -284,7 +283,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['given_name' => 'The given name field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_passport_type_id()
+    public function test_missing_passport_type_id(): void
     {
         $data = $this->happyCase;
         unset($data['passport_type_id']);
@@ -302,7 +301,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type field is required.']);
     }
 
-    public function test_passport_type_id_is_not_integer()
+    public function test_passport_type_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['passport_type_id'] = 'abc';
@@ -320,7 +319,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The passport type id field must be an integer.']);
     }
 
-    public function test_passport_type_id_is_not_exist()
+    public function test_passport_type_id_is_not_exist(): void
     {
         $data = $this->happyCase;
         $data['passport_type_id'] = 0;
@@ -338,7 +337,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_type_id' => 'The selected passport type is invalid.']);
     }
 
-    public function test_missing_passport_number()
+    public function test_missing_passport_number(): void
     {
         $data = $this->happyCase;
         unset($data['passport_number']);
@@ -356,7 +355,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field is required.']);
     }
 
-    public function test_passport_number_format_not_match()
+    public function test_passport_number_format_not_match(): void
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567$';
@@ -374,7 +373,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field format is invalid.']);
     }
 
-    public function test_passport_number_too_short()
+    public function test_passport_number_too_short(): void
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567';
@@ -392,7 +391,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must be at least 8 characters.']);
     }
 
-    public function test_passport_number_too_long()
+    public function test_passport_number_too_long(): void
     {
         $data = $this->happyCase;
         $data['passport_number'] = '1234567890123456789';
@@ -410,7 +409,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['passport_number' => 'The passport number field must not be greater than 18 characters.']);
     }
 
-    public function test_missing_gender()
+    public function test_missing_gender(): void
     {
         $data = $this->happyCase;
         unset($data['gender']);
@@ -428,7 +427,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['gender' => 'The gender field is required.']);
     }
 
-    public function test_gender_too_long()
+    public function test_gender_too_long(): void
     {
         $data = $this->happyCase;
         $data['gender'] = str_repeat('a', 256);
@@ -445,7 +444,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['gender' => 'The gender field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_birthday()
+    public function test_missing_birthday(): void
     {
         $data = $this->happyCase;
         unset($data['birthday']);
@@ -462,7 +461,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => 'The birthday field is required.']);
     }
 
-    public function test_birthday_is_not_date()
+    public function test_birthday_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['birthday'] = 'abc';
@@ -479,7 +478,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => 'The birthday field must be a valid date.']);
     }
 
-    public function test_birthday_too_close()
+    public function test_birthday_too_close(): void
     {
         $data = $this->happyCase;
         $data['birthday'] = now()->subYears(2)->addDay()->format('Y-m-d');
@@ -497,7 +496,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['birthday' => "The birthday field must be a date before or equal to $beforeTwoYear."]);
     }
 
-    public function test_happy_case_without_middle_name()
+    public function test_happy_case_without_middle_name(): void
     {
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -526,7 +525,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($this->happyCase['birthday'], $this->user->birthday->format('Y-m-d'));
     }
 
-    public function test_happy_case_with_middle_name()
+    public function test_happy_case_with_middle_name(): void
     {
         $data = $this->happyCase;
         $data['middle_name'] = 'intelligent';

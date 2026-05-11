@@ -13,9 +13,9 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
@@ -26,7 +26,7 @@ class DeleteTest extends TestCase
         $this->test->proctors()->attach($this->user->id);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->deleteJson(
             route(
@@ -40,7 +40,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_proctor_permission()
+    public function test_have_no_edit_admission_test_proctor_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -62,7 +62,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->deleteJson(
             route(
@@ -77,7 +77,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_not_exist_proctor_in_admission_test()
+    public function test_not_exist_proctor_in_admission_test(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->deleteJson(
@@ -93,7 +93,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $response = $this->actingAs($this->user)
             ->deleteJson(

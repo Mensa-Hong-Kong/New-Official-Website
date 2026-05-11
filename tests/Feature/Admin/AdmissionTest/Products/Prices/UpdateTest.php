@@ -15,13 +15,13 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $product;
+    private AdmissionTestProduct $product;
 
-    private $price;
+    private AdmissionTestPrice $price;
 
-    private $happyCase = [
+    private array $happyCase = [
         'name' => 'abc',
     ];
 
@@ -32,16 +32,14 @@ class UpdateTest extends TestCase
         $this->user->givePermissionTo(['Edit:Admission Test']);
         Queue::fake();
         $this->product = AdmissionTestProduct::factory()->create();
-        $this->price = AdmissionTestPrice::factory()
-            ->state([
-                'product_id' => $this->product->id,
-                'synced_one_time_type_to_stripe' => true,
-            ])
-            ->create();
+        $this->price = AdmissionTestPrice::factory()->create([
+            'product_id' => $this->product->id,
+            'synced_one_time_type_to_stripe' => true,
+        ]);
         Queue::fake();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -56,7 +54,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -78,7 +76,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_product_not_exists()
+    public function test_product_not_exists(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -94,7 +92,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_price_not_exists()
+    public function test_price_not_exists(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Admission Test');
@@ -110,7 +108,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_name_is_not_string()
+    public function test_name_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['name'] = ['abc'];
@@ -127,7 +125,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must be a string.']);
     }
 
-    public function test_name_too_long()
+    public function test_name_too_long(): void
     {
         $data = $this->happyCase;
         $data['name'] = str_repeat('a', 256);
@@ -144,7 +142,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['name' => 'The name field must not be greater than 255 characters.']);
     }
 
-    public function test_start_at_is_not_date()
+    public function test_start_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['start_at'] = 'abc';
@@ -155,7 +153,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['start_at' => 'The start at field must be a valid date.']);
     }
 
-    public function test_happy_case_when_name_have_no_change()
+    public function test_happy_case_when_name_have_no_change(): void
     {
         $data = $this->happyCase;
         $data['name'] = $this->price->name;
@@ -179,7 +177,7 @@ class UpdateTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_name_has_change()
+    public function test_happy_case_when_name_has_change(): void
     {
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->putJson(

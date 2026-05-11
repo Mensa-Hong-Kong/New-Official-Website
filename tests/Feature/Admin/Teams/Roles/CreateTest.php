@@ -12,7 +12,7 @@ class CreateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $team = Team::first();
         $response = $this->get(
@@ -25,7 +25,7 @@ class CreateTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $team = Team::first();
         $user = User::factory()->create();
@@ -45,7 +45,7 @@ class CreateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Permission');
@@ -59,7 +59,7 @@ class CreateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $team = Team::first();
         $user = User::factory()->create();

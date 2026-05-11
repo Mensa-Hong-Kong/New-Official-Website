@@ -13,7 +13,7 @@ class UpdateDisplayOrderTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -22,7 +22,7 @@ class UpdateDisplayOrderTest extends TestCase
         $this->user->givePermissionTo('Edit:Permission');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -41,7 +41,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_permission()
+    public function test_have_no_permission(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -67,7 +67,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_missing_type_id()
+    public function test_missing_type_id(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route('admin.teams.display-order.update'),
@@ -86,7 +86,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['message' => 'The type field is required, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_id_is_not_integer()
+    public function test_type_id_is_not_integer(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route('admin.teams.display-order.update'),
@@ -106,7 +106,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['message' => 'The type field must be an integer, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_type_id_is_not_exists()
+    public function test_type_id_is_not_exists(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route('admin.teams.display-order.update'),
@@ -126,7 +126,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['message' => 'The selected type is invalid, if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_missing_display_order()
+    public function test_missing_display_order(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -138,7 +138,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_is_not_array()
+    public function test_display_order_is_not_array(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -153,7 +153,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field must be an array.']);
     }
 
-    public function test_display_order_size_is_not_match()
+    public function test_display_order_size_is_not_match(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -168,7 +168,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_display_order_have_no_value()
+    public function test_display_order_have_no_value(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -183,7 +183,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order' => 'The display order field is required.']);
     }
 
-    public function test_display_order_value_is_not_integer()
+    public function test_display_order_value_is_not_integer(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -204,7 +204,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field must be an integer.']);
     }
 
-    public function test_display_order_value_is_duplicate()
+    public function test_display_order_value_is_duplicate(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -229,7 +229,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['display_order.0' => 'The display_order.0 field has a duplicate value.']);
     }
 
-    public function test_display_order_value_is_not_exists_on_database()
+    public function test_display_order_value_is_not_exists_on_database(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)
@@ -250,7 +250,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertInvalid(['message' => 'The ID(s) of display order field is not up to date, it you are using our CMS, please refresh. If the problem persists, please contact I.T. officer.']);
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $type = TeamType::inRandomOrder()
             ->whereNot('id', 1)

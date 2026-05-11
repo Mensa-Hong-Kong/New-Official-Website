@@ -12,7 +12,7 @@ class VerifyTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -21,7 +21,7 @@ class VerifyTest extends TestCase
         $this->user->givePermissionTo('Edit:User');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $contact = UserHasContact::factory()->create();
         $response = $this->putJson(
@@ -33,7 +33,7 @@ class VerifyTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_user_permission()
+    public function test_have_no_edit_user_permission(): void
     {
         $contact = UserHasContact::factory()->create();
         $user = User::factory()->create();
@@ -52,10 +52,9 @@ class VerifyTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_status_is_not_boolean()
+    public function test_status_is_not_boolean(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -66,10 +65,9 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_not_verified_contact_no_change()
+    public function test_happy_case_not_verified_contact_no_change(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -87,10 +85,9 @@ class VerifyTest extends TestCase
         $this->assertFalse($contact->is_default);
     }
 
-    public function test_happy_case_not_verified_contact_change_to_verified()
+    public function test_happy_case_not_verified_contact_change_to_verified(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -109,10 +106,9 @@ class VerifyTest extends TestCase
         $this->assertFalse($contact->is_default);
     }
 
-    public function test_happy_case_verified_contact_no_change()
+    public function test_happy_case_verified_contact_no_change(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -133,11 +129,9 @@ class VerifyTest extends TestCase
         $this->assertFalse($contact->is_default);
     }
 
-    public function test_happy_case_default_contact_no_change()
+    public function test_happy_case_default_contact_no_change(): void
     {
-        $contact = UserHasContact::factory()
-            ->state(['is_default' => true])
-            ->create();
+        $contact = UserHasContact::factory()->create(['is_default' => true]);
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -158,10 +152,9 @@ class VerifyTest extends TestCase
         $this->assertTrue($contact->is_default);
     }
 
-    public function test_happy_case_verified_contact_change_to_not_verified()
+    public function test_happy_case_verified_contact_change_to_not_verified(): void
     {
-        $contact = UserHasContact::factory()
-            ->create();
+        $contact = UserHasContact::factory()->create();
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -181,11 +174,9 @@ class VerifyTest extends TestCase
         $this->assertFalse($contact->is_default);
     }
 
-    public function test_happy_case_default_contact_change_to_not_verified()
+    public function test_happy_case_default_contact_change_to_not_verified(): void
     {
-        $contact = UserHasContact::factory()
-            ->state(['is_default' => true])
-            ->create();
+        $contact = UserHasContact::factory()->create(['is_default' => true]);
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)

@@ -14,7 +14,7 @@ class MembershipQualificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -22,19 +22,19 @@ class MembershipQualificationTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    public function test_user_have_no_any_relation_membership_qualification_record()
+    public function test_user_have_no_any_relation_membership_qualification_record(): void
     {
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_failed_admission_test_record()
+    public function test_user_only_has_failed_admission_test_record(): void
     {
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach($this->user->id, ['is_present' => true]);
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_passed_admission_test_record()
+    public function test_user_only_has_passed_admission_test_record(): void
     {
         $test = AdmissionTest::factory()->create();
         $test->candidates()->attach(
@@ -47,7 +47,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertTrue($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_waiting_handle_member_transfer_record()
+    public function test_user_only_has_waiting_handle_member_transfer_record(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -57,7 +57,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_rejected_member_transfer_record()
+    public function test_user_only_has_rejected_member_transfer_record(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -68,7 +68,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_accepted_member_transfer_record()
+    public function test_user_only_has_accepted_member_transfer_record(): void
     {
         $this->user->memberTransfers()->create([
             'type' => fake()->randomElement(['in', 'guest', 'out']),
@@ -79,7 +79,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertTrue($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_waiting_handle_prior_evidence_order()
+    public function test_user_only_has_waiting_handle_prior_evidence_order(): void
     {
         $this->user->priorEvidenceOrders()->create([
             'price' => 400,
@@ -91,7 +91,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_waiting_nsp_result_prior_evidence_order()
+    public function test_user_only_has_waiting_nsp_result_prior_evidence_order(): void
     {
         $priorEvidenceOrder = $this->user->priorEvidenceOrders()->create([
             'price' => 400,
@@ -109,7 +109,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_failed_prior_evidence_result()
+    public function test_user_only_has_failed_prior_evidence_result(): void
     {
         $priorEvidenceOrder = $this->user->priorEvidenceOrders()->create([
             'price' => 400,
@@ -128,7 +128,7 @@ class MembershipQualificationTest extends TestCase
         $this->assertFalse($this->user->hasQualificationOfMembership);
     }
 
-    public function test_user_only_has_passed_prior_evidence_result()
+    public function test_user_only_has_passed_prior_evidence_result(): void
     {
         $priorEvidenceOrder = $this->user->priorEvidenceOrders()->create([
             'price' => 400,

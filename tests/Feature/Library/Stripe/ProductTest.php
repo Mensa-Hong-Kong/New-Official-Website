@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    public function test_search_product_but_stripe_under_maintenance()
+    public function test_search_product_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
@@ -23,7 +23,7 @@ class ProductTest extends TestCase
         ]);
     }
 
-    public function test_search_product_happy_case()
+    public function test_search_product_happy_case(): void
     {
         $data = [
             [
@@ -71,7 +71,7 @@ class ProductTest extends TestCase
         );
     }
 
-    public function test_search_product_first_happy_case_has_result()
+    public function test_search_product_first_happy_case_has_result(): void
     {
         $data = [
             'id' => 'prod_NZOkxQ8eTZEHwN',
@@ -107,7 +107,7 @@ class ProductTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function test_search_product_first_happy_case_have_no_result()
+    public function test_search_product_first_happy_case_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response([
@@ -124,7 +124,7 @@ class ProductTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_create_product_happy_case()
+    public function test_create_product_happy_case(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -161,7 +161,7 @@ class ProductTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_find_product_have_no_result()
+    public function test_find_product_have_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/*' => Http::response(status: 404),
@@ -178,7 +178,7 @@ class ProductTest extends TestCase
         );
     }
 
-    public function test_find_product_has_result()
+    public function test_find_product_has_result(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -207,7 +207,7 @@ class ProductTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_update_product_happy_case()
+    public function test_update_product_happy_case(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',

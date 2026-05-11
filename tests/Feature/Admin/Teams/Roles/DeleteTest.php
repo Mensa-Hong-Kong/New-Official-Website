@@ -14,7 +14,7 @@ class DeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class DeleteTest extends TestCase
         $this->user->givePermissionTo('Edit:Permission');
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $team = Team::inRandomOrder()->first();
         $role = $team->roles->first();
@@ -39,7 +39,7 @@ class DeleteTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_permission()
+    public function test_have_no_edit_permission(): void
     {
         $team = Team::inRandomOrder()->first();
         $role = $team->roles->first();
@@ -62,7 +62,7 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_is_not_exist()
+    public function test_team_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -76,7 +76,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_role_is_not_exist()
+    public function test_role_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -90,7 +90,7 @@ class DeleteTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_happy_case_when_have_no_other_team()
+    public function test_happy_case_when_have_no_other_team(): void
     {
         $role = Role::has('teams', '=', 1)
             ->first();
@@ -109,7 +109,7 @@ class DeleteTest extends TestCase
         $this->assertNull(Role::firstWhere('id', $role->id));
     }
 
-    public function test_happy_case_when_has_other_teams()
+    public function test_happy_case_when_has_other_teams(): void
     {
         $role = Role::has('teams', '>', 1)
             ->first();

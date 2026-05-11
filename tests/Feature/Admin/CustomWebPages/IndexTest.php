@@ -11,13 +11,13 @@ class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->get(route('admin.custom-web-pages.index'));
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_view_user_permission()
+    public function test_have_no_view_user_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -31,7 +31,7 @@ class IndexTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case()
+    public function test_happy_case(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo('Edit:Custom Web Page');

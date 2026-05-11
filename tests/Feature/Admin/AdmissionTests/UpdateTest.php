@@ -21,7 +21,7 @@ class UpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
     private $happyCase = [
         'district_id' => 1,
@@ -30,7 +30,7 @@ class UpdateTest extends TestCase
         'maximum_candidates' => 40,
     ];
 
-    private $test;
+    private AdmissionTest $test;
 
     protected function setUp(): void
     {
@@ -40,13 +40,12 @@ class UpdateTest extends TestCase
         $testingAt = now()->addMinute();
         $this->happyCase['type_id'] = AdmissionTestType::factory()->create()->id;
         $this->happyCase['testing_at'] = $testingAt->format('Y-m-d H:i:s');
-        $this->happyCase['expect_end_at'] = $testingAt->addMinutes(30)->format('Y-m-d H:i:s');
+        $this->happyCase['expect_end_at'] = (clone $testingAt)->addMinutes(30)->format('Y-m-d H:i:s');
         $this->test = AdmissionTest::factory()->create();
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $this->user->id,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => true,
+        ]);
         ContactHasVerification::create([
             'contact_id' => $contact->id,
             'contact' => $contact->contact,
@@ -57,7 +56,7 @@ class UpdateTest extends TestCase
         ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -69,7 +68,7 @@ class UpdateTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_permission()
+    public function test_have_no_edit_admission_test_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -88,7 +87,7 @@ class UpdateTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_permission_is_not_exist()
+    public function test_permission_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -100,7 +99,7 @@ class UpdateTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_missing_type_id()
+    public function test_missing_type_id(): void
     {
         $data = $this->happyCase;
         unset($data['type_id']);
@@ -114,7 +113,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field is required.']);
     }
 
-    public function test_type_id_is_not_integer()
+    public function test_type_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = 'abc';
@@ -128,7 +127,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The type field must be an integer.']);
     }
 
-    public function test_type_id_is_not_exists_on_database()
+    public function test_type_id_is_not_exists_on_database(): void
     {
         $data = $this->happyCase;
         $data['type_id'] = 0;
@@ -142,7 +141,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['type_id' => 'The selected type is invalid.']);
     }
 
-    public function test_missing_district_id()
+    public function test_missing_district_id(): void
     {
         $data = $this->happyCase;
         unset($data['district_id']);
@@ -156,7 +155,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['district_id' => 'The district field is required.']);
     }
 
-    public function test_district_id_is_not_integer()
+    public function test_district_id_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['district_id'] = 'abc';
@@ -170,7 +169,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['district_id' => 'The district field must be an integer.']);
     }
 
-    public function test_district_id_is_not_exists_on_database()
+    public function test_district_id_is_not_exists_on_database(): void
     {
         $data = $this->happyCase;
         $data['district_id'] = 0;
@@ -184,7 +183,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['district_id' => 'The selected district is invalid.']);
     }
 
-    public function test_missing_address()
+    public function test_missing_address(): void
     {
         $data = $this->happyCase;
         unset($data['address']);
@@ -198,7 +197,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field is required.']);
     }
 
-    public function test_address_is_not_string()
+    public function test_address_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['address'] = ['abc'];
@@ -212,7 +211,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must be a string.']);
     }
 
-    public function test_address_too_long()
+    public function test_address_too_long(): void
     {
         $data = $this->happyCase;
         $data['address'] = str_repeat('a', 256);
@@ -226,7 +225,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_location()
+    public function test_missing_location(): void
     {
         $data = $this->happyCase;
         unset($data['location']);
@@ -240,7 +239,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['location' => 'The location field is required.']);
     }
 
-    public function test_location_is_not_string()
+    public function test_location_is_not_string(): void
     {
         $data = $this->happyCase;
         $data['location'] = ['abc'];
@@ -254,7 +253,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['location' => 'The location field must be a string.']);
     }
 
-    public function test_location_too_long()
+    public function test_location_too_long(): void
     {
         $data = $this->happyCase;
         $data['location'] = str_repeat('a', 256);
@@ -268,7 +267,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['location' => 'The location field must not be greater than 255 characters.']);
     }
 
-    public function test_missing_testing_at()
+    public function test_missing_testing_at(): void
     {
         $data = $this->happyCase;
         unset($data['testing_at']);
@@ -282,7 +281,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field is required.']);
     }
 
-    public function test_testing_at_is_not_date()
+    public function test_testing_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['testing_at'] = 'abc';
@@ -296,7 +295,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['testing_at' => 'The testing at field must be a valid date.']);
     }
 
-    public function test_missing_expect_end_at()
+    public function test_missing_expect_end_at(): void
     {
         $data = $this->happyCase;
         unset($data['expect_end_at']);
@@ -307,7 +306,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field is required.']);
     }
 
-    public function test_expect_end_at_is_not_date()
+    public function test_expect_end_at_is_not_date(): void
     {
         $data = $this->happyCase;
         $data['expect_end_at'] = 'abc';
@@ -318,7 +317,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a valid date.']);
     }
 
-    public function test_expect_end_at_before_testing_at()
+    public function test_expect_end_at_before_testing_at(): void
     {
         $data = $this->happyCase;
         $data['expect_end_at'] = now()->subMinute()->format('Y-m-d H:i:s');
@@ -329,7 +328,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['expect_end_at' => 'The expect end at field must be a date after than testing at.']);
     }
 
-    public function test_missing_maximum_candidates()
+    public function test_missing_maximum_candidates(): void
     {
         $data = $this->happyCase;
         unset($data['maximum_candidates']);
@@ -343,7 +342,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field is required.']);
     }
 
-    public function test_maximum_candidates_is_not_integer()
+    public function test_maximum_candidates_is_not_integer(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 'abc';
@@ -357,7 +356,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be an integer.']);
     }
 
-    public function test_maximum_candidates_less_than_one()
+    public function test_maximum_candidates_less_than_one(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 0;
@@ -371,7 +370,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must be at least 1.']);
     }
 
-    public function test_maximum_candidates_greater_than_65535()
+    public function test_maximum_candidates_greater_than_65535(): void
     {
         $data = $this->happyCase;
         $data['maximum_candidates'] = 65536;
@@ -385,7 +384,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['maximum_candidates' => 'The maximum candidates field must not be greater than 65535.']);
     }
 
-    public function test_is_public_is_not_boolean()
+    public function test_is_public_is_not_boolean(): void
     {
         $data = $this->happyCase;
         $data['is_public'] = 'abc';
@@ -399,7 +398,7 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['is_public' => 'The is public field must be true or false.']);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_with_no_change()
+    public function test_happy_case_when_have_no_candidate_and_with_no_change(): void
     {
         $data = [
             'type_id' => $this->happyCase['type_id'],
@@ -425,7 +424,7 @@ class UpdateTest extends TestCase
         $response->assertJson($data);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_change_all_without_address_and_location()
+    public function test_happy_case_when_have_no_candidate_and_change_all_without_address_and_location(): void
     {
         $this->test->update([
             'district_id' => 1,
@@ -436,7 +435,7 @@ class UpdateTest extends TestCase
         $data = [
             'type_id' => $this->happyCase['type_id'],
             'testing_at' => $now->format('Y-m-d H:i:s'),
-            'expect_end_at' => $now->addMinutes(30)->format('Y-m-d H:i:s'),
+            'expect_end_at' => (clone $now)->addMinutes(30)->format('Y-m-d H:i:s'),
             'district_id' => 2,
             'address' => 'abc',
             'location' => 'xyz',
@@ -457,7 +456,7 @@ class UpdateTest extends TestCase
         $response->assertJson($data);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database(): void
     {
         $addressID = $this->test->address->id;
         $data = [
@@ -490,7 +489,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($addressID, $this->test->address->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database(): void
     {
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
@@ -521,12 +520,9 @@ class UpdateTest extends TestCase
         $this->assertEquals($newAddress->id, $this->test->address->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database(): void
     {
-        AdmissionTest::factory()
-            ->state([
-                'address_id' => $this->test->address_id,
-            ])->create();
+        AdmissionTest::factory()->create(['address_id' => $this->test->address_id]);
         $addressID = $this->test->address->id;
         $data = [
             'type_id' => $this->test->type_id,
@@ -559,12 +555,9 @@ class UpdateTest extends TestCase
         $this->assertNotEquals($addressID, $this->test->address->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database(): void
     {
-        AdmissionTest::factory()
-            ->state([
-                'address_id' => $this->test->address_id,
-            ])->create();
+        AdmissionTest::factory()->create(['address_id' => $this->test->address_id]);
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
@@ -594,7 +587,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newAddress->id, $this->test->address->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database(): void
     {
         $locationID = $this->test->location->id;
         $data = [
@@ -624,7 +617,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($locationID, $this->test->location->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database(): void
     {
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
@@ -655,12 +648,9 @@ class UpdateTest extends TestCase
         $this->assertEquals($newLocation->id, $this->test->location->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database(): void
     {
-        AdmissionTest::factory()
-            ->state([
-                'location_id' => $this->test->location_id,
-            ])->create();
+        AdmissionTest::factory()->create(['location_id' => $this->test->location_id]);
         $locationID = $this->test->location->id;
         $data = [
             'type_id' => $this->test->type_id,
@@ -690,12 +680,9 @@ class UpdateTest extends TestCase
         $this->assertNotEquals($locationID, $this->test->location->id);
     }
 
-    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_have_no_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database(): void
     {
-        AdmissionTest::factory()
-            ->state([
-                'location_id' => $this->test->location_id,
-            ])->create();
+        AdmissionTest::factory()->create(['location_id' => $this->test->location_id]);
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [
@@ -725,7 +712,7 @@ class UpdateTest extends TestCase
         $this->assertEquals($newLocation->id, $this->test->location->id);
     }
 
-    public function test_happy_case_when_has_candidate_and_with_no_change()
+    public function test_happy_case_when_has_candidate_and_with_no_change(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -754,7 +741,7 @@ class UpdateTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_maximum_candidates()
+    public function test_happy_case_when_has_candidate_and_only_change_maximum_candidates(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -788,7 +775,7 @@ class UpdateTest extends TestCase
         Queue::assertNothingPushed();
     }
 
-    public function test_happy_case_when_has_candidate_and_change_all_without_address_and_location()
+    public function test_happy_case_when_has_candidate_and_change_all_without_address_and_location(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -801,7 +788,7 @@ class UpdateTest extends TestCase
         $data = [
             'type_id' => $this->happyCase['type_id'],
             'testing_at' => $now->format('Y-m-d H:i:s'),
-            'expect_end_at' => $now->addMinutes(30)->format('Y-m-d H:i:s'),
+            'expect_end_at' => (clone $now)->addMinutes(30)->format('Y-m-d H:i:s'),
             'district_id' => 2,
             'address' => 'abc',
             'location' => 'xyz',
@@ -827,7 +814,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_is_not_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -867,7 +854,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_address_have_no_other_location_using_and_new_address_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -905,14 +892,11 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_is_not_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
-        AdmissionTest::factory()
-            ->state([
-                'address_id' => $this->test->address_id,
-            ])->create();
+        AdmissionTest::factory()->create(['address_id' => $this->test->address_id]);
         $addressID = $this->test->address->id;
         $data = [
             'type_id' => $this->test->type_id,
@@ -950,14 +934,11 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_address_has_other_location_using_and_new_address_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
-        AdmissionTest::factory()
-            ->state([
-                'address_id' => $this->test->address_id,
-            ])->create();
+        AdmissionTest::factory()->create(['address_id' => $this->test->address_id]);
         $addressID = $this->test->address->id;
         $newAddress = Address::factory()->create();
         $data = [
@@ -992,7 +973,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_is_not_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -1029,7 +1010,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_location_have_no_other_test_using_and_new_location_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
@@ -1067,14 +1048,11 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_is_not_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
-        AdmissionTest::factory()
-            ->state([
-                'location_id' => $this->test->location_id,
-            ])->create();
+        AdmissionTest::factory()->create(['location_id' => $this->test->location_id]);
         $locationID = $this->test->location->id;
         $data = [
             'type_id' => $this->test->type_id,
@@ -1109,14 +1087,11 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database()
+    public function test_happy_case_when_has_candidate_and_only_change_location_has_other_test_using_and_new_location_exist_on_database(): void
     {
         Queue::fake();
         $this->test->candidates()->attach($this->user->id);
-        AdmissionTest::factory()
-            ->state([
-                'location_id' => $this->test->location_id,
-            ])->create();
+        AdmissionTest::factory()->create(['location_id' => $this->test->location_id]);
         $locationID = $this->test->location->id;
         $newLocation = Location::factory()->create();
         $data = [

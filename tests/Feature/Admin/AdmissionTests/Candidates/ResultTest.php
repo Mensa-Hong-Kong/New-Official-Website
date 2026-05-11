@@ -18,22 +18,21 @@ class ResultTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $test;
+    private AdmissionTest $test;
 
-    private $seatNumber = 1;
+    private int $seatNumber = 1;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
         $this->user->givePermissionTo('Edit:Admission Test Result');
-        $this->test = AdmissionTest::factory()
-            ->state([
-                'testing_at' => now()->subSecond()->subHour(),
-                'expect_end_at' => now()->subSecond(),
-            ])->create();
+        $this->test = AdmissionTest::factory()->create([
+            'testing_at' => now()->subSecond()->subHour(),
+            'expect_end_at' => now()->subSecond(),
+        ]);
         $this->test->candidates()->attach(
             $this->user->id,
             [
@@ -41,11 +40,10 @@ class ResultTest extends TestCase
                 'seat_number' => $this->seatNumber,
             ]
         );
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $this->user->id,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => true,
+        ]);
         ContactHasVerification::create([
             'contact_id' => $contact->id,
             'contact' => $contact->contact,
@@ -56,7 +54,7 @@ class ResultTest extends TestCase
         ]);
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->putJson(
             route(
@@ -70,7 +68,7 @@ class ResultTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_edit_admission_test_result_permission()
+    public function test_have_no_edit_admission_test_result_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -91,7 +89,7 @@ class ResultTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_admission_test_is_not_exist()
+    public function test_admission_test_is_not_exist(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -105,7 +103,7 @@ class ResultTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_seat_number_is_not_exists_on_the_test()
+    public function test_seat_number_is_not_exists_on_the_test(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($this->user)->putJson(
@@ -120,7 +118,7 @@ class ResultTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_before_than_expect_end_at()
+    public function test_before_than_expect_end_at(): void
     {
         $this->test->update(['expect_end_at' => now()->addSeconds(5)]);
         $response = $this->actingAs($this->user)->putJson(
@@ -136,7 +134,7 @@ class ResultTest extends TestCase
         $response->assertJson(['message' => 'Cannot add result before expect end time.']);
     }
 
-    public function test_candidate_is_absent()
+    public function test_candidate_is_absent(): void
     {
         AdmissionTestHasCandidate::where('test_id', $this->test->id)
             ->where('user_id', $this->user->id)
@@ -154,7 +152,7 @@ class ResultTest extends TestCase
         $response->assertJson(['message' => 'Cannot add result to absent candidate.']);
     }
 
-    public function test_status_is_not_boolean()
+    public function test_status_is_not_boolean(): void
     {
         $response = $this->actingAs($this->user)->putJson(
             route(
@@ -169,7 +167,7 @@ class ResultTest extends TestCase
         $response->assertInvalid(['status' => 'The status field must be true or false. if you are using our CMS, please contact I.T. officer.']);
     }
 
-    public function test_happy_case_when_pass()
+    public function test_happy_case_when_pass(): void
     {
         Notification::fake();
         $this->user = User::find($this->user->id);
@@ -193,7 +191,7 @@ class ResultTest extends TestCase
         );
     }
 
-    public function test_happy_case_when_fail()
+    public function test_happy_case_when_fail(): void
     {
         Notification::fake();
         $this->user = User::find($this->user->id);

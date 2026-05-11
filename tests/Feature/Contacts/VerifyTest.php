@@ -13,9 +13,9 @@ class VerifyTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $user;
+    private User $user;
 
-    private $contact;
+    private UserHasContact $contact;
 
     protected function setUp(): void
     {
@@ -26,7 +26,7 @@ class VerifyTest extends TestCase
         $this->contact->sendVerifyCode();
     }
 
-    public function test_have_no_login()
+    public function test_have_no_login(): void
     {
         $response = $this->postJson(
             route('contacts.verify', ['contact' => $this->contact]),
@@ -35,7 +35,7 @@ class VerifyTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_user_contact_is_not_zirself()
+    public function test_user_contact_is_not_zirself(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)
@@ -46,7 +46,7 @@ class VerifyTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_the_contact_has_been_verified()
+    public function test_the_contact_has_been_verified(): void
     {
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -58,7 +58,7 @@ class VerifyTest extends TestCase
         $response->assertJson(['message' => "The {$this->contact->type} verified."]);
     }
 
-    public function test_have_no_verify_code_record()
+    public function test_have_no_verify_code_record(): void
     {
         $this->contact->lastVerification()->delete();
         // return to zero
@@ -75,7 +75,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_verify_code_expired_and_not_request_too_many_time()
+    public function test_verify_code_expired_and_not_request_too_many_time(): void
     {
         $this->contact->lastVerification()->update(['closed_at' => now()->subSecond()]);
         // return to zero
@@ -91,11 +91,9 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_verify_code_expired_and_request_too_many_time_in_same_user_and_diff_contact()
+    public function test_verify_code_expired_and_request_too_many_time_in_same_user_and_diff_contact(): void
     {
-        $contact = UserHasContact::factory()
-            ->{$this->contact->type}()
-            ->create();
+        $contact = UserHasContact::factory()->{$this->contact->type}()->create();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -115,7 +113,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_tried_too_many_time_and_not_request_too_many_time()
+    public function test_tried_too_many_time_and_not_request_too_many_time(): void
     {
         $this->contact->lastVerification()->update(['tried_time' => 5]);
         // return to zero
@@ -131,15 +129,14 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_tried_too_many_time_and_request_too_many_time_in_same_contact_and_diff_user()
+    public function test_tried_too_many_time_and_request_too_many_time_in_same_contact_and_diff_user(): void
     {
         $user = User::factory()->create();
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $user->id,
-                'type' => $this->contact->type,
-                'contact' => $this->contact->contact,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $user->id,
+            'type' => $this->contact->type,
+            'contact' => $this->contact->contact,
+        ]);
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -159,14 +156,14 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_missing_code()
+    public function test_missing_code(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(route('contacts.verify', ['contact' => $this->contact]));
         $response->assertInvalid(['code' => 'The code field is required.']);
     }
 
-    public function test_code_is_not_string()
+    public function test_code_is_not_string(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -176,7 +173,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must be a string.']);
     }
 
-    public function test_code_size_is_not_match()
+    public function test_code_size_is_not_match(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -186,7 +183,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must be 6 characters.']);
     }
 
-    public function test_code_is_not_alpha_number()
+    public function test_code_is_not_alpha_number(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -196,7 +193,7 @@ class VerifyTest extends TestCase
         $response->assertInvalid(['code' => 'The code field must only contain letters and numbers.']);
     }
 
-    public function test_incorrect_verify_code_and_not_tried_too_many_time()
+    public function test_incorrect_verify_code_and_not_tried_too_many_time(): void
     {
         // return to zero
         Notification::fake();
@@ -212,7 +209,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_incorrect_verify_code_and_tried_too_many_time_and_not_request_too_many_time()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_not_request_too_many_time(): void
     {
         $this->contact->lastVerification()->update(['tried_time' => 4]);
         // return to zero
@@ -228,11 +225,9 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time_in_same_user_and_diff_contact()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time_in_same_user_and_diff_contact(): void
     {
-        $contact = UserHasContact::factory()
-            ->{$this->contact->type}()
-            ->create();
+        $contact = UserHasContact::factory()->{$this->contact->type}()->create();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -254,15 +249,14 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time()
+    public function test_incorrect_verify_code_and_tried_too_many_time_and_request_too_many_time(): void
     {
         $user = User::factory()->create();
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $user->id,
-                'type' => $this->contact->type,
-                'contact' => $this->contact->contact,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $user->id,
+            'type' => $this->contact->type,
+            'contact' => $this->contact->contact,
+        ]);
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
         $contact->sendVerifyCode();
@@ -284,7 +278,7 @@ class VerifyTest extends TestCase
         );
     }
 
-    public function test_happy_case_have_no_other_user_default_same_contact()
+    public function test_happy_case_have_no_other_user_default_same_contact(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(
@@ -296,16 +290,15 @@ class VerifyTest extends TestCase
         $this->assertTrue($this->contact->refresh()->isVerified);
     }
 
-    public function test_happy_case_has_other_user_default_same_contact_type()
+    public function test_happy_case_has_other_user_default_same_contact_type(): void
     {
         $user = User::factory()->create();
-        $contact = UserHasContact::factory()
-            ->state([
-                'user_id' => $user->id,
-                'type' => $this->contact->type,
-                'contact' => $this->contact->contact,
-                'is_default' => true,
-            ])->create();
+        $contact = UserHasContact::factory()->create([
+            'user_id' => $user->id,
+            'type' => $this->contact->type,
+            'contact' => $this->contact->contact,
+            'is_default' => true,
+        ]);
         $contact->sendVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)

@@ -14,7 +14,7 @@ class StripeTraitTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $product;
+    private AdmissionTestProduct $product;
 
     protected function setUp(): void
     {
@@ -22,7 +22,7 @@ class StripeTraitTest extends TestCase
         $this->product = AdmissionTestProduct::factory()->create();
     }
 
-    public function test_get_stripe_data_but_stripe_under_maintenance()
+    public function test_get_stripe_data_but_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
@@ -31,7 +31,7 @@ class StripeTraitTest extends TestCase
         $this->product->getStripe();
     }
 
-    public function test_get_stripe_data_happy_case_when_product_have_no_stripe_id_and_no_result()
+    public function test_get_stripe_data_happy_case_when_product_have_no_stripe_id_and_no_result(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::response([
@@ -46,7 +46,7 @@ class StripeTraitTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_get_stripe_data_happy_case_when_product_have_no_stripe_id_and_have_result()
+    public function test_get_stripe_data_happy_case_when_product_have_no_stripe_id_and_have_result(): void
     {
         $data = [
             'id' => 'prod_NZOkxQ8eTZEHwN',
@@ -81,7 +81,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($data['id'], $this->product->stripe_id);
     }
 
-    public function test_get_stripe_data_happy_case_when_product_has_stripe_id()
+    public function test_get_stripe_data_happy_case_when_product_has_stripe_id(): void
     {
         $this->product->update(['stripe_id' => 'cus_NeGfPRiPKxeBi1']);
         $response = [
@@ -111,7 +111,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($response, $result);
     }
 
-    public function test_create_stripe_product_but_stripe_id_already()
+    public function test_create_stripe_product_but_stripe_id_already(): void
     {
         $this->product->update(['stripe_id' => 'abc']);
         $this->expectException(AlreadyCreated::class);
@@ -119,7 +119,7 @@ class StripeTraitTest extends TestCase
         $this->product->stripeCreate();
     }
 
-    public function test_create_exists_stripe_product_just_missing_save_stripe_id()
+    public function test_create_exists_stripe_product_just_missing_save_stripe_id(): void
     {
         $data = [
             'id' => 'prod_NZOkxQ8eTZEHwN',
@@ -154,7 +154,7 @@ class StripeTraitTest extends TestCase
         $this->assertEquals($data['id'], $this->product->stripe_id);
     }
 
-    public function test_get_stripe_product_not_found_and_create_product_that_stripe_under_maintenance()
+    public function test_get_stripe_product_not_found_and_create_product_that_stripe_under_maintenance(): void
     {
         Http::fake([
             'https://api.stripe.com/v1/products/*' => Http::sequence()
@@ -169,7 +169,7 @@ class StripeTraitTest extends TestCase
         $result = $this->product->stripeCreate();
     }
 
-    public function test_create_stripe_product_happy_case()
+    public function test_create_stripe_product_happy_case(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -208,14 +208,14 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->product->synced_to_stripe);
     }
 
-    public function test_update_stripe_product_but_have_no_stripe_id()
+    public function test_update_stripe_product_but_have_no_stripe_id(): void
     {
         $this->expectException(NotYetCreated::class);
         $this->expectExceptionMessage('AdmissionTestProduct is not a Stripe product yet. See the stripeUpdate method.');
         $this->product->stripeUpdate();
     }
 
-    public function test_update_stripe_product_but_stripe_under_maintenance()
+    public function test_update_stripe_product_but_stripe_under_maintenance(): void
     {
         $this->product->update(['stripe_id' => 'prod_NWjs8kKbJWmuuc']);
         Http::fake([
@@ -225,7 +225,7 @@ class StripeTraitTest extends TestCase
         $this->product->stripeUpdate();
     }
 
-    public function test_update_stripe_product_happy_case()
+    public function test_update_stripe_product_happy_case(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -260,7 +260,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->product->synced_to_stripe);
     }
 
-    public function test_update_or_create_product_when_have_no_stripe_id()
+    public function test_update_or_create_product_when_have_no_stripe_id(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -299,7 +299,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->product->synced_to_stripe);
     }
 
-    public function test_update_or_create_product_when_has_stripe_id_and_not_synced_to_stripe()
+    public function test_update_or_create_product_when_has_stripe_id_and_not_synced_to_stripe(): void
     {
         $response = [
             'id' => 'prod_NWjs8kKbJWmuuc',
@@ -334,7 +334,7 @@ class StripeTraitTest extends TestCase
         $this->assertTrue($this->product->synced_to_stripe);
     }
 
-    public function test_update_or_create_product_when_has_stripe_id_and_synced_to_stripe()
+    public function test_update_or_create_product_when_has_stripe_id_and_synced_to_stripe(): void
     {
         $response = [
             'id' => 'prod_NZOkxQ8eTZEHwN',
