@@ -165,7 +165,7 @@ class UserHasContact extends Model
         $contact = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use($contact): bool {
+            get: function (mixed $value, array $attributes) use ($contact): bool {
                 return $contact->lastVerification &&
                     $contact->lastVerification->created_at > now()->subMinute();
             }

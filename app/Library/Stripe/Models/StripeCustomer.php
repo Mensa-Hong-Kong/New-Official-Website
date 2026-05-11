@@ -5,6 +5,7 @@ namespace App\Library\Stripe\Models;
 use App\Library\Stripe\Client;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property string $id
@@ -41,7 +42,7 @@ class StripeCustomer extends Model
         'customerable_id',
     ];
 
-    public function customerable()
+    public function customerable(): MorphTo
     {
         return $this->morphTo();
     }
