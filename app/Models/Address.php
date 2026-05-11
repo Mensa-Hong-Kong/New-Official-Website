@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -38,22 +40,22 @@ class Address extends Model
         'value',
     ];
 
-    public function district()
+    public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
     }
 
-    public function admissionTests()
+    public function admissionTests(): HasMany
     {
         return $this->hasMany(AdmissionTest::class);
     }
 
-    public function user()
+    public function user(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    public function updateAddress($districtID, $value)
+    public function updateAddress(int $districtID, string $value): Address
     {
         if ($districtID == $this->district_id && $value == $this->value) {
             return $this;

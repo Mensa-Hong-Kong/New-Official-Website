@@ -6,6 +6,7 @@ use App\Notifications\VerifyContact;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
@@ -63,14 +64,14 @@ class UserHasContact extends Model
     protected static function booted(): void
     {
         static::created(
-            function (UserHasContact $contact) {
+            function (UserHasContact $contact): void {
                 if ($contact->is_default && $contact->type == 'email') {
                     $contact->user()->update(['synced_to_stripe' => false]);
                 }
             }
         );
         static::updated(
-            function (UserHasContact $contact) {
+            function (UserHasContact $contact): void {
                 if ($contact->wasChanged('is_default')) {
                     if ($contact->type == 'email') {
                         $contact->user()->update(['synced_to_stripe' => false]);
@@ -98,12 +99,7 @@ class UserHasContact extends Model
         );
     }
 
-    public function getIsDefaultAttribute($value): bool
-    {
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
-    }
-
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -121,13 +117,13 @@ class UserHasContact extends Model
 
     protected function isVerified(): Attribute
     {
-        $lastVerification = $this->lastVerification;
+        $contact = $this;
 
         return Attribute::make(
-            get: function (mixed $value, array $attributes) use ($lastVerification): bool {
-                return $lastVerification &&
-                    $lastVerification->verified_at &&
-                    ! $lastVerification->expired_at;
+            get: function (mixed $value, array $attributes) use ($contact): bool {
+                return $contact->lastVerification &&
+                    $contact->lastVerification->verified_at &&
+                    ! $contact->lastVerification->expired_at;
             }
         );
     }
@@ -137,12 +133,12 @@ class UserHasContact extends Model
         return [$this->contact => $this->user->given_name];
     }
 
-    public function routeNotificationForWhatsApp()
+    public function routeNotificationForWhatsApp(): string
     {
         return $this->contact;
     }
 
-    public function newVerifyCode()
+    public function newVerifyCode(): string
     {
         $code = App::environment('testing') ? '123456' : Str::random(6);
         ContactHasVerification::create([
@@ -158,12 +154,12 @@ class UserHasContact extends Model
         return $code;
     }
 
-    public function sendVerifyCode()
+    public function sendVerifyCode(): void
     {
         $this->notify(new VerifyContact($this->type, $this->newVerifyCode()));
     }
 
-    public function isRequestTooFast()
+    public function isRequestTooFast(): bool
     {
         return $this->lastVerification && $this->lastVerification->created_at > now()->subMinute();
     }

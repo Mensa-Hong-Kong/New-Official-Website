@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -31,7 +32,7 @@ class Gender extends Model
         'name',
     ];
 
-    public function updateName($name)
+    public function updateName(string $name): Gender
     {
         if ($name == $this->name) {
             return $this;
@@ -52,7 +53,7 @@ class Gender extends Model
         return $gender;
     }
 
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }

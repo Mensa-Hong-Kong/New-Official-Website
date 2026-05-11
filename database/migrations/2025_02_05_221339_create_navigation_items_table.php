@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('master_id')
                 ->references('id') // navigation item id
                 ->on('navigation_items')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
         });
     }
 

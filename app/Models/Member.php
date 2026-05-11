@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -63,17 +65,17 @@ class Member extends Model
         );
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function orders()
+    public function orders(): HasMany
     {
         return $this->hasMany(MembershipOrder::class, 'user_id', 'user_id');
     }
 
-    public function transfers()
+    public function transfers(): HasMany
     {
         return $this->hasMany(MembershipTransfer::class, 'user_id', 'user_id');
     }
@@ -91,11 +93,12 @@ class Member extends Model
                     ->where(
                         function ($query) use ($thisYear) {
                             $query->whereNull('to_year')
+                                ->where('is_returned', false)
                                 ->orWhere('to_year', '>', $thisYear);
                         }
-                    )->exists() || $this->transfers()
+                    )->exists() || $member->transfers()
                     ->where('is_accepted', true)
-                    ->whereIn('type', ['in', 'guest'])
+                    ->where('type', 'in')
                     ->where(
                         function ($query) use ($thisYear) {
                             $query->whereNull('membership_ended_in')

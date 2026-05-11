@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
  * @property int $test_id
- * @property string|null $taken_from
- * @property string|null $taken_to
+ * @property \Illuminate\Support\Carbon|null $taken_from
+ * @property \Illuminate\Support\Carbon|null $taken_to
  * @property string|null $score
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -40,7 +41,13 @@ class QualifyingTestDetail extends Model
         'is_accepted',
     ];
 
-    public function test()
+    protected $casts = [
+        'taken_from' => 'date',
+        'taken_to' => 'date',
+        'is_accepted' => 'boolean',
+    ];
+
+    public function test(): BelongsTo
     {
         return $this->belongsTo(QualifyingTest::class, 'test_id');
     }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -42,12 +44,12 @@ class NavigationItem extends Model
         'display_order',
     ];
 
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(NavigationItem::class, 'master_id');
     }
 
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(NavigationItem::class, 'master_id')
             ->orderBy('display_order');

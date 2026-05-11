@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -15,9 +17,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $option_name
  * @property int|null $minimum_age
  * @property int|null $maximum_age
- * @property string|null $start_at
- * @property string|null $end_at
+ * @property \Illuminate\Support\Carbon|null $start_at
+ * @property \Illuminate\Support\Carbon|null $end_at
  * @property int $quota
+ * @property int|null $quota_validity_months
  * @property string|null $stripe_id
  * @property bool $synced_to_stripe
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -40,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder<static>|AdmissionTestProduct whereName($value)
  * @method static Builder<static>|AdmissionTestProduct whereOptionName($value)
  * @method static Builder<static>|AdmissionTestProduct whereQuota($value)
+ * @method static Builder<static>|AdmissionTestProduct whereQuotaValidityMonths($value)
  * @method static Builder<static>|AdmissionTestProduct whereStartAt($value)
  * @method static Builder<static>|AdmissionTestProduct whereStripeId($value)
  * @method static Builder<static>|AdmissionTestProduct whereSyncedToStripe($value)
@@ -65,6 +69,8 @@ class AdmissionTestProduct extends Model
     ];
 
     protected $casts = [
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
         'synced_to_stripe' => 'boolean',
     ];
 
@@ -74,12 +80,12 @@ class AdmissionTestProduct extends Model
     protected static function booted(): void
     {
         static::created(
-            function (AdmissionTestProduct $product) {
+            function (AdmissionTestProduct $product): void {
                 SyncProduct::dispatch($product->id);
             }
         );
         static::updating(
-            function (AdmissionTestProduct $product) {
+            function (AdmissionTestProduct $product): void {
                 if ($product->isDirty('name')) {
                     $product->synced_to_stripe = false;
                     SyncProduct::dispatch($product->id);
@@ -88,12 +94,12 @@ class AdmissionTestProduct extends Model
         );
     }
 
-    public function prices()
+    public function prices(): HasMany
     {
         return $this->hasMany(AdmissionTestPrice::class, 'product_id');
     }
 
-    public function price()
+    public function price(): HasOne
     {
         return $this->hasOne(AdmissionTestPrice::class, 'product_id')
             ->where(
@@ -106,9 +112,9 @@ class AdmissionTestProduct extends Model
             ->latest('updated_at');
     }
 
-    public function scopeWhereInDateRange(Builder $query, Carbon $date)
+    public function scopeWhereInDateRange(Builder $query, Carbon $date): void
     {
-        return $query->where(
+        $query->where(
             function ($query) use ($date) {
                 $query->whereNull('start_at')
                     ->orWhere('start_at', '<=', $date);
@@ -121,11 +127,10 @@ class AdmissionTestProduct extends Model
         );
     }
 
-    public function scopeWhereInAgeRange(Builder $query, int|float $age)
+    public function scopeWhereInAgeRange(Builder $query, int|float $age): void
     {
         $age = floor($age);
-
-        return $query->where(
+        $query->where(
             function ($query) use ($age) {
                 $query->whereNull('minimum_age')
                     ->orWhere('minimum_age', '<=', $age);

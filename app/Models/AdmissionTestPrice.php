@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $product_id
  * @property string|null $name
  * @property numeric $value
- * @property string|null $start_at
+ * @property \Illuminate\Support\Carbon|null $start_at
  * @property string|null $stripe_one_time_type_id
- * @property int $synced_one_time_type_to_stripe
+ * @property bool $synced_one_time_type_to_stripe
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\AdmissionTestProduct|null $product
@@ -50,7 +50,9 @@ class AdmissionTestPrice extends Model
     ];
 
     protected $casts = [
-        'synced_to_stripe' => 'boolean',
+        'value' => 'decimal:2',
+        'start_at' => 'datetime',
+        'synced_one_time_type_to_stripe' => 'boolean',
     ];
 
     /**

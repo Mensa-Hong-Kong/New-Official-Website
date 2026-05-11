@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property int $id
@@ -12,12 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $price_name
  * @property numeric $price
  * @property string $status
- * @property string $expired_at
+ * @property \Illuminate\Support\Carbon $expired_at
  * @property string $gateway_type
  * @property int $gateway_id
  * @property string|null $reference_number
  * @property numeric|null $gateway_payment_fee
- * @property int $is_returned
+ * @property bool $is_returned
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
@@ -62,17 +65,24 @@ class PriorEvidenceOrder extends Model
         'is_returned',
     ];
 
-    public function user()
+    protected $casts = [
+        'price' => 'decimal:2',
+        'expired_at' => 'datetime',
+        'gateway_payment_fee' => 'decimal:2',
+        'is_returned' => 'boolean',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function gateway()
+    public function gateway(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function result()
+    public function result(): HasOne
     {
         return $this->hasOne(PriorEvidenceResult::class, 'order_id');
     }

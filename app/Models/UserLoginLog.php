@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 /**
  * @property int $id
  * @property int $user_id
- * @property int $status
+ * @property bool $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
@@ -34,5 +34,9 @@ class UserLoginLog extends Authenticatable
 
     public $sortable = [
         'created_at',
+    ];
+
+    public $casts = [
+        'status' => 'boolean',
     ];
 }

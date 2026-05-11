@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -31,7 +32,7 @@ class QualifyingTest extends Model
         'name',
     ];
 
-    public function details()
+    public function details(): HasMany
     {
         return $this->hasMany(QualifyingTestDetail::class, 'test_id');
     }

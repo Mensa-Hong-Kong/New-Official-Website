@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -36,7 +37,7 @@ class SiteContent extends Model
         'content',
     ];
 
-    public function page()
+    public function page(): BelongsTo
     {
         return $this->belongsTo(SitePage::class, 'page_id');
     }
