@@ -56,7 +56,7 @@ class StoreRequest extends FormRequest
                         $fail('The selected user id has other same passport user account attended admission test.');
                     } elseif (
                         $request->user->lastAttendedAdmissionTest &&
-                        $request->user->lastAttendedAdmissionTest->testing_at
+                        (clone $request->user->lastAttendedAdmissionTest->testing_at)
                             ->addMonths(
                                 $request->user->lastAttendedAdmissionTest->type->interval_month
                             )->endOfDay() >= $request->route('admission_test')->testing_at

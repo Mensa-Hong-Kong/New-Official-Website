@@ -70,7 +70,7 @@ class CandidateController extends Controller implements HasMiddleware
                     }
                     if (
                         $user->lastAttendedAdmissionTest &&
-                        $user->lastAttendedAdmissionTest->testing_at
+                        (clone $user->lastAttendedAdmissionTest->testing_at)
                             ->addMonths(
                                 $user->lastAttendedAdmissionTest->type->interval_month
                             )->endOfDay() >= $admissionTest->testing_at
@@ -200,7 +200,7 @@ class CandidateController extends Controller implements HasMiddleware
                             }
                             if (
                                 $user->lastAttendedAdmissionTest &&
-                                $user->lastAttendedAdmissionTest->testing_at
+                                (clone $user->lastAttendedAdmissionTest->testing_at)
                                     ->addMonths(
                                         $user->lastAttendedAdmissionTest->type->interval_month
                                     )->endOfDay() >= $admissionTest->testing_at

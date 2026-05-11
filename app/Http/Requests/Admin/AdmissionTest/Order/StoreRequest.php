@@ -111,7 +111,7 @@ class StoreRequest extends FormRequest
                 if ($this->test) {
                     if (
                         $this->user->lastAttendedAdmissionTest &&
-                        $this->user->lastAttendedAdmissionTest->testing_at
+                        (clone $this->user->lastAttendedAdmissionTest->testing_at)
                             ->addMonths(
                                 $this->user->lastAttendedAdmissionTest->type->interval_month
                             )->endOfDay() >= $this->test->testing_at

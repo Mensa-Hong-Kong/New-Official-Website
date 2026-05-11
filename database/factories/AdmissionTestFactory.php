@@ -25,7 +25,7 @@ class AdmissionTestFactory extends Factory
         return [
             'type_id' => $type->id,
             'testing_at' => $testingAt->format('Y-m-d H:i:s'),
-            'expect_end_at' => $testingAt->addMinutes(30)->format('Y-m-d H:i:s'),
+            'expect_end_at' => (clone $testingAt)->addMinutes(30)->format('Y-m-d H:i:s'),
             'location_id' => fake()->randomElement([true, false]) ?
                 Location::factory()->create() :
                 Location::inRandomOrder()->first() ?? Location::factory()->create(),
