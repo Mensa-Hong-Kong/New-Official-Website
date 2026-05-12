@@ -7,11 +7,11 @@ use Illuminate\Validation\Rules\Numeric;
 
 abstract class Base extends Numeric
 {
-    protected $priceDecimal;
+    protected int $priceDecimal;
 
-    protected $maximum;
+    protected int $maximum;
 
-    protected $minimum;
+    protected int $minimum;
 
     public function __construct()
     {

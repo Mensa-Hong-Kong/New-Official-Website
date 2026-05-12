@@ -5,12 +5,18 @@ namespace App\Library\Stripe\Concerns\Models;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
+/**
+ * @property string $name
+ * @property string $email
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Library\Stripe\Models\StripeCustomer> $stripe
+ */
 trait HasStripeCustomer
 {
     use CreatableBase;
 
-    public function stripe()
+    public function stripe(): MorphOne
     {
         return $this->morphOne(StripeCustomer::class, 'customerable');
     }

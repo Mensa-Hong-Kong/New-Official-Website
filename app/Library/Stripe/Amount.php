@@ -6,7 +6,7 @@ use App\Library\Stripe\Exceptions\UnsupportedCurrency;
 
 class Amount
 {
-    public static $supportCurrencies = [
+    public static array $supportCurrencies = [
         'USD', 'AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD',
         'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BIF', 'BMD', 'BND',
         'BOB', 'BRL', 'BSD', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF',
@@ -24,7 +24,7 @@ class Amount
         'WST', 'XAF', 'XCD', 'XCG', 'XOF', 'XPF', 'YER', 'ZAR', 'ZMW',
     ];
 
-    public static $eurSubCurrencies = [
+    public static array $eurSubCurrencies = [
         'AD', 'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FO', 'FI',
         'FR', 'DE', 'GI', 'GR', 'GL', 'GG', 'VA', 'HU', 'IS', 'IE', 'IM',
         'IT', 'JE', 'LV', 'LI', 'LT', 'LU', 'MT', 'MC', 'NL', 'NO', 'PL',

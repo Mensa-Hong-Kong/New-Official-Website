@@ -2,6 +2,10 @@
 
 namespace App\Library\Stripe\Concerns\Models;
 
+/**
+ * @property string $stripe_id
+ * @property bool $synced_to_stripe
+ */
 trait UpdatableBase
 {
     use CreatableBase;
