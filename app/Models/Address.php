@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
  * @property-read \App\Models\District|null $district
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $user
- * @property-read int|null $user_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
  *
  * @method static \Database\Factories\AddressFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newModelQuery()
@@ -50,7 +50,7 @@ class Address extends Model
         return $this->hasMany(AdmissionTest::class);
     }
 
-    public function user(): HasMany
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
@@ -64,7 +64,7 @@ class Address extends Model
             'district_id' => $districtID,
             'value' => $value,
         ]);
-        if ($this->user()->count() + $this->admissionTests()->count() == 1) {
+        if ($this->users()->count() + $this->admissionTests()->count() == 1) {
             if ($address) {
                 $this->delete();
             } else {
