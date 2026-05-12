@@ -8,8 +8,6 @@ class Stripe extends Base
 {
     public function __construct()
     {
-        $this->priceDecimal = Amount::getActualDecimal();
-        $this->minimum = config('stripe.minimum_amount', 4);
-        parent::__construct();
+        $this->setUp(Amount::getActualDecimal(), config('stripe.minimum_amount', 4));
     }
 }
