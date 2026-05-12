@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $name
  * @property string $value
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Library\Stripe\Concerns\Models\HasStripeProduct> $product
+ *
  * @method \Illuminate\Database\Eloquent\Model update($attributes = [], $options = [])
  */
-
 trait HasStripePrice
 {
     public array $stripeData = [
