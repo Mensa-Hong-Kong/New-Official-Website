@@ -2,15 +2,16 @@
 
 namespace App\Library\Stripe;
 
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
 class Base
 {
     const STRIPE_VERSION = '2025-04-30.basil';
 
-    protected $http;
+    protected PendingRequest $http;
 
-    protected $prefix;
+    protected $prefix = '';
 
     public function __construct()
     {

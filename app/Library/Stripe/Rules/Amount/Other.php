@@ -8,7 +8,6 @@ class Other extends Base
 {
     public function __construct()
     {
-        $this->priceDecimal = Amount::getValidationDecimal();
-        parent::__construct();
+        $this->setUp(Amount::getValidationDecimal());
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Library\Stripe\Concerns;
 
+use Illuminate\Http\Client\PendingRequest;
+
 trait HasSearch
 {
-    protected $http;
+    protected PendingRequest $http;
 
     public function search(array $query)
     {
@@ -30,7 +32,7 @@ trait HasSearch
         return null;
     }
 
-    public function first($query)
+    public function first(array $query)
     {
         return $this->search($query)[0] ?? null;
     }
