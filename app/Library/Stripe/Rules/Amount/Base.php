@@ -7,7 +7,7 @@ use Illuminate\Validation\Rules\Numeric;
 
 abstract class Base extends Numeric
 {
-    public function setUp(int $priceDecimal, int|null $minimum = null)
+    public function setUp(int $priceDecimal, ?int $minimum = null)
     {
         $this->max(Amount::getMaximumValidation());
         if ($minimum) {
