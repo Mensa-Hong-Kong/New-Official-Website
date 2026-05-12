@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -38,12 +40,12 @@ class Team extends Model
         'display_order',
     ];
 
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(TeamType::class, 'type_id');
     }
 
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, TeamRole::class)
             ->withPivot('display_order');
