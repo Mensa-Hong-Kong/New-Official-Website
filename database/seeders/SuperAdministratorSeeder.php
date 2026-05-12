@@ -37,9 +37,5 @@ class SuperAdministratorSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         $user->assignRole('Super Administrator');
-
-        $admissionTest = AdmissionTest::factory()->create(['maximum_candidates' => 20]);
-        $candidates = User::factory()->count(20)->create();
-        $admissionTest->candidates()->sync($candidates->pluck('id'));
     }
 }
