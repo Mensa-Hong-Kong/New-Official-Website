@@ -165,11 +165,7 @@ class AdmissionTestOrder extends Model
         return Attribute::make(
             get: function () use ($order): bool {
                 return in_array($order->status, ['succeeded', 'partial refunded', 'full refunded']) &&
-                    $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
-                    (
-                        ! $order->quotaExpiredOn ||
-                        $order->quotaExpiredOn >= now()
-                    );
+                    $order->returned_quota + $order->attendedTests()->count() < $order->quota;
             }
         );
     }

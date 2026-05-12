@@ -418,7 +418,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.']);
+        $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission test fee.']);
     }
 
     public function test_user_id_have_unused_admission_test_quota_but_quota_expired_before_testing_time_of_this_admission_test_when_is_not_free(): void
@@ -440,7 +440,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.']);
+        $response->assertInvalid(['user_id' => 'The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission test fee.']);
     }
 
     public function test_user_id_unused_quota_admission_test_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age_limit_when_is_not_free(): void

@@ -43,7 +43,7 @@ class CandidateController extends Controller implements HasMiddleware
                         ! $admissionTest->is_free && ! $user->stripe && (
                             ! $user->lastAdmissionTestOrder?->hasUnusedQuota || (
                                 $user->lastAdmissionTestOrder->quotaExpiredOn &&
-                                $user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                                $user->lastAdmissionTestOrder->quotaExpiredOn < $admissionTest->testing_at
                             )
                         )
                     ) {
@@ -78,7 +78,13 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
                     if (! $admissionTest->is_free) {
-                        if ($user->lastAdmissionTestOrder?->hasUnusedQuota) {
+                        if (
+                            $user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                            (
+                                ! $user->lastAdmissionTestOrder->quotaExpiredOn ||
+                                $user->lastAdmissionTestOrder->quotaExpiredOn > $admissionTest->testing_at
+                            )
+                        ) {
                             if (
                                 $user->lastAdmissionTestOrder->minimum_age &&
                                 $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
@@ -123,9 +129,10 @@ class CandidateController extends Controller implements HasMiddleware
                         ! $request->route('admission_test')->is_free &&
                         (
                             ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ||
-                            $request->user()->lastAdmissionTestOrder?->hasUnusedQuota &&
-                            $request->user()->lastAdmissionTestOrder->quotaExpiredOn &&
-                            $request->user()->lastAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                            (
+                                $request->user()->lastAdmissionTestOrder->quotaExpiredOn &&
+                                $request->user()->lastAdmissionTestOrder->quotaExpiredOn < $request->route('admission_test')->testing_at
+                            )
                         )
                     ) {
                         if ($request->price_id) {

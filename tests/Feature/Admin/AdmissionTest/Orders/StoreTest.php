@@ -209,7 +209,7 @@ class StoreTest extends TestCase
         $response->assertInvalid(['user_id' => 'The selected user has unused quota.']);
     }
 
-    public function test_user_id_of_user_has_unused_quota_when_quota_within_quota_validity_months(): void
+    public function test_user_id_of_user_has_unused_quota_when_quota_within_quota_validity_months_and_without_test_id(): void
     {
         AdmissionTestOrder::factory()->create([
             'status' => 'succeeded',
@@ -731,12 +731,32 @@ class StoreTest extends TestCase
         $response->assertInvalid(['test_id' => 'The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.']);
     }
 
+    public function test_user_id_of_user_has_unused_quota_when_quota_within_quota_validity_months_and_with_test_id_and_quota_expire_date_before_testing_time(): void
+    {
+        AdmissionTestOrder::factory()->create([
+            'status' => 'succeeded',
+            'quota_validity_months' => 1,
+        ]);
+        $testingAt = now()->addWeek();
+        $test = AdmissionTest::factory()->create([
+            'testing_at' => $testingAt,
+            'expect_end_at' => (clone $testingAt)->addHour(),
+        ]);
+        $data = $this->happyCase;
+        $data['test_id'] = $test->id;
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.admission-test.orders.store'),
+            $data
+        );
+        $response->assertInvalid(['user_id' => 'The selected user has unused quota for selected test.']);
+    }
+
     public function test_user_id_has_already_been_taken_within_latest_test_interval_months(): void
     {
         $newTestingAt = now()->addDay();
         $test = AdmissionTest::factory()->create([
             'testing_at' => $newTestingAt,
-            'expect_end_at' => $newTestingAt->addHour(),
+            'expect_end_at' => (clone $newTestingAt)->addHour(),
         ]);
         $oldTest = AdmissionTest::factory()->create([
             'testing_at' => (clone $test->testing_at)->subMonths($test->type->interval_month)->addDay(),
