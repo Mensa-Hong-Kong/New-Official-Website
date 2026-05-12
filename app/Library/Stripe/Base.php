@@ -11,7 +11,7 @@ class Base
 
     protected PendingRequest $http;
 
-    protected string $prefix;
+    protected string $prefix = '';
 
     public function __construct()
     {
