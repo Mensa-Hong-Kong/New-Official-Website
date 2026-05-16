@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\AdmissionTest;
+namespace App\Http\Controllers\Admin\AdmissionTest\Order;
 
 use App\Http\Controllers\Controller as BaseController;
 use App\Http\Requests\Admin\AdmissionTest\Order\StoreRequest;
@@ -17,7 +17,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class OrderController extends BaseController implements HasMiddleware
+class Controller extends BaseController implements HasMiddleware
 {
     public static function middleware(): array
     {
