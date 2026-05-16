@@ -14,7 +14,7 @@
 
     let { tests: initTests } = $props();
     let submitting = $state();
-    let tests = $state(initTests.data);
+    let tests = $state(initTests.data ?? []);
 
     function getIndexById(id) {
         return tests.findIndex(
