@@ -13,6 +13,8 @@ function failHandle(error, callback) {
         case 419:
             alert('Cross-site request forgery alert, may be the domain is not mensa.org.hk.');
             break;
+        case 422:
+            break;
         case 500:
             alert('Unexpected error, please contact I.T.');
             break;
@@ -25,6 +27,7 @@ function failHandle(error, callback) {
             }
             break;
     }
+    console.log(error.data);
     callback(error);
 }
 
