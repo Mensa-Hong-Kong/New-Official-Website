@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 class PageController extends Controller
 {
-    public function customWebPage($pathname)
+    public function customWebPage(string $pathname)
     {
         $pathname = preg_replace('/\/+/', '/', $pathname);
         if (str_starts_with($pathname, '/')) {
@@ -43,6 +43,7 @@ class PageController extends Controller
             ] : null,
             'last_admission_test' => $request->user()?->lastAdmissionTest ? [
                 'id' => $request->user()->lastAdmissionTest->id,
+                'pivot_is_present' => $request->user()?->lastAdmissionTest?->pivot_is_present,
             ] : null,
             'created_stripe_customer' => $request->user()->stripe ?? null,
             'default_email' => $request->user()?->defaultEmail ? [
@@ -55,61 +56,61 @@ class PageController extends Controller
         $tests = AdmissionTest::joinRelation('type as type')
             ->withCount('candidates')
             ->with(['address.district.area', 'location'])
-            ->where('testing_at', '>=', now());
-        if ($request->user() && $user['has_qualification_of_membership']) {
-            $tests = $tests->where(
-                function ($query) use ($request) {
-                    $query->whereNull('minimum_age')
-                        ->orWhere('minimum_age', '<=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
-                }
-            )->where(
-                function ($query) use ($request) {
-                    $query->whereNull('maximum_age')
-                        ->orWhere('maximum_age', '>=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
-                }
-            );
-        } else {
-            $tests->with([
-                'type' => function ($query) {
-                    $query->select(['id', 'minimum_age', 'maximum_age']);
-                },
-            ]);
-        }
-        $tests = $tests->where(
-            function ($query) use ($request) {
-                $query->where('is_public', true);
-                if ($request->user()) {
-                    $query->orWhereHas(
-                        'candidates', function ($query) use ($request) {
-                            $query->where('user_id', $request->user()->id)
-                                ->where('expect_end_at', '<=', now()->subHour());
+            ->where('testing_at', '>=', now())
+            ->when(
+                $request->user() && ! $request->user()->hasQualificationOfMembership,
+                function($query) use ($request) {
+                    $query->where(
+                        function ($query) use ($request) {
+                            $query->whereNull('minimum_age')
+                                ->orWhere('minimum_age', '<=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
+                        }
+                    )->where(
+                        function ($query) use ($request) {
+                            $query->whereNull('maximum_age')
+                                ->orWhere('maximum_age', '>=', DB::raw("(TIMESTAMPDIFF(MONTH, '{$request->user()->birthday->format('Y-m-d')}', testing_at) - IF(DATE_FORMAT(testing_at, '%d') - {$request->user()->birthday->format('j')} = - 30, 0, 1)) / 12"));
                         }
                     );
+                },
+                function($query) {
+                    $query->with('type:id,minimum_age,maximum_age');
+                }
+            )->when(
+                $request->user(),
+                function($query) use($request) {
+                    $query->where('is_public', true)
+                        ->orWhereHas(
+                            'candidates', function ($query) use ($request) {
+                                $query->where('user_id', $request->user()->id)
+                                    ->where('expect_end_at', '<=', now()->subHour());
+                            }
+                        );
+                },
+                function($query) {
+                    $query->where('is_public', true);
+                }
+            )->orderBy('testing_at')
+            ->get();
+        $tests->each(
+            function(AdmissionTest $test) use($request) {
+                $test->address->district->area
+                    ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
+                $test->address->district
+                    ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
+                $test->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
+                $test->location->makeHidden(['id', 'created_at', 'updated_at']);
+                $test->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
+                if (! $request->user()) {
+                    $test->type->makeHidden('id');
                 }
             }
-        )->orderBy('testing_at')
-            ->get();
-        foreach ($tests as $test) {
-            $test->address->district->area
-                ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
-            $test->address->district
-                ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
-            $test->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
-            $test->location->makeHidden(['id', 'created_at', 'updated_at']);
-            $test->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
-            if (! $request->user()) {
-                $test->type->makeHidden('id');
-            }
-        }
+        );
 
         return Inertia::render('AdmissionTests/Index')
             ->with('user', $user)
             ->with(
-                'isReschedule', $request->user()?->lastAdmissionTest &&
-                    ! $request->user()?->lastAdmissionTest?->pivot_is_present
-            )->with(
                 'contents', SiteContent::whereHas(
-                    'page', function ($query) {
+                'page', function ($query) {
                         $query->where('name', 'Admission Test');
                     }
                 )->get()

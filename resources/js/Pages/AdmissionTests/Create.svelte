@@ -3,7 +3,8 @@
     import { formatToDate, formatToDatetime, formatToTime } from '@/timeZoneDatetime';
     import { Alert, Table, Button, Row, Col } from '@sveltestrap/sveltestrap';
 
-    let { isReschedule, test, user, products, price } = $props();
+    let { test, user, products, price } = $props();
+    let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
 
     seo.title = products ? 'Detail Admission Test' : 'Confirmation Admission Test';
 </script>

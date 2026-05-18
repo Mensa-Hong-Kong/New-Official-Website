@@ -7,9 +7,9 @@
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 
     seo.title = 'Admission Tests';
-
-    let { auth, contents, tests, user: initUser, isReschedule } = $props();
+    let { auth, contents, tests, user: initUser } = $props();
     let user = $state(initUser);
+    let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
 </script>
 
 <section class="container">

@@ -417,7 +417,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -460,7 +459,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -504,7 +502,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -548,7 +545,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -592,7 +588,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -636,7 +631,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->has(
@@ -679,7 +673,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -713,7 +706,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -747,7 +739,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -785,7 +776,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -819,7 +809,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -853,7 +842,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -891,7 +879,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -920,7 +907,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -949,7 +935,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -982,7 +967,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->has('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -1023,7 +1007,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -1067,7 +1050,6 @@ class CreateTest extends TestCase
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
-                    ->where('isReschedule', false)
                     ->has(
                         'user', function (Assert $page) {
                             $page->has('has_unused_quota_admission_test_order.quota_expired_on')
@@ -1109,7 +1091,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -1145,7 +1126,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->has('price')
                     ->where('flash.error', '')
@@ -1185,7 +1165,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -1224,7 +1203,6 @@ class CreateTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', false)
                     ->missing('products')
                     ->missing('price')
                     ->where('flash.error', '')
@@ -1251,8 +1229,7 @@ class CreateTest extends TestCase
         $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
-                $page->component('AdmissionTests/Create')
-                    ->where('isReschedule', true);
+                $page->component('AdmissionTests/Create');
             }
         );
     }

@@ -237,14 +237,6 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function create(Request $request, AdmissionTest $admissionTest)
     {
-        $user = [
-            'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ? [
-                'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
-            ] : null,
-            'default_email' => $request->user()->defaultEmail ? [
-                'contact' => $request->user()->defaultEmail->contact,
-            ] : null,
-        ];
         $admissionTest->load(['address.district.area', 'location']);
         $admissionTest->address->district->area
             ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
@@ -254,11 +246,20 @@ class CandidateController extends Controller implements HasMiddleware
         $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
         $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
         $return = Inertia::render('AdmissionTests/Create')
+            ->with('test', $admissionTest)
             ->with(
-                'isReschedule', $request->user()->lastAdmissionTest &&
-                    ! $request->user()->lastAdmissionTest->pivot_is_present
-            )->with('test', $admissionTest)
-            ->with('user', $user);
+                'user', [
+                    'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ? [
+                        'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
+                    ] : null,
+                    'default_email' => $request->user()->defaultEmail ? [
+                        'contact' => $request->user()->defaultEmail->contact,
+                    ] : null,
+                    'last_admission_test' => $request->user()?->lastAdmissionTest ? [
+                        'pivot_is_present' => $request->user()?->lastAdmissionTest?->pivot_is_present,
+                    ] : null,
+                ]
+            );
         if ($request->products) {
             $return = $return->with('products', $request->products);
             if ($request->error) {
