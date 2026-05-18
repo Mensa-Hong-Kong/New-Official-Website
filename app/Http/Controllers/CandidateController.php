@@ -6,6 +6,7 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
+use App\Models\User;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -33,11 +34,11 @@ class CandidateController extends Controller implements HasMiddleware
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
-                    if ($user->lastAdmissionTest?->id == $admissionTest->id) {
+                    if ($admissionTest->candidates()->where('user_id', $user->id)->exists()) {
                         return redirect()->route(
                             'admission-tests.candidates.show',
                             ['admission_test' => $admissionTest]
-                        )->withErrors(['message' => 'You has already schedule this admission test.']);
+                        )->withErrors(['message' => 'You has already been scheduled this admission test.']);
                     }
                     if (
                         ! $admissionTest->is_free && ! $user->stripe && (
@@ -54,7 +55,7 @@ class CandidateController extends Controller implements HasMiddleware
                         $user->lastAdmissionTest->pivot_is_present === null &&
                         $user->lastAdmissionTest->testing_at < now()->addHours(2)
                     ) {
-                        return $errorReturn->withErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+                        return $errorReturn->withErrors(['message' => 'You has already been scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
                     }
                     if ($user->member?->is_active) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
@@ -298,7 +299,7 @@ class CandidateController extends Controller implements HasMiddleware
         return $redirect->with('success', $success);
     }
 
-    private function qrCode($test, $user)
+    private function qrCode(AdmissionTest $test, User $user)
     {
         $options = new QROptions;
 

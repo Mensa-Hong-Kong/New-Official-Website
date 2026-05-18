@@ -24,6 +24,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
     private User $user;
 
     private array $happyCase = [
@@ -64,6 +65,7 @@ class StoreTest extends TestCase
 
     public function test_have_no_edit_admission_test_permission(): void
     {
+        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
@@ -166,7 +168,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $this->happyCase
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already member.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been member.']);
     }
 
     public function test_user_id_has_already_qualification_for_membership(): void
@@ -180,7 +182,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $this->happyCase
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been qualification for membership.']);
     }
 
     public function test_user_id_of_user_has_future_admission_test(): void
@@ -193,7 +195,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has been scheduled admission test.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has been scheduled other admission test.']);
     }
 
     public function test_user_id_of_user_has_unused_quota_when_quota_validity_months_is_null(): void
@@ -702,7 +704,7 @@ class StoreTest extends TestCase
             route('admin.admission-test.orders.store'),
             $data
         );
-        $response->assertInvalid(['test_id' => 'The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.']);
+        $response->assertInvalid(['test_id' => 'The selected test is invalid, may be the test is not exist or the test has been delete, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.']);
     }
 
     public function test_test_is_free(): void

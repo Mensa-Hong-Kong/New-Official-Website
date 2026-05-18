@@ -37,11 +37,11 @@ class StoreRequest extends FormRequest
                     } elseif ($request->test_id && ! $request->user->defaultEmail && ! $request->user->defaultMobile) {
                         $fail('The selected user must at least has one default contact.');
                     } elseif ($request->user->member?->is_active) {
-                        $fail('The selected user id has already member.');
+                        $fail('The selected user id has already been member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
-                        $fail('The selected user id has already qualification for membership.');
+                        $fail('The selected user id has already been qualification for membership.');
                     } elseif ($request->user->lastAdmissionTest && $request->user->lastAdmissionTest->pivot_is_present === null) {
-                        $fail('The selected user id has been scheduled admission test.');
+                        $fail('The selected user id has been scheduled other admission test.');
                     } elseif (
                         $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
                         (
@@ -83,7 +83,7 @@ class StoreRequest extends FormRequest
                             ->find($value),
                     ]);
                     if (! $request->test) {
-                        $fail('The selected test is invalid, may be the test is not exist or the test has been delete, The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
+                        $fail('The selected test is invalid, may be the test is not exist or the test has been delete, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read tests info.');
                     } elseif ($request->test->is_free) {
                         $fail('The admission test order cannot select free admission test.');
                     } elseif ($request->test->candidates_count >= $request->test->maximum_candidates) {

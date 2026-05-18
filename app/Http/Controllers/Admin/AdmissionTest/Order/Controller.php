@@ -128,7 +128,7 @@ class Controller extends BaseController implements HasMiddleware
                 DB::rollback();
 
                 return response()->json([
-                    'errors' => ['test_id' => 'The admission test is fulled, please other test, if you need update to date tests info, please reload the page or open a new window tab to read date tests info.'],
+                    'errors' => ['test_id' => 'The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read date tests info.'],
                 ], 422);
             }
         } else {

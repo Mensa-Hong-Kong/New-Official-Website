@@ -116,7 +116,7 @@ class StoreTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+        $response->assertSessionHasErrors(['message' => 'You has already been scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
     }
 
     public function test_user_already_schedule_this_admission_test(): void
@@ -132,7 +132,7 @@ class StoreTest extends TestCase
             'admission-tests.candidates.show',
             ['admission_test' => $this->test]
         );
-        $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
+        $response->assertSessionHasErrors(['message' => 'You has already been scheduled this admission test.']);
     }
 
     public function test_user_already_member(): void

@@ -18,6 +18,7 @@ class CreateTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
     private User $user;
 
     private AdmissionTest $test;
@@ -70,9 +71,11 @@ class CreateTest extends TestCase
 
     public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
+        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
         $this->user->stripe->delete();
+        $this->user->refresh();
         $this->test->update(['is_free' => false]);
-        $response = $this->actingAs($this->user->refresh())->get(
+        $response = $this->actingAs($this->user)->get(
             route(
                 'admission-tests.candidates.create',
                 ['admission_test' => $this->test]
@@ -97,7 +100,7 @@ class CreateTest extends TestCase
             ),
         );
         $response->assertRedirectToRoute('admission-tests.index');
-        $response->assertSessionHasErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+        $response->assertSessionHasErrors(['message' => 'You has already been scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
     }
 
     public function test_user_already_schedule_this_admission_test(): void
@@ -113,7 +116,7 @@ class CreateTest extends TestCase
             'admission-tests.candidates.show',
             ['admission_test' => $this->test]
         );
-        $response->assertSessionHasErrors(['message' => 'You has already schedule this admission test.']);
+        $response->assertSessionHasErrors(['message' => 'You has already been scheduled this admission test.']);
     }
 
     public function test_user_already_member(): void
