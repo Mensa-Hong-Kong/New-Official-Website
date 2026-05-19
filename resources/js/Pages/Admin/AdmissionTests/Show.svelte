@@ -329,9 +329,9 @@
                         <td>{countAttendedCandidate}</td>
                     </tr>
                     <tr>
-                        <th>Is Free</th>
+                        <th>Charge Status</th>
                         <td>
-                            <span>{test.isFree ? 'Free' : 'Fee'}</span>
+                            <span>{test.isFree ? 'Free' : 'Charge'}</span>
                         </td>
                     </tr>
                     <tr>

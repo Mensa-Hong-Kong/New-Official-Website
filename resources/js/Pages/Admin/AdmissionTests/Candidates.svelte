@@ -584,7 +584,7 @@
                             'Edit:Admission Test Candidate',
                         ])
                     }
-                        <th>Is Free</th>
+                        <th>Pricing</th>
                     {/if}
                     {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
                         {#if can('Edit:Admission Test Result')}
@@ -690,7 +690,7 @@
                                     'Edit:Admission Test Candidate',
                                 ])
                             }
-                                <td>{row.isFree ? 'Free' : 'Fee'}</td>
+                                <td>{row.isFree ? 'Free' : 'Paid'}</td>
                             {/if}
                             {#if new Date(formatToDatetime(test.expectEndAt)) < (new Date).subHour(2)}
                                 {#if can('Edit:Admission Test Result')}
@@ -776,7 +776,7 @@
                                 name="function" value="reschedule" form="createCandidateForm">Reschedule</Button>
                         </td>
                         <td colspan=2 hidden={! creating}>
-                            <Button block color="success" disabled  hidden={! creating}>
+                            <Button block color="success" disabled hidden={! creating}>
                                 <Spinner type="border" size="sm" />Adding...
                             </Button>
                         </td>
