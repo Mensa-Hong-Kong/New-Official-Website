@@ -107,7 +107,8 @@ class AdmissionTestOrder extends Model
 
     public function tests(): BelongsToMany
     {
-        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id');
+        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id')
+            ->withPivot('is_present', 'is_passed');
     }
 
     public function attendedTests(): BelongsToMany
