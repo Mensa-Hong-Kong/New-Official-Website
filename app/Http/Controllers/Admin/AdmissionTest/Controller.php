@@ -69,22 +69,37 @@ class Controller extends BaseController implements HasMiddleware
 
     public function index(Request $request)
     {
-        if ($request->user()->can('Edit:Admission Test')) {
-            $tests = new AdmissionTest;
-        } else {
-            $tests = $request->user()->proctorTests();
-        }
-        $tests = $tests->withCount('candidates')
-            ->with([
-                'location' => function ($query) {
-                    $query->select(['id', 'name']);
-                },
-            ])->sortable('testing_at')->paginate();
+        $tests = AdmissionTest::withCount('candidates')
+            ->with('location:id,name')
+            ->when(
+                ! $request->user()->canAny([
+                    'Edit:Admission Test',
+                    'Edit:Admission Test Proctor',
+                    'View:Admission Test Candidate',
+                    'Edit:Admission Test Candidate',
+                    'View:Admission Test Result',
+                    'Edit:Admission Test Result',
+                ]),
+                function($query) use ($request) {
+                    $query->whereHas(
+                        'proctors', function($query) use ($request) {
+                            $query->where('user_id', $request->user()->id);
+                        }
+                    );
+                }
+            )->sortable('testing_at')
+            ->paginate();
         $tests->append(['in_testing_time_range', 'current_user_is_proctor']);
-        $tests->makeHidden(['type_id', 'expect_end_at', 'location_id', 'address_id', 'created_at', 'updated_at']);
-        foreach ($tests as $test) {
-            $test->location->makeHidden('id');
-        }
+        $tests->setVisible([
+            'id', 'testing_at', 'location',
+            'candidates_count', 'maximum_candidates', 'is_public',
+            'in_testing_time_range', 'current_user_is_proctor',
+        ]);
+        $tests->each(
+            function(AdmissionTest $test) {
+                $test->location->setVisible(['name']);
+            }
+        );
 
         return Inertia::render('Admin/AdmissionTests/Index')
             ->with('tests', $tests);
