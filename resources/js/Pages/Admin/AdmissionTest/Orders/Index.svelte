@@ -96,7 +96,7 @@
                             {/if}
                         </td>
                         <td>{row.price}</td>
-                        <td>{row.tests_count}/{row.quota}</td>
+                        <td>{row.tests_count}/{row.quota - row.returned_quota}</td>
                         <td>{row.status.ucfirst()}</td>
                         <td>{formatToDatetime(row.created_at)}</td>
                         <td>

@@ -29,7 +29,7 @@ class Controller extends BaseController implements HasMiddleware
 
     public function index(Request $request)
     {
-        $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'quota', 'status', 'created_at'])
+        $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'returned_quota', 'quota', 'status', 'created_at'])
             ->withCount('tests')
             ->with([
                 'user' => function ($query) {
@@ -54,11 +54,13 @@ class Controller extends BaseController implements HasMiddleware
             $orders->where('created_at', '<=', $request->to);
         }
         $orders = $orders->paginate();
-        foreach ($orders as $order) {
-            $order->makeHidden('user_id');
-            $order->user->append('adorned_name');
-            $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
-        }
+        $orders->setVisible(['id', 'user', 'price', 'tests_count', 'returned_quota', 'quota', 'status', 'created_at']);
+        $orders->each(
+            function(AdmissionTestOrder $order) {
+                $order->user->append('adorned_name');
+                $order->user->setVisible(['id', 'adorned_name']);
+            }
+        );
 
         return Inertia::render('Admin/AdmissionTest/Orders/Index')
             ->with('orders', $orders)
@@ -209,7 +211,7 @@ class Controller extends BaseController implements HasMiddleware
             ->with('order', $order);
     }
 
-    public function updateStatus(Request $request, $order)
+    public function updateStatus(Request $request, int $order)
     {
         DB::beginTransaction();
         $order = AdmissionTestOrder::lockForUpdate()->withCount('tests')->findOrFail($order);
