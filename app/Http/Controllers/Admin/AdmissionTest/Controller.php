@@ -92,20 +92,6 @@ class Controller extends BaseController implements HasMiddleware
 
     public function create()
     {
-        $areas = Area::with([
-            'districts' => function ($query) {
-                $query->orderBy('display_order');
-            },
-        ])->orderBy('display_order')
-            ->get();
-        $districts = [];
-        foreach ($areas as $area) {
-            $districts[$area->name] = [];
-            foreach ($area->districts as $district) {
-                $districts[$area->name][$district->id] = $district->name;
-            }
-        }
-
         return Inertia::render('Admin/AdmissionTests/Create')
             ->with(
                 'types', AdmissionTestType::orderBy('display_order')
@@ -117,12 +103,33 @@ class Controller extends BaseController implements HasMiddleware
                     ->get('name')
                     ->pluck('name')
                     ->toArray()
-            )->with('districts', $districts)
-            ->with(
-                'addresses', Address::distinct()
-                    ->get('value')
-                    ->pluck('value')
-                    ->toArray()
+            )->with(
+                'districts', function() {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
+            )->with(
+                'addresses', Address::has('admissionTests')
+                    ->get(['district_id', 'value'])
+                    ->groupBy('district_id')
+                    ->map(
+                        function($address) {
+                            return $address->pluck('value');
+                        }
+                    )
             );
     }
 
@@ -156,25 +163,17 @@ class Controller extends BaseController implements HasMiddleware
 
     public function show(Request $request, AdmissionTest $admissionTest)
     {
-        $areas = Area::with([
-            'districts' => function ($query) {
-                $query->orderBy('display_order');
-            },
-        ])->orderBy('display_order')
-            ->get();
-        $districts = [];
-        foreach ($areas as $area) {
-            $districts[$area->name] = [];
-            foreach ($area->districts as $district) {
-                $districts[$area->name][$district->id] = $district->name;
-            }
-        }
         $admissionTest->load(['address:id,district_id']);
-        $admissionTest->makeHidden(['address_id', 'created_at', 'updated_at']);
+        $visible = [
+            'id', 'type_id', 'testing_at', 'expect_end_at', 'location_id', 'address',
+            'maximum_candidates', 'is_free', 'is_public',
+            'current_user_is_proctor','in_testing_time_range',
+        ];
         if ($request->user()->can('Edit:Admission Test Proctor')) {
             $admissionTest->load('proctors:id,family_name,middle_name,given_name');
             $admissionTest->proctors->append('adorned_name');
-            $admissionTest->proctors->makeHidden(['family_name', 'middle_name', 'given_name', 'pivot', 'member']);
+            $admissionTest->proctors->setVisible(['id', 'adorned_name']);
+            $visible[] = 'proctors';
         }
         if (
             $request->user()->canAny([
@@ -209,7 +208,7 @@ class Controller extends BaseController implements HasMiddleware
                             )->with('type:id,interval_month')
                                 ->whereNot('test_id', $admissionTest->id);
                         },
-                        'passportType:id,name,display_order',
+                        'passportType:id,name',
                     ]);
                 },
             ]);
@@ -218,9 +217,16 @@ class Controller extends BaseController implements HasMiddleware
                 'has_other_same_passport_user_attended_admission_test',
                 'has_same_passport_already_qualification_of_membership',
             ]);
-            $admissionTest->candidates->makeHidden(['passport_type_id', 'member']);
-            $pivotHidden = ['test_id', 'user_id', 'order_id'];
+            $admissionTest->candidates->setVisible([
+                'id', 'family_name', 'middle_name', 'given_name',
+                'birthday', 'passportType', 'passport_number',
+                'lastAttendedAdmissionTest',
+                'has_other_same_passport_user_joined_future_test',
+                'has_other_same_passport_user_attended_admission_test',
+                'has_same_passport_already_qualification_of_membership',
+            ]);
             $pivotAppend = [];
+            $pivotVisible = ['is_present'];
             if (
                 ! $admissionTest->is_free &&
                 $request->user()->canAny([
@@ -229,6 +235,7 @@ class Controller extends BaseController implements HasMiddleware
                 ])
             ) {
                 $pivotAppend[] = 'is_free';
+                $pivotVisible[] = 'is_passed';
             }
             if (
                 ! $request->user()->canAny([
@@ -237,27 +244,28 @@ class Controller extends BaseController implements HasMiddleware
                 ])
             ) {
                 $pivotAppend[] = 'has_result';
-                $pivotHidden[] = 'is_passed';
             }
+            $pivotVisible = array_merge($pivotVisible, $pivotAppend);
             $admissionTest->candidates->each(
-                function ($candidate) use ($pivotHidden, $pivotAppend) {
-                    $candidate->passportType->makeHidden(['id']);
-                    $candidate->pivot->makeHidden($pivotHidden);
+                function ($candidate) use ($pivotVisible, $pivotAppend) {
+                    $candidate->passportType->setVisible(['name']);
                     if (count($pivotAppend)) {
                         $candidate->pivot->append($pivotAppend);
                     }
+                    $candidate->pivot->setVisible($pivotVisible);
                     if ($candidate->lastAttendedAdmissionTest) {
                         $candidate->lastAttendedAdmissionTest
-                            ->makeHidden(['id', 'type_id', 'laravel_through_key']);
+                            ->setVisible(['testing_at', 'type']);
                         $candidate->lastAttendedAdmissionTest->type
-                            ->makeHidden('id');
+                            ->setVisible(['interval_month']);
                     }
                 }
             );
+            $visible[] = 'candidates';
             $countAttendedCandidate = $admissionTest->candidates
                 ->where('pivot.is_present', true)
                 ->count();
-            $countCandidate = $admissionTest->candidate?->count() ?? 0;
+            $countCandidate = $admissionTest->candidates->count();
         } elseif (
             $request->user()->canAny([
                 'View:Admission Test Result',
@@ -276,10 +284,11 @@ class Controller extends BaseController implements HasMiddleware
                     )->where('is_present', true);
                 },
             ]);
-            $admissionTest->candidates->makeHidden(['id', 'member']);
+            $visible[] = 'candidates';
+            $admissionTest->candidates->setVisible(['birthday', 'pivot']);
             $admissionTest->candidates->each(
                 function ($candidate) {
-                    $candidate->pivot->makeHidden(['test_id', 'user_id', 'is_present', 'order_id']);
+                    $candidate->pivot->setVisible(['seat_number', 'is_passed']);
                 }
             );
             $countAttendedCandidate = $admissionTest->candidates->count();
@@ -290,6 +299,7 @@ class Controller extends BaseController implements HasMiddleware
                 ->where('is_present', true)
                 ->count();
         }
+        $admissionTest->setVisible($visible);
 
         return Inertia::render('Admin/AdmissionTests/Show')
             ->with('test', $admissionTest)
@@ -304,13 +314,33 @@ class Controller extends BaseController implements HasMiddleware
                     ->get(['id', 'name'])
                     ->pluck('name', 'id')
                     ->toArray()
-            )->with('districts', $districts)
-            ->with(
-                'addresses', Address::distinct()
-                    ->has('admissionTests')
-                    ->get(['id', 'value'])
-                    ->pluck('value', 'id')
-                    ->toArray()
+            )->with(
+                'districts', function() {
+                    $areas = Area::with([
+                        'districts' => function ($query) {
+                            $query->orderBy('display_order');
+                        },
+                    ])->orderBy('display_order')
+                        ->get();
+                    $districts = [];
+                    foreach ($areas as $area) {
+                        $districts[$area->name] = [];
+                        foreach ($area->districts as $district) {
+                            $districts[$area->name][$district->id] = $district->name;
+                        }
+                    }
+
+                    return $districts;
+                }
+            )->with(
+                'addresses', Address::has('admissionTests')
+                    ->get(['id', 'district_id', 'value'])
+                    ->groupBy('district_id')
+                    ->map(
+                        function($address) {
+                            return $address->pluck('value', 'id');
+                        }
+                    )
             )->with('countCandidate', $countCandidate)
             ->with('countAttendedCandidate', $countAttendedCandidate);
     }

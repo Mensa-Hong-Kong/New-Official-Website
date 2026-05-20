@@ -12,7 +12,7 @@
     seo.title = 'Administration Show Admission Test';
 
     let {
-        test: initTest, types, locations, districts: areaDistricts, addresses,
+        test: initTest, types, locations, districts: areaDistricts, addresses: initAddresses,
         countCandidate, countAttendedCandidate
     } = $props();
     let submitting = $state(false);
@@ -48,6 +48,10 @@
             districts[key] = value;
         }
     }
+    let districtValue = $state();
+    let addresses = $state(initAddresses);
+
+
     function close() {
         for(let key in feedbacks) {
             feedbacks[key] = '';
@@ -58,7 +62,7 @@
         inputs.expectEndAt.value = test.expectEndAt;
         inputs.location.value = locations[test.locationID];
         inputs.district.value = test.districtID;
-        inputs.address.value = addresses[test.addressID];
+        inputs.address.value = addresses[test.districtID][test.addressID];
         inputs.maximumCandidates.value = test.maximumCandidates;
         inputs.isPublic.checked = test.isPublic;
     }
@@ -117,9 +121,8 @@
         locations[response.data.location_id] = response.data.location;
         test.locationID = response.data.location_id;
         test.districtID = response.data.district_id;
-        delete addresses[test.addressID];
         test.addressID = response.data.address_id;
-        addresses[response.data.address_id] = response.data.address;
+        addresses[test.districtID][test.addressID] = response.data.address;
         test.maximumCandidates = response.data.maximum_candidates;
         test.isPublic = response.data.is_public;
         close();
@@ -284,7 +287,7 @@
                                 hidden={! editing} disable={updating}
                                 feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
                                 invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!' }
-                                bind:inner={inputs.district}>
+                                bind:inner={inputs.district} bind:value={districtValue}>
                                 {#each Object.entries(areaDistricts) as [area, object]}
                                     <optgroup label={area}>
                                         {#each Object.entries(object) as [key, value]}
@@ -299,13 +302,13 @@
                     <tr>
                         <th>Address</th>
                         <td>
-                            <span hidden={editing}>{addresses[test.addressID]}</span>
+                            <span hidden={editing}>{addresses[test.districtID][test.addressID]}</span>
                             <Input name="location" maxlength=255 required placeholder="address"
                                 hidden={! editing} disable={updating} list="addresses"
                                 feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
                                 invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!' }
-                                bind:inner={inputs.address} value={addresses[test.addressID]} />
-                            <Datalist id="addresses" data={Object.values(addresses)} />
+                                bind:inner={inputs.address} value={addresses[test.districtID][test.addressID]} />
+                            <Datalist id="addresses" data={Object.values(addresses[districtValue] ?? {})} />
                         </td>
                     </tr>
                     <tr>

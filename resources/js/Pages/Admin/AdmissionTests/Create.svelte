@@ -21,6 +21,7 @@
     });
     let submitting = $state(false);
     let creating = $state(false);
+    let districtValue = $state();
 
     function hasError() {
         for(let [key, feedback] of Object.entries(feedbacks)) {
@@ -189,7 +190,7 @@
                 <Input type="select" name="district_id" required disabled={creating}
                     feedback={feedbacks.district} valid={feedbacks.district == 'Looks good!'}
                     invalid={feedbacks.district != '' && feedbacks.district != 'Looks good!'}
-                    bind:inner={inputs.district}>
+                    bind:inner={inputs.district} bind:value={districtValue}>
                     <option value="" selected disabled>Please select district</option>
                     {#each Object.entries(districts) as [area, object]}
                         <optgroup label={area}>
@@ -207,7 +208,7 @@
                     feedback={feedbacks.address} valid={feedbacks.address == 'Looks good!'}
                     invalid={feedbacks.address != '' && feedbacks.address != 'Looks good!'}
                     bind:inner={inputs.address} required maxlength=255 />
-                <Datalist id="addresses" data={addresses} />
+                <Datalist id="addresses" data={addresses[districtValue] ?? []} />
             </FormGroup>
         </div>
         <div class="mb-4 form-outline">
