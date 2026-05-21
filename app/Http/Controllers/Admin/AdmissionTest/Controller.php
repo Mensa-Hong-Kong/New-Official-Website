@@ -250,15 +250,14 @@ class Controller extends BaseController implements HasMiddleware
                 ])
             ) {
                 $pivotAppend[] = 'is_free';
-                $pivotVisible[] = 'is_passed';
             }
             if (
-                ! $request->user()->canAny([
+                $request->user()->canAny([
                     'View:Admission Test Result',
                     'Edit:Admission Test Result',
                 ])
             ) {
-                $pivotAppend[] = 'has_result';
+                $pivotVisible[] = 'is_passed';
             }
             $pivotVisible = array_merge($pivotVisible, $pivotAppend);
             $admissionTest->candidates->each(

@@ -63,8 +63,6 @@
                 ])
             ) {
                 data['isPassed'] = row.pivot.is_passed;
-            } else {
-                data['hasResult'] = row.pivot.has_result;
             }
             candidates.push(data);
         } else {
@@ -245,8 +243,6 @@
             ])
         ) {
             data['isPassed'] = false;
-        } else {
-            data['hasResult'] = false;
         }
         if (! test.isFree) {
             data['isFree'] = response.data.is_free;
