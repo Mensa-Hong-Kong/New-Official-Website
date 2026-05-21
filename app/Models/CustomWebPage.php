@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Kyslik\ColumnSortable\Sortable;
 
 /**
@@ -13,8 +14,8 @@ use Kyslik\ColumnSortable\Sortable;
  * @property string|null $og_image_url
  * @property string $description
  * @property string|null $content
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @method static \Database\Factories\CustomWebPageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage newModelQuery()

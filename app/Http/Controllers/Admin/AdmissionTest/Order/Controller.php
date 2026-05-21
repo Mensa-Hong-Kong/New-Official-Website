@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\AdmissionTest;
+namespace App\Http\Controllers\Admin\AdmissionTest\Order;
 
 use App\Http\Controllers\Controller as BaseController;
 use App\Http\Requests\Admin\AdmissionTest\Order\StoreRequest;
@@ -17,7 +17,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class OrderController extends BaseController implements HasMiddleware
+class Controller extends BaseController implements HasMiddleware
 {
     public static function middleware(): array
     {
@@ -29,7 +29,7 @@ class OrderController extends BaseController implements HasMiddleware
 
     public function index(Request $request)
     {
-        $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'quota', 'status', 'created_at'])
+        $orders = AdmissionTestOrder::select(['id', 'user_id', 'price', 'returned_quota', 'quota', 'status', 'created_at'])
             ->withCount('tests')
             ->with([
                 'user' => function ($query) {
@@ -54,11 +54,13 @@ class OrderController extends BaseController implements HasMiddleware
             $orders->where('created_at', '<=', $request->to);
         }
         $orders = $orders->paginate();
-        foreach ($orders as $order) {
-            $order->makeHidden('user_id');
-            $order->user->append('adorned_name');
-            $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
-        }
+        $orders->setVisible(['id', 'user', 'price', 'tests_count', 'returned_quota', 'quota', 'status', 'created_at']);
+        $orders->each(
+            function (AdmissionTestOrder $order) {
+                $order->user->append('adorned_name');
+                $order->user->setVisible(['id', 'adorned_name']);
+            }
+        );
 
         return Inertia::render('Admin/AdmissionTest/Orders/Index')
             ->with('orders', $orders)
@@ -70,46 +72,35 @@ class OrderController extends BaseController implements HasMiddleware
         return Inertia::render(
             'Admin/AdmissionTest/Orders/Create',
             [
-                'products' => function () {
-                    $products = AdmissionTestProduct::select(['id', 'name', 'minimum_age', 'maximum_age', 'quota', 'quota_validity_months'])
-                        ->with([
-                            'price' => function ($query) {
-                                $query->select(['id', 'product_id', 'name', 'value']);
-                            },
-                        ])->whereInDateRange(now())
-                        ->get();
-                    foreach ($products as $product) {
-                        $product->makeHidden(['id']);
-                        $product->price->makeHidden(['id', 'product_id']);
-                    }
-
-                    return $products;
-                },
-                'paymentGateways' => function () {
-                    return OtherPaymentGateway::where('is_active', true)
-                        ->get(['id', 'name'])
-                        ->pluck('name', 'id')
-                        ->toArray();
-                },
-                'tests' => function () {
-                    $tests = AdmissionTest::with(['address.district.area', 'location'])
-                        ->where('is_free', false)
-                        ->where('testing_at', '>=', now()->addDays(2)->endOfDay())
-                        ->whereAvailable()
-                        ->withCount('candidates')
-                        ->get();
-                    foreach ($tests as $test) {
-                        $test->address->district->area
-                            ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
-                        $test->address->district
-                            ->makeHidden(['id', 'area_id', 'display_order', 'created_at', 'updated_at']);
-                        $test->address->makeHidden(['id', 'district_id', 'created_at', 'updated_at']);
-                        $test->location->makeHidden(['id', 'created_at', 'updated_at']);
-                        $test->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'created_at', 'updated_at']);
-                    }
-
-                    return $tests;
-                },
+                'products' => AdmissionTestProduct::select(['id', 'name', 'minimum_age', 'maximum_age', 'quota', 'quota_validity_months'])
+                    ->with([
+                        'price' => function ($query) {
+                            $query->select(['id', 'product_id', 'name', 'value']);
+                        },
+                    ])->whereInDateRange(now())
+                    ->get()
+                    ->setVisible(['name', 'price', 'minimum_age', 'maximum_age', 'quota', 'quota_validity_months'])
+                    ->each(
+                        function (AdmissionTestProduct $product) {
+                            $product->price->setVisible(['name', 'value']);
+                        }
+                    ),
+                'paymentGateways' => OtherPaymentGateway::where('is_active', true)
+                    ->get(['id', 'name'])
+                    ->pluck('name', 'id')
+                    ->toArray(),
+                'tests' => AdmissionTest::with(['address.district.area', 'location'])
+                    ->where('is_free', false)
+                    ->where('testing_at', '>=', now()->addDays(2)->endOfDay())
+                    ->whereAvailable()
+                    ->withCount('candidates')
+                    ->get()
+                    ->each(
+                        function (AdmissionTest $test) {
+                            $test->location->setVisible(['name']);
+                            $test->setVisible(['id', 'testing_at', 'location', 'candidates_count', 'maximum_candidates', 'is_public']);
+                        }
+                    ),
             ]
         );
     }
@@ -128,7 +119,7 @@ class OrderController extends BaseController implements HasMiddleware
                 DB::rollback();
 
                 return response()->json([
-                    'errors' => ['test_id' => 'The admission test is fulled, please other test, if you need update to date tests info, please reload the page or open a new window tab to read date tests info.'],
+                    'errors' => ['test_id' => 'The admission test is fulled, please select other test, if you need update to date tests info, please reload the page or open a new window tab to read date tests info.'],
                 ], 422);
             }
         } else {
@@ -171,45 +162,74 @@ class OrderController extends BaseController implements HasMiddleware
     public function show(Request $request, AdmissionTestOrder $order)
     {
         $order->load([
-            'user' => function ($query) {
-                $query->select(['id', 'family_name', 'middle_name', 'given_name']);
+            'user' => function ($query) use ($request) {
+                $query->select(['id', 'family_name', 'middle_name', 'given_name'])
+                    ->when(
+                        $request->user()->can('Edit:Admission Test Candidate'),
+                        function ($query) {
+                            $query->with('lastAdmissionTest');
+                        }
+                    );
             },
             'gateway' => function ($query) {
                 $query->select(['id', 'name']);
             },
         ]);
-        $order->makeHidden(['user_id', 'gateway_type', 'gateway_id', 'updated_at']);
+        $orderVisible = [
+            'id', 'user', 'product_name', 'price_name', 'price',
+            'minimum_age', 'maximum_age',
+            'quota', 'quota_validity_months', 'returned_quota',
+            'status', 'created_at', 'expired_at', 'gateway', 'gateway_payment_fee',
+            'reference_number', 'tests',
+        ];
         $order->user->append('adorned_name');
-        $order->user->makeHidden(['family_name', 'middle_name', 'given_name', 'member']);
+        $order->user->setVisible(['id', 'adorned_name', 'lastAdmissionTest']);
         $order->gateway->append('type');
-        $order->gateway->makeHidden('id');
-        if ($request->user()->can('Edit:Admission Test')) {
+        $order->gateway->setVisible(['name', 'type']);
+        if (
+            $request->user()->canAny([
+                'View:Admission Test Candidate',
+                'Edit:Admission Test Candidate',
+            ])
+        ) {
+            if ($request->user()->can('Edit:Admission Test Candidate')) {
+                $order->user->lastAdmissionTest->setVisible([
+                    'id', 'pivot_is_present',
+                ]);
+            }
             $order->load([
                 'tests' => function ($query) {
-                    $query->with([
-                        'type' => function ($query) {
-                            $query->select(['id', 'name']);
-                        },
-                        'location' => function ($query) {
-                            $query->select(['id', 'name']);
-                        },
-                    ]);
+                    $query->with(['type:id,name', 'location:id,name'])
+                        ->orderByDesc('testing_at');
                 },
             ]);
-            foreach ($order->tests as $test) {
-                $test->makeHidden(['type_id', 'location_id', 'expect_end_at', 'maximum_candidates', 'is_public', 'created_at', 'updated_at', 'pivot']);
-                $test->type->makeHidden('id');
-                $test->location->makeHidden('id');
+            $pivotVisible = ['is_present'];
+            if (
+                ! $request->user()->canAny([
+                    'View:Admission Test Result',
+                    'Edit:Admission Test Result',
+                ])
+            ) {
+                $pivotVisible[] = 'is_passed';
             }
+            foreach ($order->tests as $test) {
+                $test->setVisible(['id', 'type', 'testing_at', 'location', 'pivot']);
+                $test->type->setVisible(['name']);
+                $test->location->setVisible(['name']);
+                $test->pivot->setVisible($pivotVisible);
+            }
+            $orderVisible[] = 'tests';
         } else {
             $order->loadCount('tests');
+            $orderVisible[] = 'tests_count';
         }
+        $order->setVisible($orderVisible);
 
         return Inertia::render('Admin/AdmissionTest/Orders/Show')
             ->with('order', $order);
     }
 
-    public function updateStatus(Request $request, $order)
+    public function updateStatus(Request $request, int $order)
     {
         DB::beginTransaction();
         $order = AdmissionTestOrder::lockForUpdate()->withCount('tests')->findOrFail($order);

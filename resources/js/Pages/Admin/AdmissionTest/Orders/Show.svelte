@@ -1,12 +1,12 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { Table, Button, Spinner } from '@sveltestrap/sveltestrap';
+    import { Table, Button } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
     import { post } from "@/submitForm";
 	import { confirm } from '@/Pages/Components/Modals/Confirm.svelte';
 	import { alert } from '@/Pages/Components/Modals/Alert.svelte';
-    import { can } from "@/gate.ts";
+    import { canAny, can } from "@/gate.ts";
 
     seo.title = 'Administration Show Admission Test Order';
 
@@ -163,11 +163,18 @@
                 </tr>
             </tbody>
         </Table>
-    </article>>
-    {#if can('Edit:Admission Test')}
+    </article>
+    {#if
+        canAny([
+            'View:Admission Test Candidate',
+            'Edit:Admission Test Candidate',
+            'View:Admission Test Result',
+            'Edit:Admission Test Result',
+        ])
+    }
         <article>
             <h3 class="mb-2 fw-bold">Tests</h3>
-            <Table>
+            <Table hover>
                 <thead>
                     <tr>
                         <th>#</th>
@@ -175,7 +182,14 @@
                         <th>Testing At</th>
                         <th>Location</th>
                         <th>Status</th>
-                        <th>Result</th>
+                        {#if
+                            canAny([
+                                'View:Admission Test Result',
+                                'Edit:Admission Test Result',
+                            ])
+                        }
+                            <th>Result</th>
+                        {/if}
                     </tr>
                 </thead>
                 <tbody>
@@ -193,15 +207,22 @@
                             <td>{formatToDatetime(test.testing_at)}</td>
                             <td>{test.location.name}</td>
                             <td>
-                                {#if test.is_present !== null}
-                                    {test.is_present ? 'Yes' : 'No'}
+                                {#if test.pivot.is_present !== null}
+                                    {test.pivot.is_present ? 'Yes' : 'No'}
                                 {/if}
                             </td>
-                            <td>
-                                {#if test.is_passed !== null}
-                                    {test.is_passed ? 'Yes' : 'No'}
-                                {/if}
-                            </td>
+                            {#if
+                                canAny([
+                                    'View:Admission Test Result',
+                                    'Edit:Admission Test Result',
+                                ])
+                            }
+                                <td>
+                                    {#if test.pivot.is_passed !== null}
+                                        {test.pivot.is_passed ? 'Yes' : 'No'}
+                                    {/if}
+                                </td>
+                            {/if}
                         </tr>
                     {/each}
                 </tbody>

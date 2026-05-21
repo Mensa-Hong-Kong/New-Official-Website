@@ -1,11 +1,19 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use Inertia\ServiceProvider;
+use Kyslik\ColumnSortable\ColumnSortableServiceProvider;
+use Laravel\Boost\BoostServiceProvider;
+use Reedware\LaravelRelationJoins\LaravelRelationJoinServiceProvider;
+use Spatie\Permission\PermissionServiceProvider;
+use Tighten\Ziggy\ZiggyServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    Spatie\Permission\PermissionServiceProvider::class,
-    Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
-    Tighten\Ziggy\ZiggyServiceProvider::class,
-    Inertia\ServiceProvider::class,
-    Reedware\LaravelRelationJoins\LaravelRelationJoinServiceProvider::class,
-    Laravel\Boost\BoostServiceProvider::class,
+    AppServiceProvider::class,
+    PermissionServiceProvider::class,
+    ColumnSortableServiceProvider::class,
+    ZiggyServiceProvider::class,
+    ServiceProvider::class,
+    LaravelRelationJoinServiceProvider::class,
+    BoostServiceProvider::class,
 ];

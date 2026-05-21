@@ -6,6 +6,7 @@ use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Library\Stripe\Concerns\Models\HasStripeProduct;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -25,8 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property bool $synced_to_stripe
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestPrice|null $price
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestPrice> $prices
+ * @property-read AdmissionTestPrice|null $price
+ * @property-read Collection<int, AdmissionTestPrice> $prices
  * @property-read int|null $prices_count
  *
  * @method static \Database\Factories\AdmissionTestProductFactory factory($count = null, $state = [])

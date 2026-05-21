@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Module;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\PermissionRegistrar;
 
 /**
  * This seeder populates the modules table with predefined data as follows. The script update the tables (e.g., modules, permissions, module_permission)
@@ -166,6 +167,6 @@ class ModulePermissionSeeder extends Seeder
             $editPermission->id => ['name' => "{$editPermission->name}:{$module->name}"],
         ]);
 
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }

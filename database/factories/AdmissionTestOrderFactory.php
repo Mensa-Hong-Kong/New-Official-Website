@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\AdmissionTestOrder;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdmissionTestOrder>
+ * @extends Factory<AdmissionTestOrder>
  */
 class AdmissionTestOrderFactory extends Factory
 {

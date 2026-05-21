@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -15,14 +17,14 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $prefix_name
  * @property string|null $nickname
  * @property string|null $suffix_name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $is_active
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $orders
+ * @property-read Collection<int, MembershipOrder> $orders
  * @property-read int|null $orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $transfers
+ * @property-read Collection<int, MembershipTransfer> $transfers
  * @property-read int|null $transfers_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newQuery()

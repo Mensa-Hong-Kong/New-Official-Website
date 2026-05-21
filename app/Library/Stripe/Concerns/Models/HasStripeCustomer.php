@@ -5,12 +5,13 @@ namespace App\Library\Stripe\Concerns\Models;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * @property string $name
  * @property string $email
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Library\Stripe\Models\StripeCustomer> $stripe
+ * @property-read Collection<int, StripeCustomer> $stripe
  */
 trait HasStripeCustomer
 {

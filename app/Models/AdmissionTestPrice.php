@@ -7,18 +7,19 @@ use App\Library\Stripe\Concerns\Models\HasStripePrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $product_id
  * @property string|null $name
  * @property numeric $value
- * @property \Illuminate\Support\Carbon|null $start_at
+ * @property Carbon|null $start_at
  * @property string|null $stripe_one_time_type_id
  * @property bool $synced_one_time_type_to_stripe
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestProduct|null $product
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AdmissionTestProduct|null $product
  *
  * @method static \Database\Factories\AdmissionTestPriceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice newModelQuery()

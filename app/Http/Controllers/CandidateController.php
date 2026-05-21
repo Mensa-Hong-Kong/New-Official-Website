@@ -6,6 +6,7 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
+use App\Models\User;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use chillerlan\QRCode\Data\QRMatrix;
@@ -33,17 +34,17 @@ class CandidateController extends Controller implements HasMiddleware
                     if (! $request->route('admission_test')->is_public) {
                         return $errorReturn->withErrors(['message' => 'The admission test is private.']);
                     }
-                    if ($user->lastAdmissionTest?->id == $admissionTest->id) {
+                    if ($admissionTest->candidates()->where('user_id', $user->id)->exists()) {
                         return redirect()->route(
                             'admission-tests.candidates.show',
                             ['admission_test' => $admissionTest]
-                        )->withErrors(['message' => 'You has already schedule this admission test.']);
+                        )->withErrors(['message' => 'You has already been scheduled this admission test.']);
                     }
                     if (
                         ! $admissionTest->is_free && ! $user->stripe && (
                             ! $user->lastAdmissionTestOrder?->hasUnusedQuota || (
                                 $user->lastAdmissionTestOrder->quotaExpiredOn &&
-                                $user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $admissionTest->testing_at
+                                $user->lastAdmissionTestOrder->quotaExpiredOn < $admissionTest->testing_at
                             )
                         )
                     ) {
@@ -54,7 +55,7 @@ class CandidateController extends Controller implements HasMiddleware
                         $user->lastAdmissionTest->pivot_is_present === null &&
                         $user->lastAdmissionTest->testing_at < now()->addHours(2)
                     ) {
-                        return $errorReturn->withErrors(['message' => 'You has already schedule other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
+                        return $errorReturn->withErrors(['message' => 'You has already been scheduled other admission test and after than before testing time 2 hours, please wait proctor to confirm the user is absent first.']);
                     }
                     if ($user->member?->is_active) {
                         return $errorReturn->withErrors(['message' => 'You has already been member.']);
@@ -78,7 +79,13 @@ class CandidateController extends Controller implements HasMiddleware
                         return $errorReturn->withErrors(['message' => "You has admission test record within {$user->lastAttendedAdmissionTest->type->interval_month} months(count from testing at of this test sub {$user->lastAttendedAdmissionTest->type->interval_month} months to now)."]);
                     }
                     if (! $admissionTest->is_free) {
-                        if ($user->lastAdmissionTestOrder?->hasUnusedQuota) {
+                        if (
+                            $user->lastAdmissionTestOrder?->hasUnusedQuota &&
+                            (
+                                ! $user->lastAdmissionTestOrder->quotaExpiredOn ||
+                                $user->lastAdmissionTestOrder->quotaExpiredOn > $admissionTest->testing_at
+                            )
+                        ) {
                             if (
                                 $user->lastAdmissionTestOrder->minimum_age &&
                                 $user->lastAdmissionTestOrder->minimum_age > floor($user->countAge($user->lastAdmissionTestOrder->created_at))
@@ -123,9 +130,10 @@ class CandidateController extends Controller implements HasMiddleware
                         ! $request->route('admission_test')->is_free &&
                         (
                             ! $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ||
-                            $request->user()->lastAdmissionTestOrder?->hasUnusedQuota &&
-                            $request->user()->lastAdmissionTestOrder->quotaExpiredOn &&
-                            $request->user()->lastAdmissionTestOrder?->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                            (
+                                $request->user()->lastAdmissionTestOrder->quotaExpiredOn &&
+                                $request->user()->lastAdmissionTestOrder->quotaExpiredOn < $request->route('admission_test')->testing_at
+                            )
                         )
                     ) {
                         if ($request->price_id) {
@@ -229,14 +237,6 @@ class CandidateController extends Controller implements HasMiddleware
 
     public function create(Request $request, AdmissionTest $admissionTest)
     {
-        $user = [
-            'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ? [
-                'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
-            ] : null,
-            'default_email' => $request->user()->defaultEmail ? [
-                'contact' => $request->user()->defaultEmail->contact,
-            ] : null,
-        ];
         $admissionTest->load(['address.district.area', 'location']);
         $admissionTest->address->district->area
             ->makeHidden(['id', 'display_order', 'created_at', 'updated_at']);
@@ -246,11 +246,20 @@ class CandidateController extends Controller implements HasMiddleware
         $admissionTest->location->makeHidden(['id', 'created_at', 'updated_at']);
         $admissionTest->makeHidden(['type_id', 'address_id', 'location_id', 'expect_end_at', 'is_public', 'created_at', 'updated_at']);
         $return = Inertia::render('AdmissionTests/Create')
+            ->with('test', $admissionTest)
             ->with(
-                'isReschedule', $request->user()->lastAdmissionTest &&
-                    ! $request->user()->lastAdmissionTest->pivot_is_present
-            )->with('test', $admissionTest)
-            ->with('user', $user);
+                'user', [
+                    'has_unused_quota_admission_test_order' => $request->user()->lastAdmissionTestOrder?->hasUnusedQuota ? [
+                        'quota_expired_on' => $request->user()->lastAdmissionTestOrder->quotaExpiredOn,
+                    ] : null,
+                    'default_email' => $request->user()->defaultEmail ? [
+                        'contact' => $request->user()->defaultEmail->contact,
+                    ] : null,
+                    'last_admission_test' => $request->user()?->lastAdmissionTest ? [
+                        'pivot_is_present' => $request->user()?->lastAdmissionTest?->pivot_is_present,
+                    ] : null,
+                ]
+            );
         if ($request->products) {
             $return = $return->with('products', $request->products);
             if ($request->error) {
@@ -291,7 +300,7 @@ class CandidateController extends Controller implements HasMiddleware
         return $redirect->with('success', $success);
     }
 
-    private function qrCode($test, $user)
+    private function qrCode(AdmissionTest $test, User $user)
     {
         $options = new QROptions;
 

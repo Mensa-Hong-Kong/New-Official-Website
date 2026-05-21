@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
 use App\Notifications\AdmissionTest\Admin\RescheduleAdmissionTest;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -21,6 +22,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var User&Authenticatable */
     private User $user;
 
     private AdmissionTest $test;
@@ -68,6 +70,7 @@ class StoreTest extends TestCase
 
     public function test_have_no_edit_admission_test_candidate_permission(): void
     {
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()
@@ -172,7 +175,7 @@ class StoreTest extends TestCase
 
     public function test_user_id_has_already_member(): void
     {
-        $member = Member::create([
+        Member::create([
             'user_id' => $this->user->id,
         ]);
         $thisYear = now()->year;
@@ -195,7 +198,7 @@ class StoreTest extends TestCase
                 'function' => 'abc',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already member.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been member.']);
     }
 
     public function test_user_id_has_already_qualification_for_membership(): void
@@ -216,7 +219,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already qualification for membership.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been qualification for membership.']);
     }
 
     public function test_when_type_has_minimum_age_and_user_age_less_than_test_type_minimum_age(): void
@@ -269,7 +272,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already schedule this admission test.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been scheduled this admission test.']);
     }
 
     public function test_schedule_function_but_user_has_other_admission_test_on_future(): void
@@ -291,7 +294,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id has already schedule other admission test.']);
+        $response->assertInvalid(['user_id' => 'The selected user id has already been scheduled other admission test.']);
     }
 
     public function test_reschedule_function_but_user_not_have_no_other_admission_test_on_future(): void
@@ -307,7 +310,7 @@ class StoreTest extends TestCase
                 'function' => 'reschedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no scheduled other admission test after than now.']);
+        $response->assertInvalid(['user_id' => 'The selected user id have no scheduled other admission test.']);
     }
 
     public function test_reschedule_function_but_user_have_other_admission_test_and_after_than_before_testing_time_2_hours_and_have_no_update_present_status(): void
@@ -418,7 +421,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.']);
+        $response->assertInvalid(['user_id' => 'The selected user id have no unused admission test quota, please select is free or let user to pay the admission test fee.']);
     }
 
     public function test_user_id_have_unused_admission_test_quota_but_quota_expired_before_testing_time_of_this_admission_test_when_is_not_free(): void
@@ -440,7 +443,7 @@ class StoreTest extends TestCase
                 'function' => 'schedule',
             ]
         );
-        $response->assertInvalid(['user_id' => 'The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.']);
+        $response->assertInvalid(['user_id' => 'The selected user id unused admission test quota expired before the testing time of selected admission test, please select is free or on order page bypass expiration date checking or let user to pay the admission test fee.']);
     }
 
     public function test_user_id_unused_quota_admission_test_order_has_minimum_age_limit_and_user_age_less_than_order_minimum_age_limit_when_is_not_free(): void

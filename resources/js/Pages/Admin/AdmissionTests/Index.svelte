@@ -14,10 +14,10 @@
 
     let { tests: initTests } = $props();
     let submitting = $state();
-    let tests = $state(initTests.data);
+    let tests = $state(initTests);
 
     function getIndexById(id) {
-        return tests.findIndex(
+        return tests['data'].findIndex(
             function(row) {
                 return row.id == id;
             }
@@ -31,7 +31,7 @@
     function deleteSuccessCallback(response) {
         let id = route().match(response.request.responseURL, 'delete').params.admission_test;
         let index = getIndexById(id);
-        tests[index]['deleting'] = false;
+        tests['data'][index]['deleting'] = false;
         submitting = false;
         alert(response.data.success, alertCallback);
     }
@@ -39,7 +39,7 @@
     function deleteFailCallback(error) {
         let id = route().match(error.request.responseURL, 'delete').params.admission_test;
         let index = getIndexById(id);
-        tests[index]['deleting'] = false;
+        tests['data'][index]['deleting'] = false;
         submitting = false;
     }
 
@@ -48,11 +48,11 @@
             let submitAt = Date.now();
             submitting = 'delete'+submitAt;
             if(submitting == 'delete'+submitAt) {
-                tests[index]['deleting'] = true;
+                tests['data'][index]['deleting'] = true;
                 post(
                     route(
                         'admin.admission-tests.destroy',
-                        {admission_test: tests[index]['id']}
+                        {admission_test: tests['data'][index]['id']}
                     ),
                     deleteSuccessCallback,
                     deleteFailCallback,
@@ -63,14 +63,14 @@
     }
 
     function destroy(index) {
-        let message = `Are you sure to delete the ${tests[index]['location']['name']}(${(new Date(tests[index]['testing_at'])).toISOString().split('.')[0].replace('T', ' ')})?`;
+        let message = `Are you sure to delete the ${tests['data'][index]['location']['name']}(${(new Date(tests['data'][index]['testing_at'])).toISOString().split('.')[0].replace('T', ' ')})?`;
         confirm(message, confirmedDelete, index);
     }
 </script>
 
 <section class="container">
     <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
-    {#if tests.length}
+    {#if tests.data.length}
         <Table hover>
             <thead>
                 <tr>
@@ -83,7 +83,7 @@
                 </tr>
             </thead>
             <tbody>
-                {#each tests as row, index}
+                {#each tests.data as row, index}
                     <tr>
                         <th scope="row">{row.id}</th>
                         <td>{formatToDatetime(row.testing_at)}</td>

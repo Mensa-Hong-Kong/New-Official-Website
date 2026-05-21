@@ -3,13 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\Address;
+use App\Models\AdmissionTest;
 use App\Models\AdmissionTestType;
 use App\Models\Location;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdmissionTest>
+ * @extends Factory<AdmissionTest>
  */
 class AdmissionTestFactory extends Factory
 {

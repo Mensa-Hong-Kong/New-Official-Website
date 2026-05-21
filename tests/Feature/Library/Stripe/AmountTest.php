@@ -3,6 +3,7 @@
 namespace Tests\Feature\Library\Stripe;
 
 use App\Library\Stripe\Amount;
+use App\Library\Stripe\Exceptions\UnsupportedCurrency;
 use Tests\TestCase;
 
 class AmountTest extends TestCase
@@ -26,7 +27,7 @@ class AmountTest extends TestCase
 
     public function test_get_actual_decimal_when_currency_is_unsupported_currency(): void
     {
-        $this->expectException(\App\Library\Stripe\Exceptions\UnsupportedCurrency::class);
+        $this->expectException(UnsupportedCurrency::class);
         config(['stripe.currency' => 123]);
         Amount::getActualDecimal();
     }
@@ -59,7 +60,7 @@ class AmountTest extends TestCase
 
     public function test_get_validation_decimal_when_currency_is_unsupported_currency(): void
     {
-        $this->expectException(\App\Library\Stripe\Exceptions\UnsupportedCurrency::class);
+        $this->expectException(UnsupportedCurrency::class);
         config(['stripe.currency' => 123]);
         Amount::getValidationDecimal();
     }
@@ -83,7 +84,7 @@ class AmountTest extends TestCase
 
     public function test_get_maximum_digits_when_currency_is_unsupported_currency(): void
     {
-        $this->expectException(\App\Library\Stripe\Exceptions\UnsupportedCurrency::class);
+        $this->expectException(UnsupportedCurrency::class);
         config(['stripe.currency' => 123]);
         Amount::getMaximumDigits();
     }
@@ -114,7 +115,7 @@ class AmountTest extends TestCase
 
     public function test_get_maximum_validation_when_currency_is_unsupported_currency(): void
     {
-        $this->expectException(\App\Library\Stripe\Exceptions\UnsupportedCurrency::class);
+        $this->expectException(UnsupportedCurrency::class);
         config(['stripe.currency' => 123]);
         Amount::getMaximumValidation();
     }

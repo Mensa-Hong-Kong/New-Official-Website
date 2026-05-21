@@ -1,5 +1,6 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
+    import { colorMode } from '@sveltestrap/sveltestrap';
     import "ckeditor5/ckeditor5.css";
 
     let { page } = $props();
@@ -14,7 +15,7 @@
 </script>
 
 <section class="container">
-    <article class="ck-content">
+    <article class="ck-content" style:color={$colorMode == 'dark' ? 'var(--ck-custom-white)' : ''}>
         {@html page.content}
     </article>
 </section>

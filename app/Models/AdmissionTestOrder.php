@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,17 +31,17 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $returned_quota
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $attendedTests
+ * @property-read AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, AdmissionTest> $attendedTests
  * @property-read int|null $attended_tests_count
  * @property-read Model|\Eloquent $gateway
  * @property-read bool $has_unused_quota
- * @property-read \App\Models\AdmissionTest|null $lastAttendedTest
- * @property-read \App\Models\AdmissionTest|null $lastTest
- * @property-read \Carbon\Carbon|null $quota_expired_on
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
+ * @property-read AdmissionTest|null $lastAttendedTest
+ * @property-read AdmissionTest|null $lastTest
+ * @property-read Carbon|null $quota_expired_on
+ * @property-read Collection<int, AdmissionTest> $tests
  * @property-read int|null $tests_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
  *
  * @method static \Database\Factories\AdmissionTestOrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder newModelQuery()
@@ -107,7 +108,8 @@ class AdmissionTestOrder extends Model
 
     public function tests(): BelongsToMany
     {
-        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id');
+        return $this->belongsToMany(AdmissionTest::class, AdmissionTestHasCandidate::class, 'order_id', 'test_id')
+            ->withPivot('is_present', 'is_passed');
     }
 
     public function attendedTests(): BelongsToMany
@@ -165,11 +167,7 @@ class AdmissionTestOrder extends Model
         return Attribute::make(
             get: function () use ($order): bool {
                 return in_array($order->status, ['succeeded', 'partial refunded', 'full refunded']) &&
-                    $order->returned_quota + $order->attendedTests()->count() < $order->quota &&
-                    (
-                        ! $order->quotaExpiredOn ||
-                        $order->quotaExpiredOn >= now()
-                    );
+                    $order->returned_quota + $order->attendedTests()->count() < $order->quota;
             }
         );
     }

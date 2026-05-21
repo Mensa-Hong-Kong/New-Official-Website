@@ -5,6 +5,7 @@ namespace Tests\Feature\Pages;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -20,7 +21,6 @@ class AdmissionTestTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Index')
-                    ->where('isReschedule', false)
                     ->has(
                         'user', function (Assert $page) {
                             $page->whereNull('last_admission_test')
@@ -34,13 +34,13 @@ class AdmissionTestTest extends TestCase
 
     public function test_happy_case_when_user_have_no_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('admission-tests.index'));
         $response->assertSuccessful();
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Index')
-                    ->where('isReschedule', false)
                     ->has(
                         'user', function (Assert $page) {
                             $page->whereNull('last_admission_test')
@@ -54,6 +54,7 @@ class AdmissionTestTest extends TestCase
 
     public function test_happy_case_when_user_have_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         AdmissionTestOrder::factory()->create([
             'user_id' => $user->id,
@@ -66,7 +67,6 @@ class AdmissionTestTest extends TestCase
         $response->assertInertia(
             function (Assert $page) {
                 $page->component('AdmissionTests/Index')
-                    ->where('isReschedule', true)
                     ->has(
                         'user', function (Assert $page) {
                             $page->has('last_admission_test.id')

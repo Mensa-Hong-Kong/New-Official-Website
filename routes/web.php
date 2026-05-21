@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AdmissionTest\CandidateController as AdminCandidateController;
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
-use App\Http\Controllers\Admin\AdmissionTest\OrderController as AdmissionTestOrderController;
+use App\Http\Controllers\Admin\AdmissionTest\Order\Controller as AdmissionTestOrderController;
 use App\Http\Controllers\Admin\AdmissionTest\PriceController as AdminAdmissionTestPriceController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\AdmissionTest\ProductController as AdminAdmissionTestProductController;
@@ -142,8 +142,10 @@ Route::middleware('auth')->group(function () {
                     Route::match(['put', 'patch'], 'types/display-order', [AdmissionTestTypeController::class, 'displayOrder'])
                         ->name('types.display-order.update');
                     Route::resource('orders', AdmissionTestOrderController::class)
+                        ->whereNumber('order')
                         ->except(['edit', 'update', 'destroy']);
                     Route::match(['put', 'patch'], 'orders/{order}/status', [AdmissionTestOrderController::class, 'updateStatus'])
+                        ->whereNumber('order')
                         ->name('orders.status.update');
                 }
             );

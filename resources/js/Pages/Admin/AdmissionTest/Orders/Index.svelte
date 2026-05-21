@@ -15,52 +15,52 @@
     <h2 class="mb-2 fw-bold">
         Admission Test Orders
     </h2>
+    <form novalidate onsubmit="{search}">
+        <Row class="g-3">
+            <Col md=1><Label>Status:</Label></Col>
+            <Col md=2>
+                <input type="checkbox" class="btn-check" name="statuses[]" value="pending" id="pending"
+                    checked={append.statuses && append.statuses.includes('pending')} />
+                <label class="form-control btn btn-outline-primary" for='pending'>Pending</label>
+            </Col>
+            <Col md=2>
+                <input type="checkbox" class="btn-check" name="statuses[]" value="canceled" id="canceled"
+                    checked={append.statuses && append.statuses.includes('canceled')} />
+                <label class="form-control btn btn-outline-primary" for='canceled'>Canceled</label>
+            </Col>
+            <Col md=2>
+                <input type="checkbox" class="btn-check" name="statuses[]" value="failed" id="failed"
+                    checked={append.statuses && append.statuses.includes('failed')} />
+                <label class="form-control btn btn-outline-primary" for='failed'>Failed</label>
+            </Col>
+            <Col md=2>
+                <input type="checkbox" class="btn-check" name="statuses[]" value="expired" id="expired"
+                    checked={append.statuses && append.statuses.includes('expired')} />
+                <label class="form-control btn btn-outline-primary" for='expired'>Expired</label>
+            </Col>
+            <Col md=2>
+                <input type="checkbox" class="btn-check" name="statuses[]" value="succeeded" id="succeeded"
+                    checked={append.statuses && append.statuses.includes('succeeded')} />
+                <label class="form-control btn btn-outline-primary" for='succeeded'>Succeeded</label>
+            </Col>
+        </Row>
+        <Row class="g-3">
+            <Col md=1><Label for="from">From:</Label></Col>
+            <Col md=3>
+                <Input type="datetime-local" name="from" value={append.from} step=1 />
+            </Col>
+            <Col md=1><Label for="to">To:</Label></Col>
+            <Col md=3>
+                <Input type="datetime-local" name="to" value={append.to} step=1 />
+            </Col>
+            <Col md=2><Button block color="primary">Search</Button></Col>
+            <Col md=2>
+                <Link class="form-control btn btn-danger"
+                    href={route('admin.admission-test.orders.index')}>Clear</Link>
+            </Col>
+        </Row>
+    </form>
     {#if orders.data.length}
-        <form novalidate onsubmit="{search}">
-            <Row class="g-3">
-                <Col md=1><Label>Status:</Label></Col>
-                <Col md=2>
-                    <input type="checkbox" class="btn-check" name="statuses[]" value="pending" id="pending"
-                        checked={append.statuses && append.statuses.includes('pending')} />
-                    <label class="form-control btn btn-outline-primary" for='pending'>Pending</label>
-                </Col>
-                <Col md=2>
-                    <input type="checkbox" class="btn-check" name="statuses[]" value="canceled" id="canceled"
-                        checked={append.statuses && append.statuses.includes('canceled')} />
-                    <label class="form-control btn btn-outline-primary" for='canceled'>Canceled</label>
-                </Col>
-                <Col md=2>
-                    <input type="checkbox" class="btn-check" name="statuses[]" value="failed" id="failed"
-                        checked={append.statuses && append.statuses.includes('failed')} />
-                    <label class="form-control btn btn-outline-primary" for='failed'>Failed</label>
-                </Col>
-                <Col md=2>
-                    <input type="checkbox" class="btn-check" name="statuses[]" value="expired" id="expired"
-                        checked={append.statuses && append.statuses.includes('expired')} />
-                    <label class="form-control btn btn-outline-primary" for='expired'>Expired</label>
-                </Col>
-                <Col md=2>
-                    <input type="checkbox" class="btn-check" name="statuses[]" value="succeeded" id="succeeded"
-                        checked={append.statuses && append.statuses.includes('succeeded')} />
-                    <label class="form-control btn btn-outline-primary" for='succeeded'>Succeeded</label>
-                </Col>
-            </Row>
-            <Row class="g-3">
-                <Col md=1><Label for="from">From:</Label></Col>
-                <Col md=3>
-                    <Input type="datetime-local" name="from" value={append.from} step=1 />
-                </Col>
-                <Col md=1><Label for="to">To:</Label></Col>
-                <Col md=3>
-                    <Input type="datetime-local" name="to" value={append.to} step=1 />
-                </Col>
-                <Col md=2><Button block color="primary">Search</Button></Col>
-                <Col md=2>
-                    <Link class="form-control btn btn-danger"
-                        href={route('admin.admission-test.orders.index')}>Clear</Link>
-                ></Col>
-            </Row>
-        </form>
         <Table hover>
             <thead>
                 <tr>
@@ -96,7 +96,7 @@
                             {/if}
                         </td>
                         <td>{row.price}</td>
-                        <td>{row.tests_count}/{row.quota}</td>
+                        <td>{row.tests_count}/{row.quota - row.returned_quota}</td>
                         <td>{row.status.ucfirst()}</td>
                         <td>{formatToDatetime(row.created_at)}</td>
                         <td>

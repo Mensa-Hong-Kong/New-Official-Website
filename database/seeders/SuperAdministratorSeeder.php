@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AdmissionTest;
 use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -37,9 +36,5 @@ class SuperAdministratorSeeder extends Seeder
             'guard_name' => 'web',
         ]);
         $user->assignRole('Super Administrator');
-
-        $admissionTest = AdmissionTest::factory()->create(['maximum_candidates' => 20]);
-        $candidates = User::factory()->count(20)->create();
-        $admissionTest->candidates()->sync($candidates->pluck('id'));
     }
 }

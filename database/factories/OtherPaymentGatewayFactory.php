@@ -6,7 +6,7 @@ use App\Models\OtherPaymentGateway;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OtherPaymentGateway>
+ * @extends Factory<OtherPaymentGateway>
  */
 class OtherPaymentGatewayFactory extends Factory
 {

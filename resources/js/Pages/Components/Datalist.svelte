@@ -1,5 +1,5 @@
 <script>
-	let { id, data, isStringKey = false } = $props();
+	let { id, data } = $props();
 </script>
 
 <datalist id="{id}">

@@ -6,19 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $order_id
  * @property int $test_id
- * @property \Illuminate\Support\Carbon $taken_on
+ * @property Carbon $taken_on
  * @property string $score
  * @property numeric|null $percent_of_group
  * @property bool|null $is_accepted
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\PriorEvidenceOrder|null $order
- * @property-read \App\Models\QualifyingTest|null $test
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read PriorEvidenceOrder|null $order
+ * @property-read QualifyingTest|null $test
+ * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newQuery()

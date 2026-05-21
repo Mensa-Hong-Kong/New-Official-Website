@@ -26,24 +26,28 @@ class StoreRequest extends FormRequest
                     if (! $request->user) {
                         $fail('The selected user id is invalid.');
                     } elseif ($request->user->member?->is_active) {
-                        $fail('The selected user id has already member.');
+                        $fail('The selected user id has already been member.');
                     } elseif ($request->user->hasQualificationOfMembership) {
-                        $fail('The selected user id has already qualification for membership.');
+                        $fail('The selected user id has already been qualification for membership.');
                     } elseif ($test->type->minimum_age && $test->type->minimum_age > floor($request->user->countAgeForPsychology($test->testing_at))) {
                         $fail('The selected user id age less than test minimum age limit.');
                     } elseif ($test->type->maximum_age && $test->type->maximum_age < floor($request->user->countAgeForPsychology($test->testing_at))) {
                         $fail('The selected user id age greater than test maximum age limit.');
-                    } elseif ($request->user->lastAdmissionTest?->id == $test->id) {
-                        $fail('The selected user id has already schedule this admission test.');
-                    } elseif ($request->function == 'schedule' && $request->user->lastAdmissionTest && $request->user->lastAdmissionTest->pivot_is_present === null) {
-                        $fail('The selected user id has already schedule other admission test.');
+                    } elseif ($test->candidates()->where('user_id', $value)->exists()) {
+                        $fail('The selected user id has already been scheduled this admission test.');
+                    } elseif (
+                        $request->function == 'schedule' &&
+                        $request->user->lastAdmissionTest &&
+                        $request->user->lastAdmissionTest->pivot_is_present === null
+                    ) {
+                        $fail('The selected user id has already been scheduled other admission test.');
                     } elseif (
                         $request->function == 'reschedule' && (
                             ! $request->user->lastAdmissionTest ||
                             $request->user->lastAdmissionTest->pivot_is_present !== null
                         )
                     ) {
-                        $fail('The selected user id have no scheduled other admission test after than now.');
+                        $fail('The selected user id have no scheduled other admission test.');
                     } elseif (
                         $request->function == 'reschedule' &&
                         $request->user->lastAdmissionTest?->pivot_is_present === null &&
@@ -66,21 +70,20 @@ class StoreRequest extends FormRequest
                         ! $test->is_free &&
                         ! $request->is_free && (
                             ! $request->user->lastAdmissionTestOrder ||
-                            ! $request->user->lastAdmissionTestOrder?->hasUnusedQuota
+                            ! $request->user->lastAdmissionTestOrder->hasUnusedQuota
                         )
                     ) {
-                        $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission fee.');
+                        $fail('The selected user id have no unused admission test quota, please select is free or let user to pay the admission test fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
                         $request->user->lastAdmissionTestOrder->quotaExpiredOn &&
-                        $request->user->lastAdmissionTestOrder->quotaExpiredOn->endOfDay() < $request->route('admission_test')->testing_at
+                        $request->user->lastAdmissionTestOrder->quotaExpiredOn < $test->testing_at
                     ) {
-                        $fail('The selected user id have no admission test quota expired before the testing time of this admission test, please select is free or let user to pay the admission fee.');
+                        $fail('The selected user id unused admission test quota expired before the testing time of selected admission test, please select is free or on order page bypass expiration date checking or let user to pay the admission test fee.');
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
                         $request->user->lastAdmissionTestOrder->minimum_age &&
                         $request->user->lastAdmissionTestOrder->minimum_age > floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {
@@ -88,7 +91,6 @@ class StoreRequest extends FormRequest
                     } elseif (
                         ! $test->is_free &&
                         ! $request->is_free &&
-                        $request->user->lastAdmissionTestOrder?->hasUnusedQuota &&
                         $request->user->lastAdmissionTestOrder->maximum_age &&
                         $request->user->lastAdmissionTestOrder->maximum_age < floor($request->user->countAge($request->user->lastAdmissionTestOrder->created_at))
                     ) {

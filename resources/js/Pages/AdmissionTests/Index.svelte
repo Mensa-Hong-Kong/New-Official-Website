@@ -1,15 +1,15 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
     import StripeCustomerAlert from "@/Pages/Components/StripeAlert/Customer.svelte";
-    import { Table, Button } from '@sveltestrap/sveltestrap';
+    import { Table, Button, colorMode } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import "ckeditor5/ckeditor5.css";
     import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
 
     seo.title = 'Admission Tests';
-
-    let { auth, contents, tests, user: initUser, isReschedule } = $props();
+    let { auth, contents, tests, user: initUser } = $props();
     let user = $state(initUser);
+    let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
 </script>
 
 <section class="container">
@@ -17,7 +17,7 @@
         <StripeCustomerAlert bind:customer={user} type="user" />
     {/if}
     <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
-    <article class="ck-content">
+    <article class="ck-content" style:color={$colorMode == 'dark' ? 'var(--ck-custom-white)' : ''}>
         {@html contents.Info}
     </article>
     {#if
@@ -105,7 +105,7 @@
             </tbody>
         </Table>
     </article>
-    <article class="ck-content">
+    <article class="ck-content" style:color={$colorMode == 'dark' ? 'var(--ck-custom-white)' : ''}>
         {@html contents.Remind}
     </article>
 </section>

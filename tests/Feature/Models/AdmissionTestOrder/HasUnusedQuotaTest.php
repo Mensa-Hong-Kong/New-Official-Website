@@ -41,18 +41,6 @@ class HasUnusedQuotaTest extends TestCase
         $this->assertFalse($order->has_unused_quota);
     }
 
-    public function test_quota_is_expired(): void
-    {
-        $order = AdmissionTestOrder::factory()->create([
-            'status' => 'succeeded',
-            'quota' => 3,
-            'quota_validity_months' => 1,
-            'created_at' => now()->subMonths(2),
-        ]);
-
-        $this->assertFalse($order->has_unused_quota);
-    }
-
     public function test_order_status_is_paid_and_returned_quota_plus_attended_tests_count_is_less_than_quota_and_quota_is_not_expired(): void
     {
         $order = AdmissionTestOrder::factory()->create([

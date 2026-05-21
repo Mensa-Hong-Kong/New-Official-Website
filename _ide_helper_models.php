@@ -42,8 +42,8 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
  * @property-read \App\Models\District|null $district
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $user
- * @property-read int|null $user_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
  * @method static \Database\Factories\AddressFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newQuery()
@@ -131,6 +131,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate whereUserId($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate whereIsPassed($value)
  */
 	class AdmissionTestHasCandidate extends \Eloquent {}
 }
@@ -354,6 +355,8 @@ namespace App\Models{
  * @property bool $middleware_should_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read bool $is_closed
+ * @property-read bool $is_tried_too_many_time
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification query()
@@ -372,7 +375,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification whereVerifiedAt($value)
  * @mixin \Eloquent
- * @property-read bool $is_closed
  */
 	class ContactHasVerification extends \Eloquent {}
 }
@@ -1167,6 +1169,7 @@ namespace App\Models{
  * @property-read \App\Models\User|null $user
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $verifications
  * @property-read int|null $verifications_count
+ * @property-read bool $is_request_too_fast
  * @method static \Database\Factories\UserHasContactFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact newQuery()
@@ -1179,6 +1182,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserHasContact whereUserId($value)
  * @mixin \Eloquent
+ * @property-read bool $is_request_too_many_time
  */
 	class UserHasContact extends \Eloquent {}
 }

@@ -197,8 +197,7 @@ class ShowTest extends TestCase
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('is_free')
-                                                            ->has('has_result');
+                                                            ->has('is_free');
                                                     }
                                                 );
                                         }
@@ -269,8 +268,7 @@ class ShowTest extends TestCase
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('is_free')
-                                                            ->has('has_result');
+                                                            ->has('is_free');
                                                     }
                                                 );
                                         }
@@ -444,8 +442,7 @@ class ShowTest extends TestCase
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('is_free')
-                                                            ->has('has_result');
+                                                            ->has('is_free');
                                                     }
                                                 );
                                         }
@@ -519,8 +516,7 @@ class ShowTest extends TestCase
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('is_free')
-                                                            ->has('has_result');
+                                                            ->has('is_free');
                                                     }
                                                 );
                                         }
@@ -700,8 +696,7 @@ class ShowTest extends TestCase
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
                                                             ->has('is_present')
-                                                            ->has('is_free')
-                                                            ->has('has_result');
+                                                            ->has('is_free');
                                                     }
                                                 );
                                         }
@@ -979,8 +974,7 @@ class ShowTest extends TestCase
                                                 )->has(
                                                     'pivot', function (Assert $page) {
                                                         $page->has('seat_number')
-                                                            ->has('is_present')
-                                                            ->has('has_result');
+                                                            ->has('is_present');
                                                     }
                                                 );
                                         }
