@@ -250,7 +250,10 @@
             <h3 class="mb-2 fw-bold">Tests</h3>
             <Table hover>
                 <thead>
-                    {#if can('Edit:Admission Test Candidate')}
+                    {#if
+                        can('Edit:Admission Test Candidate') &&
+                        order.quota > order.returned_quota + attended_tests_count
+                    }
                         <tr>
                             <td style="width: 150px">
                                 <form method="POST" novalidate onsubmit={createTest} id="createTestForm">
