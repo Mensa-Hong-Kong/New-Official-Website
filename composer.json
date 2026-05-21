@@ -35,7 +35,7 @@
     "repositories": [
         {
             "type": "git",
-            "url": "https://github.com/tszyuloveyou/ziggy"
+            "url": "https://github.com/Mensa-Hong-Kong/ziggy"
         }
     ],
     "autoload": {
