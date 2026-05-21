@@ -151,7 +151,7 @@ Route::middleware('auth')->group(function () {
                     Route::resource('orders/{order}/admission-tests', AdmissionTestOrderTestController::class)
                         ->whereNumber(['order', 'admission_test'])
                         ->names('orders.admission-tests')
-                        ->only('destroy');
+                        ->only(['store', 'destroy']);
                 }
             );
             Route::resource('admission-tests', AdminAdmissionTestController::class)
