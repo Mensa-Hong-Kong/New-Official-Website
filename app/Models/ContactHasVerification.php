@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,14 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $type
  * @property string|null $code
  * @property int $tried_time
- * @property \Illuminate\Support\Carbon|null $closed_at
- * @property \Illuminate\Support\Carbon|null $verified_at
- * @property \Illuminate\Support\Carbon|null $expired_at
+ * @property Carbon|null $closed_at
+ * @property Carbon|null $verified_at
+ * @property Carbon|null $expired_at
  * @property int $creator_id
  * @property string $creator_ip
  * @property bool $middleware_should_count
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $is_closed
  * @property-read bool $is_tried_too_many_time
  *

@@ -5,6 +5,7 @@ namespace Tests\Feature\Pages;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestOrder;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -33,7 +34,7 @@ class AdmissionTestTest extends TestCase
 
     public function test_happy_case_when_user_have_no_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
-        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('admission-tests.index'));
         $response->assertSuccessful();
@@ -53,7 +54,7 @@ class AdmissionTestTest extends TestCase
 
     public function test_happy_case_when_user_have_scheduled_admission_test_and_unused_quota_admission_test_order(): void
     {
-        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         AdmissionTestOrder::factory()->create([
             'user_id' => $user->id,

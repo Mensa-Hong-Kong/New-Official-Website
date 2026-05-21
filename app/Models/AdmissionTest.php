@@ -4,35 +4,37 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Kyslik\ColumnSortable\Sortable;
 
 /**
  * @property int $id
  * @property int $type_id
- * @property \Illuminate\Support\Carbon $testing_at
- * @property \Illuminate\Support\Carbon|null $expect_end_at
+ * @property Carbon $testing_at
+ * @property Carbon|null $expect_end_at
  * @property int|null $location_id
  * @property int|null $address_id
  * @property int|null $maximum_candidates
  * @property bool $is_free
  * @property bool $is_public
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Address|null $address
- * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $candidates
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Address|null $address
+ * @property-read AdmissionTestHasProctor|AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, User> $candidates
  * @property-read int|null $candidates_count
  * @property-read bool $current_user_is_proctor
  * @property-read bool $in_testing_time_range
- * @property-read \App\Models\Location|null $location
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $proctors
+ * @property-read Location|null $location
+ * @property-read Collection<int, User> $proctors
  * @property-read int|null $proctors_count
- * @property-read \App\Models\AdmissionTestType|null $type
+ * @property-read AdmissionTestType|null $type
  *
  * @method static \Database\Factories\AdmissionTestFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdmissionTest newModelQuery()

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
 use App\Notifications\AdmissionTest\Admin\RescheduleAdmissionTest;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -21,7 +22,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+    /** @var User&Authenticatable */
     private User $user;
 
     private AdmissionTest $test;
@@ -69,7 +70,7 @@ class StoreTest extends TestCase
 
     public function test_have_no_edit_admission_test_candidate_permission(): void
     {
-        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()

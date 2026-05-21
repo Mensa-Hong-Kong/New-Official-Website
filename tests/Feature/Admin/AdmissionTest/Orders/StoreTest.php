@@ -15,6 +15,7 @@ use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
@@ -24,7 +25,7 @@ class StoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+    /** @var User&Authenticatable */
     private User $user;
 
     private array $happyCase = [
@@ -65,7 +66,7 @@ class StoreTest extends TestCase
 
     public function test_have_no_edit_admission_test_permission(): void
     {
-        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+        /** @var User&Authenticatable */
         $user = User::factory()->create();
         $user->givePermissionTo(
             ModulePermission::inRandomOrder()

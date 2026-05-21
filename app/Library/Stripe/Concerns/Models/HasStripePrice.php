@@ -6,13 +6,14 @@ use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreatedPrice;
 use App\Library\Stripe\Exceptions\NotYetCreated;
 use App\Library\Stripe\Exceptions\NotYetCreatedProduct;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
  * @property string $name
  * @property string $value
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Library\Stripe\Concerns\Models\HasStripeProduct> $product
+ * @property-read Collection<int, HasStripeProduct> $product
  *
  * @method \Illuminate\Database\Eloquent\Model update($attributes = [], $options = [])
  */

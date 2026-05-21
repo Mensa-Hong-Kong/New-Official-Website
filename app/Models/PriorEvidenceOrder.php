@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,17 +16,17 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $price_name
  * @property numeric $price
  * @property string $status
- * @property \Illuminate\Support\Carbon $expired_at
+ * @property Carbon $expired_at
  * @property string $gateway_type
  * @property int $gateway_id
  * @property string|null $reference_number
  * @property numeric|null $gateway_payment_fee
  * @property bool $is_returned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read \App\Models\PriorEvidenceResult|null $result
- * @property-read \App\Models\User|null $user
+ * @property-read PriorEvidenceResult|null $result
+ * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newQuery()

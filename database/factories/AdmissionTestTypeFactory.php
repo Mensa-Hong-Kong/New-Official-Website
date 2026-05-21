@@ -6,7 +6,7 @@ use App\Models\AdmissionTestType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdmissionTestType>
+ * @extends Factory<AdmissionTestType>
  */
 class AdmissionTestTypeFactory extends Factory
 {

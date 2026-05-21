@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Jobs\Stripe\Customers\CreateUser;
 use App\Library\Stripe\Concerns\Models\HasStripeCustomer;
+use App\Library\Stripe\Models\StripeCustomer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,10 +15,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Kyslik\ColumnSortable\Sortable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -35,59 +40,59 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\PriorEvidenceResult|null $acceptedPriorEvidence
- * @property-read \App\Models\Address|null $address
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
+ * @property-read PriorEvidenceResult|null $acceptedPriorEvidence
+ * @property-read Address|null $address
+ * @property-read Collection<int, AdmissionTestOrder> $admissionTestOrders
  * @property-read int|null $admission_test_orders_count
- * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
+ * @property-read AdmissionTestHasProctor|AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
  * @property-read string $adorned_name
  * @property-read int|float $age
  * @property-read int|float $age_for_psychology
  * @property-read bool $can_edit_passport_information
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $contactVerifications
+ * @property-read Collection<int, ContactHasVerification> $contactVerifications
  * @property-read int|null $contact_verifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $contacts
+ * @property-read Collection<int, UserHasContact> $contacts
  * @property-read int|null $contacts_count
- * @property-read \App\Models\UserHasContact|null $defaultEmail
- * @property-read \App\Models\UserHasContact|null $defaultMobile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $emails
+ * @property-read UserHasContact|null $defaultEmail
+ * @property-read UserHasContact|null $defaultMobile
+ * @property-read Collection<int, UserHasContact> $emails
  * @property-read int|null $emails_count
- * @property-read \App\Models\Gender|null $gender
+ * @property-read Gender|null $gender
  * @property-read bool $has_other_same_passport_user_attended_admission_test
  * @property-read bool $has_other_same_passport_user_joined_future_test
  * @property-read bool $has_qualification_of_membership
  * @property-read bool $has_same_passport_already_qualification_of_membership
- * @property-read \App\Models\AdmissionTest|null $lastAdmissionTest
- * @property-read \App\Models\AdmissionTestOrder|null $lastAdmissionTestOrder
- * @property-read \App\Models\AdmissionTest|null $lastAttendedAdmissionTest
- * @property-read \App\Models\AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
- * @property-read \App\Models\UserLoginLog|null $lastLoginLog
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserLoginLog> $loginLogs
+ * @property-read AdmissionTest|null $lastAdmissionTest
+ * @property-read AdmissionTestOrder|null $lastAdmissionTestOrder
+ * @property-read AdmissionTest|null $lastAttendedAdmissionTest
+ * @property-read AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
+ * @property-read UserLoginLog|null $lastLoginLog
+ * @property-read Collection<int, UserLoginLog> $loginLogs
  * @property-read int|null $login_logs_count
- * @property-read \App\Models\Member|null $member
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $memberTransfers
+ * @property-read Member|null $member
+ * @property-read Collection<int, MembershipTransfer> $memberTransfers
  * @property-read int|null $member_transfers_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $membershipOrders
+ * @property-read Collection<int, MembershipOrder> $membershipOrders
  * @property-read int|null $membership_orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $mobiles
+ * @property-read Collection<int, UserHasContact> $mobiles
  * @property-read int|null $mobiles_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\AdmissionTest|null $passedAdmissionTest
- * @property-read \App\Models\PassportType|null $passportType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ModulePermission> $permissions
+ * @property-read AdmissionTest|null $passedAdmissionTest
+ * @property-read PassportType|null $passportType
+ * @property-read Collection<int, ModulePermission> $permissions
  * @property-read int|null $permissions_count
  * @property-read string $preferred_name
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PriorEvidenceOrder> $priorEvidenceOrders
+ * @property-read Collection<int, PriorEvidenceOrder> $priorEvidenceOrders
  * @property-read int|null $prior_evidence_orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $proctorTests
+ * @property-read Collection<int, AdmissionTest> $proctorTests
  * @property-read int|null $proctor_tests_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TeamRole> $roles
+ * @property-read Collection<int, TeamRole> $roles
  * @property-read int|null $roles_count
- * @property-read \App\Library\Stripe\Models\StripeCustomer|null $stripe
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read StripeCustomer|null $stripe
+ * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])

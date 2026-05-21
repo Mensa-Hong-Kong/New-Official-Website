@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $price_name
  * @property numeric $price
  * @property string $status
- * @property \Illuminate\Support\Carbon $expired_at
+ * @property Carbon $expired_at
  * @property int|null $from_year
  * @property int|null $to_year
  * @property string $gateway_type
@@ -22,11 +23,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $reference_number
  * @property numeric|null $gateway_payment_fee
  * @property bool $is_returned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read \App\Models\Member|null $member
- * @property-read \App\Models\User|null $user
+ * @property-read Member|null $member
+ * @property-read User|null $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newQuery()

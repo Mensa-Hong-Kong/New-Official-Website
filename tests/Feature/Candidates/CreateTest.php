@@ -10,6 +10,7 @@ use App\Models\Member;
 use App\Models\MembershipOrder;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class CreateTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+    /** @var User&Authenticatable */
     private User $user;
 
     private AdmissionTest $test;
@@ -71,7 +72,7 @@ class CreateTest extends TestCase
 
     public function test_user_not_exist_stripe_customer_when_test_is_not_free_and_user_have_no_unused_quota_order(): void
     {
-        /** @var User&\Illuminate\Contracts\Auth\Authenticatable */
+        /** @var User&Authenticatable */
         $this->user->stripe->delete();
         $this->user->refresh();
         $this->test->update(['is_free' => false]);

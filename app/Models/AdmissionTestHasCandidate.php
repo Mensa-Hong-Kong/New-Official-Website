@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,12 +16,12 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property int|null $seat_number
  * @property bool|null $is_present
  * @property bool|null $is_passed
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $candidate
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $candidate
  * @property-read bool $has_result
  * @property-read bool $is_free
- * @property-read \App\Models\AdmissionTest $test
+ * @property-read AdmissionTest $test
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate newQuery()
