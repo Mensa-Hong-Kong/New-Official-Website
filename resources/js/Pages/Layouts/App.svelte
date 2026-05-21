@@ -355,45 +355,6 @@
                                 {/if}
                             </ul>
                         </li>
-                        <li class="accordion">
-                            <button data-bs-toggle="collapse" aria-expanded="true"
-                                data-bs-target="#asideNavAdminAdmissionTestProduct" aria-controls="asideNavAdminAdmissionTestProduct"
-                                style="height: 0em" class={[
-                                    'nav-item', 'accordion-button',
-                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTest/Products/')},
-                                ]}>
-                                Admission Test Products
-                            </button>
-                            <ul id="asideNavAdminAdmissionTestProduct" class={[
-                                'accordion-collapse', 'collapse',
-                                {show: $page.component.startsWith('Admin/AdmissionTest/Products/')},
-                            ]}>
-                                <NavItem>
-                                    <Link href={route('admin.admission-test.products.index')}
-                                        class={[
-                                            'nav-link',
-                                            {active: $page.component == 'Admin/AdmissionTest/Products/Index'}
-                                        ]}>Index</Link>
-                                </NavItem>
-                                <NavItem>
-                                    <Link href={route('admin.admission-test.products.create')}
-                                        class={[
-                                            'nav-link',
-                                            {active: $page.component == 'Admin/AdmissionTest/Products/Create'}
-                                        ]}>Create</Link>
-                                </NavItem>
-                                {#if $page.component == 'Admin/AdmissionTest/Products/Show'}
-                                    <NavItem>
-                                        <Link href={
-                                            route(
-                                                'admin.admission-test.products.show',
-                                                {product: route().params.product}
-                                            )
-                                        } class="nav-link active">Show</Link>
-                                    </NavItem>
-                                {/if}
-                            </ul>
-                        </li>
                     {/if}
                     {#if
                         canAny([
@@ -494,6 +455,47 @@
                                 </ul>
                             </li>
                         {/if}
+                    {/if}
+                    {#if can('Edit:Admission Test')}
+                        <li class="accordion">
+                            <button data-bs-toggle="collapse" aria-expanded="true"
+                                data-bs-target="#asideNavAdminAdmissionTestProduct" aria-controls="asideNavAdminAdmissionTestProduct"
+                                style="height: 0em" class={[
+                                    'nav-item', 'accordion-button',
+                                    {collapsed: ! $page.component.startsWith('Admin/AdmissionTest/Products/')},
+                                ]}>
+                                Admission Test Products
+                            </button>
+                            <ul id="asideNavAdminAdmissionTestProduct" class={[
+                                'accordion-collapse', 'collapse',
+                                {show: $page.component.startsWith('Admin/AdmissionTest/Products/')},
+                            ]}>
+                                <NavItem>
+                                    <Link href={route('admin.admission-test.products.index')}
+                                        class={[
+                                            'nav-link',
+                                            {active: $page.component == 'Admin/AdmissionTest/Products/Index'}
+                                        ]}>Index</Link>
+                                </NavItem>
+                                <NavItem>
+                                    <Link href={route('admin.admission-test.products.create')}
+                                        class={[
+                                            'nav-link',
+                                            {active: $page.component == 'Admin/AdmissionTest/Products/Create'}
+                                        ]}>Create</Link>
+                                </NavItem>
+                                {#if $page.component == 'Admin/AdmissionTest/Products/Show'}
+                                    <NavItem>
+                                        <Link href={
+                                            route(
+                                                'admin.admission-test.products.show',
+                                                {product: route().params.product}
+                                            )
+                                        } class="nav-link active">Show</Link>
+                                    </NavItem>
+                                {/if}
+                            </ul>
+                        </li>
                     {/if}
                     {#if can('Edit:Admission Test Order')}
                         <li class="accordion">
