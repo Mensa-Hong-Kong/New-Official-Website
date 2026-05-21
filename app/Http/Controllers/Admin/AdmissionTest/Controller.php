@@ -80,9 +80,9 @@ class Controller extends BaseController implements HasMiddleware
                     'View:Admission Test Result',
                     'Edit:Admission Test Result',
                 ]),
-                function($query) use ($request) {
+                function ($query) use ($request) {
                     $query->whereHas(
-                        'proctors', function($query) use ($request) {
+                        'proctors', function ($query) use ($request) {
                             $query->where('user_id', $request->user()->id);
                         }
                     );
@@ -96,7 +96,7 @@ class Controller extends BaseController implements HasMiddleware
             'in_testing_time_range', 'current_user_is_proctor',
         ]);
         $tests->each(
-            function(AdmissionTest $test) {
+            function (AdmissionTest $test) {
                 $test->location->setVisible(['name']);
             }
         );
@@ -119,7 +119,7 @@ class Controller extends BaseController implements HasMiddleware
                     ->pluck('name')
                     ->toArray()
             )->with(
-                'districts', function() {
+                'districts', function () {
                     $areas = Area::with([
                         'districts' => function ($query) {
                             $query->orderBy('display_order');
@@ -141,7 +141,7 @@ class Controller extends BaseController implements HasMiddleware
                     ->get(['district_id', 'value'])
                     ->groupBy('district_id')
                     ->map(
-                        function($address) {
+                        function ($address) {
                             return $address->pluck('value');
                         }
                     )
@@ -182,7 +182,7 @@ class Controller extends BaseController implements HasMiddleware
         $visible = [
             'id', 'type_id', 'testing_at', 'expect_end_at', 'location_id', 'address',
             'maximum_candidates', 'is_free', 'is_public',
-            'current_user_is_proctor','in_testing_time_range',
+            'current_user_is_proctor', 'in_testing_time_range',
         ];
         if ($request->user()->can('Edit:Admission Test Proctor')) {
             $admissionTest->load('proctors:id,family_name,middle_name,given_name');
@@ -330,7 +330,7 @@ class Controller extends BaseController implements HasMiddleware
                     ->pluck('name', 'id')
                     ->toArray()
             )->with(
-                'districts', function() {
+                'districts', function () {
                     $areas = Area::with([
                         'districts' => function ($query) {
                             $query->orderBy('display_order');
@@ -352,7 +352,7 @@ class Controller extends BaseController implements HasMiddleware
                     ->get(['id', 'district_id', 'value'])
                     ->groupBy('district_id')
                     ->map(
-                        function($address) {
+                        function ($address) {
                             return $address->pluck('value', 'id');
                         }
                     )

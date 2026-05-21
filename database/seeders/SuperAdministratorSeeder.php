@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AdmissionTest;
 use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
