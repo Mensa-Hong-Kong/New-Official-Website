@@ -4,9 +4,15 @@ namespace App\Http\Controllers\Admin\AdmissionTest\Order;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdmissionTest\Order\TestRequest;
+use App\Models\AdmissionTest;
+use App\Models\AdmissionTestHasCandidate;
 use App\Models\AdmissionTestOrder;
 use App\Notifications\AdmissionTest\Admin\AssignAdmissionTest;
+use App\Notifications\AdmissionTest\Admin\CanceledAdmissionTestAppointment;
+use App\Notifications\AdmissionTest\Admin\RemovedAdmissionTestRecord;
 use App\Notifications\AdmissionTest\Admin\RescheduleAdmissionTest;
+use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +26,16 @@ class AdmissionTestController extends Controller implements HasMiddleware
                 'permission:Edit:Admission Test Order',
                 'permission:Edit:Admission Test Candidate',
             ])),
+            (new Middleware(
+                function (Request $request, Closure $next) {
+                    $pivot = AdmissionTestHasCandidate::where('test_id', $request->route('admission_test')->id)
+                        ->where('order_id', $request->route('order')->id)
+                        ->firstOrFail();
+                    $request->merge(['pivot' => $pivot]);
+
+                    return $next($request);
+                }
+            ))->only('destroy'),
         ];
     }
 
@@ -49,5 +65,19 @@ class AdmissionTestController extends Controller implements HasMiddleware
             'testing_at' => $request->test->testing_at,
             'location' => $request->test->location->name,
         ];
+    }
+
+    public function destroy(Request $request, AdmissionTestOrder $order, AdmissionTest $admissionTest)
+    {
+        DB::beginTransaction();
+        $order->tests()->detach($admissionTest->id);
+        if ($request->pivot->is_passed === null) {
+            $order->user->notify(new CanceledAdmissionTestAppointment($admissionTest));
+        } else {
+            $order->user->notify(new RemovedAdmissionTestRecord($admissionTest, $request->pivot));
+        }
+        DB::commit();
+
+        return ['success' => 'The admission test delete success!'];
     }
 }
