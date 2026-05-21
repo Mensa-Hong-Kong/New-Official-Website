@@ -235,7 +235,7 @@ class Controller extends BaseController implements HasMiddleware
             $admissionTest->candidates->setVisible([
                 'id', 'family_name', 'middle_name', 'given_name',
                 'birthday', 'passportType', 'passport_number',
-                'lastAttendedAdmissionTest',
+                'lastAttendedAdmissionTest', 'pivot',
                 'has_other_same_passport_user_joined_future_test',
                 'has_other_same_passport_user_attended_admission_test',
                 'has_same_passport_already_qualification_of_membership',
