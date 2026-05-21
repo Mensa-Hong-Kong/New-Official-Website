@@ -241,7 +241,7 @@ class Controller extends BaseController implements HasMiddleware
                 'has_same_passport_already_qualification_of_membership',
             ]);
             $pivotAppend = [];
-            $pivotVisible = ['is_present'];
+            $pivotVisible = ['seat_number', 'is_present'];
             if (
                 ! $admissionTest->is_free &&
                 $request->user()->canAny([
