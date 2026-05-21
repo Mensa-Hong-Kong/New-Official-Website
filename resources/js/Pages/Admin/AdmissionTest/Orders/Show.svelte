@@ -76,6 +76,57 @@
         confirm(message, confirmedUpdateStatus, status);
     }
 
+    function getIndexById(id) {
+        return order.tests.findIndex(
+            function(element) {
+                return element.id == id;
+            }
+        );
+    }
+
+    function deleteTestSuccessCallback(response) {
+        alert(response.data.success);
+        let id = route().match(response.request.responseURL, 'delete').params.admission_test;
+        let index = getIndexById(id);
+        order.tests.splice(index, 1);
+        order.user.last_admission_test = null;
+        submitting = false;
+    }
+
+    function deleteTestFailCallback(error) {
+        let id = route().match(error.request.responseURL, 'delete').params.admission_test;
+        let index = getIndexById(id);
+        order.tests[index]['deleting'] = false;
+        submitting = false;
+    }
+
+    function confirmedDeleteTest(index) {
+        if(! submitting) {
+            let submitAt = Date.now();
+            submitting = 'deleteTest'+submitAt;
+            if(submitting == 'deleteTest'+submitAt) {
+                order['tests'][index]['deleting'] = true;
+                post(
+                    route(
+                        'admin.admission-test.orders.admission-tests.destroy',
+                        {
+                            order: order.id,
+                            admission_test: order['tests'][index]['id'],
+                        }
+                    ),
+                    deleteTestSuccessCallback,
+                    deleteTestFailCallback,
+                    'delete'
+                );
+            }
+        }
+    }
+
+    function destroyTest(index) {
+        let message = `Are you sure to delete admission test record of ${order['tests'][index]['location']['name']} at ${formatToDatetime(order['tests'][index]['testing_at'])}?`;
+        confirm(message, confirmedDeleteTest, index);
+    }
+
     function validation()
     {
         if(inputs.test.validity.valueMissing) {
@@ -302,10 +353,13 @@
                         }
                             <th>Result</th>
                         {/if}
+                        {#if can('Edit:Admission Test Candidate')}
+                            <th>Control</th>
+                        {/if}
                     </tr>
                 </thead>
                 <tbody>
-                    {#each order.tests as test}
+                    {#each order.tests as test, index}
                         <tr>
                             <td>
                                 <Link href={
@@ -333,6 +387,17 @@
                                     {#if test.pivot.is_passed !== null}
                                         {test.pivot.is_passed ? 'Yes' : 'No'}
                                     {/if}
+                                </td>
+                            {/if}
+                            {#if can('Edit:Admission Test Candidate')}
+                                <td>
+                                    <Button block color="danger" disabled={submitting} onclick={() => destroyTest(index)}>
+                                        {#if test.deleting}
+                                            <Spinner type="border" size="sm" />Deleting...
+                                        {:else}
+                                            Delete
+                                        {/if}
+                                    </Button>
                                 </td>
                             {/if}
                         </tr>
