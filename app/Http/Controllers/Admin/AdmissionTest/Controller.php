@@ -223,7 +223,7 @@ class Controller extends BaseController implements HasMiddleware
                             )->with('type:id,interval_month')
                                 ->whereNot('test_id', $admissionTest->id);
                         },
-                        'passportType:id,name',
+                        'passportType:id,name,display_order',
                     ]);
                 },
             ]);
@@ -263,7 +263,7 @@ class Controller extends BaseController implements HasMiddleware
             $pivotVisible = array_merge($pivotVisible, $pivotAppend);
             $admissionTest->candidates->each(
                 function ($candidate) use ($pivotVisible, $pivotAppend) {
-                    $candidate->passportType->setVisible(['name']);
+                    $candidate->passportType->setVisible(['name', 'display_order']);
                     if (count($pivotAppend)) {
                         $candidate->pivot->append($pivotAppend);
                     }
