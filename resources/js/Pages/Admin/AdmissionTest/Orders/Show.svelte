@@ -189,13 +189,15 @@
                 </tr>
                 <tr>
                     <th>Quota</th>
-                    <td>
-                        {#if can('Edit:Admission Test')}
-                            {order.tests.length}
-                        {:else}
-                            {order.tests_count}
-                        {/if}/{order.quota}
-                    </td>
+                    <td>{order.quota}</td>
+                </tr>
+                <tr>
+                    <th>Returned Quota</th>
+                    <td>{order.returned_quota}</td>
+                </tr>
+                <tr>
+                    <th>Used Quota</th>
+                    <td>{order.attended_tests_count}</td>
                 </tr>
                 <tr>
                     <th>Quota Validity Months</th>
