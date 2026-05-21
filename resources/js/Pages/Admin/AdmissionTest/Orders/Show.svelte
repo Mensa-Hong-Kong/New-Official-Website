@@ -1,6 +1,6 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { Table, Button } from '@sveltestrap/sveltestrap';
+    import { Table, Button, Spinner, Input } from '@sveltestrap/sveltestrap';
     import { Link } from "@inertiajs/svelte";
     import { formatToDatetime } from '@/timeZoneDatetime';
     import { post } from "@/submitForm";
@@ -13,6 +13,9 @@
     let { order: initOrder } = $props();
     let order = $state(initOrder);
     let submitting = $state(false);
+    let creating = $state(false);
+    let inputs = $state({});
+    let isReschedule = $derived(order.user?.last_admission_test && ! order.user.last_admission_test.pivot_is_present);
 
     if (order.status == 'pending') {
         let expiredTime = new Date(formatToDatetime(order.expired_at)) - (new Date);
@@ -71,6 +74,75 @@
     function updateStatus(status) {
         let message = `Are you sure to update order status to ${status}?`;
         confirm(message, confirmedUpdateStatus, status);
+    }
+
+    function validation()
+    {
+        if(inputs.test.validity.valueMissing) {
+            alert('The user id field is required.');
+            return false;
+        }
+        if(inputs.test.validity.patternMismatch) {
+            alert('The user id field must be an integer.');
+            return false;
+        }
+        return true;
+    }
+
+    function createTestSuccessCallback(response) {
+        alert(response.data.success);
+        let data = {
+            id: response.data.id,
+            type: {name: response.data.type},
+            testing_at: response.data.testing_at,
+            location: {name: response.data.location},
+            pivot: {is_present: null}
+        }
+        if(
+            canAny([
+                'View:Admission Test Result',
+                'Edit:Admission Test Result',
+            ])
+        ) {
+            data['isPassed'] = null;
+        }
+        order.tests.unshift(data);
+        creating = false;
+        submitting = false;
+    }
+
+    function createTestFailCallback(error) {
+        alert(error.response.data.message);
+        creating = false;
+        submitting  = false;
+    }
+
+    function createTest(event) {
+        event.preventDefault();
+        if(! submitting) {
+            let submitAt = Date.now();
+            submitting = 'createTest'+submitAt;
+            if(submitting == 'createTest'+submitAt) {
+                if(validation()) {
+                    creating = true;
+                    let data = {
+                        test_id: inputs.test.value,
+                        function: event.submitter.value,
+                    };
+                    post(
+                        route(
+                            'admin.admission-test.orders.admission-tests.store',
+                            {order: order.id}
+                        ),
+                        createTestSuccessCallback,
+                        createTestFailCallback,
+                        'post', data
+                    );
+                } else {
+                    submitting = false;
+                }
+            }
+        }
     }
 </script>
 
@@ -176,6 +248,41 @@
             <h3 class="mb-2 fw-bold">Tests</h3>
             <Table hover>
                 <thead>
+                    {#if can('Edit:Admission Test Candidate')}
+                        <tr>
+                            <td style="width: 150px">
+                                <form method="POST" novalidate onsubmit={createTest} id="createTestForm">
+                                    <Input name="test_id" patten="^\+?[1-9][0-9]*" required
+                                        bind:inner={inputs.test} />
+                                </form>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            {#if
+                                canAny([
+                                    'View:Admission Test Result',
+                                    'Edit:Admission Test Result',
+                                ])
+                            }
+                                <td></td>
+                            {/if}
+                            <td>
+                                <Button block form="createTestForm" disabled={submitting}
+                                    color={isReschedule ? 'danger': 'success'}
+                                    name="function"
+                                    value={isReschedule ? 'reschedule': 'schedule'}>
+                                    {#if creating}
+                                        <Spinner type="border" size="sm" />
+                                        {isReschedule ? 'Rescheduling' : 'Scheduling'}...
+                                    {:else}
+                                        {isReschedule ? 'Reschedule' : 'Schedule'}
+                                    {/if}
+                                </Button>
+                            </td>
+                        </tr>
+                    {/if}
                     <tr>
                         <th>#</th>
                         <th>Type</th>
