@@ -1,21 +1,23 @@
-### Set-up Environment
+# Mensa Hong Kong Office Website
+
+## Set-up Environment
 
 Please read the documents folder for Windows or Mac setup instructions.
 
-### Pull the project
+## Pull the project
 
-### Gen .env
+## Gen .env
 
 Please read documents folder for ansible
 
-### Install Library
+## Install Library
 
 ```shell
 composer install
 npm install
 ```
 
-### Set-up Local Server
+## Set-up Local Server
 
 ```shell
 php artisan serve
@@ -25,55 +27,54 @@ php artisan serve
 npm run dev
 ```
 
-### Add Super Administrator For Local Actual Test
+## Add Super Administrator For Local Actual Test
 
 ```shell
 php artisan db:seed --class=SuperAdministratorSeeder
 ```
 
-### As Known Issues
+## As Known Issues
 
 1. nav nested node hyperlink not work
 
-### Database
+## Database
 
 Please read database/README.md for database setup and details.
 
-### Coding Suggestion
+## Coding Suggestion
 
-1. SOLID：https://en.wikipedia.org/wiki/SOLID
-2. Design Pattern: https://ithelp.ithome.com.tw/articles/10201706
+1. SOLID：<https://en.wikipedia.org/wiki/SOLID>
+2. Design Pattern: <https://ithelp.ithome.com.tw/articles/10201706>
 
 以上只是建議，不是強行要求，比如說Prince Wong傾向：
+
 1. 單一責任原則在function多過class
 2. fat controller skinny model，除非多過一個地方會用到同一功能
 
-### Payment cards for Stripe UAT
-https://docs.stripe.com/testing
+## Payment cards for Stripe UAT
 
+<https://docs.stripe.com/testing>
 
-### A.I. Helper
+## A.I. Helper
 
 This installed laravel prompts mcp and boost
 
 Please read laravel official documents:
 
-- Laravel Prompts: https://laravel.com/docs/11.x/prompts
-- Laravel MCP: https://laravel.com/docs/11.x/mcp#main-content
-- Laravel Boost: https://laravel.com/docs/11.x/installation#installing-laravel-boost
+- Laravel Prompts: <https://laravel.com/docs/11.x/prompts>
+- Laravel MCP: <https://laravel.com/docs/11.x/mcp#main-content>
+- Laravel Boost: <https://laravel.com/docs/11.x/installation#installing-laravel-boost>
 
+## Todo
 
-### Todo
+### stage 1 permission system, nav, custom web page and admission test
 
-#### stage 1 permission system, nav, custom web page and admission test
-
-- move the project checklist to github project or jira
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
 - Add admin exchange and refund for admin admission test orders
 - add reschedule charges create product
 - add reschedule charges create product price
-- add reschedule charges to reschedule function, user show and candidate create and store middleware 
+- add reschedule charges to reschedule function, user show and candidate create and store middleware
 - Add other costs table and add relation to admission tests for venue rental and nsp
 - Add admin store proctor and candidates function to admin user show
 - Add proctor and candidate admission test list to admin user show
@@ -86,14 +87,14 @@ Please read laravel official documents:
 - add team_statuses table and update team found end and back end to support team_statuses
 - Add assign roles function to admin user show
 - Admin team show page add team member list and relation role
-- add notification_templates table, add seeder and add admin notification templates index 
+- add notification_templates table, add seeder and add admin notification templates index
 - add admin notification templates edit and update
 - change notifications to use templates
-- change qr code to from quickchart.io gen image link to use twilio assets
+- change qr code from quickchart.io gen image link to use twilio assets
 - add user delete function
 - change makeHidden to setVisible
 
-#### stage 2 third party iq test result
+### stage 2 third party iq test result
 
 - Add admin third party iq test accept list store
 - Add admin third party iq test accept list index
@@ -114,7 +115,7 @@ Please read laravel official documents:
 - Add stripe payment gateway for third party iq test result request on user show
 - Add admin exchange and refund for third party iq test request orders
 
-#### stage 3 membership
+### stage 3 membership
 
 - add admin nation mensa index
 - add admin nation mensa store
@@ -145,7 +146,7 @@ Please read laravel official documents:
 - Add edit forwarding email function
 - Add admin forwarding email changing index and approve or reject function
 
-#### stage 4 news
+### stage 4 news
 
 - subscriptable channel store
 - subscriptable channel index
@@ -159,7 +160,9 @@ Please read laravel official documents:
 - Add new index
 - Add new show
 
-#### stage 5 event
+### stage 5 model audit (coming soon)
+
+### stage 6 event
 
 - Add admin events create
 - Add admin events index
@@ -179,7 +182,7 @@ Please read laravel official documents:
 - Add event show
 - Add admin exchange and refund for event orders
 
-#### stage 6 online shop
+### stage 7 online shop
 
 - Add admin shop products create
 - Add admin shop products index
@@ -203,14 +206,15 @@ Please read laravel official documents:
 - add shop order show page
 - Add admin exchange and refund for shop orders
 
-#### stage 7 analytics (coming soon)
+### stage 8 analytics (coming soon)
 
-#### stage 8 contest (coming soon)
+### stage 9 contest (coming soon)
 
-#### stage 9 CalDAV (coming soon)
+### stage 10 CalDAV (coming soon)
 
-#### stage 10 project management (coming soon)
+### stage 11 project management (coming soon)
 
-#### unimportant
+### unimportant
 
-- takeout Strip Library from app folder to make a standalone composer package on standalone repo. 
+- takeout Strip Library from app folder to make a standalone composer package on standalone repo.
+- move the project checklist to github project or jira or stage 10 project management system
