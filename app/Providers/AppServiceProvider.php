@@ -21,9 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Blade::directive('hidden', function ($condition) {
-            return "<?php if($condition) { echo 'hidden'; } ?>";
-        });
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Administrator') ? true : null;
         });
