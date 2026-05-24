@@ -2,6 +2,7 @@
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { formatToDate, formatToDatetime, formatToTime } from '@/timeZoneDatetime';
     import { Alert, Table, Button, Row, Col } from '@sveltestrap/sveltestrap';
+    import { Form } from '@inertiajs/svelte'
 
     let { test, user, products, price } = $props();
     let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
@@ -87,7 +88,7 @@
             <Button color="primary" class="form-control">Next</Button>
         </form>
     {:else}
-        <form method="POST" action={
+        <Form method="post" action={
             route(
                 'admission-tests.candidates.store',
                 {admission_test: test.id}
@@ -97,7 +98,7 @@
                 <input type="hidden" name="price_id" value={price.id} />
             {/if}
             <Button color="success" class="form-control">Confirm</Button>
-        </form>
+        </Form>
     {/if}
 </section>
 
