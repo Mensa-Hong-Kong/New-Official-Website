@@ -6,7 +6,6 @@ use App\Models\AdmissionTest;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\OtherPaymentGateway;
-use App\Models\User;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
 use Closure;
