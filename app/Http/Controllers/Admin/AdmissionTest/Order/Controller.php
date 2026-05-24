@@ -175,12 +175,13 @@ class Controller extends BaseController implements HasMiddleware
                 $query->select(['id', 'name']);
             },
         ]);
+        $order->loadCount('attendedTests');
         $orderVisible = [
             'id', 'user', 'product_name', 'price_name', 'price',
             'minimum_age', 'maximum_age',
             'quota', 'quota_validity_months', 'returned_quota',
             'status', 'created_at', 'expired_at', 'gateway', 'gateway_payment_fee',
-            'reference_number', 'tests',
+            'reference_number', 'tests', 'attended_tests_count',
         ];
         $order->user->append('adorned_name');
         $order->user->setVisible(['id', 'adorned_name', 'lastAdmissionTest']);
@@ -219,9 +220,6 @@ class Controller extends BaseController implements HasMiddleware
                 $test->pivot->setVisible($pivotVisible);
             }
             $orderVisible[] = 'tests';
-        } else {
-            $order->loadCount('tests');
-            $orderVisible[] = 'tests_count';
         }
         $order->setVisible($orderVisible);
 

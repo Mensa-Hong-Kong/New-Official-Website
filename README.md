@@ -68,11 +68,8 @@ Please read laravel official documents:
 #### stage 1 permission system, nav, custom web page and admission test
 
 - move the project checklist to github project or jira
-- admission test order show add schedule and reschedule function, add bypass expired function and add unit tests
 - update candidate store method to support select product and contact stripe
 - add stripe checkout web hock handle
-- change quota validity months to inside product and order table
-- add details, candidate and result module under admission test and change permission from admission test module to details, candidate and result
 - Add admin exchange and refund for admin admission test orders
 - add reschedule charges create product
 - add reschedule charges create product price
@@ -94,6 +91,7 @@ Please read laravel official documents:
 - change notifications to use templates
 - change qr code to from quickchart.io gen image link to use twilio assets
 - add user delete function
+- change makeHidden to setVisible
 
 #### stage 2 third party iq test result
 
