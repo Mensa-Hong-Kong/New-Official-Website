@@ -31,12 +31,16 @@
         isOpenNav = !isOpenNav;
     }
 
-    if ($page.props.flash.success) {
-        alert($page.props.flash.success);
-    }
-    if ($page.props.flash.error) {
-        alert($page.props.flash.error);
-    }
+    $effect(
+        function() {
+            if ($page.props.flash.success) {
+                alert($page.props.flash.success);
+            }
+            if ($page.props.flash.error) {
+                alert($page.props.flash.error);
+            }
+        }
+    );
 
     let navigationNodes = $state(Object.fromEntries(
         $page.props.navigationItems.map(

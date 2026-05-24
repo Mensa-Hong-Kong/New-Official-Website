@@ -25,7 +25,7 @@ class AssignAdmissionTest extends Notification
     {
         $options = new QROptions;
 
-        $options->version = 5;
+        $options->version = 6;
         $options->outputInterface = QRMarkupHTML::class;
         $options->cssClass = 'qrcode';
         $options->moduleValues = [

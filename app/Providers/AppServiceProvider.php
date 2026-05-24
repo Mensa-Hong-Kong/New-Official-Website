@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Blade;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,11 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Blade::directive('hidden', function ($condition) {
-            return "<?php if($condition) { echo 'hidden'; } ?>";
-        });
-        Gate::before(function ($user, $ability) {
-            return $user->hasRole('Super Administrator') ? true : null;
-        });
+        if (! in_array(config('app.env', 'production'), ['production', 'state'])) {
+            Gate::before(
+                function (User $user, string $ability) {
+                    return $user->hasRole('Super Administrator') ? true : null;
+                }
+            );
+        }
     }
 }
