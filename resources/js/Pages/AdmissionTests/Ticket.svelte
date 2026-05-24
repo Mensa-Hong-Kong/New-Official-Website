@@ -1,11 +1,12 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
-    import { formatToDate, formatToTime, formatToDatetime } from '@/timeZoneDatetime';
+    import { formatToDate, formatToDatetime, formatToTime } from '@/timeZoneDatetime';
     import { Table } from '@sveltestrap/sveltestrap';
+    import QR from '@svelte-put/qr/img/QR.svelte';
 
     seo.title = 'Ticket';
 
-    let { test, qrCode, candidate } = $props();
+    let { auth, test, candidate } = $props();
 </script>
 
 <section class="container">
@@ -31,13 +32,23 @@
                 {test.address.district.area.name}
             </td>
         </tr>
-        {#if qrCode}
+        {#if new Date(formatToDatetime(test.expect_end_at)) >= (new Date).subHour() }
             <tr>
-                <th>Ticket</th>
+                <th colspan=2>Ticket</th>
             </tr>
             <tr>
-                <td>
-                    <img src={qrCode} alt="Ticket QR Code">
+                <td colspan=2>
+                    <QR anchorOuterFill="red" anchorInnerFill="red"
+                        moduleFill='#000000' backgroundFill='#FFFFFF'
+                        version=6 height=315 width=315 margin={4} data={
+                            route(
+                                'admin.admission-tests.candidates.show',
+                                {
+                                    admission_test: route().params.admission_test,
+                                    candidate: auth.user.id,
+                                }
+                            )
+                        } />
                 </td>
             </tr>
         {:else}
@@ -57,7 +68,7 @@
             {/if}
         {/if}
     </Table>
-    {#if qrCode}
+    {#if new Date(formatToDatetime(test.expect_end_at)) < (new Date).subHour()}
         <div class="alert alert-danger" role="alert">
             <b>Remember:</b>
             <ol>

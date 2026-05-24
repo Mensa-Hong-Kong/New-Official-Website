@@ -9,10 +9,6 @@ use App\Models\OtherPaymentGateway;
 use App\Models\User;
 use App\Notifications\AdmissionTest\RescheduleAdmissionTest;
 use App\Notifications\AdmissionTest\ScheduleAdmissionTest;
-use chillerlan\QRCode\Data\QRMatrix;
-use chillerlan\QRCode\Output\QRMarkupHTML;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -300,35 +296,6 @@ class CandidateController extends Controller implements HasMiddleware
         return $redirect->with('success', $success);
     }
 
-    private function qrCode(AdmissionTest $test, User $user)
-    {
-        $options = new QROptions;
-
-        $options->version = 5;
-        $options->outputInterface = QRMarkupHTML::class;
-        $options->cssClass = 'qrcode';
-        $options->moduleValues = [
-            // finder
-            QRMatrix::M_FINDER_DARK => '#A71111', // dark (true)
-            QRMatrix::M_FINDER_DOT => '#A71111', // finder dot, dark (true)
-            QRMatrix::M_FINDER => '#FFBFBF', // light (false)
-            // alignment
-            QRMatrix::M_ALIGNMENT_DARK => '#A70364',
-            QRMatrix::M_ALIGNMENT => '#FFC9C9',
-        ];
-
-        $out = (new QRCode($options))->render(
-            route(
-                'admin.admission-tests.candidates.show', [
-                    'admission_test' => $test,
-                    'candidate' => $user,
-                ]
-            )
-        );
-
-        return $out;
-    }
-
     public function show(Request $request, AdmissionTest $admissionTest)
     {
         $admissionTest->load(['address.district.area', 'location']);
@@ -345,9 +312,7 @@ class CandidateController extends Controller implements HasMiddleware
 
         $return = Inertia::render('AdmissionTests/Ticket')
             ->with('test', $admissionTest);
-        if ($admissionTest->expect_end_at >= now()->subHour()) {
-            $return = $return->with('qrCode', $this->qrCode($admissionTest, $request->user()));
-        } else {
+        if ($admissionTest->expect_end_at < now()->subHour()) {
             $return = $return->with(
                 'candidate', [
                     'pivot' => [
