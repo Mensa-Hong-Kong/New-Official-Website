@@ -23,3 +23,4 @@ Artisan::command('inspire', function () {
 
 Schedule::call(new ClearUnusedAdminVerifiedRecode)->daily();
 Schedule::call(new ClearUnusedUserResetPasswordFailedRecord)->daily();
+Schedule::command('queue:prune-failed --hours=' . 90 * 24)->monthly();
