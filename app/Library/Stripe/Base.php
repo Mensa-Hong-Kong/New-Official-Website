@@ -5,7 +5,7 @@ namespace App\Library\Stripe;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Base
+abstract class Base
 {
     const STRIPE_VERSION = '2025-04-30.basil';
 
@@ -17,7 +17,9 @@ class Base
     {
         $this->http = Http::baseUrl('https://api.stripe.com/v1')
             ->withToken(config('stripe.keys.secret'))
-            ->withHeader('Stripe-Version', static::STRIPE_VERSION);
+            ->withHeader('Stripe-Version', static::STRIPE_VERSION)
+            ->connectTimeout(3)
+            ->timeout(10);
     }
 
     public function find(string $id): ?array
