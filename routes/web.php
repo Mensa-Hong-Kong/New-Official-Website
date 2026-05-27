@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\AdmissionTest\CandidateController as AdminCandidateController;
 use App\Http\Controllers\Admin\AdmissionTest\Controller as AdminAdmissionTestController;
 use App\Http\Controllers\Admin\AdmissionTest\Order\AdmissionTestController as AdmissionTestOrderTestController;
-use App\Http\Controllers\Admin\AdmissionTest\Order\Controller as AdmissionTestOrderController;
+use App\Http\Controllers\Admin\AdmissionTest\Order\Controller as AdminAdmissionTestOrderController;
 use App\Http\Controllers\Admin\AdmissionTest\PriceController as AdminAdmissionTestPriceController;
 use App\Http\Controllers\Admin\AdmissionTest\ProctorController;
 use App\Http\Controllers\Admin\AdmissionTest\ProductController as AdminAdmissionTestProductController;
@@ -19,7 +19,8 @@ use App\Http\Controllers\Admin\SiteContentController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\AdmissionTest\CandidateController;
+use App\Http\Controllers\AdmissionTest\OrderController as AdmissionTestOrderController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
@@ -81,6 +82,9 @@ Route::middleware('auth')->group(function () {
         ->except(['edit', 'update'])
         ->whereNumber('admission_test')
         ->names('admission-tests.candidates');
+    Route::get('admission-test/orders/{order}/leaving-payment', [AdmissionTestOrderController::class, 'leavingPayment'])
+        ->whereNumber('order')
+        ->name('admission-test.orders.leaving-payment');
 
     Route::prefix('admin')->name('admin.')
         ->group(function () {
@@ -142,10 +146,10 @@ Route::middleware('auth')->group(function () {
                         ->except(['show', 'destroy']);
                     Route::match(['put', 'patch'], 'types/display-order', [AdmissionTestTypeController::class, 'displayOrder'])
                         ->name('types.display-order.update');
-                    Route::resource('orders', AdmissionTestOrderController::class)
+                    Route::resource('orders', AdminAdmissionTestOrderController::class)
                         ->whereNumber('order')
                         ->except(['edit', 'update', 'destroy']);
-                    Route::match(['put', 'patch'], 'orders/{order}/status', [AdmissionTestOrderController::class, 'updateStatus'])
+                    Route::match(['put', 'patch'], 'orders/{order}/status', [AdminAdmissionTestOrderController::class, 'updateStatus'])
                         ->whereNumber('order')
                         ->name('orders.status.update');
                     Route::resource('orders/{order}/admission-tests', AdmissionTestOrderTestController::class)

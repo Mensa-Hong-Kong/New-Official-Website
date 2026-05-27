@@ -16,8 +16,8 @@ namespace App\Library\Stripe\Models{
  * @property string $id
  * @property string $customerable_type
  * @property int $customerable_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model|\Eloquent $customerable
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StripeCustomer newQuery()
@@ -37,12 +37,12 @@ namespace App\Models{
  * @property int $id
  * @property int $district_id
  * @property string $value
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
- * @property-read \App\Models\District|null $district
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read District|null $district
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Database\Factories\AddressFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newModelQuery()
@@ -62,25 +62,25 @@ namespace App\Models{
 /**
  * @property int $id
  * @property int $type_id
- * @property \Illuminate\Support\Carbon $testing_at
- * @property \Illuminate\Support\Carbon|null $expect_end_at
+ * @property Carbon $testing_at
+ * @property Carbon|null $expect_end_at
  * @property int|null $location_id
  * @property int|null $address_id
  * @property int|null $maximum_candidates
  * @property bool $is_free
  * @property bool $is_public
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Address|null $address
- * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $candidates
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Address|null $address
+ * @property-read AdmissionTestHasProctor|AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, User> $candidates
  * @property-read int|null $candidates_count
  * @property-read bool $current_user_is_proctor
  * @property-read bool $in_testing_time_range
- * @property-read \App\Models\Location|null $location
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $proctors
+ * @property-read Location|null $location
+ * @property-read Collection<int, User> $proctors
  * @property-read int|null $proctors_count
- * @property-read \App\Models\AdmissionTestType|null $type
+ * @property-read AdmissionTestType|null $type
  * @method static \Database\Factories\AdmissionTestFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdmissionTest newModelQuery()
  * @method static Builder<static>|AdmissionTest newQuery()
@@ -112,12 +112,12 @@ namespace App\Models{
  * @property int|null $seat_number
  * @property bool|null $is_present
  * @property bool|null $is_passed
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $candidate
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $candidate
  * @property-read bool $has_result
  * @property-read bool $is_free
- * @property-read \App\Models\AdmissionTest $test
+ * @property-read AdmissionTest $test
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasCandidate query()
@@ -141,8 +141,8 @@ namespace App\Models{
  * @property int $id
  * @property int $test_id
  * @property int $user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasProctor newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasProctor newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestHasProctor query()
@@ -176,17 +176,17 @@ namespace App\Models{
  * @property int $returned_quota
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $attendedTests
+ * @property-read AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, AdmissionTest> $attendedTests
  * @property-read int|null $attended_tests_count
  * @property-read Model|\Eloquent $gateway
  * @property-read bool $has_unused_quota
- * @property-read \App\Models\AdmissionTest|null $lastAttendedTest
- * @property-read \App\Models\AdmissionTest|null $lastTest
- * @property-read \Carbon\Carbon|null $quota_expired_on
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $tests
+ * @property-read AdmissionTest|null $lastAttendedTest
+ * @property-read AdmissionTest|null $lastTest
+ * @property-read Carbon|null $quota_expired_on
+ * @property-read Collection<int, AdmissionTest> $tests
  * @property-read int|null $tests_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
  * @method static \Database\Factories\AdmissionTestOrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestOrder newQuery()
@@ -220,12 +220,12 @@ namespace App\Models{
  * @property int $product_id
  * @property string|null $name
  * @property numeric $value
- * @property \Illuminate\Support\Carbon|null $start_at
+ * @property Carbon|null $start_at
  * @property string|null $stripe_one_time_type_id
  * @property bool $synced_one_time_type_to_stripe
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestProduct|null $product
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AdmissionTestProduct|null $product
  * @method static \Database\Factories\AdmissionTestPriceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestPrice newQuery()
@@ -259,8 +259,8 @@ namespace App\Models{
  * @property bool $synced_to_stripe
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AdmissionTestPrice|null $price
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestPrice> $prices
+ * @property-read AdmissionTestPrice|null $price
+ * @property-read Collection<int, AdmissionTestPrice> $prices
  * @property-read int|null $prices_count
  * @method static \Database\Factories\AdmissionTestProductFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdmissionTestProduct newModelQuery()
@@ -295,9 +295,9 @@ namespace App\Models{
  * @property int|null $maximum_age
  * @property bool $is_active
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $test
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AdmissionTest> $test
  * @property-read int|null $test_count
  * @method static \Database\Factories\AdmissionTestTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AdmissionTestType newModelQuery()
@@ -322,9 +322,9 @@ namespace App\Models{
  * @property int $id
  * @property string $name
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\District> $districts
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, District> $districts
  * @property-read int|null $districts_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Area newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Area newQuery()
@@ -347,14 +347,14 @@ namespace App\Models{
  * @property string $type
  * @property string|null $code
  * @property int $tried_time
- * @property \Illuminate\Support\Carbon|null $closed_at
- * @property \Illuminate\Support\Carbon|null $verified_at
- * @property \Illuminate\Support\Carbon|null $expired_at
+ * @property Carbon|null $closed_at
+ * @property Carbon|null $verified_at
+ * @property Carbon|null $expired_at
  * @property int $creator_id
  * @property string $creator_ip
  * @property bool $middleware_should_count
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $is_closed
  * @property-read bool $is_tried_too_many_time
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactHasVerification newModelQuery()
@@ -387,8 +387,8 @@ namespace App\Models{
  * @property string|null $og_image_url
  * @property string $description
  * @property string|null $content
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Database\Factories\CustomWebPageFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CustomWebPage newQuery()
@@ -413,9 +413,9 @@ namespace App\Models{
  * @property int $area_id
  * @property string $name
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Area|null $area
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Area|null $area
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|District query()
@@ -434,9 +434,9 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newQuery()
@@ -454,9 +454,9 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
  * @method static \Database\Factories\LocationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Location newModelQuery()
@@ -478,14 +478,14 @@ namespace App\Models{
  * @property string|null $prefix_name
  * @property string|null $nickname
  * @property string|null $suffix_name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $is_active
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $orders
+ * @property-read Collection<int, MembershipOrder> $orders
  * @property-read int|null $orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $transfers
+ * @property-read Collection<int, MembershipTransfer> $transfers
  * @property-read int|null $transfers_count
- * @property-read \App\Models\User|null $user
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Member newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Member query()
@@ -509,7 +509,7 @@ namespace App\Models{
  * @property string|null $price_name
  * @property numeric $price
  * @property string $status
- * @property \Illuminate\Support\Carbon $expired_at
+ * @property Carbon $expired_at
  * @property int|null $from_year
  * @property int|null $to_year
  * @property string $gateway_type
@@ -517,11 +517,11 @@ namespace App\Models{
  * @property string|null $reference_number
  * @property numeric|null $gateway_payment_fee
  * @property bool $is_returned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read \App\Models\Member|null $member
- * @property-read \App\Models\User|null $user
+ * @property-read Member|null $member
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipOrder query()
@@ -556,10 +556,10 @@ namespace App\Models{
  * @property int|null $membership_ended_in
  * @property string|null $remark
  * @property bool|null $is_accepted
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\NationalMensa|null $nationalMensa
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read NationalMensa|null $nationalMensa
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipTransfer query()
@@ -585,12 +585,12 @@ namespace App\Models{
  * @property string $name
  * @property string|null $title
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Module> $children
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Module> $children
  * @property-read int|null $children_count
  * @property-read Module|null $parent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $permissions
+ * @property-read Collection<int, Permission> $permissions
  * @property-read int|null $permissions_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newQuery()
@@ -614,13 +614,13 @@ namespace App\Models{
  * @property int $module_id
  * @property int $permission_id
  * @property string $guard_name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ModulePermission> $permissions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, ModulePermission> $permissions
  * @property-read int|null $permissions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TeamRole> $roles
+ * @property-read Collection<int, TeamRole> $roles
  * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ModulePermission newQuery()
@@ -647,8 +647,8 @@ namespace App\Models{
  * @property string $name
  * @property string $url
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NationalMensa query()
@@ -670,9 +670,9 @@ namespace App\Models{
  * @property string $name
  * @property string|null $url
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, NavigationItem> $children
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, NavigationItem> $children
  * @property-read int|null $children_count
  * @property-read NavigationItem|null $parent
  * @method static \Database\Factories\NavigationItemFactory factory($count = null, $state = [])
@@ -697,9 +697,9 @@ namespace App\Models{
  * @property string $name
  * @property bool $is_active
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AdmissionTestOrder> $admissionTestOrders
  * @property-read int|null $admission_test_orders_count
  * @property-read string $type
  * @method static \Database\Factories\OtherPaymentGatewayFactory factory($count = null, $state = [])
@@ -722,8 +722,8 @@ namespace App\Models{
  * @property int $id
  * @property string $name
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PassportType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PassportType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PassportType query()
@@ -743,9 +743,9 @@ namespace App\Models{
  * @property string $name
  * @property string|null $title
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Module> $modules
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Module> $modules
  * @property-read int|null $modules_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newQuery()
@@ -769,17 +769,17 @@ namespace App\Models{
  * @property string|null $price_name
  * @property numeric $price
  * @property string $status
- * @property \Illuminate\Support\Carbon $expired_at
+ * @property Carbon $expired_at
  * @property string $gateway_type
  * @property int $gateway_id
  * @property string|null $reference_number
  * @property numeric|null $gateway_payment_fee
  * @property bool $is_returned
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model|\Eloquent $gateway
- * @property-read \App\Models\PriorEvidenceResult|null $result
- * @property-read \App\Models\User|null $user
+ * @property-read PriorEvidenceResult|null $result
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceOrder query()
@@ -806,15 +806,15 @@ namespace App\Models{
 /**
  * @property int $order_id
  * @property int $test_id
- * @property \Illuminate\Support\Carbon $taken_on
+ * @property Carbon $taken_on
  * @property string $score
  * @property numeric|null $percent_of_group
  * @property bool|null $is_accepted
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\PriorEvidenceOrder|null $order
- * @property-read \App\Models\QualifyingTest|null $test
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read PriorEvidenceOrder|null $order
+ * @property-read QualifyingTest|null $test
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriorEvidenceResult query()
@@ -835,9 +835,9 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QualifyingTestDetail> $details
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, QualifyingTestDetail> $details
  * @property-read int|null $details_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTest newQuery()
@@ -855,12 +855,12 @@ namespace App\Models{
 /**
  * @property int $id
  * @property int $test_id
- * @property \Illuminate\Support\Carbon|null $taken_from
- * @property \Illuminate\Support\Carbon|null $taken_to
+ * @property Carbon|null $taken_from
+ * @property Carbon|null $taken_to
  * @property string|null $score
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\QualifyingTest|null $test
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read QualifyingTest|null $test
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|QualifyingTestDetail query()
@@ -886,11 +886,11 @@ namespace App\Models{
  * @property int|null $creator_id
  * @property string $creator_ip
  * @property bool $middleware_should_count
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\PassportType|null $passportType
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $creator
+ * @property-read PassportType|null $passportType
+ * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResetPasswordLog query()
@@ -913,9 +913,9 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Team> $teams
  * @property-read int|null $teams_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newQuery()
@@ -935,9 +935,9 @@ namespace App\Models{
  * @property int $page_id
  * @property string $name
  * @property string|null $content
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\SitePage|null $page
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read SitePage|null $page
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SiteContent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SiteContent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SiteContent query()
@@ -956,9 +956,9 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SiteContent> $contents
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, SiteContent> $contents
  * @property-read int|null $contents_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SitePage newQuery()
@@ -976,13 +976,37 @@ namespace App\Models{
 /**
  * @property int $id
  * @property string $name
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AdmissionTestOrder> $admissionTestOrders
+ * @property-read int|null $admission_test_orders_count
+ * @property-read string $type
+ * @method static \Database\Factories\OtherPaymentGatewayFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereDisplayOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OtherPaymentGateway whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class SystemPaymentGateway extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property string $name
  * @property int $type_id
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Role> $roles
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Role> $roles
  * @property-read int|null $roles_count
- * @property-read \App\Models\TeamType|null $type
+ * @property-read TeamType|null $type
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
@@ -1005,11 +1029,11 @@ namespace App\Models{
  * @property int|null $role_id
  * @property int $display_order
  * @property string $guard_name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ModulePermission> $permissions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, ModulePermission> $permissions
  * @property-read int|null $permissions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamRole newQuery()
@@ -1035,9 +1059,9 @@ namespace App\Models{
  * @property string $name
  * @property string|null $title
  * @property int $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Team> $teams
  * @property-read int|null $teams_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TeamType newQuery()
@@ -1070,59 +1094,59 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\PriorEvidenceResult|null $acceptedPriorEvidence
- * @property-read \App\Models\Address|null $address
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTestOrder> $admissionTestOrders
+ * @property-read PriorEvidenceResult|null $acceptedPriorEvidence
+ * @property-read Address|null $address
+ * @property-read Collection<int, AdmissionTestOrder> $admissionTestOrders
  * @property-read int|null $admission_test_orders_count
- * @property-read \App\Models\AdmissionTestHasProctor|\App\Models\AdmissionTestHasCandidate|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $admissionTests
+ * @property-read AdmissionTestHasProctor|AdmissionTestHasCandidate|null $pivot
+ * @property-read Collection<int, AdmissionTest> $admissionTests
  * @property-read int|null $admission_tests_count
  * @property-read string $adorned_name
  * @property-read int|float $age
  * @property-read int|float $age_for_psychology
  * @property-read bool $can_edit_passport_information
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $contactVerifications
+ * @property-read Collection<int, ContactHasVerification> $contactVerifications
  * @property-read int|null $contact_verifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $contacts
+ * @property-read Collection<int, UserHasContact> $contacts
  * @property-read int|null $contacts_count
- * @property-read \App\Models\UserHasContact|null $defaultEmail
- * @property-read \App\Models\UserHasContact|null $defaultMobile
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $emails
+ * @property-read UserHasContact|null $defaultEmail
+ * @property-read UserHasContact|null $defaultMobile
+ * @property-read Collection<int, UserHasContact> $emails
  * @property-read int|null $emails_count
- * @property-read \App\Models\Gender|null $gender
+ * @property-read Gender|null $gender
  * @property-read bool $has_other_same_passport_user_attended_admission_test
  * @property-read bool $has_other_same_passport_user_joined_future_test
  * @property-read bool $has_qualification_of_membership
  * @property-read bool $has_same_passport_already_qualification_of_membership
- * @property-read \App\Models\AdmissionTest|null $lastAdmissionTest
- * @property-read \App\Models\AdmissionTestOrder|null $lastAdmissionTestOrder
- * @property-read \App\Models\AdmissionTest|null $lastAttendedAdmissionTest
- * @property-read \App\Models\AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
- * @property-read \App\Models\UserLoginLog|null $lastLoginLog
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserLoginLog> $loginLogs
+ * @property-read AdmissionTest|null $lastAdmissionTest
+ * @property-read AdmissionTestOrder|null $lastAdmissionTestOrder
+ * @property-read AdmissionTest|null $lastAttendedAdmissionTest
+ * @property-read AdmissionTest|null $last_attended_admission_test_of_other_same_passport_user
+ * @property-read UserLoginLog|null $lastLoginLog
+ * @property-read Collection<int, UserLoginLog> $loginLogs
  * @property-read int|null $login_logs_count
- * @property-read \App\Models\Member|null $member
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipTransfer> $memberTransfers
+ * @property-read Member|null $member
+ * @property-read Collection<int, MembershipTransfer> $memberTransfers
  * @property-read int|null $member_transfers_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MembershipOrder> $membershipOrders
+ * @property-read Collection<int, MembershipOrder> $membershipOrders
  * @property-read int|null $membership_orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserHasContact> $mobiles
+ * @property-read Collection<int, UserHasContact> $mobiles
  * @property-read int|null $mobiles_count
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\AdmissionTest|null $passedAdmissionTest
- * @property-read \App\Models\PassportType|null $passportType
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ModulePermission> $permissions
+ * @property-read AdmissionTest|null $passedAdmissionTest
+ * @property-read PassportType|null $passportType
+ * @property-read Collection<int, ModulePermission> $permissions
  * @property-read int|null $permissions_count
  * @property-read string $preferred_name
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PriorEvidenceOrder> $priorEvidenceOrders
+ * @property-read Collection<int, PriorEvidenceOrder> $priorEvidenceOrders
  * @property-read int|null $prior_evidence_orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdmissionTest> $proctorTests
+ * @property-read Collection<int, AdmissionTest> $proctorTests
  * @property-read int|null $proctor_tests_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TeamRole> $roles
+ * @property-read Collection<int, TeamRole> $roles
  * @property-read int|null $roles_count
- * @property-read \App\Library\Stripe\Models\StripeCustomer|null $stripe
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read StripeCustomer|null $stripe
+ * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
@@ -1160,14 +1184,14 @@ namespace App\Models{
  * @property string $type
  * @property string $contact
  * @property bool $is_default
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read bool $is_verified
- * @property-read \App\Models\ContactHasVerification|null $lastVerification
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read ContactHasVerification|null $lastVerification
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\User|null $user
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContactHasVerification> $verifications
+ * @property-read User|null $user
+ * @property-read Collection<int, ContactHasVerification> $verifications
  * @property-read int|null $verifications_count
  * @property-read bool $is_request_too_fast
  * @method static \Database\Factories\UserHasContactFactory factory($count = null, $state = [])
@@ -1192,8 +1216,8 @@ namespace App\Models{
  * @property int $id
  * @property int $user_id
  * @property bool $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserLoginLog query()

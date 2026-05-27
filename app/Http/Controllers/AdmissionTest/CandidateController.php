@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\AdmissionTest;
 
+use App\Http\Controllers\Controller;
 use App\Models\AdmissionTest;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;

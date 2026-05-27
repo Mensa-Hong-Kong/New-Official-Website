@@ -12,10 +12,14 @@ class VerifySignature
 {
     public function handle(Request $request, Closure $next)
     {
+        $signature = $request->header('Stripe-Signature');
+        if (! $signature) {
+            throw new AccessDeniedHttpException('Missing Stripe-Signature header.');
+        }
         try {
             WebhookSignature::verifyHeader(
                 $request->getContent(),
-                $request->header('Stripe-Signature'),
+                $signature,
                 config('stripe.keys.webhook'),
                 config('stripe.lifetime.webhook')
             );
