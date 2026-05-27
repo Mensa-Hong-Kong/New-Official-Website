@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
     import { seo } from '@/Pages/Layouts/App.svelte';
     import { Link, router } from "@inertiajs/svelte";
 
@@ -14,7 +13,7 @@
 				count -= 1;
 			} else {
 				clearInterval(interval);
-				router.get('admission-tests.index');
+				router.visit(route('admission-tests.index'));
 			}
 		}, 1000);
 
