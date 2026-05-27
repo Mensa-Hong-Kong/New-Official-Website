@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
         ->except(['edit', 'update'])
         ->whereNumber('admission_test')
         ->names('admission-tests.candidates');
-    Route::get('admission-test/orders/{order}/leaving-payment', AdmissionTestOrderController::class)
+    Route::get('admission-test/orders/{order}/leaving-payment', [AdmissionTestOrderController::class, 'leavingPayment'])
         ->whereNumber('order')
         ->name('admission-test.orders.leaving-payment');
 
