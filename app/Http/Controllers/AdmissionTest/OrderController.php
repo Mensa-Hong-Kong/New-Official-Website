@@ -22,7 +22,7 @@ class OrderController extends Controller implements HasMiddleware
                     }
                     if (in_array($request->route('order')->status, ['succeeded', 'partial refunded', 'full refunded'])) {
                         return redirect()->route('admission-tests.index')
-                            ->withErrors(['message' => 'This order has already been completed. Your access is active, no further action is required']);
+                            ->withErrors(['message' => 'This order has already been completed. Your access is active, no further action is required.']);
                     }
 
                     return $next($request);
@@ -31,7 +31,7 @@ class OrderController extends Controller implements HasMiddleware
         ];
     }
 
-    public function cancel(AdmissionTestOrder $order)
+    public function leavingPayment(AdmissionTestOrder $order)
     {
         if ($order->status == 'pending') {
             $order->update(['status' => 'canceled']);
