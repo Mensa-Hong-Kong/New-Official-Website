@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Library\Stripe\Events\Customer\HasDefaultEmail;
 use App\Notifications\VerifyContact;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -188,5 +189,52 @@ class UserHasContact extends Model
                     ->count() >= 5;
             }
         );
+    }
+
+    public function verified(bool $hasSendVerifyCode = false): void
+    {
+        if ($hasSendVerifyCode) {
+            $this->lastVerification->update(['verified_at' => now()]);
+        } else {
+            $request = request();
+            ContactHasVerification::create([
+                'contact_id' => $this->id,
+                'contact' => $this->contact,
+                'type' => $this->type,
+                'verified_at' => now(),
+                'creator_id' => $request->user()->id,
+                'creator_ip' => $request->ip(),
+                'middleware_should_count' => false,
+            ]);
+        }
+        $otherSameDefaultContacts = UserHasContact::with('user')
+            ->where('is_default', true)
+            ->where('contact', $this->contact)
+            ->where('type', $this->type)
+            ->whereNot('id', $this->id)
+            ->get();
+        UserHasContact::whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray())
+            ->update(['is_default' => false]);
+        if (count($otherSameDefaultContacts)) {
+            if ($this->type == 'email') {
+                User::whereHas(
+                    'contacts', function ($query) use ($otherSameDefaultContacts) {
+                        $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
+                    }
+                )->update(['synced_to_stripe' => false]);
+            }
+            event(
+                new HasDefaultEmail(
+                    $otherSameDefaultContacts->pluck('user')->filter()->unique('id'),
+                    false
+                )
+            );
+            ContactHasVerification::whereNull('expired_at')
+                ->whereNotNull('verified_at')
+                ->whereIn('contact', $this->contact)
+                ->whereIn('type', $this->type)
+                ->whereNot('contact_id', $this->id)
+                ->update(['expired_at' => now()]);
+        }
     }
 }

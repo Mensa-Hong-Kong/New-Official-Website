@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Contact\StoreRequest;
 use App\Http\Requests\Admin\Contact\UpdateRequest;
 use App\Http\Requests\StatusRequest;
-use App\Models\ContactHasVerification;
-use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -20,43 +18,12 @@ class ContactController extends Controller implements HasMiddleware
         return [new Middleware('permission:Edit:User')];
     }
 
-    private function verified(UserHasContact $contact)
-    {
-        $request = request();
-        $verification = ContactHasVerification::create([
-            'contact_id' => $contact->id,
-            'contact' => $contact->contact,
-            'type' => $contact->type,
-            'verified_at' => now(),
-            'creator_id' => $request->user()->id,
-            'creator_ip' => $request->ip(),
-            'middleware_should_count' => false,
-        ]);
-        $verifications = ContactHasVerification::where('type', $contact->type)
-            ->where('contact', $contact->contact)
-            ->whereNot('id', $verification->id)
-            ->get(['id', 'contact_id']);
-        if (count($verifications)) {
-            UserHasContact::whereIn('id', $verifications->pluck('contact_id')->toArray())
-                ->update(['is_default' => false]);
-            if ($contact->type == 'email') {
-                User::whereHas(
-                    'contacts', function ($query) use ($verifications) {
-                        $query->whereIn('id', $verifications->pluck('contact_id')->toArray());
-                    }
-                )->update(['synced_to_stripe' => false]);
-            }
-            ContactHasVerification::whereIn('id', $verifications->pluck('id')->toArray())
-                ->update(['expired_at' => now()]);
-        }
-    }
-
     public function verify(StatusRequest $request, UserHasContact $contact)
     {
         if ($request->status != $contact->isVerified) {
             DB::beginTransaction();
             if ($request->status) {
-                $this->verified($contact);
+                $contact->verified();
             } else {
                 $contact->lastVerification()->update(['expired_at' => now()]);
                 if ($contact->is_default) {
@@ -78,7 +45,7 @@ class ContactController extends Controller implements HasMiddleware
             DB::beginTransaction();
             $contact->update(['is_default' => (bool) $request->status]);
             if ($request->status && ! $contact->isVerified) {
-                $this->verified($contact);
+                $contact->verified();
             }
             DB::commit();
         }
@@ -98,7 +65,7 @@ class ContactController extends Controller implements HasMiddleware
             'is_default' => $request->is_default ?? false,
         ]);
         if (($request->is_verified ?? false) || ($contact->is_default ?? false)) {
-            $this->verified($contact);
+            $contact->verified();
         }
 
         return [
@@ -127,7 +94,7 @@ class ContactController extends Controller implements HasMiddleware
 
         if ($return['is_verified'] != $contact->isVerified) {
             if ($return['is_verified']) {
-                $this->verified($contact);
+                $contact->verified();
             } else {
                 $contact->lastVerification()->update(['expired_at' => now()]);
             }
