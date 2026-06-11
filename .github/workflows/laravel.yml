@@ -25,6 +25,15 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -59,6 +68,9 @@ jobs:
 
       - name: npm install
         run: npm install
+
+      - name: Fix Rollup Linux dependency
+        run: npm install @rollup/rollup-linux-x64-gnu --save-optional
 
       - name: build assets
         run: npm run build

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Contact\StoreRequest;
 use App\Http\Requests\Contact\UpdateRequest;
 use App\Http\Requests\Contact\VerifyRequest;
-use App\Models\ContactHasVerification;
-use App\Models\User;
 use App\Models\UserHasContact;
 use Closure;
 use Illuminate\Http\Request;
@@ -104,7 +102,7 @@ class ContactController extends Controller implements HasMiddleware
         ];
     }
 
-    public function sendVerifyCode(Request $request, UserHasContact $contact)
+    public function sendVerifyCode(UserHasContact $contact)
     {
         $contact->sendVerifyCode();
 
@@ -131,40 +129,17 @@ class ContactController extends Controller implements HasMiddleware
                     $contact->sendVerifyCode();
                 }
             }
-            $content = ['errors' => [
+            $response = ['errors' => [
                 'code' => "$error.",
                 'isFailedTooMany' => $isFailedTooMany,
             ]];
         } else {
-            $contact->lastVerification->update(['verified_at' => now()]);
-            $contactIDs = UserHasContact::where('is_default', true)
-                ->where('contact', $contact->contact)
-                ->where('type', $contact->type)
-                ->whereNot('id', $contact->id)
-                ->get(['id'])
-                ->pluck('id')
-                ->toArray();
-            if (count($contactIDs)) {
-                if ($contact->type == 'email') {
-                    User::whereHas(
-                        'contacts', function ($query) use ($contactIDs) {
-                            $query->whereIn('id', $contactIDs);
-                        }
-                    )->update(['synced_to_stripe' => false]);
-                }
-                UserHasContact::whereIn('id', $contactIDs)
-                    ->update(['is_default' => false]);
-            }
-            ContactHasVerification::whereNull('expired_at')
-                ->whereNotNull('verified_at')
-                ->where('type', $contact->type)
-                ->whereNot('contact_id', $contact->id)
-                ->update(['expired_at' => now()]);
-            $content = ['success' => "The {$contact->type} verify success."];
+            $contact->verified(true);
+            $response = ['success' => "The {$contact->type} verify success."];
         }
         DB::commit();
 
-        return response($content, isset($error) ? 422 : 200);
+        return response($response, isset($error) ? 422 : 200);
     }
 
     public function setDefault(UserHasContact $contact)

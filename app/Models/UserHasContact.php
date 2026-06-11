@@ -70,8 +70,32 @@ class UserHasContact extends Model
     {
         static::created(
             function (UserHasContact $contact): void {
-                if ($contact->is_default && $contact->type == 'email') {
-                    $contact->user()->update(['synced_to_stripe' => false]);
+                if ($contact->is_default) {
+                    if ($contact->type == 'email') {
+                        $contact->user->update(['synced_to_stripe' => false]);
+                    }
+                    UserHasContact::where('is_default', true)
+                        ->where('type', $contact->type)
+                        ->where('user_id', $contact->user_id)
+                        ->whereNot('id', $contact->id)
+                        ->update(['is_default' => false]);
+                    $otherSameDefaultContacts = UserHasContact::with('user')
+                        ->where('is_default', true)
+                        ->where('type', $contact->type)
+                        ->where('contact', $contact->contact)
+                        ->whereNot('id', $contact->id)
+                        ->get();
+                    if ($otherSameDefaultContacts->count()) {
+                        UserHasContact::whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray())
+                            ->update(['is_default' => false]);
+                        if ($contact->type == 'email') {
+                            User::whereHas(
+                                'contacts', function ($query) use ($otherSameDefaultContacts) {
+                                    $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
+                                }
+                            )->update(['synced_to_stripe' => false]);
+                        }
+                    }
                 }
             }
         );
@@ -79,26 +103,44 @@ class UserHasContact extends Model
             function (UserHasContact $contact): void {
                 if ($contact->wasChanged('is_default')) {
                     if ($contact->type == 'email') {
-                        $contact->user()->update(['synced_to_stripe' => false]);
+                        $contact->user->update(['synced_to_stripe' => false]);
                     }
                     if ($contact->is_default) {
                         UserHasContact::where('type', $contact->type)
                             ->where('user_id', $contact->user_id)
                             ->whereNot('id', $contact->id)
                             ->update(['is_default' => false]);
-                        $contacts = UserHasContact::where('type', $contact->type)
+                        $otherSameDefaultContacts = UserHasContact::with('user')
+                            ->where('is_default', true)
+                            ->where('type', $contact->type)
                             ->where('contact', $contact->contact)
                             ->whereNot('id', $contact->id)
-                            ->get(['id', 'user_id']);
-                        if (count($contacts)) {
-                            if ($contact->type == 'email') {
-                                User::whereIn('id', $contacts->pluck('user_id')->toArray())
-                                    ->update(['synced_to_stripe' => false]);
-                            }
-                            UserHasContact::whereIn('id', $contacts->pluck('id')->toArray())
+                            ->get();
+                        if ($otherSameDefaultContacts->count()) {
+                            UserHasContact::whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray())
                                 ->update(['is_default' => false]);
+                            if ($contact->type == 'email') {
+                                User::whereHas(
+                                    'contacts', function ($query) use ($otherSameDefaultContacts) {
+                                        $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
+                                    }
+                                )->update(['synced_to_stripe' => false]);
+                            }
                         }
                     }
+                } elseif (
+                    $contact->is_default &&
+                    $contact->type == 'email' &&
+                    $contact->wasChanged('contact')
+                ) {
+                    $contact->user->update(['synced_to_stripe' => false]);
+                }
+            }
+        );
+        static::deleted(
+            function (UserHasContact $contact): void {
+                if ($contact->is_default && $contact->type == 'email') {
+                    $contact->user->update(['synced_to_stripe' => false]);
                 }
             }
         );
@@ -188,5 +230,44 @@ class UserHasContact extends Model
                     ->count() >= 5;
             }
         );
+    }
+
+    public function verified(bool $hasSendVerifyCode = false): void
+    {
+        if ($hasSendVerifyCode) {
+            $this->lastVerification->update(['verified_at' => now()]);
+        } else {
+            $request = request();
+            ContactHasVerification::create([
+                'contact_id' => $this->id,
+                'contact' => $this->contact,
+                'type' => $this->type,
+                'verified_at' => now(),
+                'creator_id' => $request->user()->id,
+                'creator_ip' => $request->ip(),
+                'middleware_should_count' => false,
+            ]);
+        }
+        $otherSameDefaultContacts = UserHasContact::with('user')
+            ->where('is_default', true)
+            ->where('contact', $this->contact)
+            ->where('type', $this->type)
+            ->whereNot('id', $this->id)
+            ->get();
+        if (count($otherSameDefaultContacts)) {
+            UserHasContact::whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray())
+                ->update(['is_default' => false]);
+            if ($this->type == 'email') {
+                $users = $otherSameDefaultContacts->pluck('user')->filter()->unique('id');
+                User::whereIn('id', $users->pluck('id')->toArray())
+                    ->update(['synced_to_stripe' => false]);
+            }
+            ContactHasVerification::whereNull('expired_at')
+                ->whereNotNull('verified_at')
+                ->where('contact', $this->contact)
+                ->where('type', $this->type)
+                ->whereNot('contact_id', $this->id)
+                ->update(['expired_at' => now()]);
+        }
     }
 }

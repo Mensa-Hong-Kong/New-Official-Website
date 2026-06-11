@@ -6,6 +6,7 @@
         "dev": "vite && vite --ssr"
     },
     "devDependencies": {
+        "@laravel/echo-svelte": "^2.3.4",
         "@svelte-put/qr": "^2.1.2",
         "axios": "^1.11.0",
         "concurrently": "^9.2.1",
