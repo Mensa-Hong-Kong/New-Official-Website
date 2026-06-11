@@ -11,6 +11,22 @@ database:
     name: mensa
     user: laravel
     password: password
+redis:
+  client: predis
+  host: 127.0.0.1
+  password: 'null'
+  port: 6379
+reverb:
+  server:
+    host: 0.0.0.0
+    port: 8080
+  app:
+    id: 123456
+    key: 1234567890abcdefghij
+    secret: 1234567890abcdefghijklmnopqrstuv
+  host: 127.0.0.1
+  port: 8080
+  scheme: http
 twilio:
   auth:
     sid: AC1a2ae0f510f993e28f85d3a02b879d72

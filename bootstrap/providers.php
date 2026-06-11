@@ -4,6 +4,7 @@ use App\Providers\AppServiceProvider;
 use Inertia\ServiceProvider;
 use Kyslik\ColumnSortable\ColumnSortableServiceProvider;
 use Laravel\Boost\BoostServiceProvider;
+use Laravel\Reverb\ReverbServiceProvider;
 use Reedware\LaravelRelationJoins\LaravelRelationJoinServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 use Tighten\Ziggy\ZiggyServiceProvider;
@@ -16,4 +17,5 @@ return [
     ServiceProvider::class,
     LaravelRelationJoinServiceProvider::class,
     BoostServiceProvider::class,
+    ReverbServiceProvider::class,
 ];
