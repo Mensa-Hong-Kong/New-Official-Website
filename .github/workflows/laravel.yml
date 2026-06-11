@@ -57,8 +57,11 @@ jobs:
       - name: install composer dependencies
         run: composer install
 
-      - name: npm clean install
-        run: npm ci
+      - name: npm install
+        run: npm install
+
+      - name: Fix Rollup Linux dependency
+        run: npm install @rollup/rollup-linux-x64-gnu --save-optional
 
       - name: build assets
         run: npm run build
