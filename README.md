@@ -20,21 +20,21 @@ npm install
 ## Set-up Local Server
 
 ```shell
-php artisan serve
+php artisan serve --env=testing
 ```
 
 ```shell
-npm run dev
+npm run dev:testing
 ```
 
 ```shell
-php artisan reverb:start --debug
+php artisan reverb:start --debug --env=testing
 ```
 
 ## Add Super Administrator For Local Actual Test
 
 ```shell
-php artisan db:seed --class=SuperAdministratorSeeder
+php artisan db:seed --class=SuperAdministratorSeeder --env=testing
 ```
 
 ## As Known Issues
