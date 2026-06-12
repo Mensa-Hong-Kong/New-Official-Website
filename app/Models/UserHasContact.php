@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Notifications\VerifyContact;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -73,6 +74,12 @@ class UserHasContact extends Model
                 if ($contact->is_default) {
                     if ($contact->type == 'email') {
                         $contact->user->update(['synced_to_stripe' => false]);
+                        event(
+                            new DefaultEmail(
+                                $contact->user,
+                                $contact->contact
+                            )
+                        );
                     }
                     UserHasContact::where('is_default', true)
                         ->where('type', $contact->type)
@@ -94,6 +101,7 @@ class UserHasContact extends Model
                                     $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
                                 }
                             )->update(['synced_to_stripe' => false]);
+                            event(new DefaultEmail($otherSameDefaultContacts->pluck('user')->filter()->unique('id')));
                         }
                     }
                 }
@@ -104,6 +112,12 @@ class UserHasContact extends Model
                 if ($contact->wasChanged('is_default')) {
                     if ($contact->type == 'email') {
                         $contact->user->update(['synced_to_stripe' => false]);
+                        event(
+                            new DefaultEmail(
+                                $contact->user,
+                                $contact->is_default ? $contact->contact : null
+                            )
+                        );
                     }
                     if ($contact->is_default) {
                         UserHasContact::where('type', $contact->type)
@@ -125,6 +139,7 @@ class UserHasContact extends Model
                                         $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
                                     }
                                 )->update(['synced_to_stripe' => false]);
+                                event(new DefaultEmail($otherSameDefaultContacts->pluck('user')->filter()->unique('id')));
                             }
                         }
                     }
@@ -133,6 +148,12 @@ class UserHasContact extends Model
                     $contact->type == 'email' &&
                     $contact->wasChanged('contact')
                 ) {
+                    event(
+                        new DefaultEmail(
+                            $contact->user,
+                            $contact->is_default ? $contact->contact : null
+                        )
+                    );
                     $contact->user->update(['synced_to_stripe' => false]);
                 }
             }
@@ -141,6 +162,7 @@ class UserHasContact extends Model
             function (UserHasContact $contact): void {
                 if ($contact->is_default && $contact->type == 'email') {
                     $contact->user->update(['synced_to_stripe' => false]);
+                    event(new DefaultEmail($contact->user));
                 }
             }
         );
@@ -261,6 +283,7 @@ class UserHasContact extends Model
                 $users = $otherSameDefaultContacts->pluck('user')->filter()->unique('id');
                 User::whereIn('id', $users->pluck('id')->toArray())
                     ->update(['synced_to_stripe' => false]);
+                event(new DefaultEmail($users));
             }
             ContactHasVerification::whereNull('expired_at')
                 ->whereNotNull('verified_at')
