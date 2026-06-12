@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,5 +29,15 @@ class AppServiceProvider extends ServiceProvider
                 }
             );
         }
+        Factory::macro(
+            'createQuietly', function (array $attributes = []) {
+                return $this->modelName()::withoutEvents(
+                    function () use ($attributes) {
+                        /** @var Factory $this */
+                        return $this->create($attributes);
+                    }
+                );
+            }
+        );
     }
 }

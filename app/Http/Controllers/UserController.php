@@ -315,9 +315,4 @@ class UserController extends Controller implements HasMiddleware
             'errors' => ['failed' => 'The provided passport, birthday or verified contact is incorrect.'],
         ], 422);
     }
-
-    public function createdStripeCustomer(Request $request)
-    {
-        return ['status' => (bool) $request->user()->stripe];
-    }
 }
