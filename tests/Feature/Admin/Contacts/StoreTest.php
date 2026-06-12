@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Admin\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -17,7 +20,7 @@ class StoreTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create(['synced_to_stripe' => true]);
         $this->user->givePermissionTo('Edit:User');
     }
 
@@ -355,6 +358,7 @@ class StoreTest extends TestCase
 
     public function test_happy_case_for_new_not_verified_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
@@ -389,10 +393,12 @@ class StoreTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_new_verified_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
@@ -428,20 +434,14 @@ class StoreTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_for_new_default_contact(): void
+    public function test_happy_case_for_new_default_mobile(): void
     {
-        $type = fake()->randomElement(['email', 'mobile']);
-        $contact = '';
-        switch ($type) {
-            case 'email':
-                $contact = fake()->freeEmail();
-                break;
-            case 'mobile':
-                $contact = fake()->numberBetween(10000, 999999999999999);
-                break;
-        }
+        Event::fake(DefaultEmail::class);
+        $type = 'mobile';
+        $contact = fake()->numberBetween(10000, 999999999999999);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('admin.contacts.store'),
@@ -467,5 +467,44 @@ class StoreTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_for_new_default_email(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $type = 'email';
+        $contact = fake()->freeEmail();
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('admin.contacts.store'),
+                [
+                    'user_id' => $this->user->id,
+                    'type' => $type,
+                    'contact' => $contact,
+                    'is_default' => true,
+                ]
+            );
+        $response->assertSuccessful();
+        $contactModel = UserHasContact::first();
+        $this->assertEquals($type, $contactModel->type);
+        $this->assertEquals($contact, $contactModel->contact);
+        $this->assertEquals($this->user->id, $contactModel->user_id);
+        $this->assertTrue($contactModel->isVerified);
+        $this->assertTrue($contactModel->is_default);
+        $response->assertJson([
+            'success' => "The $type create success!",
+            'id' => $contactModel->id,
+            'type' => $type,
+            'contact' => $contact,
+            'is_verified' => true,
+            'is_default' => true,
+        ]);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $contact]]
+        );
     }
 }

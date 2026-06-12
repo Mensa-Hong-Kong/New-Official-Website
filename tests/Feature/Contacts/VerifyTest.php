@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\VerifyContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -280,6 +283,7 @@ class VerifyTest extends TestCase
 
     public function test_happy_case_have_no_other_user_default_same_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
@@ -288,12 +292,15 @@ class VerifyTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
         $this->assertTrue($this->contact->refresh()->isVerified);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_has_other_user_default_same_contact_type(): void
+    public function test_happy_case_has_other_user_default_mobile(): void
     {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'mobile']);
         $user = User::factory()->create();
-        $contact = UserHasContact::factory()->create([
+        $contact = UserHasContact::factory()->createQuietly([
             'user_id' => $user->id,
             'type' => $this->contact->type,
             'contact' => $this->contact->contact,
@@ -311,5 +318,37 @@ class VerifyTest extends TestCase
         $this->assertTrue($this->contact->refresh()->isVerified);
         $this->assertFalse($contact->refresh()->is_default);
         $this->assertFalse($contact->refresh()->isVerified);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_has_other_user_default_email(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'email']);
+        $user = User::factory()->create();
+        $contact = UserHasContact::factory()->createQuietly([
+            'user_id' => $user->id,
+            'type' => $this->contact->type,
+            'contact' => $this->contact->contact,
+            'is_default' => true,
+        ]);
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->postJson(
+                route('contacts.verify', ['contact' => $this->contact]),
+                ['code' => '123456']
+            );
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
+        $this->assertTrue($this->contact->refresh()->isVerified);
+        $this->assertFalse($contact->refresh()->is_default);
+        $this->assertFalse($contact->refresh()->isVerified);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 }
