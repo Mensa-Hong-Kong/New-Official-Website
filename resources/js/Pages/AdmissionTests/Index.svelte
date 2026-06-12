@@ -14,7 +14,7 @@
 </script>
 
 <section class="container">
-    {#if auth.user}
+    {#if auth.user && ! user.has_qualification_of_membership}
         <StripeCustomerAlert bind:customer={user} type="user" />
     {/if}
     <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>

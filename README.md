@@ -27,6 +27,10 @@ php artisan serve
 npm run dev
 ```
 
+```shell
+php artisan reverb:start --debug
+```
+
 ## Add Super Administrator For Local Actual Test
 
 ```shell

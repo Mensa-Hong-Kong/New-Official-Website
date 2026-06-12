@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\Contacts;
 
 use App\Library\Stripe\Events\Customer\DefaultEmail;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
@@ -57,7 +58,10 @@ class DeleteTest extends TestCase
 
     public function test_happy_case_when_contact_is_not_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->deleteJson(
@@ -70,11 +74,15 @@ class DeleteTest extends TestCase
         $response->assertJson(['success' => "The {$contact->type} delete success!"]);
         $this->assertNull(UserHasContact::firstWhere('id', $contact->id));
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_when_mobile_is_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $contact = UserHasContact::factory()->mobile()->createQuietly(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->deleteJson(
@@ -87,11 +95,15 @@ class DeleteTest extends TestCase
         $response->assertJson(['success' => "The {$contact->type} delete success!"]);
         $this->assertNull(UserHasContact::firstWhere('id', $contact->id));
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_when_email_is_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $contact = UserHasContact::factory()->email()->createQuietly(['is_default' => true]);
         $response = $this->actingAs($this->user)
             ->deleteJson(
@@ -108,6 +120,12 @@ class DeleteTest extends TestCase
             'App.Models.User.'.$contact->user->id,
             PrivateChannel::class,
             ['default_email' => null]
+        );
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$contact->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
         );
     }
 }
