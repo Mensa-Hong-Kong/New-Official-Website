@@ -24,8 +24,4 @@ do
     fi
 done
 
-cd "$SCRIPT_DIR/ansible"
-ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
-
-cd $SCRIPT_DIR
-php artisan migrate
+php artisan migrate --env=testing
