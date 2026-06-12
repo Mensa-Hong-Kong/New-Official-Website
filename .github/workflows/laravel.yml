@@ -72,11 +72,7 @@ jobs:
         run: npm run build:testing
 
       - name: run migrations with seeders
-        run: php artisan migrate --seed --env=testing
-
-      - name: render dot env
-        run: ansible-playbook -i environments/test/hosts.yml playbooks/phpunit.yml
-        working-directory: ./ansible
+        run: php artisan migrate --env=testing
 
       - name: run test suite
         run: XDEBUG_MODE=off php artisan test --env=testing
