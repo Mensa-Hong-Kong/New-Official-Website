@@ -3,10 +3,13 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\Stripe\Customers\CreateUser;
+use App\Library\Stripe\Events\Customer\Created;
 use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Uri;
 use Tests\TestCase;
@@ -42,6 +45,7 @@ class CreateUserTest extends TestCase
 
     public function test_already_stripe_user_just_missing_save_stripe_id(): void
     {
+        Event::fake(Created::class);
         $data = [
             'id' => 'cus_NeGfPRiPKxeBi1',
             'object' => 'customer',
@@ -100,10 +104,17 @@ class CreateUserTest extends TestCase
         $this->user = User::find($this->user->id);
         $this->assertEquals($data['id'], $this->user->stripe->id);
         $this->assertTrue((bool) $this->user->synced_to_stripe);
+        $this->assertBroadcastChannel(
+            Created::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['created_stripe_customer' => true]
+        );
     }
 
     public function test_not_found_stripe_customer_and_create_customer_but_stripe_under_maintenance(): void
     {
+        Event::fake(Created::class);
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
                 'object' => 'search_result',
@@ -115,10 +126,12 @@ class CreateUserTest extends TestCase
         ]);
         $this->expectException(RequestException::class);
         app()->call([new CreateUser($this->user->id), 'handle']);
+        Event::assertNotDispatched(Created::class);
     }
 
     public function test_create_stripe_customer_happy_case(): void
     {
+        Event::fake(Created::class);
         $response = [
             'id' => 'cus_NffrFeUfNV2Hib',
             'object' => 'customer',
@@ -190,5 +203,11 @@ class CreateUserTest extends TestCase
         $this->user = User::find($this->user->id);
         $this->assertEquals($response['id'], $this->user->stripe->id);
         $this->assertFalse((bool) $this->user->synced_to_stripe);
+        $this->assertBroadcastChannel(
+            Created::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['created_stripe_customer' => true]
+        );
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Library\Stripe\Webhooks;
 
+use App\Library\Stripe\Models\StripeCustomer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Queue;
+use Tests\TestCase;
 
 class CustomerDeletedTest extends TestCase
 {
@@ -62,9 +62,8 @@ class CustomerDeletedTest extends TestCase
 
     public function test_customer_exist_and_customer_is_user_and_search_first_stripe_customer_for_user_but_stripe_under_maintenance(): void
     {
-        Queue::fake();
-        $user = User::factory()->create();
-        $user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
+        $user = User::factory()->createQuietly();
+        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
         ]);
@@ -80,13 +79,14 @@ class CustomerDeletedTest extends TestCase
             $this->signatureHeader($data)
         );
         $response->assertStatus(500);
+        $this->assertTrue(StripeCustomer::where('id', 'cus_NeGfPRiPKxeBi1')->exists());
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function test_customer_exist_and_customer_is_user_and_create_customer_but_stripe_under_maintenance(): void
     {
-        Queue::fake();
-        $user = User::factory()->create();
-        $user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
+        $user = User::factory()->createQuietly();
+        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
         Http::fake([
             'https://api.stripe.com/v1/customers/*' => Http::response([
                 'object' => 'search_result',
@@ -108,14 +108,14 @@ class CustomerDeletedTest extends TestCase
             $this->signatureHeader($data)
         );
         $response->assertStatus(500);
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function test_customer_exist_and_customer_is_user_and_create_customer_happy_case(): void
     {
-        Queue::fake();
-        $user = User::factory()->create();
-        $user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
-        $stripeCreateRresponse = [
+        $user = User::factory()->createQuietly();
+        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
+        $stripeCreateResponse = [
             'id' => 'cus_NffrFeUfNV2Hib',
             'object' => 'customer',
             'address' => null,
@@ -150,7 +150,7 @@ class CustomerDeletedTest extends TestCase
                 'has_more' => false,
                 'data' => [],
             ]),
-            'https://api.stripe.com/v1/*' => Http::response($stripeCreateRresponse),
+            'https://api.stripe.com/v1/*' => Http::response($stripeCreateResponse),
         ]);
         $data = [
             'type' => 'customer.deleted',
@@ -166,8 +166,9 @@ class CustomerDeletedTest extends TestCase
         $response->assertSuccessful();
         $response->assertSee('Webhook Handled');
         $this->assertEquals(
-            $stripeCreateRresponse['id'],
+            $stripeCreateResponse['id'],
             $user->refresh()->stripe->id
         );
+        $this->assertDatabaseCount('jobs', 2);
     }
 }
