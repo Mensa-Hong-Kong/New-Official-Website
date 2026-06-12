@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\User;
 use App\Models\UserHasContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -20,7 +23,7 @@ class SetDefaultTest extends TestCase
     {
         parent::setUp();
         Notification::fake();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create(['synced_to_stripe' => true]);
         $this->contact = UserHasContact::factory()->create();
         $this->contact->sendVerifyCode();
     }
@@ -64,8 +67,10 @@ class SetDefaultTest extends TestCase
         $response->assertCreated();
     }
 
-    public function test_happy_case_user_have_no_default_contact(): void
+    public function test_mobile_happy_case_user_have_no_default_contact(): void
     {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'mobile']);
         $this->contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->patchJson(route(
@@ -74,14 +79,35 @@ class SetDefaultTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
         $this->assertTrue($this->contact->refresh()->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_user_has_default_contact(): void
+    public function test_email_happy_case_user_have_no_default_contact(): void
     {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'email']);
         $this->contact->lastVerification()->update(['verified_at' => now()]);
-        $contact = UserHasContact::factory()
-            ->{$this->contact->type}()
-            ->create(['is_default' => true]);
+        $response = $this->actingAs($this->user)
+            ->patchJson(route(
+                'contacts.set-default', ['contact' => $this->contact]
+            ));
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
+        $this->assertTrue($this->contact->refresh()->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$this->contact->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $this->contact->contact]]
+        );
+    }
+
+    public function test_mobile_happy_case_user_has_default_contact(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'mobile']);
+        $this->contact->lastVerification()->update(['verified_at' => now()]);
+        $contact = UserHasContact::factory()->mobile()->createQuietly(['is_default' => true]);
         $contact->sendVerifyCode();
         $contact->lastVerification->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -92,5 +118,30 @@ class SetDefaultTest extends TestCase
         $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
         $this->assertTrue($this->contact->refresh()->is_default);
         $this->assertFalse($contact->refresh()->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_email_happy_case_user_has_default_contact(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $this->contact->update(['type' => 'email']);
+        $this->contact->lastVerification()->update(['verified_at' => now()]);
+        $contact = UserHasContact::factory()->email()->createQuietly(['is_default' => true]);
+        $contact->sendVerifyCode();
+        $contact->lastVerification->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->patchJson(route(
+                'contacts.set-default', ['contact' => $this->contact]
+            ));
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} changed to default!"]);
+        $this->assertTrue($this->contact->refresh()->is_default);
+        $this->assertFalse($contact->refresh()->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$contact->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $this->contact->contact]]
+        );
     }
 }

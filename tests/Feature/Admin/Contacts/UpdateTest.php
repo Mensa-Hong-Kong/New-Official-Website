@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Admin\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -17,7 +20,7 @@ class UpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create(['synced_to_stripe' => true]);
         $this->user->givePermissionTo('Edit:User');
     }
 
@@ -165,6 +168,7 @@ class UpdateTest extends TestCase
 
     public function test_happy_case_for_not_verified_email_only_change_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -183,14 +187,16 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_not_verified_mobile_only_change_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -209,14 +215,16 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_not_verified_contact_only_change_to_is_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $contact = UserHasContact::factory()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -235,40 +243,77 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
+        $contactModel = UserHasContact::find($contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertTrue($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_for_not_verified_contact_only_change_to_is_default(): void
+    public function test_happy_case_for_not_verified_mobile_only_change_to_is_default(): void
     {
-        $contact = UserHasContact::factory()->create();
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->mobile()->create();
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
                     'admin.contacts.update',
-                    ['contact' => $contact]
+                    ['contact' => $mobile]
                 ), [
-                    $contact->type => $contact->contact,
+                    'mobile' => $mobile->contact,
                     'is_default' => true,
                 ]
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} update success!",
-            $contact->type => $contact->contact,
+            'success' => 'The mobile update success!',
+            'mobile' => $mobile->contact,
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
-        $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified);
-        $this->assertTrue($contactModel->is_default);
+        $mobileModel = UserHasContact::find($mobile->id);
+        $this->assertEquals($mobile->contact, $mobileModel->contact);
+        $this->assertTrue($mobileModel->isVerified);
+        $this->assertTrue($mobileModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_for_not_verified_email_only_change_to_is_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->email()->create();
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.contacts.update',
+                    ['contact' => $email]
+                ), [
+                    'email' => $email->contact,
+                    'is_default' => true,
+                ]
+            );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The email update success!',
+            'email' => $email->contact,
+            'is_verified' => true,
+            'is_default' => true,
+        ]);
+        $emailModel = UserHasContact::find($email->id);
+        $this->assertEquals($email->contact, $emailModel->contact);
+        $this->assertTrue($emailModel->isVerified);
+        $this->assertTrue($emailModel->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $email->contact]]
+        );
     }
 
     public function test_happy_case_for_not_verified_email_change_contact_and_is_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -290,14 +335,16 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_not_verified_email_change_contact_and_is_default(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -319,14 +366,21 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $email->contact]]
+        );
     }
 
     public function test_happy_case_for_not_verified_mobile_change_contact_and_is_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -348,14 +402,16 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_not_verified_mobile_change_contact_and_is_default(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -377,14 +433,16 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_verified_email_only_change_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -408,14 +466,16 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_verified_mobile_only_change_contact(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -439,14 +499,16 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_verified_contact_only_change_to_is_not_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $contact = UserHasContact::factory()->create();
         $contact->newVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
@@ -464,42 +526,81 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
+        $contactModel = UserHasContact::find($contact->id);
         $this->assertEquals($contact->contact, $contactModel->contact);
         $this->assertFalse($contactModel->isVerified);
         $this->assertFalse($contactModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_for_verified_contact_only_change_to_is_default(): void
+    public function test_happy_case_for_verified_mobile_only_change_to_is_default(): void
     {
-        $contact = UserHasContact::factory()->create();
-        $contact->newVerifyCode();
-        $contact->lastVerification()->update(['verified_at' => now()]);
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->mobile()->create();
+        $mobile->newVerifyCode();
+        $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
                     'admin.contacts.update',
-                    ['contact' => $contact]
+                    ['contact' => $mobile]
                 ), [
-                    $contact->type => $contact->contact,
+                    'mobile' => $mobile->contact,
                     'is_default' => true,
                 ]
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} update success!",
-            $contact->type => $contact->contact,
+            'success' => 'The mobile update success!',
+            'mobile' => $mobile->contact,
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
-        $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified);
-        $this->assertTrue($contactModel->is_default);
+        $mobileModel = UserHasContact::find($mobile->id);
+        $this->assertEquals($mobile->contact, $mobileModel->contact);
+        $this->assertTrue($mobileModel->isVerified);
+        $this->assertTrue($mobileModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_for_verified_email_only_change_to_is_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->email()->create();
+        $email->newVerifyCode();
+        $email->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.contacts.update',
+                    ['contact' => $email]
+                ), [
+                    'email' => $email->contact,
+                    'is_default' => true,
+                ]
+            );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The email update success!',
+            'email' => $email->contact,
+            'is_verified' => true,
+            'is_default' => true,
+        ]);
+        $emailModel = UserHasContact::find($email->id);
+        $this->assertEquals($email->contact, $emailModel->contact);
+        $this->assertTrue($emailModel->isVerified);
+        $this->assertTrue($emailModel->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $email->contact]]
+        );
     }
 
     public function test_happy_case_for_verified_email_change_contact_and_is_not_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -520,14 +621,16 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_verified_email_change_contact_and_is_default(): void
     {
+        Event::fake(DefaultEmail::class);
         $email = UserHasContact::factory()->create([
             'type' => 'email',
             'contact' => 'example@gamil.com',
@@ -551,14 +654,21 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => $email->contact]]
+        );
     }
 
     public function test_happy_case_for_verified_mobile_change_contact_and_is_not_verified(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -579,14 +689,16 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_verified_mobile_change_contact_and_is_default(): void
     {
+        Event::fake(DefaultEmail::class);
         $mobile = UserHasContact::factory()->create([
             'type' => 'mobile',
             'contact' => '12345678',
@@ -610,15 +722,17 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_default_email_only_change_contact(): void
     {
-        $email = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->createQuietly([
             'type' => 'email',
             'contact' => 'example@gamil.com',
             'is_default' => true,
@@ -642,15 +756,22 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertTrue($email->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => ['contact' => 'example@live.com']]
+        );
     }
 
     public function test_happy_case_for_default_mobile_only_change_contact(): void
     {
-        $mobile = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->createQuietly([
             'type' => 'mobile',
             'contact' => '12345678',
             'is_default' => true,
@@ -674,66 +795,137 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => true,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertTrue($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_for_default_contact_only_change_to_is_not_verified(): void
+    public function test_happy_case_for_default_mobile_only_change_to_is_not_verified(): void
     {
-        $contact = UserHasContact::factory()->create(['is_default' => true]);
-        $contact->newVerifyCode();
-        $contact->lastVerification()->update(['verified_at' => now()]);
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->mobile()->createQuietly(['is_default' => true]);
+        $mobile->newVerifyCode();
+        $mobile->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
                     'admin.contacts.update',
-                    ['contact' => $contact]
-                ), [$contact->type => $contact->contact]
+                    ['contact' => $mobile]
+                ), ['mobile' => $mobile->contact]
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} update success!",
-            $contact->type => $contact->contact,
+            'success' => 'The mobile update success!',
+            'mobile' => $mobile->contact,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
-        $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertFalse($contactModel->isVerified);
-        $this->assertFalse($contactModel->is_default);
+        $mobileModel = UserHasContact::find($mobile->id);
+        $this->assertEquals($mobile->contact, $mobileModel->contact);
+        $this->assertFalse($mobileModel->isVerified);
+        $this->assertFalse($mobileModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_for_default_contact_only_change_to_is_not_default(): void
+    public function test_happy_case_for_default_email_only_change_to_is_not_verified(): void
     {
-        $contact = UserHasContact::factory()->create(['is_default' => true]);
-        $contact->newVerifyCode();
-        $contact->lastVerification()->update(['verified_at' => now()]);
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->email()->createQuietly(['is_default' => true]);
+        $email->newVerifyCode();
+        $email->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
                     'admin.contacts.update',
-                    ['contact' => $contact]
+                    ['contact' => $email]
+                ), ['email' => $email->contact]
+            );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The email update success!',
+            'email' => $email->contact,
+        ]);
+        $emailModel = UserHasContact::find($email->id);
+        $this->assertEquals($email->contact, $emailModel->contact);
+        $this->assertFalse($emailModel->isVerified);
+        $this->assertFalse($emailModel->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
+    }
+
+    public function test_happy_case_for_default_mobile_only_change_to_is_not_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->mobile()->createQuietly(['is_default' => true]);
+        $mobile->newVerifyCode();
+        $mobile->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.contacts.update',
+                    ['contact' => $mobile]
                 ), [
-                    $contact->type => $contact->contact,
+                    'mobile' => $mobile->contact,
                     'is_verified' => true,
                 ]
             );
         $response->assertSuccessful();
         $response->assertJson([
-            'success' => "The {$contact->type} update success!",
-            $contact->type => $contact->contact,
+            'success' => 'The mobile update success!',
+            'mobile' => $mobile->contact,
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $contactModel = UserHasContact::firstWhere('id', $contact->id);
-        $this->assertEquals($contact->contact, $contactModel->contact);
-        $this->assertTrue($contactModel->isVerified);
-        $this->assertFalse($contactModel->is_default);
+        $mobileModel = UserHasContact::find($mobile->id);
+        $this->assertEquals($mobile->contact, $mobileModel->contact);
+        $this->assertTrue($mobileModel->isVerified);
+        $this->assertFalse($mobileModel->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_for_default_email_only_change_to_is_not_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->email()->createQuietly(['is_default' => true]);
+        $email->newVerifyCode();
+        $email->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.contacts.update',
+                    ['contact' => $email]
+                ), [
+                    'email' => $email->contact,
+                    'is_verified' => true,
+                ]
+            );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => 'The email update success!',
+            'email' => $email->contact,
+            'is_verified' => true,
+            'is_default' => false,
+        ]);
+        $emailModel = UserHasContact::find($email->id);
+        $this->assertEquals($email->contact, $emailModel->contact);
+        $this->assertTrue($emailModel->isVerified);
+        $this->assertFalse($emailModel->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 
     public function test_happy_case_for_default_email_change_contact_and_is_not_verified(): void
     {
-        $email = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->createQuietly([
             'type' => 'email',
             'contact' => 'example@gamil.com',
             'is_default' => true,
@@ -754,15 +946,22 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertFalse($email->isVerified);
         $this->assertFalse($email->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 
     public function test_happy_case_for_default_email_change_contact_and_is_not_default(): void
     {
-        $email = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $email = UserHasContact::factory()->createQuietly([
             'type' => 'email',
             'contact' => 'example@gamil.com',
             'is_default' => true,
@@ -786,15 +985,22 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $email = UserHasContact::firstWhere('id', $email->id);
+        $email = UserHasContact::find($email->id);
         $this->assertEquals('example@live.com', $email->contact);
         $this->assertTrue($email->isVerified);
         $this->assertFalse($email->is_default);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$email->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 
     public function test_happy_case_for_default_mobile_change_contact_and_is_not_verified(): void
     {
-        $mobile = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->createQuietly([
             'type' => 'mobile',
             'contact' => '12345678',
             'is_default' => true,
@@ -815,15 +1021,17 @@ class UpdateTest extends TestCase
             'is_verified' => false,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertFalse($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
     public function test_happy_case_for_default_mobile_only_change_contact_and_is_not_default(): void
     {
-        $mobile = UserHasContact::factory()->create([
+        Event::fake(DefaultEmail::class);
+        $mobile = UserHasContact::factory()->createQuietly([
             'type' => 'mobile',
             'contact' => '12345678',
             'is_default' => true,
@@ -847,9 +1055,10 @@ class UpdateTest extends TestCase
             'is_verified' => true,
             'is_default' => false,
         ]);
-        $mobile = UserHasContact::firstWhere('id', $mobile->id);
+        $mobile = UserHasContact::find($mobile->id);
         $this->assertEquals('87654321', $mobile->contact);
         $this->assertTrue($mobile->isVerified);
         $this->assertFalse($mobile->is_default);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 }

@@ -14,9 +14,17 @@
     if (modelName && customer.id) {
         useEcho(
             `${modelName}.${customer.id}`,
-            '.StripeCustomerCreated',
+            [
+                '.StripeCustomerCreated',
+                '.DefaultEmail',
+            ],
             (event) => {
-                customer.created_stripe_customer = event.created_stripe_customer;
+                if (event.created_stripe_customer !== undefined) {
+                    customer.created_stripe_customer = event.created_stripe_customer;
+                }
+                if (event.default_email !== undefined) {
+                    customer.default_email = event.default_email;
+                }
             }
         );
     }
@@ -29,7 +37,7 @@
         </Alert>
     {:else if ! customer.default_email}
         <Alert color="danger">
-            You have no default email, the stripe cannot send the receipt to you. If you added default email, please reload this page to confirm the email has been synced to stripe.
+            You have no default email, the stripe cannot send the receipt to you.
         </Alert>
     {/if}
 {/if}

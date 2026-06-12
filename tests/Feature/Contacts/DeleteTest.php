@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\User;
 use App\Models\UserHasContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class DeleteTest extends TestCase
@@ -18,7 +21,7 @@ class DeleteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create(['synced_to_stripe' => true]);
         $this->contact = UserHasContact::factory()->create();
     }
 
@@ -42,8 +45,9 @@ class DeleteTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_happy_case(): void
+    public function test_happy_case_when_contact_is_not_default(): void
     {
+        Event::fake(DefaultEmail::class);
         $response = $this->actingAs($this->user)
             ->deleteJson(route(
                 'contacts.destroy',
@@ -51,5 +55,45 @@ class DeleteTest extends TestCase
             ));
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} delete success!"]);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_when_mobile_is_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $this->contact->updateQuietly([
+            'type' => 'mobile',
+            'is_default' => true,
+        ]);
+        $response = $this->actingAs($this->user)
+            ->deleteJson(route(
+                'contacts.destroy',
+                ['contact' => $this->contact]
+            ));
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} delete success!"]);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_when_email_is_default(): void
+    {
+        Event::fake(DefaultEmail::class);
+        $this->contact->updateQuietly([
+            'type' => 'email',
+            'is_default' => true,
+        ]);
+        $response = $this->actingAs($this->user)
+            ->deleteJson(route(
+                'contacts.destroy',
+                ['contact' => $this->contact]
+            ));
+        $response->assertSuccessful();
+        $response->assertJson(['success' => "The {$this->contact->type} delete success!"]);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$this->contact->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 }

@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Contacts;
 
+use App\Library\Stripe\Events\Customer\DefaultEmail;
 use App\Models\User;
 use App\Models\UserHasContact;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -17,7 +20,7 @@ class UpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create(['synced_to_stripe' => true]);
     }
 
     public function test_have_no_login(): void
@@ -125,10 +128,73 @@ class UpdateTest extends TestCase
         $response->assertInvalid([$contact->type => "The {$contact->type} has already been taken."]);
     }
 
-    public function test_happy_case_when_contact_have_no_change_and_origin_is_default_and_is_verified(): void
+    public function test_happy_case_when_contact_have_no_change_and_origin_is_verified_and_have_no_default_contact(): void
     {
         Notification::fake();
-        $contact = UserHasContact::factory()->create(['is_default' => true]);
+        Event::fake(DefaultEmail::class);
+        $contact = UserHasContact::factory()->create();
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'contacts.update',
+                    ['contact' => $contact]
+                ), [$contact->type => "$contact->contact"]
+            );
+        $type = ucfirst($contact->type);
+        $this->assertNull($this->user->{"default$type"});
+        $this->assertTrue($contact->isVerified);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The {$contact->type} update success!",
+            $contact->type => "$contact->contact",
+            "default_{$contact->type}_id" => null,
+            'is_verified' => true,
+        ]);
+        $this->assertNull($contact->lastVerification->expired_at);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_when_contact_have_no_change_and_origin_is_verified_and_has_default_contact(): void
+    {
+        Notification::fake();
+        Event::fake(DefaultEmail::class);
+        $defaultContact = UserHasContact::factory()->createQuietly(['is_default' => true]);
+        $defaultContact->sendVerifyCode();
+        $defaultContact->lastVerification()->update(['verified_at' => now()]);
+        $contact = UserHasContact::factory()->{$defaultContact->type}()->create();
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['verified_at' => now()]);
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'contacts.update',
+                    ['contact' => $contact]
+                ), [$contact->type => "$contact->contact"]
+            );
+        $type = ucfirst($contact->type);
+        $this->assertEquals(
+            $defaultContact->id,
+            $this->user->{"default$type"}->id
+        );
+        $this->assertTrue($contact->isVerified);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The {$contact->type} update success!",
+            $contact->type => "$contact->contact",
+            "default_{$contact->type}_id" => $defaultContact->id,
+            'is_verified' => true,
+        ]);
+        $this->assertNull($contact->lastVerification->expired_at);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_when_contact_have_no_change_and_origin_is_default(): void
+    {
+        Notification::fake();
+        Event::fake(DefaultEmail::class);
+        $contact = UserHasContact::factory()->createQuietly(['is_default' => true]);
         $contact->sendVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
         $response = $this->actingAs($this->user)
@@ -152,23 +218,20 @@ class UpdateTest extends TestCase
             'is_verified' => true,
         ]);
         $this->assertNull($contact->lastVerification->expired_at);
+        Event::assertNotDispatched(DefaultEmail::class);
     }
 
-    public function test_happy_case_when_contact_has_change(): void
+    public function test_happy_case_when_contact_has_change_and_is_mobile_and_origin_is_default(): void
     {
         Notification::fake();
-        $contact = UserHasContact::factory()->create();
+        Event::fake(DefaultEmail::class);
+        $contact = UserHasContact::factory()->createQuietly([
+            'is_default' => true,
+            'type' => 'mobile',
+        ]);
         $contact->sendVerifyCode();
         $contact->lastVerification()->update(['verified_at' => now()]);
-        $newContact = '';
-        switch ($contact->type) {
-            case 'email':
-                $newContact = fake()->freeEmail();
-                break;
-            case 'mobile':
-                $newContact = fake()->numberBetween(10000, 999999999999999);
-                break;
-        }
+        $newContact = fake()->numberBetween(10000, 999999999999999);
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -184,5 +247,40 @@ class UpdateTest extends TestCase
             'is_verified' => false,
         ]);
         $this->assertNotNull($contact->lastVerification->expired_at);
+        Event::assertNotDispatched(DefaultEmail::class);
+    }
+
+    public function test_happy_case_when_contact_has_change_and_is_email_and_origin_is_default(): void
+    {
+        Notification::fake();
+        Event::fake(DefaultEmail::class);
+        $contact = UserHasContact::factory()->createQuietly([
+            'is_default' => true,
+            'type' => 'email',
+        ]);
+        $contact->sendVerifyCode();
+        $contact->lastVerification()->update(['verified_at' => now()]);
+        $newContact = fake()->freeEmail();
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'contacts.update',
+                    ['contact' => $contact]
+                ), [$contact->type => $newContact]
+            );
+        $response->assertSuccessful();
+        $response->assertJson([
+            'success' => "The {$contact->type} update success!",
+            $contact->type => $newContact,
+            "default_{$contact->type}_id" => null,
+            'is_verified' => false,
+        ]);
+        $this->assertNotNull($contact->lastVerification->expired_at);
+        $this->assertBroadcastChannel(
+            DefaultEmail::class,
+            'App.Models.User.'.$contact->user->id,
+            PrivateChannel::class,
+            ['default_email' => null]
+        );
     }
 }
