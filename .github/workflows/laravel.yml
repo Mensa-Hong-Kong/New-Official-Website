@@ -59,10 +59,6 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
 
-      - name: render migration dot env
-        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
-        working-directory: ./ansible
-
       - name: install composer dependencies
         run: composer install
 
@@ -73,17 +69,13 @@ jobs:
         run: npm install @rollup/rollup-linux-x64-gnu --save-optional
 
       - name: build assets
-        run: npm run build
+        run: npm run build:testing
 
       - name: run migrations with seeders
-        run: php artisan migrate --seed
-
-      - name: render dot env
-        run: ansible-playbook -i environments/test/hosts.yml playbooks/phpunit.yml
-        working-directory: ./ansible
+        run: php artisan migrate --env=testing
 
       - name: run test suite
-        run: XDEBUG_MODE=off php artisan test
+        run: XDEBUG_MODE=off php artisan test --env=testing
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -99,10 +91,6 @@ jobs:
         with:
           path: vendor
           key: ${{ hashFiles('composer.lock') }}
-
-      - name: render migration dot env
-        run: ansible-playbook -i environments/local/hosts.yml playbooks/phpunit.yml
-        working-directory: ./ansible
 
       - name: install composer dependencies
         run: composer install

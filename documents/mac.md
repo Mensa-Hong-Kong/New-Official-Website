@@ -45,38 +45,6 @@ export NVM_DIR="$HOME/.nvm"
 nvm install --lts
 ```
 
-### PyEnv
-
-1. Install:
-
-```shell
-brew install pyenv
-```
-
-2. Manually add these lines to `~/.zprofile`
-
-```shell
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-export PIPENV_PYTHON="$PYENV_ROOT/shims/python"
-
-plugin=(
-  pyenv
-)
-
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-```
-
-### Python
-
-1. Install:
-
-```shell
-pyenv install 3.11.4
-pyenv global 3.11.4
-```
-
 ### php 8.2
 
 1. First time install:
