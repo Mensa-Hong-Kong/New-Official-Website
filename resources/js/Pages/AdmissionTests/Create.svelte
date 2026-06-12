@@ -1,16 +1,22 @@
 <script>
     import { seo } from '@/Pages/Layouts/App.svelte';
+    import StripeCustomerAlert from "@/Pages/Components/StripeAlert/Customer.svelte";
     import { formatToDate, formatToDatetime, formatToTime } from '@/timeZoneDatetime';
     import { Alert, Table, Button, Row, Col } from '@sveltestrap/sveltestrap';
     import { Form } from '@inertiajs/svelte'
 
-    let { test, user, products, price } = $props();
+    let { test, user: initUser, products, price } = $props();
+    let user = $state(initUser);
     let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
+    user['id'] = auth.user?.id;
 
     seo.title = products ? 'Detail Admission Test' : 'Confirmation Admission Test';
 </script>
 
 <section class="container">
+    {#if products || price}
+        <StripeCustomerAlert bind:customer={user} type="user" />
+    {/if}
     <h3 class="mb-2 fw-bold">
         {isReschedule ? 'Reschedule' : 'Schedule'}
         Admission Test {products ? 'Detail' : 'Confirmation'}
