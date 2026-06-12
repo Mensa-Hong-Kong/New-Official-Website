@@ -10,10 +10,11 @@
     let { auth, contents, tests, user: initUser } = $props();
     let user = $state(initUser);
     let isReschedule = user?.last_admission_test && ! user?.last_admission_test.pivot_is_present
+    user['id'] = auth.user?.id;
 </script>
 
 <section class="container">
-    {#if user}
+    {#if auth.user}
         <StripeCustomerAlert bind:customer={user} type="user" />
     {/if}
     <h2 class="mb-2 fw-bold text-uppercase">Admission Tests</h2>
