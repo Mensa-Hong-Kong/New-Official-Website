@@ -3,8 +3,8 @@
 namespace Tests\Feature\Library\Stripe\Webhooks;
 
 use App\Library\Stripe\Http\Controllers\WebHooks\Controller;
-use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Http\Request;
+use Tests\TestCase;
 
 class HandleTest extends TestCase
 {
