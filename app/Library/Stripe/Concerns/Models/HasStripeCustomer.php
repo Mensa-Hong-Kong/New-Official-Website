@@ -3,19 +3,39 @@
 namespace App\Library\Stripe\Concerns\Models;
 
 use App\Library\Stripe\Client;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
+ * Trait HasStripeCustomer
+ *
+ * @property string $id
  * @property string $name
  * @property string $email
- * @property-read Collection<int, StripeCustomer> $stripe
+ * @property string $synced_to_stripe
+ * @property-read StripeCustomer|null $stripe
+ *
+ * @mixin Model
+ *
+ * @method static void updated(\Closure|string $callback)
  */
 trait HasStripeCustomer
 {
     use CreatableBase;
+
+    public static function bootHasStripeCustomer()
+    {
+        static::updated(
+            function (Model $customer) {
+                if ($customer->wasChanged('synced_to_stripe')) {
+                    event(new Synced($customer, $customer->synced_to_stripe));
+                }
+            }
+        );
+    }
 
     public function stripe(): MorphOne
     {
@@ -49,7 +69,6 @@ trait HasStripeCustomer
             ]);
             if ($result) {
                 $this->update([
-                    'stripe_id' => $result['id'],
                     'synced_to_stripe' => $this->stripeName() == $result['name'] &&
                         $this->stripeEmail() == $result['email'],
                 ]);
