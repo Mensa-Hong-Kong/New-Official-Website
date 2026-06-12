@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin\Contacts;
 
 use App\Library\Stripe\Events\Customer\DefaultEmail;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\ModulePermission;
 use App\Models\User;
 use App\Models\UserHasContact;
@@ -358,7 +359,10 @@ class StoreTest extends TestCase
 
     public function test_happy_case_for_new_not_verified_contact(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
@@ -394,11 +398,15 @@ class StoreTest extends TestCase
             'is_default' => false,
         ]);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_for_new_verified_contact(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $type = fake()->randomElement(['email', 'mobile']);
         $contact = '';
         switch ($type) {
@@ -435,11 +443,15 @@ class StoreTest extends TestCase
             'is_default' => false,
         ]);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_for_new_default_mobile(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $type = 'mobile';
         $contact = fake()->numberBetween(10000, 999999999999999);
         $response = $this->actingAs($this->user)
@@ -468,11 +480,15 @@ class StoreTest extends TestCase
             'is_default' => true,
         ]);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_for_new_default_email(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $type = 'email';
         $contact = fake()->freeEmail();
         $response = $this->actingAs($this->user)
@@ -505,6 +521,12 @@ class StoreTest extends TestCase
             'App.Models.User.'.$this->user->id,
             PrivateChannel::class,
             ['default_email' => ['contact' => $contact]]
+        );
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
         );
     }
 }

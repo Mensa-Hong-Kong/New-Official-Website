@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\Users;
 
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\Address;
 use App\Models\District;
 use App\Models\Gender;
@@ -9,7 +10,9 @@ use App\Models\Member;
 use App\Models\ModulePermission;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -19,9 +22,9 @@ class UpdateTest extends TestCase
     private User $user;
 
     private array $happyCase = [
-        'username' => '12345678',
-        'family_name' => 'LEE',
-        'given_name' => 'Chi Nan',
+        'username' => '87654321',
+        'family_name' => 'Chan',
+        'given_name' => 'Tsi Man',
         'passport_type_id' => 2,
         'passport_number' => 'C668668E',
         'gender' => 'Female',
@@ -36,11 +39,12 @@ class UpdateTest extends TestCase
             'username' => '12345678',
             'password' => '12345678',
             'family_name' => 'Chan',
-            'given_name' => 'Diamond',
+            'given_name' => 'Tsi Man',
             'passport_type_id' => 2,
             'passport_number' => 'A1234567',
             'gender_id' => Gender::firstOrCreate(['name' => 'Male'])->id,
             'birthday' => '1997-07-01',
+            'synced_to_stripe' => true,
         ]);
         $this->user->givePermissionTo('Edit:User');
     }
@@ -293,7 +297,7 @@ class UpdateTest extends TestCase
     public function test_middle_name_is_not_string(): void
     {
         $data = $this->happyCase;
-        $data['middle_name'] = ['Chan'];
+        $data['middle_name'] = ['Diamond'];
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -677,8 +681,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_happy_case_without_middle_name_and_address_when_user_is_not_member(): void
+    public function test_happy_case_without_middle_name_and_address_when_user_is_not_member_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)
             ->putJson(
@@ -700,12 +705,115 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_number'], $user->passport_number);
         $this->assertEquals($data['gender'], $user->gender->name);
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_middle_name_and_without_address_when_user_is_not_member(): void
+    public function test_happy_case_with_family_name_and_without_address_when_user_is_not_member_and_middle_name_and_given_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
-        $data['middle_name'] = 'intelligent';
+        $data['family_name'] = 'Chen';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['family_name'], $user->family_name);
+        $this->assertEmpty($user->middle_name);
+        $this->assertEquals($data['given_name'], $user->given_name);
+        $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $user->passport_number);
+        $this->assertEquals($data['gender'], $user->gender->name);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_given_name_and_without_address_when_user_is_not_member_and_middle_name_and_family_name_have_no_change(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCase;
+        $data['given_name'] = 'Da Wen';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['family_name'], $user->family_name);
+        $this->assertEmpty($user->middle_name);
+        $this->assertEquals($data['given_name'], $user->given_name);
+        $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $user->passport_number);
+        $this->assertEquals($data['gender'], $user->gender->name);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_family_name_and_given_name_and_without_address_when_user_is_not_member_and_middle_name_have_no_change(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCase;
+        $data['family_name'] = 'Chen';
+        $data['given_name'] = 'Da Wen';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['family_name'], $user->family_name);
+        $this->assertEmpty($user->middle_name);
+        $this->assertEquals($data['given_name'], $user->given_name);
+        $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $user->passport_number);
+        $this->assertEquals($data['gender'], $user->gender->name);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_family_name_and_middle_name_and_without_address_when_user_is_not_member_and_given_name_have_no_change(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCase;
+        $data['family_name'] = 'Chen';
+        $data['middle_name'] = 'Diamond';
         $response = $this->actingAs($this->user)
             ->putJson(
                 route(
@@ -726,12 +834,87 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['passport_number'], $user->passport_number);
         $this->assertEquals($data['gender'], $user->gender->name);
         $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
     }
 
-    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_have_no_address_and_without_middle_name(): void
+    public function test_happy_case_with_given_name_and_middle_name_and_without_address_when_user_is_not_member_and_family_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
-        unset($data['middle_name']);
+        $data['middle_name'] = 'Diamond';
+        $data['given_name'] = 'Da Wen';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['family_name'], $user->family_name);
+        $this->assertEquals($data['middle_name'], $user->middle_name);
+        $this->assertEquals($data['given_name'], $user->given_name);
+        $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $user->passport_number);
+        $this->assertEquals($data['gender'], $user->gender->name);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_adorned_name_and_without_address_when_user_is_not_member(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCase;
+        $data['family_name'] = 'Li';
+        $data['middle_name'] = 'Intelligent';
+        $data['given_name'] = 'Chi Nan';
+        $response = $this->actingAs($this->user)
+            ->putJson(
+                route(
+                    'admin.users.update',
+                    ['user' => $this->user]
+                ), $data
+            );
+        $response->assertSuccessful();
+        $data['success'] = 'The user data update success!';
+        $response->assertJson($data);
+        $user = User::firstWhere('id', $this->user->id);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['username'], $user->username);
+        $this->assertEquals($data['family_name'], $user->family_name);
+        $this->assertEquals($data['middle_name'], $user->middle_name);
+        $this->assertEquals($data['given_name'], $user->given_name);
+        $this->assertEquals($data['passport_type_id'], $user->passport_type_id);
+        $this->assertEquals($data['passport_number'], $user->passport_number);
+        $this->assertEquals($data['gender'], $user->gender->name);
+        $this->assertEquals($data['birthday'], $user->birthday->format('Y-m-d'));
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_have_no_address_and_without_middle_name_and_adorned_name_have_no_change(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCase;
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
         $response = $this->actingAs($this->user)
@@ -751,12 +934,13 @@ class UpdateTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name(): void
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
-        unset($data['middle_name']);
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
         $address = Address::create([
@@ -787,12 +971,13 @@ class UpdateTest extends TestCase
                 ->exists()
         );
         $this->assertEquals(1, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_without_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name(): void
+    public function test_happy_case_without_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_middle_name_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
-        unset($data['middle_name']);
         $address = Address::create([
             'district_id' => District::inRandomOrder()->first()->id,
             'value' => '456 Street',
@@ -812,12 +997,13 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
         $this->assertNull($this->user->fresh()->address_id);
         $this->assertEquals(0, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_other_object_using_and_without_middle_name(): void
+    public function test_happy_case_with_change_address_when_user_is_not_member_and_before_has_address_and_the_user_address_have_other_object_using_and_without_middle_name_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCase;
-        unset($data['middle_name']);
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
         $address = Address::create([
@@ -850,10 +1036,12 @@ class UpdateTest extends TestCase
         );
         $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
         $this->assertEquals(2, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_null(): void
+    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_null_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create();
         $member->orders()->create([
             'price' => 200,
@@ -891,10 +1079,12 @@ class UpdateTest extends TestCase
         $this->assertNull($member->prefix_name);
         $this->assertNull($member->nickname);
         $this->assertNull($member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_member_data_and_without_change_middle_name_and_address_when_user_is_active_member_and_before_member_data_is_null(): void
+    public function test_happy_case_with_change_member_data_and_without_change_middle_name_and_address_when_user_is_active_member_and_before_member_data_is_null_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create();
         $member->orders()->create([
             'price' => 200,
@@ -929,10 +1119,12 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['prefix_name'], $member->prefix_name);
         $this->assertEquals($data['nickname'], $member->nickname);
         $this->assertEquals($data['suffix_name'], $member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_not_null(): void
+    public function test_happy_case_without_change_middle_name_and_address_and_member_extends_data_when_user_is_active_member_and_before_member_data_is_not_null_and_adorned_name_have_no_change(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create([
             'prefix_name' => 'Mr.',
             'nickname' => 'Diamond',
@@ -974,5 +1166,6 @@ class UpdateTest extends TestCase
         $this->assertNull($member->prefix_name);
         $this->assertNull($member->nickname);
         $this->assertNull($member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 }

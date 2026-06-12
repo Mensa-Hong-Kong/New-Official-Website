@@ -3,6 +3,7 @@
 namespace Tests\Feature\Contacts;
 
 use App\Library\Stripe\Events\Customer\DefaultEmail;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\User;
 use App\Models\UserHasContact;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -47,7 +48,10 @@ class DeleteTest extends TestCase
 
     public function test_happy_case_when_contact_is_not_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $response = $this->actingAs($this->user)
             ->deleteJson(route(
                 'contacts.destroy',
@@ -56,11 +60,15 @@ class DeleteTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} delete success!"]);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_when_mobile_is_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $this->contact->updateQuietly([
             'type' => 'mobile',
             'is_default' => true,
@@ -73,11 +81,15 @@ class DeleteTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson(['success' => "The {$this->contact->type} delete success!"]);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_when_email_is_default(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $this->contact->updateQuietly([
             'type' => 'email',
             'is_default' => true,
@@ -94,6 +106,12 @@ class DeleteTest extends TestCase
             'App.Models.User.'.$this->contact->user->id,
             PrivateChannel::class,
             ['default_email' => null]
+        );
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->contact->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
         );
     }
 }

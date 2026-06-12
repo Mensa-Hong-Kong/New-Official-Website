@@ -2,12 +2,15 @@
 
 namespace Tests\Feature\User;
 
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\Address;
 use App\Models\District;
 use App\Models\Member;
 use App\Models\OtherPaymentGateway;
 use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -22,7 +25,7 @@ class UpdateTest extends TestCase
         'username' => 'testing123',
         'family_name' => 'Chan',
         'middle_name' => 'Diamond',
-        'given_name' => 'Chi Nan',
+        'given_name' => 'Tsi Man',
         'passport_type_id' => 1,
         'passport_number' => 'A12345678',
         'gender' => 'Male',
@@ -36,6 +39,10 @@ class UpdateTest extends TestCase
         $this->user = User::factory()->create([
             'username' => 'testing123',
             'password' => '12345678',
+            'family_name' => 'Chan',
+            'middle_name' => 'Diamond',
+            'given_name' => 'Tsi Man',
+            'synced_to_stripe' => true,
         ]);
     }
 
@@ -556,8 +563,9 @@ class UpdateTest extends TestCase
         $response->assertInvalid(['address' => 'The address field must not be greater than 255 characters.']);
     }
 
-    public function test_happy_case_without_change_username_and_new_password_and_address_when_user_can_edit_passport_information(): void
+    public function test_happy_case_without_change_username_and_new_password_and_family_name_and_given_name_and_middle_name_and_address_when_user_can_edit_passport_information(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $response = $this->actingAs($this->user)->putJson(route('profile.update'), $data);
         $response->assertSuccessful();
@@ -565,10 +573,12 @@ class UpdateTest extends TestCase
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_username_without_new_password_and_address_when_user_can_edit_passport_information(): void
+    public function test_happy_case_with_change_username_without_new_password_and_family_name_and_given_name_and_middle_name_and_address_when_user_can_edit_passport_information(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['username'] = 'testing2';
         $data['password'] = '12345678';
@@ -578,10 +588,12 @@ class UpdateTest extends TestCase
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_new_password_without_change_username_and_address_when_user_can_edit_passport_information(): void
+    public function test_happy_case_with_new_password_without_change_username_and_family_name_and_given_name_and_middle_name_and_address_when_user_can_edit_passport_information(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['password'] = '12345678';
         $data['new_password'] = '98765432';
@@ -592,10 +604,12 @@ class UpdateTest extends TestCase
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_have_no_address_and_without_change_username_and_new_password(): void
+    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_have_no_address_and_without_change_username_and_new_password_and_family_name_and_given_name_and_middle_name(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
@@ -610,10 +624,12 @@ class UpdateTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password(): void
+    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_and_family_name_and_given_name_and_middle_name(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
@@ -639,10 +655,12 @@ class UpdateTest extends TestCase
                 ->exists()
         );
         $this->assertEquals(1, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_without_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password(): void
+    public function test_happy_case_without_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_no_other_object_using_and_without_change_username_and_new_password_and_family_name_and_given_name_and_middle_name(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $address = Address::create([
             'district_id' => District::inRandomOrder()->first()->id,
@@ -659,10 +677,12 @@ class UpdateTest extends TestCase
         $response->assertJson($expect);
         $this->assertNull($this->user->fresh()->address_id);
         $this->assertEquals(0, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password(): void
+    public function test_happy_case_with_change_address_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_and_family_name_and_given_name_and_middle_name(): void
     {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['district_id'] = District::inRandomOrder()->first()->id;
         $data['address'] = '123 Street';
@@ -690,10 +710,69 @@ class UpdateTest extends TestCase
         );
         $this->assertNotEquals($address->id, $this->user->fresh()->address_id);
         $this->assertEquals(2, Address::count());
+        Event::assertNotDispatched(Synced::class);
     }
 
-    public function test_happy_case_with_change_username_and_new_password_and_without_address_when_user_can_edit_passport_information(): void
+    public function test_happy_case_with_change_family_name_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_and_address_and_given_name_and_middle_name(): void
     {
+        Event::fake(Synced::class);
+        $data = $this->happyCaseWithPassportInformation;
+        $data['family_name'] = 'Chen';
+        $response = $this->actingAs($this->user)->putJson(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_change_given_name_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_and_address_and_family_name_and_middle_name(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCaseWithPassportInformation;
+        $data['given_name'] = 'Da Wen';
+        $response = $this->actingAs($this->user)->putJson(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_change_middle_name_when_user_can_edit_passport_information_and_before_has_address_and_the_user_address_have_other_object_using_and_without_change_username_and_new_password_and_address_and_family_name_and_given_name(): void
+    {
+        Event::fake(Synced::class);
+        $data = $this->happyCaseWithPassportInformation;
+        $data['middle_name'] = 'Derwin';
+        $response = $this->actingAs($this->user)->putJson(route('profile.update'), $data);
+        $response->assertSuccessful();
+        $unsetKeys = ['password', 'new_password', 'new_password_confirmation'];
+        $expect = array_diff_key($data, array_flip($unsetKeys));
+        $expect['success'] = 'The profile update success!';
+        $response->assertJson($expect);
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$this->user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
+        );
+    }
+
+    public function test_happy_case_with_change_username_and_new_password_and_without_address_and_family_name_and_given_name_and_middle_name_when_user_can_edit_passport_information(): void
+    {
+        Event::fake(Synced::class);
         $data = $this->happyCaseWithPassportInformation;
         $data['username'] = 'testing2';
         $data['password'] = '12345678';
@@ -705,10 +784,12 @@ class UpdateTest extends TestCase
         $expect = array_diff_key($data, array_flip($unsetKeys));
         $expect['success'] = 'The profile update success!';
         $response->assertJson($expect);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_without_change_username_and_new_password_and_address_and_member_data_when_user_is_active_member_and_before_member_data_is_null(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create();
         $member->orders()->create([
             'price' => 200,
@@ -738,10 +819,12 @@ class UpdateTest extends TestCase
         $this->assertNull($member->prefix_name);
         $this->assertNull($member->nickname);
         $this->assertNull($member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_without_change_username_and_new_password_and_address_and_with_member_data_when_user_is_active_member_and_before_member_data_is_null(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create();
         $member->orders()->create([
             'price' => 200,
@@ -771,10 +854,12 @@ class UpdateTest extends TestCase
         $this->assertEquals($data['prefix_name'], $member->prefix_name);
         $this->assertEquals($data['nickname'], $member->nickname);
         $this->assertEquals($data['suffix_name'], $member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_without_change_username_and_new_password_and_address_and_member_data_when_user_is_active_member_and_before_member_data_is_not_null(): void
     {
+        Event::fake(Synced::class);
         $member = $this->user->member()->create([
             'prefix_name' => 'Mr.',
             'nickname' => 'Tester',
@@ -808,5 +893,6 @@ class UpdateTest extends TestCase
         $this->assertNull($member->prefix_name);
         $this->assertNull($member->nickname);
         $this->assertNull($member->suffix_name);
+        Event::assertNotDispatched(Synced::class);
     }
 }

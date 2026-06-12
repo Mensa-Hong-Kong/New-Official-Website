@@ -3,6 +3,7 @@
 namespace Tests\Feature\Contacts;
 
 use App\Library\Stripe\Events\Customer\DefaultEmail;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Models\User;
 use App\Models\UserHasContact;
 use App\Notifications\VerifyContact;
@@ -283,7 +284,10 @@ class VerifyTest extends TestCase
 
     public function test_happy_case_have_no_other_user_default_same_contact(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $response = $this->actingAs($this->user)
             ->postJson(
                 route('contacts.verify', ['contact' => $this->contact]),
@@ -293,11 +297,15 @@ class VerifyTest extends TestCase
         $response->assertJson(['success' => "The {$this->contact->type} verify success."]);
         $this->assertTrue($this->contact->refresh()->isVerified);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_has_other_user_default_mobile(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $this->contact->update(['type' => 'mobile']);
         $user = User::factory()->create();
         $contact = UserHasContact::factory()->createQuietly([
@@ -319,11 +327,15 @@ class VerifyTest extends TestCase
         $this->assertFalse($contact->refresh()->is_default);
         $this->assertFalse($contact->refresh()->isVerified);
         Event::assertNotDispatched(DefaultEmail::class);
+        Event::assertNotDispatched(Synced::class);
     }
 
     public function test_happy_case_has_other_user_default_email(): void
     {
-        Event::fake(DefaultEmail::class);
+        Event::fake([
+            DefaultEmail::class,
+            Synced::class,
+        ]);
         $this->contact->update(['type' => 'email']);
         $user = User::factory()->create();
         $contact = UserHasContact::factory()->createQuietly([
@@ -349,6 +361,12 @@ class VerifyTest extends TestCase
             'App.Models.User.'.$user->id,
             PrivateChannel::class,
             ['default_email' => null]
+        );
+        $this->assertBroadcastChannel(
+            Synced::class,
+            'App.Models.User.'.$user->id,
+            PrivateChannel::class,
+            ['synced_to_stripe' => false]
         );
     }
 }
