@@ -6,10 +6,6 @@ Please read the documents folder for Windows or Mac setup instructions.
 
 ## Pull the project
 
-## Gen .env
-
-Please read documents folder for ansible
-
 ## Install Library
 
 ```shell
