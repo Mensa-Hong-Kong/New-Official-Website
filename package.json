@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build && vite build --ssr",
-        "dev": "vite && vite --ssr"
+        "build:testing": "vite build --mode testing && vite build --mode testing --ssr",
+        "dev": "vite",
+        "dev:testing": "vite --mode testing"
     },
     "devDependencies": {
         "@laravel/echo-svelte": "^2.3.4",
