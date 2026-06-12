@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Library\Stripe\Events\Customer\DefaultEmail;
+use App\Library\Stripe\Events\Customer\Synced;
 use App\Notifications\VerifyContact;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -101,6 +102,7 @@ class UserHasContact extends Model
                                     $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
                                 }
                             )->update(['synced_to_stripe' => false]);
+                            event(new Synced($otherSameDefaultContacts->pluck('user')->filter()->unique('id'), false));
                             event(new DefaultEmail($otherSameDefaultContacts->pluck('user')->filter()->unique('id')));
                         }
                     }
@@ -139,6 +141,7 @@ class UserHasContact extends Model
                                         $query->whereIn('id', $otherSameDefaultContacts->pluck('id')->toArray());
                                     }
                                 )->update(['synced_to_stripe' => false]);
+                                event(new Synced($otherSameDefaultContacts->pluck('user')->filter()->unique('id'), false));
                                 event(new DefaultEmail($otherSameDefaultContacts->pluck('user')->filter()->unique('id')));
                             }
                         }
@@ -283,6 +286,7 @@ class UserHasContact extends Model
                 $users = $otherSameDefaultContacts->pluck('user')->filter()->unique('id');
                 User::whereIn('id', $users->pluck('id')->toArray())
                     ->update(['synced_to_stripe' => false]);
+                event(new Synced($users, false));
                 event(new DefaultEmail($users));
             }
             ContactHasVerification::whereNull('expired_at')
