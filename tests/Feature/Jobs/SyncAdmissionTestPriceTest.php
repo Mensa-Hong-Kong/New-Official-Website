@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Jobs;
 
-use App\Jobs\Stripe\Prices\SyncAdmissionTest;
+use App\Library\Stripe\Jobs\SyncPriceToStripe;
 use App\Models\AdmissionTestPrice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -30,7 +30,7 @@ class SyncAdmissionTestPriceTest extends TestCase
     {
         $this->price->product->update(['stripe_id' => null]);
         Http::fake();
-        $job = (new SyncAdmissionTest($this->price->id))->withFakeQueueInteractions();
+        $job = (new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id))->withFakeQueueInteractions();
         $job->handle();
         $job->assertReleased(60);
         Http::assertNothingSent();
@@ -66,7 +66,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'stripe_one_time_type_id' => $data['id'],
             'synced_one_time_type_to_stripe' => true,
         ]);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
         Http::assertNothingSent();
     }
 
@@ -76,7 +76,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'https://api.stripe.com/v1/prices/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
     }
 
     public function test_stripe_created_and_price_update_to_date_just_missing_save_stripe_id(): void
@@ -111,7 +111,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             ]),
         ]);
         $this->price->update(['name' => $data['nickname']]);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
         $getProductUrl = Uri::of('https://api.stripe.com/v1/prices/search')
             ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
             ->__toString();
@@ -137,7 +137,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         ]);
         $this->price->update(['stripe_one_time_type_id' => 'price_1MoBy5LkdIwHu7ixZhnattbh']);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
     }
 
     public function test_happy_case_has_stripe_id_just_data_not_update_to_date(): void
@@ -170,7 +170,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'stripe_one_time_type_id' => $response['id'],
             'name' => $response['nickname'],
         ]);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
         Http::assertSent(
             function (Request $request) use ($response) {
                 return $request->url() == "https://api.stripe.com/v1/prices/{$response['id']}";
@@ -197,7 +197,7 @@ class SyncAdmissionTestPriceTest extends TestCase
                 ])->pushStatus(503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
     }
 
     public function test_happy_case_stripe_first_not_found_and_create_stripe_price(): void
@@ -233,7 +233,7 @@ class SyncAdmissionTestPriceTest extends TestCase
             'https://api.stripe.com/v1/prices' => Http::response($response),
         ]);
         $this->price->update(['name' => $response['nickname']]);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
         $urls = [
             Uri::of('https://api.stripe.com/v1/prices/search')
                 ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])
@@ -289,7 +289,7 @@ class SyncAdmissionTestPriceTest extends TestCase
         ]);
         $this->price->update(['name' => null]);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
     }
 
     public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date(): void
@@ -346,7 +346,7 @@ class SyncAdmissionTestPriceTest extends TestCase
                 ])->push($response),
         ]);
         $this->price->update(['name' => $response['nickname']]);
-        app()->call([new SyncAdmissionTest($this->price->id), 'handle']);
+        app()->call([new SyncPriceToStripe(AdmissionTestPrice::class, $this->price->id), 'handle']);
         $urls = [
             Uri::of('https://api.stripe.com/v1/prices/search')
                 ->withQuery(['query' => "type:'one_time' AND metadata['type']:'".AdmissionTestPrice::class."' AND metadata['id']:'{$this->price->id}'"])

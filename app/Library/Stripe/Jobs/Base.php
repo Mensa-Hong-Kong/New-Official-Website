@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library\Stripe\Abstracts\Jobs;
+namespace App\Library\Stripe\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -12,9 +12,8 @@ abstract class Base implements ShouldQueue
 {
     use InteractsWithQueue, Queueable;
 
-    protected string $model;
-
     public function __construct(
+        protected string $model,
         protected int $modelID
     ) {}
 

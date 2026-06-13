@@ -5,10 +5,47 @@ namespace App\Library\Stripe\Concerns\Models;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Exceptions\AlreadyCreated;
 use App\Library\Stripe\Exceptions\NotYetCreated;
+use App\Library\Stripe\Jobs\SyncProductToStripe;
+use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Trait HasStripeCustomer
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $synced_to_stripe
+ *
+ * @mixin Model
+ *
+ * @method static void created(\Closure|string $callback)
+ * @method static void updating(\Closure|string $callback)
+ */
 trait HasStripeProduct
 {
     use UpdatableBase;
+
+    public static function bootHasStripeProduct()
+    {
+        static::created(
+            function (Model $product): void {
+                SyncProductToStripe::dispatch(
+                    __CLASS__,
+                    $product->id
+                );
+            }
+        );
+        static::updating(
+            function (Model $product): void {
+                if ($product->isDirty('name')) {
+                    $product->synced_to_stripe = false;
+                    SyncProductToStripe::dispatch(
+                        __CLASS__,
+                        $product->id
+                    );
+                }
+            }
+        );
+    }
 
     public function getStripe(): ?array
     {

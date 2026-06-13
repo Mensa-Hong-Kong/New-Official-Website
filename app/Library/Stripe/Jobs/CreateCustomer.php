@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Library\Stripe\Abstracts\Jobs;
+namespace App\Library\Stripe\Jobs;
 
 use Illuminate\Support\Facades\DB;
 
-abstract class SyncProductToStripe extends Base
+class CreateCustomer extends Base
 {
     public function handle(): void
     {
         DB::beginTransaction();
         $model = $this->model::lockForUpdate()
             ->find($this->modelID);
-        if (! $model->synced_to_stripe) {
-            $model->stripeUpdateOrCreate();
+        if (! $model->stripe) {
+            $model->stripeCreate();
             DB::commit();
         } else {
             DB::rollBack();

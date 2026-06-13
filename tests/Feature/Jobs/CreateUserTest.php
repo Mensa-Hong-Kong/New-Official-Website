@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Jobs;
 
-use App\Jobs\Stripe\Customers\CreateUser;
 use App\Library\Stripe\Events\Customer\Created;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Models\User;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,7 +30,7 @@ class CreateUserTest extends TestCase
     {
         Http::fake();
         $this->user->stripe()->create(['id' => 'cus_NeGfPRiPKxeBi1']);
-        app()->call([new CreateUser($this->user->id), 'handle']);
+        app()->call([new CreateCustomer(User::class, $this->user->id), 'handle']);
         Http::assertNothingSent();
     }
 
@@ -40,7 +40,7 @@ class CreateUserTest extends TestCase
             'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new CreateUser($this->user->id), 'handle']);
+        app()->call([new CreateCustomer(User::class, $this->user->id), 'handle']);
     }
 
     public function test_already_stripe_user_just_missing_save_stripe_id(): void
@@ -87,7 +87,7 @@ class CreateUserTest extends TestCase
                 'data' => [$data],
             ]),
         ]);
-        app()->call([new CreateUser($this->user->id), 'handle']);
+        app()->call([new CreateCustomer(User::class, $this->user->id), 'handle']);
         $getCustomerUrl = Uri::of('https://api.stripe.com/v1/customers/search')
             ->withQuery(['query' => "metadata['type']:'".User::class."' AND metadata['id']:'{$this->user->id}'"])
             ->__toString();
@@ -125,7 +125,7 @@ class CreateUserTest extends TestCase
             'https://api.stripe.com/v1/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new CreateUser($this->user->id), 'handle']);
+        app()->call([new CreateCustomer(User::class, $this->user->id), 'handle']);
         Event::assertNotDispatched(Created::class);
     }
 
@@ -174,7 +174,7 @@ class CreateUserTest extends TestCase
             'middle_name' => null,
             'family_name' => 'Rosen',
         ]);
-        app()->call([new CreateUser($this->user->id), 'handle']);
+        app()->call([new CreateCustomer(User::class, $this->user->id), 'handle']);
         $getCustomerUrl = Uri::of('https://api.stripe.com/v1/customers/search')
             ->withQuery(['query' => "metadata['type']:'".User::class."' AND metadata['id']:'{$this->user->id}'"])
             ->__toString();

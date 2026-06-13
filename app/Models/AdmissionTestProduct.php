@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
 use App\Library\Stripe\Concerns\Models\HasStripeProduct;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,26 +73,6 @@ class AdmissionTestProduct extends Model
         'end_at' => 'datetime',
         'synced_to_stripe' => 'boolean',
     ];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::created(
-            function (AdmissionTestProduct $product): void {
-                SyncProduct::dispatch($product->id);
-            }
-        );
-        static::updating(
-            function (AdmissionTestProduct $product): void {
-                if ($product->isDirty('name')) {
-                    $product->synced_to_stripe = false;
-                    SyncProduct::dispatch($product->id);
-                }
-            }
-        );
-    }
 
     public function prices(): HasMany
     {

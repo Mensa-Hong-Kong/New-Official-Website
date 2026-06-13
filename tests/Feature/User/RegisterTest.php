@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\User;
 
-use App\Jobs\Stripe\Customers\CreateUser;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Models\Address;
 use App\Models\District;
 use App\Models\User;
@@ -377,7 +377,7 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_without_mobile_and_email_and_address_and_with_middle_name_happy_case(): void
@@ -387,7 +387,7 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register'), $data);
         $response->assertValid();
         $response->assertRedirectToRoute('profile.show');
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_without_middle_name_and_email_and_address_and_with_mobile_happy_case(): void
@@ -402,7 +402,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 12345678)
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_without_middle_name_and_mobile_and_address_and_with_email_happy_case(): void
@@ -417,7 +417,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 'example@gamil.com')
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_without_middle_name_and_mobile_and_email_and_with_address_happy_case(): void
@@ -433,7 +433,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_mobile_and_without_email_and_address_happy_case(): void
@@ -449,7 +449,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 12345678)
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_email_and_without_mobile_and_address_happy_case(): void
@@ -465,7 +465,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 'example@gamil.com')
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_address_and_without_mobile_and_email_happy_case(): void
@@ -482,7 +482,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_email_and_mobile_and_without_middle_name_and_address_happy_case(): void
@@ -503,7 +503,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 'example@gamil.com')
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_email_and_address_and_without_middle_name_and_mobile_happy_case(): void
@@ -526,7 +526,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_email_and_mobile_and_address_and_without_middle_happy_case(): void
@@ -554,7 +554,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_email_and_mobile_and_without_address_happy_case(): void
@@ -576,7 +576,7 @@ class RegisterTest extends TestCase
                 ->where('contact', 'example@gamil.com')
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_email_and_address_and_without_mobile_happy_case(): void
@@ -599,7 +599,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_mobile_and_address_name_and_without_email_happy_case(): void
@@ -622,7 +622,7 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 
     public function test_with_middle_name_and_email_and_mobile_and_address_happy_case(): void
@@ -651,6 +651,6 @@ class RegisterTest extends TestCase
                 ->where('value', $data['address'])
                 ->exists()
         );
-        Queue::assertPushed(CreateUser::class);
+        Queue::assertPushed(CreateCustomer::class);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Library\Stripe\Abstracts\Jobs;
+namespace App\Library\Stripe\Jobs;
 
 use Illuminate\Support\Facades\DB;
 
-abstract class SyncPriceToStripe extends Base
+class SyncPriceToStripe extends Base
 {
     public function handle(): void
     {
