@@ -51,12 +51,26 @@ class StripeCustomer extends Model
     {
         static::created(
             function (StripeCustomer $customer): void {
-                event(new Created($customer, 'created'));
+                event(
+                    new Created(
+                        $customer->customerable_type,
+                        $customer->customerable_id,
+                        'created'
+                    )
+                );
             }
         );
-        static::deleted(
+        static::deleting(
             function (StripeCustomer $customer): void {
-                event(new Created($customer, 'deleted'));
+                if ($customer->customerable) {
+                    event(
+                        new Created(
+                            $customer->customerable_type,
+                            $customer->customerable_id,
+                            'deleted'
+                        )
+                    );
+                }
             }
         );
     }
