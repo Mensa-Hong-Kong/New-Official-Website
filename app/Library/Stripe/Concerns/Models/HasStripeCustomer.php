@@ -2,7 +2,7 @@
 
 namespace App\Library\Stripe\Concerns\Models;
 
-use App\Library\Stripe\Abstracts\Jobs\CreateCustomer;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Events\Customer\Synced;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 /**
  * Trait HasStripeCustomer
  *
- * @property string $id
+ * @property int $id
  * @property string $name
  * @property string $email
  * @property string $synced_to_stripe
@@ -31,10 +31,10 @@ trait HasStripeCustomer
     public static function bootHasStripeCustomer()
     {
         static::created(
-            function (Model $user): void {
+            function (Model $customer): void {
                 CreateCustomer::dispatch(
                     __CLASS__,
-                    $user->id
+                    $customer->id
                 );
             }
         );
