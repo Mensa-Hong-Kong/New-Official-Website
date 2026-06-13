@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Library\Stripe\Jobs;
+
+use Illuminate\Support\Facades\DB;
+
+class CreateCustomer extends Base
+{
+    public function handle(): void
+    {
+        DB::beginTransaction();
+        $model = $this->model::lockForUpdate()
+            ->find($this->modelID);
+        if (! $model->stripe) {
+            $model->stripeCreate();
+            DB::commit();
+        } else {
+            DB::rollBack();
+        }
+    }
+}
