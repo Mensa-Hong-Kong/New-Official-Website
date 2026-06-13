@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products\Prices;
 
-use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
+use App\Library\Stripe\Jobs\SyncPriceToStripe;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\ModulePermission;
@@ -197,6 +197,6 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertFalse((bool) $price->synced_one_time_type_to_stripe);
-        Queue::assertPushed(SyncPrice::class);
+        Queue::assertPushed(SyncPriceToStripe::class);
     }
 }

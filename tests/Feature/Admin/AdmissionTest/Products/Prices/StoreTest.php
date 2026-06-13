@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products\Prices;
 
-use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
 use App\Library\Stripe\Amount;
+use App\Library\Stripe\Jobs\SyncPriceToStripe;
 use App\Models\AdmissionTestPrice;
 use App\Models\AdmissionTestProduct;
 use App\Models\ModulePermission;
@@ -197,6 +197,6 @@ class StoreTest extends TestCase
         $data['id'] = $price->id;
         $data['updated_at'] = $price->updated_at->toISOString();
         $response->assertJson($data);
-        Queue::assertPushed(SyncPrice::class);
+        Queue::assertPushed(SyncPriceToStripe::class);
     }
 }
