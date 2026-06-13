@@ -2,10 +2,14 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
+use App\Jobs\Caches\RebuildNavigation;
 use App\Models\ModulePermission;
 use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use Mockery;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -203,21 +207,55 @@ class StoreTest extends TestCase
 
     public function test_happy_case_when_have_no_url(): void
     {
+        Cache::spy();
         $response = $this->actingAs($this->user)->postJson(
             route('admin.navigation-items.store'),
             $this->happyCase
         );
         $response->assertRedirectToRoute('admin.navigation-items.index');
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_when_has_url(): void
     {
-        $data = $this->happyCase;
+        Cache::spy();
         $data['url'] = 'https://google.com';
         $response = $this->actingAs($this->user)->postJson(
             route('admin.navigation-items.store'),
             $this->happyCase
         );
         $response->assertRedirectToRoute('admin.navigation-items.index');
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
+    }
+
+    public function test_happy_case_whe_redis_is_down()
+    {
+        Bus::fake();
+        Cache::spy()->shouldReceive('lock')->once()
+            ->andThrow(new \RuntimeException('Redis error'));
+        $response = $this->actingAs($this->user)->postJson(
+            route('admin.navigation-items.store'),
+            $this->happyCase
+        );
+        $response->assertRedirectToRoute('admin.navigation-items.index');
+        Bus::assertDispatched(RebuildNavigation::class);
     }
 }

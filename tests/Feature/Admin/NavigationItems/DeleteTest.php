@@ -2,10 +2,14 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
+use App\Jobs\Caches\RebuildNavigation;
 use App\Models\ModulePermission;
 use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use Mockery;
 use Tests\TestCase;
 
 class DeleteTest extends TestCase
@@ -72,6 +76,7 @@ class DeleteTest extends TestCase
 
     public function test_happy_case_when_have_no_children(): void
     {
+        Cache::spy();
         $response = $this->actingAs($this->user)->deleteJson(
             route(
                 'admin.navigation-items.destroy',
@@ -80,10 +85,21 @@ class DeleteTest extends TestCase
         );
         $response->assertJson(['success' => 'The display order update success!']);
         $this->assertFalse(NavigationItem::where('id', $this->item->id)->exists());
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_when_has_children(): void
     {
+        Cache::spy();
         $subItem = NavigationItem::factory()->create([
             'master_id' => $this->item->id,
         ]);
@@ -96,5 +112,31 @@ class DeleteTest extends TestCase
         $response->assertJson(['success' => 'The display order update success!']);
         $this->assertFalse(NavigationItem::where('id', $this->item->id)->exists());
         $this->assertFalse(NavigationItem::where('id', $subItem->id)->exists());
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
+    }
+
+    public function test_happy_case_whe_redis_is_down()
+    {
+        Bus::fake();
+        Cache::spy()->shouldReceive('lock')->once()
+            ->andThrow(new \RuntimeException('Redis error'));
+        $response = $this->actingAs($this->user)->deleteJson(
+            route(
+                'admin.navigation-items.destroy',
+                ['navigation_item' => $this->item]
+            )
+        );
+        $response->assertJson(['success' => 'The display order update success!']);
+        $this->assertFalse(NavigationItem::where('id', $this->item->id)->exists());
+        Bus::assertDispatched(RebuildNavigation::class);
     }
 }
