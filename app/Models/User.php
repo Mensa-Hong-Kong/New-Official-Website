@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\Stripe\Customers\CreateUser;
 use App\Library\Stripe\Concerns\Models\HasStripeCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
 use Carbon\Carbon;
@@ -162,11 +161,6 @@ class User extends Authenticatable
      */
     protected static function booted(): void
     {
-        static::created(
-            function (User $user): void {
-                CreateUser::dispatch($user->id);
-            }
-        );
         static::updating(
             function (User $user): void {
                 if ($user->isDirty(['family_name', 'middle_name', 'given_name'])) {
