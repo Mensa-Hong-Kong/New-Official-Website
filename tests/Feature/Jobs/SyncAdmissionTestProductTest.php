@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Jobs;
 
-use App\Jobs\Stripe\Products\SyncAdmissionTest;
+use App\Library\Stripe\Jobs\SyncProductToStripe;
 use App\Models\AdmissionTestProduct;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -52,7 +52,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'stripe_id' => 'prod_NWjs8kKbJWmuuc',
             'synced_to_stripe' => true,
         ]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
         Http::assertNothingSent();
     }
 
@@ -62,7 +62,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'https://api.stripe.com/v1/products/*' => Http::response(status: 503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
     }
 
     public function test_stripe_created_and_product_update_to_date_just_missing_save_stripe_id(): void
@@ -95,7 +95,7 @@ class SyncAdmissionTestProductTest extends TestCase
             ]),
         ]);
         $this->product->update(['name' => $data['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
         $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
@@ -121,7 +121,7 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['stripe_id' => 'prod_NWjs8kKbJWmuuc']);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
     }
 
     public function test_happy_case_has_stripe_id_just_data_not_update_to_date(): void
@@ -153,7 +153,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'stripe_id' => 'prod_NWjs8kKbJWmuuc',
             'name' => $response['name'],
         ]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
         Http::assertSent(
             function (Request $request) {
                 return $request->url() == 'https://api.stripe.com/v1/products/prod_NWjs8kKbJWmuuc';
@@ -180,7 +180,7 @@ class SyncAdmissionTestProductTest extends TestCase
                 ])->pushStatus(503),
         ]);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
     }
 
     public function test_happy_case_stripe_first_not_found_and_create_stripe_product(): void
@@ -215,7 +215,7 @@ class SyncAdmissionTestProductTest extends TestCase
             'https://api.stripe.com/v1/products' => Http::response($response),
         ]);
         $this->product->update(['name' => $response['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
         $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();
@@ -278,7 +278,7 @@ class SyncAdmissionTestProductTest extends TestCase
         ]);
         $this->product->update(['name' => 'Gold Plan']);
         $this->expectException(RequestException::class);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
     }
 
     public function test_happy_case_stripe_created_but_missing_save_stripe_id_and_stripe_data_not_update_to_date(): void
@@ -333,7 +333,7 @@ class SyncAdmissionTestProductTest extends TestCase
                 ])->push($response),
         ]);
         $this->product->update(['name' => $response['name']]);
-        app()->call([new SyncAdmissionTest($this->product->id), 'handle']);
+        app()->call([new SyncProductToStripe(AdmissionTestProduct::class, $this->product->id), 'handle']);
         $getProductUrl = Uri::of('https://api.stripe.com/v1/products/search')
             ->withQuery(['query' => "metadata['type']:'".AdmissionTestProduct::class."' AND metadata['id']:'{$this->product->id}'"])
             ->__toString();

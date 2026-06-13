@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin\AdmissionTest\Products;
 
-use App\Jobs\Stripe\Products\SyncAdmissionTest as SyncProduct;
+use App\Library\Stripe\Jobs\SyncProductToStripe;
 use App\Models\AdmissionTestProduct;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -441,7 +441,7 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertFalse((bool) AdmissionTestProduct::find($this->product->id)->synced_to_stripe);
-        Queue::assertPushed(SyncProduct::class);
+        Queue::assertPushed(SyncProductToStripe::class);
     }
 
     public function test_happy_case_when_only_quota_validity_months_has_change(): void
@@ -485,6 +485,6 @@ class UpdateTest extends TestCase
         $response->assertSuccessful();
         $response->assertJson($data);
         $this->assertFalse((bool) AdmissionTestProduct::find($this->product->id)->synced_to_stripe);
-        Queue::assertPushed(SyncProduct::class);
+        Queue::assertPushed(SyncProductToStripe::class);
     }
 }
