@@ -46,10 +46,8 @@ class StoreTest extends TestCase
                 ->name
         );
         $response = $this->actingAs($user)->postJson(
-            route(
-                route('admin.navigation-items.store'),
-                $this->happyCase
-            )
+            route('admin.navigation-items.store'),
+            $this->happyCase
         );
         $response->assertForbidden();
     }
