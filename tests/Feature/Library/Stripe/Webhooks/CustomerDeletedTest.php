@@ -2,10 +2,14 @@
 
 namespace Tests\Feature\Library\Stripe\Webhooks;
 
+use App\Library\Stripe\Events\Customer\Created;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
 use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CustomerDeletedTest extends TestCase
@@ -45,6 +49,7 @@ class CustomerDeletedTest extends TestCase
 
     public function test_customer_is_not_exists(): void
     {
+        Queue::fake();
         $data = [
             'type' => 'customer.deleted',
             'data' => [
@@ -58,14 +63,17 @@ class CustomerDeletedTest extends TestCase
         );
         $response->assertSuccessful();
         $response->assertSee('Webhook Handled');
+        Queue::assertNothingPushed();
     }
 
-    public function test_customer_exist_and_customer_is_user_and_search_first_stripe_customer_for_user_but_stripe_under_maintenance(): void
+    public function test_customer_exist_and_customer_is_user_and_user_is_not_exist(): void
     {
-        $user = User::factory()->createQuietly();
-        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
-        Http::fake([
-            'https://api.stripe.com/v1/customers/*' => Http::response(status: 503),
+        Queue::fake();
+        Event::fake(Created::class);
+        StripeCustomer::createQuietly([
+            'id' => 'cus_NeGfPRiPKxeBi1',
+            'customerable_type' => User::class,
+            'customerable_id' => 123,
         ]);
         $data = [
             'type' => 'customer.deleted',
@@ -78,97 +86,37 @@ class CustomerDeletedTest extends TestCase
             $data,
             $this->signatureHeader($data)
         );
-        $response->assertStatus(500);
-        $this->assertTrue(StripeCustomer::where('id', 'cus_NeGfPRiPKxeBi1')->exists());
-        $this->assertDatabaseCount('jobs', 0);
-    }
-
-    public function test_customer_exist_and_customer_is_user_and_create_customer_but_stripe_under_maintenance(): void
-    {
-        $user = User::factory()->createQuietly();
-        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
-        Http::fake([
-            'https://api.stripe.com/v1/customers/*' => Http::response([
-                'object' => 'search_result',
-                'url' => '/v1/customers/search',
-                'has_more' => false,
-                'data' => [],
-            ]),
-            'https://api.stripe.com/v1/*' => Http::response(status: 503),
-        ]);
-        $data = [
-            'type' => 'customer.deleted',
-            'data' => [
-                'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
-            ],
-        ];
-        $response = $this->postJson(
-            route('webhooks.stripe'),
-            $data,
-            $this->signatureHeader($data)
-        );
-        $response->assertStatus(500);
-        $this->assertDatabaseCount('jobs', 0);
-    }
-
-    public function test_customer_exist_and_customer_is_user_and_create_customer_happy_case(): void
-    {
-        $user = User::factory()->createQuietly();
-        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
-        $stripeCreateResponse = [
-            'id' => 'cus_NffrFeUfNV2Hib',
-            'object' => 'customer',
-            'address' => null,
-            'balance' => 0,
-            'created' => 1680893993,
-            'currency' => null,
-            'default_source' => null,
-            'delinquent' => false,
-            'description' => null,
-            'email' => 'jennyrosen@example.com',
-            'invoice_prefix' => '0759376C',
-            'invoice_settings' => [
-                'custom_fields' => null,
-                'default_payment_method' => null,
-                'footer' => null,
-                'rendering_options' => null,
-            ],
-            'livemode' => false,
-            'metadata' => [],
-            'name' => 'Jenny Rosen',
-            'next_invoice_sequence' => 1,
-            'phone' => null,
-            'preferred_locales' => [],
-            'shipping' => null,
-            'tax_exempt' => 'none',
-            'test_clock' => null,
-        ];
-        Http::fake([
-            'https://api.stripe.com/v1/customers/*' => Http::response([
-                'object' => 'search_result',
-                'url' => '/v1/customers/search',
-                'has_more' => false,
-                'data' => [],
-            ]),
-            'https://api.stripe.com/v1/*' => Http::response($stripeCreateResponse),
-        ]);
-        $data = [
-            'type' => 'customer.deleted',
-            'data' => [
-                'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
-            ],
-        ];
-        $response = $this->postJson(
-            route('webhooks.stripe'),
-            $data,
-            $this->signatureHeader($data)
-        );
-        $response->assertSuccessful();
         $response->assertSee('Webhook Handled');
-        $this->assertEquals(
-            $stripeCreateResponse['id'],
-            $user->refresh()->stripe->id
+        $this->assertNull(StripeCustomer::find('cus_NeGfPRiPKxeBi1'));
+        Queue::assertNothingPushed();
+        Event::assertNotDispatched(Created::class);
+    }
+
+    public function test_customer_exist_and_customer_is_user_and_user_is_exists(): void
+    {
+        Event::fake(Created::class);
+        Queue::fake();
+        $user = User::factory()->createQuietly();
+        $user->stripe()->createQuietly(['id' => 'cus_NeGfPRiPKxeBi1']);
+        $data = [
+            'type' => 'customer.deleted',
+            'data' => [
+                'object' => ['id' => 'cus_NeGfPRiPKxeBi1'],
+            ],
+        ];
+        $response = $this->postJson(
+            route('webhooks.stripe'),
+            $data,
+            $this->signatureHeader($data)
         );
-        $this->assertDatabaseCount('jobs', 2);
+        $response->assertSee('Webhook Handled');
+        $this->assertNull(StripeCustomer::find('cus_NeGfPRiPKxeBi1'));
+        $this->assertBroadcastChannel(
+            Created::class,
+            'App.Models.User.'.$user->id,
+            PrivateChannel::class,
+            ['created_stripe_customer' => false]
+        );
+        Queue::assertPushed(CreateCustomer::class);
     }
 }

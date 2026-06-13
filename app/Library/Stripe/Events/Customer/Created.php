@@ -2,7 +2,6 @@
 
 namespace App\Library\Stripe\Events\Customer;
 
-use App\Library\Stripe\Models\StripeCustomer;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -16,13 +15,14 @@ class Created implements ShouldBroadcast
      * @param  'created'|'deleted'  $action
      */
     public function __construct(
-        public StripeCustomer $customer,
+        public string $customerableType,
+        public string $customerableID,
         public string $action,
     ) {}
 
     public function broadcastOn(): array
     {
-        return [new PrivateChannel(str_replace('\\', '.', $this->customer->customerable_type).'.'.$this->customer->customerable_id)];
+        return [new PrivateChannel(str_replace('\\', '.', $this->customerableType).'.'.$this->customerableID)];
     }
 
     public function broadcastAs(): string

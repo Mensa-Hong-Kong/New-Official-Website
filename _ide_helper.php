@@ -2217,48 +2217,6 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
-     * @method static bool check()
-     * @method static bool guest()
-     * @method static \Illuminate\Contracts\Auth\Authenticatable|null user()
-     * @method static int|string|null id()
-     * @method static bool validate(array $credentials = [])
-     * @method static bool hasUser()
-     * @method static \Illuminate\Contracts\Auth\Guard setUser(\Illuminate\Contracts\Auth\Authenticatable $user)
-     * @method static bool attempt(array $credentials = [], bool $remember = false)
-     * @method static bool once(array $credentials = [])
-     * @method static void login(\Illuminate\Contracts\Auth\Authenticatable $user, bool $remember = false)
-     * @method static \Illuminate\Contracts\Auth\Authenticatable|false loginUsingId(mixed $id, bool $remember = false)
-     * @method static \Illuminate\Contracts\Auth\Authenticatable|false onceUsingId(mixed $id)
-     * @method static bool viaRemember()
-     * @method static void logout()
-     * @method static \Symfony\Component\HttpFoundation\Response|null basic(string $field = 'email', array $extraConditions = [])
-     * @method static \Symfony\Component\HttpFoundation\Response|null onceBasic(string $field = 'email', array $extraConditions = [])
-     * @method static bool attemptWhen(array $credentials = [], array|callable|null $callbacks = null, bool $remember = false)
-     * @method static string hashPasswordForCookie(string $passwordHash)
-     * @method static void logoutCurrentDevice()
-     * @method static \Illuminate\Contracts\Auth\Authenticatable|null logoutOtherDevices(string $password)
-     * @method static void attempting(mixed $callback)
-     * @method static \Illuminate\Contracts\Auth\Authenticatable getLastAttempted()
-     * @method static string getName()
-     * @method static string getRecallerName()
-     * @method static \Illuminate\Auth\SessionGuard setRememberDuration(int $minutes)
-     * @method static \Illuminate\Contracts\Cookie\QueueingFactory getCookieJar()
-     * @method static void setCookieJar(\Illuminate\Contracts\Cookie\QueueingFactory $cookie)
-     * @method static \Illuminate\Contracts\Events\Dispatcher getDispatcher()
-     * @method static void setDispatcher(\Illuminate\Contracts\Events\Dispatcher $events)
-     * @method static \Illuminate\Contracts\Session\Session getSession()
-     * @method static \Illuminate\Contracts\Auth\Authenticatable|null getUser()
-     * @method static \Symfony\Component\HttpFoundation\Request getRequest()
-     * @method static \Illuminate\Auth\SessionGuard setRequest(\Symfony\Component\HttpFoundation\Request $request)
-     * @method static \Illuminate\Support\Timebox getTimebox()
-     * @method static \Illuminate\Contracts\Auth\Authenticatable authenticate()
-     * @method static \Illuminate\Auth\SessionGuard forgetUser()
-     * @method static \Illuminate\Contracts\Auth\UserProvider getProvider()
-     * @method static void setProvider(\Illuminate\Contracts\Auth\UserProvider $provider)
-     * @method static void macro(string $name, object|callable $macro)
-     * @method static void mixin(object $mixin, bool $replace = true)
-     * @method static bool hasMacro(string $name)
-     * @method static void flushMacros()
      * @see \Illuminate\Auth\AuthManager
      * @see \Illuminate\Auth\SessionGuard
      */
@@ -2470,6 +2428,547 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Auth\AuthManager $instance */
             return $instance->getDefaultUserProvider();
+        }
+
+        /**
+         * Get the currently authenticated user.
+         *
+         * @return \App\Models\User|null
+         * @static
+         */
+        public static function user()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->user();
+        }
+
+        /**
+         * Get the ID for the currently authenticated user.
+         *
+         * @return int|string|null
+         * @static
+         */
+        public static function id()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->id();
+        }
+
+        /**
+         * Log a user into the application without sessions or cookies.
+         *
+         * @param array $credentials
+         * @return bool
+         * @static
+         */
+        public static function once($credentials = [])
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->once($credentials);
+        }
+
+        /**
+         * Log the given user ID into the application without sessions or cookies.
+         *
+         * @param mixed $id
+         * @return \App\Models\User|false
+         * @static
+         */
+        public static function onceUsingId($id)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->onceUsingId($id);
+        }
+
+        /**
+         * Validate a user's credentials.
+         *
+         * @param array $credentials
+         * @return bool
+         * @static
+         */
+        public static function validate($credentials = [])
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->validate($credentials);
+        }
+
+        /**
+         * Attempt to authenticate using HTTP Basic Auth.
+         *
+         * @param string $field
+         * @param array $extraConditions
+         * @return \Symfony\Component\HttpFoundation\Response|null
+         * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+         * @static
+         */
+        public static function basic($field = 'email', $extraConditions = [])
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->basic($field, $extraConditions);
+        }
+
+        /**
+         * Perform a stateless HTTP Basic login attempt.
+         *
+         * @param string $field
+         * @param array $extraConditions
+         * @return \Symfony\Component\HttpFoundation\Response|null
+         * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+         * @static
+         */
+        public static function onceBasic($field = 'email', $extraConditions = [])
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->onceBasic($field, $extraConditions);
+        }
+
+        /**
+         * Attempt to authenticate a user using the given credentials.
+         *
+         * @param array $credentials
+         * @param bool $remember
+         * @return bool
+         * @static
+         */
+        public static function attempt($credentials = [], $remember = false)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->attempt($credentials, $remember);
+        }
+
+        /**
+         * Attempt to authenticate a user with credentials and additional callbacks.
+         *
+         * @param array $credentials
+         * @param array|callable|null $callbacks
+         * @param bool $remember
+         * @return bool
+         * @static
+         */
+        public static function attemptWhen($credentials = [], $callbacks = null, $remember = false)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->attemptWhen($credentials, $callbacks, $remember);
+        }
+
+        /**
+         * Log the given user ID into the application.
+         *
+         * @param mixed $id
+         * @param bool $remember
+         * @return \App\Models\User|false
+         * @static
+         */
+        public static function loginUsingId($id, $remember = false)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->loginUsingId($id, $remember);
+        }
+
+        /**
+         * Log a user into the application.
+         *
+         * @param \Illuminate\Contracts\Auth\Authenticatable $user
+         * @param bool $remember
+         * @return void
+         * @static
+         */
+        public static function login($user, $remember = false)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->login($user, $remember);
+        }
+
+        /**
+         * Create a HMAC of the password hash for storage in cookies.
+         *
+         * @param string $passwordHash
+         * @return string
+         * @static
+         */
+        public static function hashPasswordForCookie($passwordHash)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->hashPasswordForCookie($passwordHash);
+        }
+
+        /**
+         * Log the user out of the application.
+         *
+         * @return void
+         * @static
+         */
+        public static function logout()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->logout();
+        }
+
+        /**
+         * Log the user out of the application on their current device only.
+         *
+         * This method does not cycle the "remember" token.
+         *
+         * @return void
+         * @static
+         */
+        public static function logoutCurrentDevice()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->logoutCurrentDevice();
+        }
+
+        /**
+         * Invalidate other sessions for the current user.
+         *
+         * The application must be using the AuthenticateSession middleware.
+         *
+         * @param string $password
+         * @return \App\Models\User|null
+         * @throws \Illuminate\Auth\AuthenticationException
+         * @static
+         */
+        public static function logoutOtherDevices($password)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->logoutOtherDevices($password);
+        }
+
+        /**
+         * Register an authentication attempt event listener.
+         *
+         * @param mixed $callback
+         * @return void
+         * @static
+         */
+        public static function attempting($callback)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->attempting($callback);
+        }
+
+        /**
+         * Get the last user we attempted to authenticate.
+         *
+         * @return \App\Models\User
+         * @static
+         */
+        public static function getLastAttempted()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getLastAttempted();
+        }
+
+        /**
+         * Get a unique identifier for the auth session value.
+         *
+         * @return string
+         * @static
+         */
+        public static function getName()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getName();
+        }
+
+        /**
+         * Get the name of the cookie used to store the "recaller".
+         *
+         * @return string
+         * @static
+         */
+        public static function getRecallerName()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getRecallerName();
+        }
+
+        /**
+         * Determine if the user was authenticated via "remember me" cookie.
+         *
+         * @return bool
+         * @static
+         */
+        public static function viaRemember()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->viaRemember();
+        }
+
+        /**
+         * Set the number of minutes the remember me cookie should be valid for.
+         *
+         * @param int $minutes
+         * @return \Illuminate\Auth\SessionGuard
+         * @static
+         */
+        public static function setRememberDuration($minutes)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->setRememberDuration($minutes);
+        }
+
+        /**
+         * Get the cookie creator instance used by the guard.
+         *
+         * @return \Illuminate\Contracts\Cookie\QueueingFactory
+         * @throws \RuntimeException
+         * @static
+         */
+        public static function getCookieJar()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getCookieJar();
+        }
+
+        /**
+         * Set the cookie creator instance used by the guard.
+         *
+         * @param \Illuminate\Contracts\Cookie\QueueingFactory $cookie
+         * @return void
+         * @static
+         */
+        public static function setCookieJar($cookie)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->setCookieJar($cookie);
+        }
+
+        /**
+         * Get the event dispatcher instance.
+         *
+         * @return \Illuminate\Contracts\Events\Dispatcher
+         * @static
+         */
+        public static function getDispatcher()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getDispatcher();
+        }
+
+        /**
+         * Set the event dispatcher instance.
+         *
+         * @param \Illuminate\Contracts\Events\Dispatcher $events
+         * @return void
+         * @static
+         */
+        public static function setDispatcher($events)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->setDispatcher($events);
+        }
+
+        /**
+         * Get the session store used by the guard.
+         *
+         * @return \Illuminate\Contracts\Session\Session
+         * @static
+         */
+        public static function getSession()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getSession();
+        }
+
+        /**
+         * Return the currently cached user.
+         *
+         * @return \App\Models\User|null
+         * @static
+         */
+        public static function getUser()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getUser();
+        }
+
+        /**
+         * Set the current user.
+         *
+         * @param \Illuminate\Contracts\Auth\Authenticatable $user
+         * @return \Illuminate\Auth\SessionGuard
+         * @static
+         */
+        public static function setUser($user)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->setUser($user);
+        }
+
+        /**
+         * Get the current request instance.
+         *
+         * @return \Symfony\Component\HttpFoundation\Request
+         * @static
+         */
+        public static function getRequest()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getRequest();
+        }
+
+        /**
+         * Set the current request instance.
+         *
+         * @param \Symfony\Component\HttpFoundation\Request $request
+         * @return \Illuminate\Auth\SessionGuard
+         * @static
+         */
+        public static function setRequest($request)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->setRequest($request);
+        }
+
+        /**
+         * Get the timebox instance used by the guard.
+         *
+         * @return \Illuminate\Support\Timebox
+         * @static
+         */
+        public static function getTimebox()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getTimebox();
+        }
+
+        /**
+         * Determine if the current user is authenticated. If not, throw an exception.
+         *
+         * @return \App\Models\User
+         * @throws \Illuminate\Auth\AuthenticationException
+         * @static
+         */
+        public static function authenticate()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->authenticate();
+        }
+
+        /**
+         * Determine if the guard has a user instance.
+         *
+         * @return bool
+         * @static
+         */
+        public static function hasUser()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->hasUser();
+        }
+
+        /**
+         * Determine if the current user is authenticated.
+         *
+         * @return bool
+         * @static
+         */
+        public static function check()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->check();
+        }
+
+        /**
+         * Determine if the current user is a guest.
+         *
+         * @return bool
+         * @static
+         */
+        public static function guest()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->guest();
+        }
+
+        /**
+         * Forget the current user.
+         *
+         * @return \Illuminate\Auth\SessionGuard
+         * @static
+         */
+        public static function forgetUser()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->forgetUser();
+        }
+
+        /**
+         * Get the user provider used by the guard.
+         *
+         * @return \Illuminate\Contracts\Auth\UserProvider
+         * @static
+         */
+        public static function getProvider()
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            return $instance->getProvider();
+        }
+
+        /**
+         * Set the user provider used by the guard.
+         *
+         * @param \Illuminate\Contracts\Auth\UserProvider $provider
+         * @return void
+         * @static
+         */
+        public static function setProvider($provider)
+        {
+            /** @var \Illuminate\Auth\SessionGuard $instance */
+            $instance->setProvider($provider);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            \Illuminate\Auth\SessionGuard::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            \Illuminate\Auth\SessionGuard::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            return \Illuminate\Auth\SessionGuard::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            \Illuminate\Auth\SessionGuard::flushMacros();
         }
 
             }
@@ -3914,53 +4413,6 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
-     * @method static bool has(\UnitEnum|array|string $key)
-     * @method static bool missing(\UnitEnum|string $key)
-     * @method static mixed get(\UnitEnum|array|string $key, mixed $default = null)
-     * @method static array many(array $keys)
-     * @method static iterable getMultiple(iterable $keys, mixed $default = null)
-     * @method static mixed pull(\UnitEnum|array|string $key, mixed $default = null)
-     * @method static string string(\UnitEnum|string $key, \Closure|string|null $default = null)
-     * @method static int integer(\UnitEnum|string $key, \Closure|int|null $default = null)
-     * @method static float float(\UnitEnum|string $key, \Closure|float|null $default = null)
-     * @method static bool boolean(\UnitEnum|string $key, \Closure|bool|null $default = null)
-     * @method static array array(\UnitEnum|string $key, \Closure|array|null $default = null)
-     * @method static bool put(\UnitEnum|array|string $key, mixed $value, \DateTimeInterface|\DateInterval|int|null $ttl = null)
-     * @method static bool set(\UnitEnum|array|string $key, mixed $value, \DateTimeInterface|\DateInterval|int|null $ttl = null)
-     * @method static bool putMany(array $values, \DateTimeInterface|\DateInterval|int|null $ttl = null)
-     * @method static bool setMultiple(iterable $values, null|int|\DateInterval $ttl = null)
-     * @method static bool add(\UnitEnum|array|string $key, mixed $value, \DateTimeInterface|\DateInterval|int|null $ttl = null)
-     * @method static int|bool increment(\UnitEnum|string $key, mixed $value = 1)
-     * @method static int|bool decrement(\UnitEnum|string $key, mixed $value = 1)
-     * @method static bool forever(\UnitEnum|string $key, mixed $value)
-     * @method static mixed remember(\UnitEnum|string $key, \Closure|\DateTimeInterface|\DateInterval|int|null $ttl, \Closure $callback)
-     * @method static mixed sear(\UnitEnum|string $key, \Closure $callback)
-     * @method static mixed rememberForever(\UnitEnum|string $key, \Closure $callback)
-     * @method static mixed flexible(\UnitEnum|string $key, array $ttl, callable $callback, array|null $lock = null, bool $alwaysDefer = false)
-     * @method static mixed withoutOverlapping(\UnitEnum|string $key, callable $callback, int $lockFor = 0, int $waitFor = 10, string|null $owner = null)
-     * @method static \Illuminate\Cache\Limiters\ConcurrencyLimiterBuilder funnel(\UnitEnum|string $name)
-     * @method static bool forget(\UnitEnum|array|string $key)
-     * @method static bool delete(\UnitEnum|array|string $key)
-     * @method static bool deleteMultiple(iterable $keys)
-     * @method static bool clear()
-     * @method static \Illuminate\Cache\TaggedCache tags(mixed $names)
-     * @method static string|null getName()
-     * @method static bool supportsTags()
-     * @method static int|null getDefaultCacheTime()
-     * @method static \Illuminate\Cache\Repository setDefaultCacheTime(int|null $seconds)
-     * @method static \Illuminate\Contracts\Cache\Store getStore()
-     * @method static \Illuminate\Cache\Repository setStore(\Illuminate\Contracts\Cache\Store $store)
-     * @method static \Illuminate\Contracts\Events\Dispatcher|null getEventDispatcher()
-     * @method static void setEventDispatcher(\Illuminate\Contracts\Events\Dispatcher $events)
-     * @method static void macro(string $name, object|callable $macro)
-     * @method static void mixin(object $mixin, bool $replace = true)
-     * @method static bool hasMacro(string $name)
-     * @method static void flushMacros()
-     * @method static mixed macroCall(string $method, array $parameters)
-     * @method static bool flush()
-     * @method static string getPrefix()
-     * @method static \Illuminate\Contracts\Cache\Lock lock(string $name, int $seconds = 0, string|null $owner = null)
-     * @method static \Illuminate\Contracts\Cache\Lock restoreLock(string $name, string $owner)
      * @see \Illuminate\Cache\CacheManager
      * @see \Illuminate\Cache\Repository
      */
@@ -4135,6 +4587,813 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Cache\CacheManager $instance */
             return $instance->setApplication($app);
+        }
+
+        /**
+         * Determine if an item exists in the cache.
+         *
+         * @param \UnitEnum|array|string $key
+         * @return bool
+         * @static
+         */
+        public static function has($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->has($key);
+        }
+
+        /**
+         * Determine if an item doesn't exist in the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @return bool
+         * @static
+         */
+        public static function missing($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->missing($key);
+        }
+
+        /**
+         * Retrieve an item from the cache by key.
+         *
+         * @param \UnitEnum|array|string $key
+         * @param mixed $default
+         * @return mixed
+         * @static
+         */
+        public static function get($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->get($key, $default);
+        }
+
+        /**
+         * Retrieve multiple items from the cache by key.
+         *
+         * Items not found in the cache will have a null value.
+         *
+         * @param array $keys
+         * @return array
+         * @static
+         */
+        public static function many($keys)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->many($keys);
+        }
+
+        /**
+         * Obtains multiple cache items by their unique keys.
+         *
+         * @return iterable
+         * @param iterable<string> $keys A list of keys that can be obtained in a single operation.
+         * @param mixed $default Default value to return for keys that do not exist.
+         * @return iterable<string, mixed> A list of key => value pairs. Cache keys that do not exist or are stale will have $default as value.
+         * @throws \Psr\SimpleCache\InvalidArgumentException
+         *   MUST be thrown if $keys is neither an array nor a Traversable,
+         *   or if any of the $keys are not a legal value.
+         * @static
+         */
+        public static function getMultiple($keys, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->getMultiple($keys, $default);
+        }
+
+        /**
+         * Retrieve an item from the cache and delete it.
+         *
+         * @param \UnitEnum|array|string $key
+         * @param mixed $default
+         * @return mixed
+         * @static
+         */
+        public static function pull($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->pull($key, $default);
+        }
+
+        /**
+         * Retrieve a string item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param (\Closure():(string|null))|string|null $default
+         * @return string
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function string($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->string($key, $default);
+        }
+
+        /**
+         * Retrieve an integer item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param (\Closure():(int|null))|int|null $default
+         * @return int
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function integer($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->integer($key, $default);
+        }
+
+        /**
+         * Retrieve a float item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param (\Closure():(float|null))|float|null $default
+         * @return float
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function float($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->float($key, $default);
+        }
+
+        /**
+         * Retrieve a boolean item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param (\Closure():(bool|null))|bool|null $default
+         * @return bool
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function boolean($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->boolean($key, $default);
+        }
+
+        /**
+         * Retrieve an array item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param (\Closure():(array<array-key, mixed>|null))|array<array-key, mixed>|null $default
+         * @return array<array-key, mixed>
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function array($key, $default = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->array($key, $default);
+        }
+
+        /**
+         * Store an item in the cache.
+         *
+         * @param \UnitEnum|array|string $key
+         * @param mixed $value
+         * @param \DateTimeInterface|\DateInterval|int|null $ttl
+         * @return bool
+         * @static
+         */
+        public static function put($key, $value, $ttl = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->put($key, $value, $ttl);
+        }
+
+        /**
+         * Store an item in the cache.
+         *
+         * @param \UnitEnum|array|string $key
+         * @param mixed $value
+         * @param \DateTimeInterface|\DateInterval|int|null $ttl
+         * @return bool
+         * @static
+         */
+        public static function set($key, $value, $ttl = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->set($key, $value, $ttl);
+        }
+
+        /**
+         * Store multiple items in the cache for a given number of seconds.
+         *
+         * @param array $values
+         * @param \DateTimeInterface|\DateInterval|int|null $ttl
+         * @return bool
+         * @static
+         */
+        public static function putMany($values, $ttl = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->putMany($values, $ttl);
+        }
+
+        /**
+         * Persists a set of key => value pairs in the cache, with an optional TTL.
+         *
+         * @return bool
+         * @param iterable $values A list of key => value pairs for a multiple-set operation.
+         * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
+         *                                       the driver supports TTL then the library may set a default value
+         *                                       for it or let the driver take care of that.
+         * @return bool True on success and false on failure.
+         * @throws \Psr\SimpleCache\InvalidArgumentException
+         *   MUST be thrown if $values is neither an array nor a Traversable,
+         *   or if any of the $values are not a legal value.
+         * @static
+         */
+        public static function setMultiple($values, $ttl = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->setMultiple($values, $ttl);
+        }
+
+        /**
+         * Store an item in the cache if the key does not exist.
+         *
+         * @param \UnitEnum|array|string $key
+         * @param mixed $value
+         * @param \DateTimeInterface|\DateInterval|int|null $ttl
+         * @return bool
+         * @static
+         */
+        public static function add($key, $value, $ttl = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->add($key, $value, $ttl);
+        }
+
+        /**
+         * Increment the value of an item in the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param mixed $value
+         * @return int|bool
+         * @static
+         */
+        public static function increment($key, $value = 1)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->increment($key, $value);
+        }
+
+        /**
+         * Decrement the value of an item in the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @param mixed $value
+         * @return int|bool
+         * @static
+         */
+        public static function decrement($key, $value = 1)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->decrement($key, $value);
+        }
+
+        /**
+         * Store an item in the cache indefinitely.
+         *
+         * @param \UnitEnum|string $key
+         * @param mixed $value
+         * @return bool
+         * @static
+         */
+        public static function forever($key, $value)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->forever($key, $value);
+        }
+
+        /**
+         * Get an item from the cache, or execute the given Closure and store the result.
+         *
+         * @template TCacheValue
+         * @param \UnitEnum|string $key
+         * @param \Closure|\DateTimeInterface|\DateInterval|int|null $ttl
+         * @param \Closure():  TCacheValue  $callback
+         * @return TCacheValue
+         * @static
+         */
+        public static function remember($key, $ttl, $callback)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->remember($key, $ttl, $callback);
+        }
+
+        /**
+         * Get an item from the cache, or execute the given Closure and store the result forever.
+         *
+         * @template TCacheValue
+         * @param \UnitEnum|string $key
+         * @param \Closure():  TCacheValue  $callback
+         * @return TCacheValue
+         * @static
+         */
+        public static function sear($key, $callback)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->sear($key, $callback);
+        }
+
+        /**
+         * Get an item from the cache, or execute the given Closure and store the result forever.
+         *
+         * @template TCacheValue
+         * @param \UnitEnum|string $key
+         * @param \Closure():  TCacheValue  $callback
+         * @return TCacheValue
+         * @static
+         */
+        public static function rememberForever($key, $callback)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->rememberForever($key, $callback);
+        }
+
+        /**
+         * Retrieve an item from the cache by key, refreshing it in the background if it is stale.
+         *
+         * @template TCacheValue
+         * @param \UnitEnum|string $key
+         * @param array{ 0: \DateTimeInterface|\DateInterval|int, 1: \DateTimeInterface|\DateInterval|int } $ttl
+         * @param (callable(): TCacheValue) $callback
+         * @param array{ seconds?: int, owner?: string }|null $lock
+         * @param bool $alwaysDefer
+         * @return TCacheValue
+         * @static
+         */
+        public static function flexible($key, $ttl, $callback, $lock = null, $alwaysDefer = false)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->flexible($key, $ttl, $callback, $lock, $alwaysDefer);
+        }
+
+        /**
+         * Execute a callback while holding an atomic lock on a cache mutex to prevent overlapping calls.
+         *
+         * @template TReturn
+         * @param \UnitEnum|string $key
+         * @param callable():  TReturn  $callback
+         * @param int $lockFor
+         * @param int $waitFor
+         * @param string|null $owner
+         * @return TReturn
+         * @throws \Illuminate\Contracts\Cache\LockTimeoutException
+         * @static
+         */
+        public static function withoutOverlapping($key, $callback, $lockFor = 0, $waitFor = 10, $owner = null)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->withoutOverlapping($key, $callback, $lockFor, $waitFor, $owner);
+        }
+
+        /**
+         * Funnel a callback for a maximum number of simultaneous executions.
+         *
+         * @param \UnitEnum|string $name
+         * @return \Illuminate\Cache\Limiters\ConcurrencyLimiterBuilder
+         * @static
+         */
+        public static function funnel($name)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->funnel($name);
+        }
+
+        /**
+         * Remove an item from the cache.
+         *
+         * @param \UnitEnum|array|string $key
+         * @return bool
+         * @static
+         */
+        public static function forget($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->forget($key);
+        }
+
+        /**
+         * Remove an item from the cache.
+         *
+         * @param \UnitEnum|array|string $key
+         * @return bool
+         * @static
+         */
+        public static function delete($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->delete($key);
+        }
+
+        /**
+         * Deletes multiple cache items in a single operation.
+         *
+         * @return bool
+         * @param iterable<string> $keys A list of string-based keys to be deleted.
+         * @return bool True if the items were successfully removed. False if there was an error.
+         * @throws \Psr\SimpleCache\InvalidArgumentException
+         *   MUST be thrown if $keys is neither an array nor a Traversable,
+         *   or if any of the $keys are not a legal value.
+         * @static
+         */
+        public static function deleteMultiple($keys)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->deleteMultiple($keys);
+        }
+
+        /**
+         * Wipes clean the entire cache's keys.
+         *
+         * @return bool
+         * @return bool True on success and false on failure.
+         * @static
+         */
+        public static function clear()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->clear();
+        }
+
+        /**
+         * Begin executing a new tags operation if the store supports it.
+         *
+         * @param mixed $names
+         * @return \Illuminate\Cache\TaggedCache
+         * @throws \BadMethodCallException
+         * @static
+         */
+        public static function tags($names)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->tags($names);
+        }
+
+        /**
+         * Get the name of the cache store.
+         *
+         * @return string|null
+         * @static
+         */
+        public static function getName()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->getName();
+        }
+
+        /**
+         * Determine if the current store supports tags.
+         *
+         * @return bool
+         * @static
+         */
+        public static function supportsTags()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->supportsTags();
+        }
+
+        /**
+         * Get the default cache time.
+         *
+         * @return int|null
+         * @static
+         */
+        public static function getDefaultCacheTime()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->getDefaultCacheTime();
+        }
+
+        /**
+         * Set the default cache time in seconds.
+         *
+         * @param int|null $seconds
+         * @return \Illuminate\Cache\Repository
+         * @static
+         */
+        public static function setDefaultCacheTime($seconds)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->setDefaultCacheTime($seconds);
+        }
+
+        /**
+         * Get the cache store implementation.
+         *
+         * @return \Illuminate\Contracts\Cache\Store
+         * @static
+         */
+        public static function getStore()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->getStore();
+        }
+
+        /**
+         * Set the cache store implementation.
+         *
+         * @param \Illuminate\Contracts\Cache\Store $store
+         * @return static
+         * @static
+         */
+        public static function setStore($store)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->setStore($store);
+        }
+
+        /**
+         * Get the event dispatcher instance.
+         *
+         * @return \Illuminate\Contracts\Events\Dispatcher|null
+         * @static
+         */
+        public static function getEventDispatcher()
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->getEventDispatcher();
+        }
+
+        /**
+         * Set the event dispatcher instance.
+         *
+         * @param \Illuminate\Contracts\Events\Dispatcher $events
+         * @return void
+         * @static
+         */
+        public static function setEventDispatcher($events)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            $instance->setEventDispatcher($events);
+        }
+
+        /**
+         * Determine if a cached value exists.
+         *
+         * @param \UnitEnum|string $key
+         * @return bool
+         * @static
+         */
+        public static function offsetExists($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->offsetExists($key);
+        }
+
+        /**
+         * Retrieve an item from the cache by key.
+         *
+         * @param \UnitEnum|string $key
+         * @return mixed
+         * @static
+         */
+        public static function offsetGet($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->offsetGet($key);
+        }
+
+        /**
+         * Store an item in the cache for the default time.
+         *
+         * @param \UnitEnum|string $key
+         * @param mixed $value
+         * @return void
+         * @static
+         */
+        public static function offsetSet($key, $value)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            $instance->offsetSet($key, $value);
+        }
+
+        /**
+         * Remove an item from the cache.
+         *
+         * @param \UnitEnum|string $key
+         * @return void
+         * @static
+         */
+        public static function offsetUnset($key)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            $instance->offsetUnset($key);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            \Illuminate\Cache\Repository::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            \Illuminate\Cache\Repository::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            return \Illuminate\Cache\Repository::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            \Illuminate\Cache\Repository::flushMacros();
+        }
+
+        /**
+         * Dynamically handle calls to the class.
+         *
+         * @param string $method
+         * @param array $parameters
+         * @return mixed
+         * @throws \BadMethodCallException
+         * @static
+         */
+        public static function macroCall($method, $parameters)
+        {
+            /** @var \Illuminate\Cache\Repository $instance */
+            return $instance->macroCall($method, $parameters);
+        }
+
+        /**
+         * Get a lock instance.
+         *
+         * @param string $name
+         * @param int $seconds
+         * @param string|null $owner
+         * @return \Illuminate\Contracts\Cache\Lock
+         * @static
+         */
+        public static function lock($name, $seconds = 0, $owner = null)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->lock($name, $seconds, $owner);
+        }
+
+        /**
+         * Restore a lock instance using the owner identifier.
+         *
+         * @param string $name
+         * @param string $owner
+         * @return \Illuminate\Contracts\Cache\Lock
+         * @static
+         */
+        public static function restoreLock($name, $owner)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->restoreLock($name, $owner);
+        }
+
+        /**
+         * Remove all items from the cache.
+         *
+         * @return bool
+         * @static
+         */
+        public static function flush()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->flush();
+        }
+
+        /**
+         * Remove all expired tag set entries.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushStaleTags()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            $instance->flushStaleTags();
+        }
+
+        /**
+         * Get the Redis connection instance.
+         *
+         * @return \Illuminate\Redis\Connections\Connection
+         * @static
+         */
+        public static function connection()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->connection();
+        }
+
+        /**
+         * Get the Redis connection instance that should be used to manage locks.
+         *
+         * @return \Illuminate\Redis\Connections\Connection
+         * @static
+         */
+        public static function lockConnection()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->lockConnection();
+        }
+
+        /**
+         * Specify the name of the connection that should be used to store data.
+         *
+         * @param string $connection
+         * @return void
+         * @static
+         */
+        public static function setConnection($connection)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            $instance->setConnection($connection);
+        }
+
+        /**
+         * Specify the name of the connection that should be used to manage locks.
+         *
+         * @param string $connection
+         * @return \Illuminate\Cache\RedisStore
+         * @static
+         */
+        public static function setLockConnection($connection)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->setLockConnection($connection);
+        }
+
+        /**
+         * Get the Redis database instance.
+         *
+         * @return \Illuminate\Contracts\Redis\Factory
+         * @static
+         */
+        public static function getRedis()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->getRedis();
+        }
+
+        /**
+         * Get the cache key prefix.
+         *
+         * @return string
+         * @static
+         */
+        public static function getPrefix()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->getPrefix();
+        }
+
+        /**
+         * Set the cache key prefix.
+         *
+         * @param string $prefix
+         * @return void
+         * @static
+         */
+        public static function setPrefix($prefix)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            $instance->setPrefix($prefix);
         }
 
             }
@@ -5444,6 +6703,156 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
+     * @see \Illuminate\Encryption\Encrypter
+     */
+    class Crypt {
+        /**
+         * Determine if the given key and cipher combination is valid.
+         *
+         * @param string $key
+         * @param string $cipher
+         * @return bool
+         * @static
+         */
+        public static function supported($key, $cipher)
+        {
+            return \Illuminate\Encryption\Encrypter::supported($key, $cipher);
+        }
+
+        /**
+         * Create a new encryption key for the given cipher.
+         *
+         * @param string $cipher
+         * @return string
+         * @static
+         */
+        public static function generateKey($cipher)
+        {
+            return \Illuminate\Encryption\Encrypter::generateKey($cipher);
+        }
+
+        /**
+         * Encrypt the given value.
+         *
+         * @param mixed $value
+         * @param bool $serialize
+         * @return string
+         * @throws \Illuminate\Contracts\Encryption\EncryptException
+         * @static
+         */
+        public static function encrypt($value, $serialize = true)
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->encrypt($value, $serialize);
+        }
+
+        /**
+         * Encrypt a string without serialization.
+         *
+         * @param string $value
+         * @return string
+         * @throws \Illuminate\Contracts\Encryption\EncryptException
+         * @static
+         */
+        public static function encryptString($value)
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->encryptString($value);
+        }
+
+        /**
+         * Decrypt the given value.
+         *
+         * @param string $payload
+         * @param bool $unserialize
+         * @return mixed
+         * @throws \Illuminate\Contracts\Encryption\DecryptException
+         * @static
+         */
+        public static function decrypt($payload, $unserialize = true)
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->decrypt($payload, $unserialize);
+        }
+
+        /**
+         * Decrypt the given string without unserialization.
+         *
+         * @param string $payload
+         * @return string
+         * @throws \Illuminate\Contracts\Encryption\DecryptException
+         * @static
+         */
+        public static function decryptString($payload)
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->decryptString($payload);
+        }
+
+        /**
+         * Determine if the given value appears to be encrypted by this encrypter.
+         *
+         * @param mixed $value
+         * @return bool
+         * @static
+         */
+        public static function appearsEncrypted($value)
+        {
+            return \Illuminate\Encryption\Encrypter::appearsEncrypted($value);
+        }
+
+        /**
+         * Get the encryption key that the encrypter is currently using.
+         *
+         * @return string
+         * @static
+         */
+        public static function getKey()
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->getKey();
+        }
+
+        /**
+         * Get the current encryption key and all previous encryption keys.
+         *
+         * @return array
+         * @static
+         */
+        public static function getAllKeys()
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->getAllKeys();
+        }
+
+        /**
+         * Get the previous encryption keys.
+         *
+         * @return array
+         * @static
+         */
+        public static function getPreviousKeys()
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->getPreviousKeys();
+        }
+
+        /**
+         * Set the previous / legacy encryption keys that should be utilized if decryption fails.
+         *
+         * @param array $keys
+         * @return \Illuminate\Encryption\Encrypter
+         * @throws \RuntimeException
+         * @static
+         */
+        public static function previousKeys($keys)
+        {
+            /** @var \Illuminate\Encryption\Encrypter $instance */
+            return $instance->previousKeys($keys);
+        }
+
+            }
+    /**
      * @see https://carbon.nesbot.com/docs/
      * @see https://github.com/briannesbitt/Carbon/blob/master/src/Carbon/Factory.php
      * @method static bool canBeCreatedFromFormat(?string $date, string $format)
@@ -5601,91 +7010,6 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
-     * @method static void useDefaultQueryGrammar()
-     * @method static void useDefaultSchemaGrammar()
-     * @method static void useDefaultPostProcessor()
-     * @method static \Illuminate\Database\Schema\Builder getSchemaBuilder()
-     * @method static \Illuminate\Database\Query\Builder table(\Closure|\Illuminate\Database\Query\Builder|\Illuminate\Contracts\Database\Query\Expression|\UnitEnum|string $table, string|null $as = null)
-     * @method static \Illuminate\Database\Query\Builder query()
-     * @method static mixed selectOne(string $query, array $bindings = [], bool $useReadPdo = true)
-     * @method static mixed scalar(string $query, array $bindings = [], bool $useReadPdo = true)
-     * @method static array selectFromWriteConnection(string $query, array $bindings = [])
-     * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
-     * @method static array selectResultSets(string $query, array $bindings = [], bool $useReadPdo = true)
-     * @method static \Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
-     * @method static bool insert(string $query, array $bindings = [])
-     * @method static int update(string $query, array $bindings = [])
-     * @method static int delete(string $query, array $bindings = [])
-     * @method static bool statement(string $query, array $bindings = [])
-     * @method static int affectingStatement(string $query, array $bindings = [])
-     * @method static bool unprepared(string $query)
-     * @method static int|null threadCount()
-     * @method static array[] pretend(\Closure $callback)
-     * @method static mixed withoutPretending(\Closure $callback)
-     * @method static void bindValues(\PDOStatement $statement, array $bindings)
-     * @method static array prepareBindings(array $bindings)
-     * @method static void logQuery(string $query, array $bindings, float|null $time = null)
-     * @method static void whenQueryingForLongerThan(\DateTimeInterface|\Carbon\CarbonInterval|float|int $threshold, callable $handler)
-     * @method static void allowQueryDurationHandlersToRunAgain()
-     * @method static float totalQueryDuration()
-     * @method static void resetTotalQueryDuration()
-     * @method static void reconnectIfMissingConnection()
-     * @method static \Illuminate\Database\Connection beforeStartingTransaction(\Closure $callback)
-     * @method static \Illuminate\Database\Connection beforeExecuting(\Closure $callback)
-     * @method static void listen(\Closure $callback)
-     * @method static \Illuminate\Contracts\Database\Query\Expression raw(mixed $value)
-     * @method static string escape(string|float|int|bool|null $value, bool $binary = false)
-     * @method static bool hasModifiedRecords()
-     * @method static void recordsHaveBeenModified(bool $value = true)
-     * @method static \Illuminate\Database\Connection setRecordModificationState(bool $value)
-     * @method static void forgetRecordModificationState()
-     * @method static \Illuminate\Database\Connection useWriteConnectionWhenReading(bool $value = true)
-     * @method static \PDO getPdo()
-     * @method static \PDO|\Closure|null getRawPdo()
-     * @method static \PDO getReadPdo()
-     * @method static \PDO|\Closure|null getRawReadPdo()
-     * @method static \Illuminate\Database\Connection setPdo(\PDO|\Closure|null $pdo)
-     * @method static \Illuminate\Database\Connection setReadPdo(\PDO|\Closure|null $pdo)
-     * @method static \Illuminate\Database\Connection setReadPdoConfig(array $config)
-     * @method static string|null getName()
-     * @method static string|null getNameWithReadWriteType()
-     * @method static mixed getConfig(string|null $option = null)
-     * @method static string getDriverName()
-     * @method static string getDriverTitle()
-     * @method static \Illuminate\Database\Query\Grammars\Grammar getQueryGrammar()
-     * @method static \Illuminate\Database\Connection setQueryGrammar(\Illuminate\Database\Query\Grammars\Grammar $grammar)
-     * @method static \Illuminate\Database\Schema\Grammars\Grammar getSchemaGrammar()
-     * @method static \Illuminate\Database\Connection setSchemaGrammar(\Illuminate\Database\Schema\Grammars\Grammar $grammar)
-     * @method static \Illuminate\Database\Query\Processors\Processor getPostProcessor()
-     * @method static \Illuminate\Database\Connection setPostProcessor(\Illuminate\Database\Query\Processors\Processor $processor)
-     * @method static \Illuminate\Contracts\Events\Dispatcher|null getEventDispatcher()
-     * @method static \Illuminate\Database\Connection setEventDispatcher(\Illuminate\Contracts\Events\Dispatcher $events)
-     * @method static void unsetEventDispatcher()
-     * @method static \Illuminate\Database\Connection setTransactionManager(\Illuminate\Database\DatabaseTransactionsManager $manager)
-     * @method static void unsetTransactionManager()
-     * @method static bool pretending()
-     * @method static array[] getQueryLog()
-     * @method static array getRawQueryLog()
-     * @method static void flushQueryLog()
-     * @method static void enableQueryLog()
-     * @method static void disableQueryLog()
-     * @method static bool logging()
-     * @method static string getDatabaseName()
-     * @method static \Illuminate\Database\Connection setDatabaseName(string $database)
-     * @method static \Illuminate\Database\Connection setReadWriteType(string|null $readWriteType)
-     * @method static string getTablePrefix()
-     * @method static \Illuminate\Database\Connection setTablePrefix(string $prefix)
-     * @method static mixed withoutTablePrefix(\Closure $callback)
-     * @method static string getServerVersion()
-     * @method static void resolverFor(string $driver, \Closure $callback)
-     * @method static \Closure|null getResolver(string $driver)
-     * @method static mixed transaction(\Closure $callback, int $attempts = 1)
-     * @method static void beginTransaction()
-     * @method static void commit()
-     * @method static void rollBack(int|null $toLevel = null)
-     * @method static int transactionLevel()
-     * @method static void afterCommit(callable $callback)
-     * @method static void afterRollBack(callable $callback)
      * @see \Illuminate\Database\DatabaseManager
      */
     class DB {
@@ -5706,7 +7030,7 @@ namespace Illuminate\Support\Facades {
          * Build a database connection instance from the given configuration.
          *
          * @param array $config
-         * @return \Illuminate\Database\ConnectionInterface
+         * @return \Illuminate\Database\MySqlConnection
          * @static
          */
         public static function build($config)
@@ -5733,7 +7057,7 @@ namespace Illuminate\Support\Facades {
          * @param \UnitEnum|string $name
          * @param array $config
          * @param bool $force
-         * @return \Illuminate\Database\ConnectionInterface
+         * @return \Illuminate\Database\MySqlConnection
          * @static
          */
         public static function connectUsing($name, $config, $force = false)
@@ -5973,6 +7297,1223 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Database\DatabaseManager $instance */
             return $instance->macroCall($method, $parameters);
+        }
+
+        /**
+         * Get a human-readable name for the given connection driver.
+         *
+         * @return string
+         * @static
+         */
+        public static function getDriverTitle()
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getDriverTitle();
+        }
+
+        /**
+         * Run an insert statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param string|null $sequence
+         * @return bool
+         * @static
+         */
+        public static function insert($query, $bindings = [], $sequence = null)
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->insert($query, $bindings, $sequence);
+        }
+
+        /**
+         * Get the connection's last insert ID.
+         *
+         * @return string|int|null
+         * @static
+         */
+        public static function getLastInsertId()
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getLastInsertId();
+        }
+
+        /**
+         * Determine if the connected database is a MariaDB database.
+         *
+         * @return bool
+         * @static
+         */
+        public static function isMaria()
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->isMaria();
+        }
+
+        /**
+         * Get the server version for the connection.
+         *
+         * @return string
+         * @static
+         */
+        public static function getServerVersion()
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getServerVersion();
+        }
+
+        /**
+         * Get a schema builder instance for the connection.
+         *
+         * @return \Illuminate\Database\Schema\MySqlBuilder
+         * @static
+         */
+        public static function getSchemaBuilder()
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getSchemaBuilder();
+        }
+
+        /**
+         * Get the schema state for the connection.
+         *
+         * @param \Illuminate\Filesystem\Filesystem|null $files
+         * @param callable|null $processFactory
+         * @return \Illuminate\Database\Schema\MySqlSchemaState
+         * @static
+         */
+        public static function getSchemaState($files = null, $processFactory = null)
+        {
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getSchemaState($files, $processFactory);
+        }
+
+        /**
+         * Set the query grammar to the default implementation.
+         *
+         * @return void
+         * @static
+         */
+        public static function useDefaultQueryGrammar()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->useDefaultQueryGrammar();
+        }
+
+        /**
+         * Set the schema grammar to the default implementation.
+         *
+         * @return void
+         * @static
+         */
+        public static function useDefaultSchemaGrammar()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->useDefaultSchemaGrammar();
+        }
+
+        /**
+         * Set the query post processor to the default implementation.
+         *
+         * @return void
+         * @static
+         */
+        public static function useDefaultPostProcessor()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->useDefaultPostProcessor();
+        }
+
+        /**
+         * Begin a fluent query against a database table.
+         *
+         * @param \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Contracts\Database\Query\Expression|\UnitEnum|string $table
+         * @param string|null $as
+         * @return \Illuminate\Database\Query\Builder
+         * @static
+         */
+        public static function table($table, $as = null)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->table($table, $as);
+        }
+
+        /**
+         * Get a new query builder instance.
+         *
+         * @return \Illuminate\Database\Query\Builder
+         * @static
+         */
+        public static function query()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->query();
+        }
+
+        /**
+         * Run a select statement and return a single result.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return mixed
+         * @static
+         */
+        public static function selectOne($query, $bindings = [], $useReadPdo = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->selectOne($query, $bindings, $useReadPdo);
+        }
+
+        /**
+         * Run a select statement and return the first column of the first row.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return mixed
+         * @throws \Illuminate\Database\MultipleColumnsSelectedException
+         * @static
+         */
+        public static function scalar($query, $bindings = [], $useReadPdo = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->scalar($query, $bindings, $useReadPdo);
+        }
+
+        /**
+         * Run a select statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return array
+         * @static
+         */
+        public static function selectFromWriteConnection($query, $bindings = [])
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->selectFromWriteConnection($query, $bindings);
+        }
+
+        /**
+         * Run a select statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return array
+         * @static
+         */
+        public static function select($query, $bindings = [], $useReadPdo = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->select($query, $bindings, $useReadPdo);
+        }
+
+        /**
+         * Run a select statement against the database and returns all of the result sets.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return array
+         * @static
+         */
+        public static function selectResultSets($query, $bindings = [], $useReadPdo = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->selectResultSets($query, $bindings, $useReadPdo);
+        }
+
+        /**
+         * Run a select statement against the database and returns a generator.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return \Generator<int, \stdClass>
+         * @static
+         */
+        public static function cursor($query, $bindings = [], $useReadPdo = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->cursor($query, $bindings, $useReadPdo);
+        }
+
+        /**
+         * Run an update statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int
+         * @static
+         */
+        public static function update($query, $bindings = [])
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->update($query, $bindings);
+        }
+
+        /**
+         * Run a delete statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int
+         * @static
+         */
+        public static function delete($query, $bindings = [])
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->delete($query, $bindings);
+        }
+
+        /**
+         * Execute an SQL statement and return the boolean result.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return bool
+         * @static
+         */
+        public static function statement($query, $bindings = [])
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->statement($query, $bindings);
+        }
+
+        /**
+         * Run an SQL statement and get the number of rows affected.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int
+         * @static
+         */
+        public static function affectingStatement($query, $bindings = [])
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->affectingStatement($query, $bindings);
+        }
+
+        /**
+         * Run a raw, unprepared query against the PDO connection.
+         *
+         * @param string $query
+         * @return bool
+         * @static
+         */
+        public static function unprepared($query)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->unprepared($query);
+        }
+
+        /**
+         * Get the number of open connections for the database.
+         *
+         * @return int|null
+         * @static
+         */
+        public static function threadCount()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->threadCount();
+        }
+
+        /**
+         * Execute the given callback in "dry run" mode.
+         *
+         * @param (\Closure(\Illuminate\Database\Connection): mixed) $callback
+         * @return \Illuminate\Database\array{query: string, bindings: array, time: float|null}[]
+         * @static
+         */
+        public static function pretend($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->pretend($callback);
+        }
+
+        /**
+         * Execute the given callback without "pretending".
+         *
+         * @param \Closure $callback
+         * @return mixed
+         * @static
+         */
+        public static function withoutPretending($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->withoutPretending($callback);
+        }
+
+        /**
+         * Bind values to their parameters in the given statement.
+         *
+         * @param \PDOStatement $statement
+         * @param array $bindings
+         * @return void
+         * @static
+         */
+        public static function bindValues($statement, $bindings)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->bindValues($statement, $bindings);
+        }
+
+        /**
+         * Prepare the query bindings for execution.
+         *
+         * @param array $bindings
+         * @return array
+         * @static
+         */
+        public static function prepareBindings($bindings)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->prepareBindings($bindings);
+        }
+
+        /**
+         * Log a query in the connection's query log.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param float|null $time
+         * @return void
+         * @static
+         */
+        public static function logQuery($query, $bindings, $time = null)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->logQuery($query, $bindings, $time);
+        }
+
+        /**
+         * Register a callback to be invoked when the connection queries for longer than a given amount of time.
+         *
+         * @param \DateTimeInterface|\Carbon\CarbonInterval|float|int $threshold
+         * @param (callable(\Illuminate\Database\Connection, \Illuminate\Database\Events\QueryExecuted): mixed) $handler
+         * @return void
+         * @static
+         */
+        public static function whenQueryingForLongerThan($threshold, $handler)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->whenQueryingForLongerThan($threshold, $handler);
+        }
+
+        /**
+         * Allow all the query duration handlers to run again, even if they have already run.
+         *
+         * @return void
+         * @static
+         */
+        public static function allowQueryDurationHandlersToRunAgain()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->allowQueryDurationHandlersToRunAgain();
+        }
+
+        /**
+         * Get the duration of all run queries in milliseconds.
+         *
+         * @return float
+         * @static
+         */
+        public static function totalQueryDuration()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->totalQueryDuration();
+        }
+
+        /**
+         * Reset the duration of all run queries.
+         *
+         * @return void
+         * @static
+         */
+        public static function resetTotalQueryDuration()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->resetTotalQueryDuration();
+        }
+
+        /**
+         * Reconnect to the database if a PDO connection is missing.
+         *
+         * @return void
+         * @static
+         */
+        public static function reconnectIfMissingConnection()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->reconnectIfMissingConnection();
+        }
+
+        /**
+         * Register a hook to be run just before a database transaction is started.
+         *
+         * @param \Closure $callback
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function beforeStartingTransaction($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->beforeStartingTransaction($callback);
+        }
+
+        /**
+         * Register a hook to be run just before a database query is executed.
+         *
+         * @param \Closure $callback
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function beforeExecuting($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->beforeExecuting($callback);
+        }
+
+        /**
+         * Register a database query listener with the connection.
+         *
+         * @param \Closure(\Illuminate\Database\Events\QueryExecuted) $callback
+         * @return void
+         * @static
+         */
+        public static function listen($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->listen($callback);
+        }
+
+        /**
+         * Get a new raw query expression.
+         *
+         * @param mixed $value
+         * @return \Illuminate\Contracts\Database\Query\Expression
+         * @static
+         */
+        public static function raw($value)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->raw($value);
+        }
+
+        /**
+         * Escape a value for safe SQL embedding.
+         *
+         * @param string|float|int|bool|null $value
+         * @param bool $binary
+         * @return string
+         * @throws \RuntimeException
+         * @static
+         */
+        public static function escape($value, $binary = false)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->escape($value, $binary);
+        }
+
+        /**
+         * Determine if the database connection has modified any database records.
+         *
+         * @return bool
+         * @static
+         */
+        public static function hasModifiedRecords()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->hasModifiedRecords();
+        }
+
+        /**
+         * Indicate if any records have been modified.
+         *
+         * @param bool $value
+         * @return void
+         * @static
+         */
+        public static function recordsHaveBeenModified($value = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->recordsHaveBeenModified($value);
+        }
+
+        /**
+         * Set the record modification state.
+         *
+         * @param bool $value
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setRecordModificationState($value)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setRecordModificationState($value);
+        }
+
+        /**
+         * Reset the record modification state.
+         *
+         * @return void
+         * @static
+         */
+        public static function forgetRecordModificationState()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->forgetRecordModificationState();
+        }
+
+        /**
+         * Indicate that the connection should use the write PDO connection for reads.
+         *
+         * @param bool $value
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function useWriteConnectionWhenReading($value = true)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->useWriteConnectionWhenReading($value);
+        }
+
+        /**
+         * Get the current PDO connection.
+         *
+         * @return \PDO
+         * @static
+         */
+        public static function getPdo()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getPdo();
+        }
+
+        /**
+         * Get the current PDO connection parameter without executing any reconnect logic.
+         *
+         * @return \PDO|\Closure|null
+         * @static
+         */
+        public static function getRawPdo()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getRawPdo();
+        }
+
+        /**
+         * Get the current PDO connection used for reading.
+         *
+         * @return \PDO
+         * @static
+         */
+        public static function getReadPdo()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getReadPdo();
+        }
+
+        /**
+         * Get the current read PDO connection parameter without executing any reconnect logic.
+         *
+         * @return \PDO|\Closure|null
+         * @static
+         */
+        public static function getRawReadPdo()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getRawReadPdo();
+        }
+
+        /**
+         * Set the PDO connection.
+         *
+         * @param \PDO|\Closure|null $pdo
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setPdo($pdo)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setPdo($pdo);
+        }
+
+        /**
+         * Set the PDO connection used for reading.
+         *
+         * @param \PDO|\Closure|null $pdo
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setReadPdo($pdo)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setReadPdo($pdo);
+        }
+
+        /**
+         * Set the read PDO connection configuration.
+         *
+         * @param array $config
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setReadPdoConfig($config)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setReadPdoConfig($config);
+        }
+
+        /**
+         * Get the database connection name.
+         *
+         * @return string|null
+         * @static
+         */
+        public static function getName()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getName();
+        }
+
+        /**
+         * Get the database connection with its read / write type.
+         *
+         * @return string|null
+         * @static
+         */
+        public static function getNameWithReadWriteType()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getNameWithReadWriteType();
+        }
+
+        /**
+         * Get an option from the configuration options.
+         *
+         * @param string|null $option
+         * @return mixed
+         * @static
+         */
+        public static function getConfig($option = null)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getConfig($option);
+        }
+
+        /**
+         * Get the PDO driver name.
+         *
+         * @return string
+         * @static
+         */
+        public static function getDriverName()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getDriverName();
+        }
+
+        /**
+         * Get the query grammar used by the connection.
+         *
+         * @return \Illuminate\Database\Query\Grammars\Grammar
+         * @static
+         */
+        public static function getQueryGrammar()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getQueryGrammar();
+        }
+
+        /**
+         * Set the query grammar used by the connection.
+         *
+         * @param \Illuminate\Database\Query\Grammars\Grammar $grammar
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setQueryGrammar($grammar)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setQueryGrammar($grammar);
+        }
+
+        /**
+         * Get the schema grammar used by the connection.
+         *
+         * @return \Illuminate\Database\Schema\Grammars\Grammar
+         * @static
+         */
+        public static function getSchemaGrammar()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getSchemaGrammar();
+        }
+
+        /**
+         * Set the schema grammar used by the connection.
+         *
+         * @param \Illuminate\Database\Schema\Grammars\Grammar $grammar
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setSchemaGrammar($grammar)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setSchemaGrammar($grammar);
+        }
+
+        /**
+         * Get the query post processor used by the connection.
+         *
+         * @return \Illuminate\Database\Query\Processors\Processor
+         * @static
+         */
+        public static function getPostProcessor()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getPostProcessor();
+        }
+
+        /**
+         * Set the query post processor used by the connection.
+         *
+         * @param \Illuminate\Database\Query\Processors\Processor $processor
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setPostProcessor($processor)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setPostProcessor($processor);
+        }
+
+        /**
+         * Get the event dispatcher used by the connection.
+         *
+         * @return \Illuminate\Contracts\Events\Dispatcher|null
+         * @static
+         */
+        public static function getEventDispatcher()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getEventDispatcher();
+        }
+
+        /**
+         * Set the event dispatcher instance on the connection.
+         *
+         * @param \Illuminate\Contracts\Events\Dispatcher $events
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setEventDispatcher($events)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setEventDispatcher($events);
+        }
+
+        /**
+         * Unset the event dispatcher for this connection.
+         *
+         * @return void
+         * @static
+         */
+        public static function unsetEventDispatcher()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->unsetEventDispatcher();
+        }
+
+        /**
+         * Set the transaction manager instance on the connection.
+         *
+         * @param \Illuminate\Database\DatabaseTransactionsManager $manager
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setTransactionManager($manager)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setTransactionManager($manager);
+        }
+
+        /**
+         * Unset the transaction manager for this connection.
+         *
+         * @return void
+         * @static
+         */
+        public static function unsetTransactionManager()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->unsetTransactionManager();
+        }
+
+        /**
+         * Determine if the connection is in a "dry run".
+         *
+         * @return bool
+         * @static
+         */
+        public static function pretending()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->pretending();
+        }
+
+        /**
+         * Get the connection query log.
+         *
+         * @return \Illuminate\Database\array{query: string, bindings: array, time: float|null}[]
+         * @static
+         */
+        public static function getQueryLog()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getQueryLog();
+        }
+
+        /**
+         * Get the connection query log with embedded bindings.
+         *
+         * @return array
+         * @static
+         */
+        public static function getRawQueryLog()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getRawQueryLog();
+        }
+
+        /**
+         * Clear the query log.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushQueryLog()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->flushQueryLog();
+        }
+
+        /**
+         * Enable the query log on the connection.
+         *
+         * @return void
+         * @static
+         */
+        public static function enableQueryLog()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->enableQueryLog();
+        }
+
+        /**
+         * Disable the query log on the connection.
+         *
+         * @return void
+         * @static
+         */
+        public static function disableQueryLog()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->disableQueryLog();
+        }
+
+        /**
+         * Determine whether we're logging queries.
+         *
+         * @return bool
+         * @static
+         */
+        public static function logging()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->logging();
+        }
+
+        /**
+         * Get the name of the connected database.
+         *
+         * @return string
+         * @static
+         */
+        public static function getDatabaseName()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getDatabaseName();
+        }
+
+        /**
+         * Set the name of the connected database.
+         *
+         * @param string $database
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setDatabaseName($database)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setDatabaseName($database);
+        }
+
+        /**
+         * Set the read / write type of the connection.
+         *
+         * @param string|null $readWriteType
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setReadWriteType($readWriteType)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setReadWriteType($readWriteType);
+        }
+
+        /**
+         * Get the table prefix for the connection.
+         *
+         * @return string
+         * @static
+         */
+        public static function getTablePrefix()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->getTablePrefix();
+        }
+
+        /**
+         * Set the table prefix in use by the connection.
+         *
+         * @param string $prefix
+         * @return \Illuminate\Database\MySqlConnection
+         * @static
+         */
+        public static function setTablePrefix($prefix)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->setTablePrefix($prefix);
+        }
+
+        /**
+         * Execute the given callback without table prefix.
+         *
+         * @param \Closure $callback
+         * @return mixed
+         * @static
+         */
+        public static function withoutTablePrefix($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->withoutTablePrefix($callback);
+        }
+
+        /**
+         * Register a connection resolver.
+         *
+         * @param string $driver
+         * @param \Closure $callback
+         * @return void
+         * @static
+         */
+        public static function resolverFor($driver, $callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            \Illuminate\Database\MySqlConnection::resolverFor($driver, $callback);
+        }
+
+        /**
+         * Get the connection resolver for the given driver.
+         *
+         * @param string $driver
+         * @return \Closure|null
+         * @static
+         */
+        public static function getResolver($driver)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            return \Illuminate\Database\MySqlConnection::getResolver($driver);
+        }
+
+        /**
+         * @template TReturn of mixed
+         *
+         * Execute a Closure within a transaction.
+         * @param (\Closure(static): TReturn) $callback
+         * @param int $attempts
+         * @return TReturn
+         * @throws \Throwable
+         * @static
+         */
+        public static function transaction($callback, $attempts = 1)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->transaction($callback, $attempts);
+        }
+
+        /**
+         * Start a new database transaction.
+         *
+         * @return void
+         * @throws \Throwable
+         * @static
+         */
+        public static function beginTransaction()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->beginTransaction();
+        }
+
+        /**
+         * Commit the active database transaction.
+         *
+         * @return void
+         * @throws \Throwable
+         * @static
+         */
+        public static function commit()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->commit();
+        }
+
+        /**
+         * Rollback the active database transaction.
+         *
+         * @param int|null $toLevel
+         * @return void
+         * @throws \Throwable
+         * @static
+         */
+        public static function rollBack($toLevel = null)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->rollBack($toLevel);
+        }
+
+        /**
+         * Get the number of active transactions.
+         *
+         * @return int
+         * @static
+         */
+        public static function transactionLevel()
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            return $instance->transactionLevel();
+        }
+
+        /**
+         * Execute the callback after a transaction commits.
+         *
+         * @param callable $callback
+         * @return void
+         * @throws \RuntimeException
+         * @static
+         */
+        public static function afterCommit($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->afterCommit($callback);
+        }
+
+        /**
+         * Execute the callback after a transaction rolls back.
+         *
+         * @param callable $callback
+         * @return void
+         * @throws \RuntimeException
+         * @static
+         */
+        public static function afterRollBack($callback)
+        {
+            //Method inherited from \Illuminate\Database\Connection 
+            /** @var \Illuminate\Database\MySqlConnection $instance */
+            $instance->afterRollBack($callback);
         }
 
             }
@@ -7135,6 +9676,372 @@ namespace Illuminate\Support\Facades {
         public static function flushMacros()
         {
             \Illuminate\Filesystem\Filesystem::flushMacros();
+        }
+
+            }
+    /**
+     * @see \Illuminate\Auth\Access\Gate
+     */
+    class Gate {
+        /**
+         * Determine if a given ability has been defined.
+         *
+         * @param \UnitEnum|array|string $ability
+         * @return bool
+         * @static
+         */
+        public static function has($ability)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->has($ability);
+        }
+
+        /**
+         * Perform an on-demand authorization check. Throw an authorization exception if the condition or callback is false.
+         *
+         * @param \Illuminate\Auth\Access\Response|\Closure|bool $condition
+         * @param string|null $message
+         * @param string|null $code
+         * @return \Illuminate\Auth\Access\Response
+         * @throws \Illuminate\Auth\Access\AuthorizationException
+         * @static
+         */
+        public static function allowIf($condition, $message = null, $code = null)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->allowIf($condition, $message, $code);
+        }
+
+        /**
+         * Perform an on-demand authorization check. Throw an authorization exception if the condition or callback is true.
+         *
+         * @param \Illuminate\Auth\Access\Response|\Closure|bool $condition
+         * @param string|null $message
+         * @param string|null $code
+         * @return \Illuminate\Auth\Access\Response
+         * @throws \Illuminate\Auth\Access\AuthorizationException
+         * @static
+         */
+        public static function denyIf($condition, $message = null, $code = null)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->denyIf($condition, $message, $code);
+        }
+
+        /**
+         * Define a new ability.
+         *
+         * @param \UnitEnum|string $ability
+         * @param callable|array|string $callback
+         * @return \Illuminate\Auth\Access\Gate
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function define($ability, $callback)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->define($ability, $callback);
+        }
+
+        /**
+         * Define abilities for a resource.
+         *
+         * @param string $name
+         * @param string $class
+         * @param array|null $abilities
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function resource($name, $class, $abilities = null)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->resource($name, $class, $abilities);
+        }
+
+        /**
+         * Define a policy class for a given class type.
+         *
+         * @param string $class
+         * @param string $policy
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function policy($class, $policy)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->policy($class, $policy);
+        }
+
+        /**
+         * Register a callback to run before all Gate checks.
+         *
+         * @param callable $callback
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function before($callback)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->before($callback);
+        }
+
+        /**
+         * Register a callback to run after all Gate checks.
+         *
+         * @param callable $callback
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function after($callback)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->after($callback);
+        }
+
+        /**
+         * Determine if all of the given abilities should be granted for the current user.
+         *
+         * @param iterable|\UnitEnum|string $ability
+         * @param mixed $arguments
+         * @return bool
+         * @static
+         */
+        public static function allows($ability, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->allows($ability, $arguments);
+        }
+
+        /**
+         * Determine if any of the given abilities should be denied for the current user.
+         *
+         * @param iterable|\UnitEnum|string $ability
+         * @param mixed $arguments
+         * @return bool
+         * @static
+         */
+        public static function denies($ability, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->denies($ability, $arguments);
+        }
+
+        /**
+         * Determine if all of the given abilities should be granted for the current user.
+         *
+         * @param iterable|\UnitEnum|string $abilities
+         * @param mixed $arguments
+         * @return bool
+         * @static
+         */
+        public static function check($abilities, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->check($abilities, $arguments);
+        }
+
+        /**
+         * Determine if any one of the given abilities should be granted for the current user.
+         *
+         * @param iterable|\UnitEnum|string $abilities
+         * @param mixed $arguments
+         * @return bool
+         * @static
+         */
+        public static function any($abilities, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->any($abilities, $arguments);
+        }
+
+        /**
+         * Determine if all of the given abilities should be denied for the current user.
+         *
+         * @param iterable|\UnitEnum|string $abilities
+         * @param mixed $arguments
+         * @return bool
+         * @static
+         */
+        public static function none($abilities, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->none($abilities, $arguments);
+        }
+
+        /**
+         * Determine if the given ability should be granted for the current user.
+         *
+         * @param \UnitEnum|string $ability
+         * @param mixed $arguments
+         * @return \Illuminate\Auth\Access\Response
+         * @throws \Illuminate\Auth\Access\AuthorizationException
+         * @static
+         */
+        public static function authorize($ability, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->authorize($ability, $arguments);
+        }
+
+        /**
+         * Inspect the user for the given ability.
+         *
+         * @param \UnitEnum|string $ability
+         * @param mixed $arguments
+         * @return \Illuminate\Auth\Access\Response
+         * @static
+         */
+        public static function inspect($ability, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->inspect($ability, $arguments);
+        }
+
+        /**
+         * Get the raw result from the authorization callback.
+         *
+         * @param string $ability
+         * @param mixed $arguments
+         * @return mixed
+         * @throws \Illuminate\Auth\Access\AuthorizationException
+         * @static
+         */
+        public static function raw($ability, $arguments = [])
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->raw($ability, $arguments);
+        }
+
+        /**
+         * Get a policy instance for a given class.
+         *
+         * @param object|string $class
+         * @return mixed
+         * @static
+         */
+        public static function getPolicyFor($class)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->getPolicyFor($class);
+        }
+
+        /**
+         * Specify a callback to be used to guess policy names.
+         *
+         * @param callable $callback
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function guessPolicyNamesUsing($callback)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->guessPolicyNamesUsing($callback);
+        }
+
+        /**
+         * Build a policy class instance of the given type.
+         *
+         * @param object|string $class
+         * @return mixed
+         * @throws \Illuminate\Contracts\Container\BindingResolutionException
+         * @static
+         */
+        public static function resolvePolicy($class)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->resolvePolicy($class);
+        }
+
+        /**
+         * Get a gate instance for the given user.
+         *
+         * @param \Illuminate\Contracts\Auth\Authenticatable|mixed $user
+         * @return static
+         * @static
+         */
+        public static function forUser($user)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->forUser($user);
+        }
+
+        /**
+         * Get all of the defined abilities.
+         *
+         * @return array
+         * @static
+         */
+        public static function abilities()
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->abilities();
+        }
+
+        /**
+         * Get all of the defined policies.
+         *
+         * @return array
+         * @static
+         */
+        public static function policies()
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->policies();
+        }
+
+        /**
+         * Set the default denial response for gates and policies.
+         *
+         * @param \Illuminate\Auth\Access\Response $response
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function defaultDenialResponse($response)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->defaultDenialResponse($response);
+        }
+
+        /**
+         * Set the container instance used by the gate.
+         *
+         * @param \Illuminate\Contracts\Container\Container $container
+         * @return \Illuminate\Auth\Access\Gate
+         * @static
+         */
+        public static function setContainer($container)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->setContainer($container);
+        }
+
+        /**
+         * Deny with a HTTP status code.
+         *
+         * @param int $status
+         * @param string|null $message
+         * @param int|null $code
+         * @return \Illuminate\Auth\Access\Response
+         * @static
+         */
+        public static function denyWithStatus($status, $message = null, $code = null)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->denyWithStatus($status, $message, $code);
+        }
+
+        /**
+         * Deny with a 404 HTTP status code.
+         *
+         * @param string|null $message
+         * @param int|null $code
+         * @return \Illuminate\Auth\Access\Response
+         * @static
+         */
+        public static function denyAsNotFound($message = null, $code = null)
+        {
+            /** @var \Illuminate\Auth\Access\Gate $instance */
+            return $instance->denyAsNotFound($message, $code);
         }
 
             }
@@ -9841,14 +12748,6 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
-     * @method static mixed getJobTries(mixed $job)
-     * @method static mixed getJobBackoff(mixed $job)
-     * @method static mixed getJobExpiration(mixed $job)
-     * @method static void createPayloadUsing(callable|null $callback)
-     * @method static array getConfig()
-     * @method static \Illuminate\Queue\Queue setConfig(array $config)
-     * @method static \Illuminate\Container\Container getContainer()
-     * @method static void setContainer(\Illuminate\Container\Container $container)
      * @see \Illuminate\Queue\QueueManager
      * @see \Illuminate\Queue\Queue
      * @see \Illuminate\Support\Testing\Fakes\QueueFake
@@ -10592,6 +13491,676 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Support\Testing\Fakes\QueueFake $instance */
             return $instance->setConnectionName($name);
+        }
+
+        /**
+         * Release a reserved job back onto the queue after (n) seconds.
+         *
+         * @param string $queue
+         * @param \Illuminate\Queue\Jobs\DatabaseJobRecord $job
+         * @param int $delay
+         * @return mixed
+         * @static
+         */
+        public static function release($queue, $job, $delay)
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->release($queue, $job, $delay);
+        }
+
+        /**
+         * Delete a reserved job from the queue.
+         *
+         * @param string $queue
+         * @param string $id
+         * @return void
+         * @throws \Throwable
+         * @static
+         */
+        public static function deleteReserved($queue, $id)
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            $instance->deleteReserved($queue, $id);
+        }
+
+        /**
+         * Delete a reserved job from the reserved queue and release it.
+         *
+         * @param string $queue
+         * @param \Illuminate\Queue\Jobs\DatabaseJob $job
+         * @param int $delay
+         * @return void
+         * @static
+         */
+        public static function deleteAndRelease($queue, $job, $delay)
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            $instance->deleteAndRelease($queue, $job, $delay);
+        }
+
+        /**
+         * Delete all of the jobs from the queue.
+         *
+         * @param string $queue
+         * @return int
+         * @static
+         */
+        public static function clear($queue)
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->clear($queue);
+        }
+
+        /**
+         * Get the queue or return the default.
+         *
+         * @param string|null $queue
+         * @return string
+         * @static
+         */
+        public static function getQueue($queue)
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getQueue($queue);
+        }
+
+        /**
+         * Get the underlying database instance.
+         *
+         * @return \Illuminate\Database\Connection
+         * @static
+         */
+        public static function getDatabase()
+        {
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getDatabase();
+        }
+
+        /**
+         * Get the maximum number of attempts for an object-based queue handler.
+         *
+         * @param mixed $job
+         * @return mixed
+         * @static
+         */
+        public static function getJobTries($job)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getJobTries($job);
+        }
+
+        /**
+         * Get the backoff for an object-based queue handler.
+         *
+         * @param mixed $job
+         * @return mixed
+         * @static
+         */
+        public static function getJobBackoff($job)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getJobBackoff($job);
+        }
+
+        /**
+         * Get the expiration timestamp for an object-based queue handler.
+         *
+         * @param mixed $job
+         * @return mixed
+         * @static
+         */
+        public static function getJobExpiration($job)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getJobExpiration($job);
+        }
+
+        /**
+         * Register a callback to be executed when creating job payloads.
+         *
+         * @param callable|null $callback
+         * @return void
+         * @static
+         */
+        public static function createPayloadUsing($callback)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            \Illuminate\Queue\DatabaseQueue::createPayloadUsing($callback);
+        }
+
+        /**
+         * Get the queue configuration array.
+         *
+         * @return array
+         * @static
+         */
+        public static function getConfig()
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getConfig();
+        }
+
+        /**
+         * Set the queue configuration array.
+         *
+         * @param array $config
+         * @return \Illuminate\Queue\DatabaseQueue
+         * @static
+         */
+        public static function setConfig($config)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->setConfig($config);
+        }
+
+        /**
+         * Get the container instance being used by the connection.
+         *
+         * @return \Illuminate\Container\Container
+         * @static
+         */
+        public static function getContainer()
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            return $instance->getContainer();
+        }
+
+        /**
+         * Set the IoC container instance.
+         *
+         * @param \Illuminate\Container\Container $container
+         * @return void
+         * @static
+         */
+        public static function setContainer($container)
+        {
+            //Method inherited from \Illuminate\Queue\Queue 
+            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            $instance->setContainer($container);
+        }
+
+            }
+    /**
+     * @see \Illuminate\Cache\RateLimiter
+     */
+    class RateLimiter {
+        /**
+         * Register a named rate limiter configuration.
+         *
+         * @param \UnitEnum|string $name
+         * @param \Closure $callback
+         * @return \Illuminate\Cache\RateLimiter
+         * @static
+         */
+        public static function for($name, $callback)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->for($name, $callback);
+        }
+
+        /**
+         * Get the given named rate limiter.
+         *
+         * @param \UnitEnum|string $name
+         * @return \Closure|null
+         * @static
+         */
+        public static function limiter($name)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->limiter($name);
+        }
+
+        /**
+         * Attempts to execute a callback if it's not limited.
+         *
+         * @param string $key
+         * @param int $maxAttempts
+         * @param \Closure $callback
+         * @param \DateTimeInterface|\DateInterval|int $decaySeconds
+         * @return mixed
+         * @static
+         */
+        public static function attempt($key, $maxAttempts, $callback, $decaySeconds = 60)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->attempt($key, $maxAttempts, $callback, $decaySeconds);
+        }
+
+        /**
+         * Determine if the given key has been "accessed" too many times.
+         *
+         * @param string $key
+         * @param int $maxAttempts
+         * @return bool
+         * @static
+         */
+        public static function tooManyAttempts($key, $maxAttempts)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->tooManyAttempts($key, $maxAttempts);
+        }
+
+        /**
+         * Increment (by 1) the counter for a given key for a given decay time.
+         *
+         * @param string $key
+         * @param \DateTimeInterface|\DateInterval|int $decaySeconds
+         * @return int
+         * @static
+         */
+        public static function hit($key, $decaySeconds = 60)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->hit($key, $decaySeconds);
+        }
+
+        /**
+         * Increment the counter for a given key for a given decay time by a given amount.
+         *
+         * @param string $key
+         * @param \DateTimeInterface|\DateInterval|int $decaySeconds
+         * @param int $amount
+         * @return int
+         * @static
+         */
+        public static function increment($key, $decaySeconds = 60, $amount = 1)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->increment($key, $decaySeconds, $amount);
+        }
+
+        /**
+         * Decrement the counter for a given key for a given decay time by a given amount.
+         *
+         * @param string $key
+         * @param \DateTimeInterface|\DateInterval|int $decaySeconds
+         * @param int $amount
+         * @return int
+         * @static
+         */
+        public static function decrement($key, $decaySeconds = 60, $amount = 1)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->decrement($key, $decaySeconds, $amount);
+        }
+
+        /**
+         * Get the number of attempts for the given key.
+         *
+         * @param string $key
+         * @return mixed
+         * @static
+         */
+        public static function attempts($key)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->attempts($key);
+        }
+
+        /**
+         * Reset the number of attempts for the given key.
+         *
+         * @param string $key
+         * @return bool
+         * @static
+         */
+        public static function resetAttempts($key)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->resetAttempts($key);
+        }
+
+        /**
+         * Get the number of retries left for the given key.
+         *
+         * @param string $key
+         * @param int $maxAttempts
+         * @return int
+         * @static
+         */
+        public static function remaining($key, $maxAttempts)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->remaining($key, $maxAttempts);
+        }
+
+        /**
+         * Get the number of retries left for the given key.
+         *
+         * @param string $key
+         * @param int $maxAttempts
+         * @return int
+         * @static
+         */
+        public static function retriesLeft($key, $maxAttempts)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->retriesLeft($key, $maxAttempts);
+        }
+
+        /**
+         * Clear the hits and lockout timer for the given key.
+         *
+         * @param string $key
+         * @return void
+         * @static
+         */
+        public static function clear($key)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            $instance->clear($key);
+        }
+
+        /**
+         * Get the number of seconds until the "key" is accessible again.
+         *
+         * @param string $key
+         * @return int
+         * @static
+         */
+        public static function availableIn($key)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->availableIn($key);
+        }
+
+        /**
+         * Clean the rate limiter key from unicode characters.
+         *
+         * @param string $key
+         * @return string
+         * @static
+         */
+        public static function cleanRateLimiterKey($key)
+        {
+            /** @var \Illuminate\Cache\RateLimiter $instance */
+            return $instance->cleanRateLimiterKey($key);
+        }
+
+            }
+    /**
+     * @see \Illuminate\Routing\Redirector
+     */
+    class Redirect {
+        /**
+         * Create a new redirect response to the previous location.
+         *
+         * @param int $status
+         * @param array $headers
+         * @param mixed $fallback
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function back($status = 302, $headers = [], $fallback = false)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->back($status, $headers, $fallback);
+        }
+
+        /**
+         * Create a new redirect response to the current URI.
+         *
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function refresh($status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->refresh($status, $headers);
+        }
+
+        /**
+         * Create a new redirect response, while putting the current URL in the session.
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function guest($path, $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->guest($path, $status, $headers, $secure);
+        }
+
+        /**
+         * Create a new redirect response to the previously intended location.
+         *
+         * @param mixed $default
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function intended($default = '/', $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->intended($default, $status, $headers, $secure);
+        }
+
+        /**
+         * Create a new redirect response to the given path.
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function to($path, $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->to($path, $status, $headers, $secure);
+        }
+
+        /**
+         * Create a new redirect response to an external URL (no validation).
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function away($path, $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->away($path, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to the given HTTPS path.
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function secure($path, $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->secure($path, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to a named route.
+         *
+         * @param \BackedEnum|string $route
+         * @param mixed $parameters
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function route($route, $parameters = [], $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->route($route, $parameters, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to a signed named route.
+         *
+         * @param \BackedEnum|string $route
+         * @param mixed $parameters
+         * @param \DateTimeInterface|\DateInterval|int|null $expiration
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function signedRoute($route, $parameters = [], $expiration = null, $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->signedRoute($route, $parameters, $expiration, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to a signed named route.
+         *
+         * @param \BackedEnum|string $route
+         * @param \DateTimeInterface|\DateInterval|int|null $expiration
+         * @param mixed $parameters
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function temporarySignedRoute($route, $expiration, $parameters = [], $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->temporarySignedRoute($route, $expiration, $parameters, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to a controller action.
+         *
+         * @param string|array $action
+         * @param mixed $parameters
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function action($action, $parameters = [], $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->action($action, $parameters, $status, $headers);
+        }
+
+        /**
+         * Get the URL generator instance.
+         *
+         * @return \Illuminate\Routing\UrlGenerator
+         * @static
+         */
+        public static function getUrlGenerator()
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->getUrlGenerator();
+        }
+
+        /**
+         * Set the active session store.
+         *
+         * @param \Illuminate\Session\Store $session
+         * @return void
+         * @static
+         */
+        public static function setSession($session)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            $instance->setSession($session);
+        }
+
+        /**
+         * Get the "intended" URL from the session.
+         *
+         * @return string|null
+         * @static
+         */
+        public static function getIntendedUrl()
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->getIntendedUrl();
+        }
+
+        /**
+         * Set the "intended" URL in the session.
+         *
+         * @param string $url
+         * @return \Illuminate\Routing\Redirector
+         * @static
+         */
+        public static function setIntendedUrl($url)
+        {
+            /** @var \Illuminate\Routing\Redirector $instance */
+            return $instance->setIntendedUrl($url);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            \Illuminate\Routing\Redirector::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            \Illuminate\Routing\Redirector::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            return \Illuminate\Routing\Redirector::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            \Illuminate\Routing\Redirector::flushMacros();
         }
 
             }
@@ -13284,6 +16853,313 @@ namespace Illuminate\Support\Facades {
 
             }
     /**
+     * @see \Illuminate\Routing\ResponseFactory
+     */
+    class Response {
+        /**
+         * Create a new response instance.
+         *
+         * @param mixed $content
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\Response
+         * @static
+         */
+        public static function make($content = '', $status = 200, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->make($content, $status, $headers);
+        }
+
+        /**
+         * Create a new "no content" response.
+         *
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\Response
+         * @static
+         */
+        public static function noContent($status = 204, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->noContent($status, $headers);
+        }
+
+        /**
+         * Create a new response for a given view.
+         *
+         * @param string|array $view
+         * @param array $data
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\Response
+         * @static
+         */
+        public static function view($view, $data = [], $status = 200, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->view($view, $data, $status, $headers);
+        }
+
+        /**
+         * Create a new JSON response instance.
+         *
+         * @param mixed $data
+         * @param int $status
+         * @param array $headers
+         * @param int $options
+         * @return \Illuminate\Http\JsonResponse
+         * @static
+         */
+        public static function json($data = [], $status = 200, $headers = [], $options = 0)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->json($data, $status, $headers, $options);
+        }
+
+        /**
+         * Create a new JSONP response instance.
+         *
+         * @param string $callback
+         * @param mixed $data
+         * @param int $status
+         * @param array $headers
+         * @param int $options
+         * @return \Illuminate\Http\JsonResponse
+         * @static
+         */
+        public static function jsonp($callback, $data = [], $status = 200, $headers = [], $options = 0)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->jsonp($callback, $data, $status, $headers, $options);
+        }
+
+        /**
+         * Create a new event stream response.
+         *
+         * @param \Closure $callback
+         * @param array $headers
+         * @param \Illuminate\Http\StreamedEvent|string|null $endStreamWith
+         * @return \Symfony\Component\HttpFoundation\StreamedResponse
+         * @static
+         */
+        public static function eventStream($callback, $headers = [], $endStreamWith = '</stream>')
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->eventStream($callback, $headers, $endStreamWith);
+        }
+
+        /**
+         * Create a new streamed response instance.
+         *
+         * @param callable|null $callback
+         * @param int $status
+         * @param array $headers
+         * @return \Symfony\Component\HttpFoundation\StreamedResponse
+         * @static
+         */
+        public static function stream($callback, $status = 200, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->stream($callback, $status, $headers);
+        }
+
+        /**
+         * Create a new streamed JSON response instance.
+         *
+         * @param array $data
+         * @param int $status
+         * @param array $headers
+         * @param int $encodingOptions
+         * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+         * @static
+         */
+        public static function streamJson($data, $status = 200, $headers = [], $encodingOptions = 15)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->streamJson($data, $status, $headers, $encodingOptions);
+        }
+
+        /**
+         * Create a new streamed response instance as a file download.
+         *
+         * @param callable $callback
+         * @param string|null $name
+         * @param array $headers
+         * @param string|null $disposition
+         * @return \Symfony\Component\HttpFoundation\StreamedResponse
+         * @throws \Illuminate\Routing\Exceptions\StreamedResponseException
+         * @static
+         */
+        public static function streamDownload($callback, $name = null, $headers = [], $disposition = 'attachment')
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->streamDownload($callback, $name, $headers, $disposition);
+        }
+
+        /**
+         * Create a new file download response.
+         *
+         * @param \SplFileInfo|string $file
+         * @param string|null $name
+         * @param array $headers
+         * @param string|null $disposition
+         * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+         * @static
+         */
+        public static function download($file, $name = null, $headers = [], $disposition = 'attachment')
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->download($file, $name, $headers, $disposition);
+        }
+
+        /**
+         * Return the raw contents of a binary file.
+         *
+         * @param \SplFileInfo|string $file
+         * @param array $headers
+         * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+         * @static
+         */
+        public static function file($file, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->file($file, $headers);
+        }
+
+        /**
+         * Create a new redirect response to the given path.
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function redirectTo($path, $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->redirectTo($path, $status, $headers, $secure);
+        }
+
+        /**
+         * Create a new redirect response to a named route.
+         *
+         * @param \BackedEnum|string $route
+         * @param mixed $parameters
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function redirectToRoute($route, $parameters = [], $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->redirectToRoute($route, $parameters, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response to a controller action.
+         *
+         * @param array|string $action
+         * @param mixed $parameters
+         * @param int $status
+         * @param array $headers
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function redirectToAction($action, $parameters = [], $status = 302, $headers = [])
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->redirectToAction($action, $parameters, $status, $headers);
+        }
+
+        /**
+         * Create a new redirect response, while putting the current URL in the session.
+         *
+         * @param string $path
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function redirectGuest($path, $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->redirectGuest($path, $status, $headers, $secure);
+        }
+
+        /**
+         * Create a new redirect response to the previously intended location.
+         *
+         * @param string $default
+         * @param int $status
+         * @param array $headers
+         * @param bool|null $secure
+         * @return \Illuminate\Http\RedirectResponse
+         * @static
+         */
+        public static function redirectToIntended($default = '/', $status = 302, $headers = [], $secure = null)
+        {
+            /** @var \Illuminate\Routing\ResponseFactory $instance */
+            return $instance->redirectToIntended($default, $status, $headers, $secure);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            \Illuminate\Routing\ResponseFactory::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            \Illuminate\Routing\ResponseFactory::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            return \Illuminate\Routing\ResponseFactory::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            \Illuminate\Routing\ResponseFactory::flushMacros();
+        }
+
+            }
+    /**
      * @method static \Illuminate\Routing\RouteRegistrar attribute(string $key, mixed $value)
      * @method static \Illuminate\Routing\RouteRegistrar whereAlpha(array|string $parameters)
      * @method static \Illuminate\Routing\RouteRegistrar whereAlphaNumeric(array|string $parameters)
@@ -14655,6 +18531,715 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Console\Scheduling\Schedule $instance */
             return $instance->macroCall($method, $parameters);
+        }
+
+            }
+    /**
+     * @see \Illuminate\Database\Schema\Builder
+     */
+    class Schema {
+        /**
+         * Drop all tables from the database.
+         *
+         * @return void
+         * @static
+         */
+        public static function dropAllTables()
+        {
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->dropAllTables();
+        }
+
+        /**
+         * Drop all views from the database.
+         *
+         * @return void
+         * @static
+         */
+        public static function dropAllViews()
+        {
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->dropAllViews();
+        }
+
+        /**
+         * Get the names of current schemas for the connection.
+         *
+         * @return string[]|null
+         * @static
+         */
+        public static function getCurrentSchemaListing()
+        {
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getCurrentSchemaListing();
+        }
+
+        /**
+         * Set the default string length for migrations.
+         *
+         * @param non-negative-int $length
+         * @return void
+         * @static
+         */
+        public static function defaultStringLength($length)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::defaultStringLength($length);
+        }
+
+        /**
+         * Set the default time precision for migrations.
+         *
+         * @static
+         */
+        public static function defaultTimePrecision($precision)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            return \Illuminate\Database\Schema\MySqlBuilder::defaultTimePrecision($precision);
+        }
+
+        /**
+         * Set the default morph key type for migrations.
+         *
+         * @param string $type
+         * @return void
+         * @throws \InvalidArgumentException
+         * @static
+         */
+        public static function defaultMorphKeyType($type)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::defaultMorphKeyType($type);
+        }
+
+        /**
+         * Set the default morph key type for migrations to UUIDs.
+         *
+         * @return void
+         * @static
+         */
+        public static function morphUsingUuids()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::morphUsingUuids();
+        }
+
+        /**
+         * Set the default morph key type for migrations to ULIDs.
+         *
+         * @return void
+         * @static
+         */
+        public static function morphUsingUlids()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::morphUsingUlids();
+        }
+
+        /**
+         * Create a database in the schema.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function createDatabase($name)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->createDatabase($name);
+        }
+
+        /**
+         * Drop a database from the schema if the database exists.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function dropDatabaseIfExists($name)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->dropDatabaseIfExists($name);
+        }
+
+        /**
+         * Get the schemas that belong to the connection.
+         *
+         * @return \Illuminate\Database\Schema\list<array{name: string, path: string|null, default: bool}>
+         * @static
+         */
+        public static function getSchemas()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getSchemas();
+        }
+
+        /**
+         * Determine if the given table exists.
+         *
+         * @param string $table
+         * @return bool
+         * @static
+         */
+        public static function hasTable($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->hasTable($table);
+        }
+
+        /**
+         * Determine if the given view exists.
+         *
+         * @param string $view
+         * @return bool
+         * @static
+         */
+        public static function hasView($view)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->hasView($view);
+        }
+
+        /**
+         * Get the tables that belong to the connection.
+         *
+         * @param string|string[]|null $schema
+         * @return \Illuminate\Database\Schema\list<array{name: string, schema: string|null, schema_qualified_name: string, size: int|null, comment: string|null, collation: string|null, engine: string|null}>
+         * @static
+         */
+        public static function getTables($schema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getTables($schema);
+        }
+
+        /**
+         * Get the names of the tables that belong to the connection.
+         *
+         * @param string|string[]|null $schema
+         * @param bool $schemaQualified
+         * @return list<string>
+         * @static
+         */
+        public static function getTableListing($schema = null, $schemaQualified = true)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getTableListing($schema, $schemaQualified);
+        }
+
+        /**
+         * Get the views that belong to the connection.
+         *
+         * @param string|string[]|null $schema
+         * @return \Illuminate\Database\Schema\list<array{name: string, schema: string|null, schema_qualified_name: string, definition: string}>
+         * @static
+         */
+        public static function getViews($schema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getViews($schema);
+        }
+
+        /**
+         * Get the user-defined types that belong to the connection.
+         *
+         * @param string|string[]|null $schema
+         * @return \Illuminate\Database\Schema\list<array{name: string, schema: string, type: string, type: string, category: string, implicit: bool}>
+         * @static
+         */
+        public static function getTypes($schema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getTypes($schema);
+        }
+
+        /**
+         * Determine if the given table has a given column.
+         *
+         * @param string $table
+         * @param string $column
+         * @return bool
+         * @static
+         */
+        public static function hasColumn($table, $column)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->hasColumn($table, $column);
+        }
+
+        /**
+         * Determine if the given table has given columns.
+         *
+         * @param string $table
+         * @param array<string> $columns
+         * @return bool
+         * @static
+         */
+        public static function hasColumns($table, $columns)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->hasColumns($table, $columns);
+        }
+
+        /**
+         * Execute a table builder callback if the given table has a given column.
+         *
+         * @param string $table
+         * @param string $column
+         * @param \Closure $callback
+         * @return void
+         * @static
+         */
+        public static function whenTableHasColumn($table, $column, $callback)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableHasColumn($table, $column, $callback);
+        }
+
+        /**
+         * Execute a table builder callback if the given table doesn't have a given column.
+         *
+         * @param string $table
+         * @param string $column
+         * @param \Closure $callback
+         * @return void
+         * @static
+         */
+        public static function whenTableDoesntHaveColumn($table, $column, $callback)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableDoesntHaveColumn($table, $column, $callback);
+        }
+
+        /**
+         * Execute a table builder callback if the given table has a given index.
+         *
+         * @param string $table
+         * @param string|array $index
+         * @param \Closure $callback
+         * @param string|null $type
+         * @return void
+         * @static
+         */
+        public static function whenTableHasIndex($table, $index, $callback, $type = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableHasIndex($table, $index, $callback, $type);
+        }
+
+        /**
+         * Execute a table builder callback if the given table doesn't have a given index.
+         *
+         * @param string $table
+         * @param string|array $index
+         * @param \Closure $callback
+         * @param string|null $type
+         * @return void
+         * @static
+         */
+        public static function whenTableDoesntHaveIndex($table, $index, $callback, $type = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableDoesntHaveIndex($table, $index, $callback, $type);
+        }
+
+        /**
+         * Get the data type for the given column name.
+         *
+         * @param string $table
+         * @param string $column
+         * @param bool $fullDefinition
+         * @return string
+         * @static
+         */
+        public static function getColumnType($table, $column, $fullDefinition = false)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getColumnType($table, $column, $fullDefinition);
+        }
+
+        /**
+         * Get the column listing for a given table.
+         *
+         * @param string $table
+         * @return list<string>
+         * @static
+         */
+        public static function getColumnListing($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getColumnListing($table);
+        }
+
+        /**
+         * Get the columns for a given table.
+         *
+         * @param string $table
+         * @return \Illuminate\Database\Schema\list<array{name: string, type: string, type_name: string, nullable: bool, default: mixed, auto_increment: bool, comment: string|null, generation: array{type: string, expression: string|null}|null}>
+         * @static
+         */
+        public static function getColumns($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getColumns($table);
+        }
+
+        /**
+         * Get the indexes for a given table.
+         *
+         * @param string $table
+         * @return \Illuminate\Database\Schema\list<array{name: string, columns: list<string>, type: string, unique: bool, primary: bool}>
+         * @static
+         */
+        public static function getIndexes($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getIndexes($table);
+        }
+
+        /**
+         * Get the names of the indexes for a given table.
+         *
+         * @param string $table
+         * @return list<string>
+         * @static
+         */
+        public static function getIndexListing($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getIndexListing($table);
+        }
+
+        /**
+         * Determine if the given table has a given index.
+         *
+         * @param string $table
+         * @param string|array $index
+         * @param string|null $type
+         * @return bool
+         * @static
+         */
+        public static function hasIndex($table, $index, $type = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->hasIndex($table, $index, $type);
+        }
+
+        /**
+         * Get the foreign keys for a given table.
+         *
+         * @param string $table
+         * @return array
+         * @static
+         */
+        public static function getForeignKeys($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getForeignKeys($table);
+        }
+
+        /**
+         * Modify a table on the schema.
+         *
+         * @param string $table
+         * @param \Closure $callback
+         * @return void
+         * @static
+         */
+        public static function table($table, $callback)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->table($table, $callback);
+        }
+
+        /**
+         * Create a new table on the schema.
+         *
+         * @param string $table
+         * @param \Closure $callback
+         * @return void
+         * @static
+         */
+        public static function create($table, $callback)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->create($table, $callback);
+        }
+
+        /**
+         * Drop a table from the schema.
+         *
+         * @param string $table
+         * @return void
+         * @static
+         */
+        public static function drop($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->drop($table);
+        }
+
+        /**
+         * Drop a table from the schema if it exists.
+         *
+         * @param string $table
+         * @return void
+         * @static
+         */
+        public static function dropIfExists($table)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->dropIfExists($table);
+        }
+
+        /**
+         * Drop columns from a table schema.
+         *
+         * @param string $table
+         * @param string|array<string> $columns
+         * @return void
+         * @static
+         */
+        public static function dropColumns($table, $columns)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->dropColumns($table, $columns);
+        }
+
+        /**
+         * Drop all types from the database.
+         *
+         * @return void
+         * @throws \LogicException
+         * @static
+         */
+        public static function dropAllTypes()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->dropAllTypes();
+        }
+
+        /**
+         * Rename a table on the schema.
+         *
+         * @param string $from
+         * @param string $to
+         * @return void
+         * @static
+         */
+        public static function rename($from, $to)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->rename($from, $to);
+        }
+
+        /**
+         * Enable foreign key constraints.
+         *
+         * @return bool
+         * @static
+         */
+        public static function enableForeignKeyConstraints()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->enableForeignKeyConstraints();
+        }
+
+        /**
+         * Disable foreign key constraints.
+         *
+         * @return bool
+         * @static
+         */
+        public static function disableForeignKeyConstraints()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->disableForeignKeyConstraints();
+        }
+
+        /**
+         * Disable foreign key constraints during the execution of a callback.
+         *
+         * @template TReturn
+         * @param (\Closure(): TReturn) $callback
+         * @return TReturn
+         * @static
+         */
+        public static function withoutForeignKeyConstraints($callback)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->withoutForeignKeyConstraints($callback);
+        }
+
+        /**
+         * Create the vector extension on the schema if it does not exist.
+         *
+         * @param string|null $schema
+         * @return void
+         * @static
+         */
+        public static function ensureVectorExtensionExists($schema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->ensureVectorExtensionExists($schema);
+        }
+
+        /**
+         * Create a new extension on the schema if it does not exist.
+         *
+         * @param string $name
+         * @param string|null $schema
+         * @return void
+         * @static
+         */
+        public static function ensureExtensionExists($name, $schema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->ensureExtensionExists($name, $schema);
+        }
+
+        /**
+         * Get the default schema name for the connection.
+         *
+         * @return string|null
+         * @static
+         */
+        public static function getCurrentSchemaName()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getCurrentSchemaName();
+        }
+
+        /**
+         * Parse the given database object reference and extract the schema and table.
+         *
+         * @param string $reference
+         * @param string|bool|null $withDefaultSchema
+         * @return array{string|null, string}
+         * @static
+         */
+        public static function parseSchemaAndTable($reference, $withDefaultSchema = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->parseSchemaAndTable($reference, $withDefaultSchema);
+        }
+
+        /**
+         * Get the database connection instance.
+         *
+         * @return \Illuminate\Database\Connection
+         * @static
+         */
+        public static function getConnection()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            return $instance->getConnection();
+        }
+
+        /**
+         * Set the Schema Blueprint resolver callback.
+         *
+         * @param \Closure(\Illuminate\Database\Connection, string, \Closure|null):  \Illuminate\Database\Schema\Blueprint  $resolver
+         * @return void
+         * @static
+         */
+        public static function blueprintResolver($resolver)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->blueprintResolver($resolver);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            return \Illuminate\Database\Schema\MySqlBuilder::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            \Illuminate\Database\Schema\MySqlBuilder::flushMacros();
         }
 
             }
@@ -19207,6 +23792,7 @@ namespace  {
     class Config extends \Illuminate\Support\Facades\Config {}
     class Context extends \Illuminate\Support\Facades\Context {}
     class Cookie extends \Illuminate\Support\Facades\Cookie {}
+    class Crypt extends \Illuminate\Support\Facades\Crypt {}
     class Date extends \Illuminate\Support\Facades\Date {}
     class DB extends \Illuminate\Support\Facades\DB {}
 
@@ -24580,9 +29166,13 @@ namespace  {
     class Password extends \Illuminate\Support\Facades\Password {}
     class Process extends \Illuminate\Support\Facades\Process {}
     class Queue extends \Illuminate\Support\Facades\Queue {}
+    class RateLimiter extends \Illuminate\Support\Facades\RateLimiter {}
+    class Redirect extends \Illuminate\Support\Facades\Redirect {}
     class Request extends \Illuminate\Support\Facades\Request {}
+    class Response extends \Illuminate\Support\Facades\Response {}
     class Route extends \Illuminate\Support\Facades\Route {}
     class Schedule extends \Illuminate\Support\Facades\Schedule {}
+    class Schema extends \Illuminate\Support\Facades\Schema {}
     class Session extends \Illuminate\Support\Facades\Session {}
     class Storage extends \Illuminate\Support\Facades\Storage {}
     class Str extends \Illuminate\Support\Str {}

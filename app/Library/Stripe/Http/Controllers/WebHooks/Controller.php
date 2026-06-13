@@ -3,8 +3,8 @@
 namespace App\Library\Stripe\Http\Controllers\WebHooks;
 
 use App\Library\Stripe\Http\Middleware\Webhooks\VerifySignature;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\DB;
@@ -24,18 +24,19 @@ class Controller implements HasMiddleware
     protected function customerDeleted(Request $request)
     {
         $request->validate(['data.object.id' => 'required|string']);
-        $customer = StripeCustomer::find($request['data']['object']['id']);
+        $customer = StripeCustomer::with('customerable')
+            ->find($request['data']['object']['id']);
         if ($customer) {
-            try {
-                DB::beginTransaction();
-                $customerable = $customer->customerable;
-                $customer->delete();
-                $customerable->stripeCreate();
-                DB::commit();
-            } catch (RequestException $e) {
-                DB::rollBack();
-                abort(500, $e->getMessage());
+            DB::beginTransaction();
+            $customerable = $customer->customerable;
+            if ($customerable) {
+                CreateCustomer::dispatch(
+                    $customer->customerable_type,
+                    $customer->customerable_id,
+                );
             }
+            $customer->delete();
+            DB::commit();
         }
 
         return $this->success();
