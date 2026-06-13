@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\NavigationItem\DisplayOrderRequest;
 use App\Http\Requests\Admin\NavigationItem\FormRequest;
+use App\Jobs\Caches\RebuildNavigation;
 use App\Models\NavigationItem;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -45,6 +47,23 @@ class NavigationItemController extends Controller implements HasMiddleware
             ->with('displayOptions', $displayOptions);
     }
 
+    private function rebuildCache(): void
+    {
+        try {
+            $cacheKey = NavigationItem::CACHE_KEY;
+            Cache::lock($cacheKey.'_lock', 10)->block(
+                5, function () use ($cacheKey) {
+                    $latestItems = NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                    Cache::forever($cacheKey, $latestItems);
+                }
+            );
+        } catch (\Throwable $e) {
+            RebuildNavigation::dispatch();
+        }
+    }
+
     public function store(FormRequest $request)
     {
         DB::beginTransaction();
@@ -61,6 +80,7 @@ class NavigationItemController extends Controller implements HasMiddleware
             'url' => $request->url,
             'display_order' => $request->display_order,
         ]);
+        $this->rebuildCache();
         DB::commit();
 
         return redirect()->route('admin.navigation-items.index');
@@ -141,6 +161,7 @@ class NavigationItemController extends Controller implements HasMiddleware
             'url' => $request->url,
             'display_order' => $request->display_order,
         ]);
+        $this->rebuildCache();
         DB::commit();
 
         return redirect()->route('admin.navigation-items.index');
@@ -148,7 +169,10 @@ class NavigationItemController extends Controller implements HasMiddleware
 
     public function destroy(NavigationItem $navigationItem)
     {
+        DB::beginTransaction();
         $navigationItem->delete();
+        $this->rebuildCache();
+        DB::commit();
 
         return ['success' => 'The display order update success!'];
     }
@@ -167,11 +191,14 @@ class NavigationItemController extends Controller implements HasMiddleware
         }
         $masterIdCase = implode(' ', $masterIdCase);
         $displayOrderCase = implode(' ', $displayOrderCase);
+        DB::beginTransaction();
         NavigationItem::whereIn('id', $IDs)
             ->update([
                 'master_id' => DB::raw("(CASE $masterIdCase ELSE master_id END)"),
                 'display_order' => DB::raw("(CASE $displayOrderCase ELSE display_order END)"),
             ]);
+        $this->rebuildCache();
+        DB::commit();
         $return = [
             'success' => 'The display order update success!',
             'display_order' => [],

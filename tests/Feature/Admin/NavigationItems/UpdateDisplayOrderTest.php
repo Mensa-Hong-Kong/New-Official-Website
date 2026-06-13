@@ -2,10 +2,14 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
+use App\Jobs\Caches\RebuildNavigation;
 use App\Models\ModulePermission;
 use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use Mockery;
 use Tests\TestCase;
 
 class UpdateDisplayOrderTest extends TestCase
@@ -47,7 +51,7 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_have_no_permission(): void
+    public function test_have_no_edit_navigation_item_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
@@ -177,6 +181,7 @@ class UpdateDisplayOrderTest extends TestCase
 
     public function test_happy_case_with_no_change(): void
     {
+        Cache::spy();
         $data = $this->happyCase;
         $response = $this->actingAs($this->user)->putJson(
             route('admin.navigation-items.display-order.update'),
@@ -185,10 +190,21 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertSuccessful();
         $data['success'] = 'The display order update success!';
         $response->assertJson($data);
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_change_all(): void
     {
+        Cache::spy();
         $item1ID = $this->happyCase['display_order'][0][0];
         $item2ID = $this->happyCase['display_order'][0][1];
         $item1point1ID = $this->happyCase['display_order'][$item1ID][0];
@@ -205,5 +221,31 @@ class UpdateDisplayOrderTest extends TestCase
         $response->assertSuccessful();
         $data['success'] = 'The display order update success!';
         $response->assertJson($data);
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
+    }
+
+    public function test_happy_case_whe_redis_is_down()
+    {
+        Bus::fake();
+        Cache::spy()->shouldReceive('lock')->once()
+            ->andThrow(new \RuntimeException('Redis error'));
+        $data = $this->happyCase;
+        $response = $this->actingAs($this->user)->putJson(
+            route('admin.navigation-items.display-order.update'),
+            $this->happyCase
+        );
+        $response->assertSuccessful();
+        $data['success'] = 'The display order update success!';
+        $response->assertJson($data);
+        Bus::assertDispatched(RebuildNavigation::class);
     }
 }

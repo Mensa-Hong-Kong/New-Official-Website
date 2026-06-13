@@ -2,9 +2,14 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
+use App\Jobs\Caches\RebuildNavigation;
+use App\Models\ModulePermission;
 use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use Mockery;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -42,6 +47,24 @@ class UpdateTest extends TestCase
             $this->happyCase
         );
         $response->assertUnauthorized();
+    }
+
+    public function test_have_no_edit_navigation_item_permission(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Navigation Item')
+                ->first()
+                ->name
+        );
+        $response = $this->actingAs($user)->putJson(
+            route(
+                'admin.navigation-items.update',
+                ['navigation_item' => $this->item]
+            )
+        );
+        $response->assertForbidden();
     }
 
     public function test_missing_master_id(): void
@@ -234,6 +257,7 @@ class UpdateTest extends TestCase
 
     public function test_happy_case_with_no_change_when_have_no_url(): void
     {
+        Cache::spy();
         $response = $this->actingAs($this->user)->putJson(
             route(
                 'admin.navigation-items.update',
@@ -242,10 +266,21 @@ class UpdateTest extends TestCase
             $this->happyCase
         );
         $response->assertRedirectToRoute('admin.navigation-items.index');
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_with_no_change_when_has_url(): void
     {
+        Cache::spy();
         $data = $this->happyCase;
         $this->item->update(['url' => 'https://google.com']);
         $data['url'] = 'https://google.com';
@@ -257,10 +292,21 @@ class UpdateTest extends TestCase
             $data
         );
         $response->assertRedirectToRoute('admin.navigation-items.index');
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_with_changing_when_have_no_url(): void
     {
+        Cache::spy();
         $item = NavigationItem::factory()->create([
             'master_id' => null,
             'display_order' => 1,
@@ -292,10 +338,21 @@ class UpdateTest extends TestCase
         $this->assertEquals(0, $item->refresh()->display_order);
         $this->assertEquals(0, $subItem1->refresh()->display_order);
         $this->assertEquals(2, $subItem2->refresh()->display_order);
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
     }
 
     public function test_happy_case_with_changing_when_has_url(): void
     {
+        Cache::spy();
         $item = NavigationItem::factory()->create([
             'master_id' => null,
             'display_order' => 1,
@@ -330,5 +387,34 @@ class UpdateTest extends TestCase
         $this->assertEquals(0, $item->refresh()->display_order);
         $this->assertEquals(0, $subItem1->refresh()->display_order);
         $this->assertEquals(2, $subItem2->refresh()->display_order);
+        Cache::shouldHaveReceived('forever')->once()->with(
+            NavigationItem::CACHE_KEY,
+            Mockery::on(
+                function ($argument) {
+                    return is_array($argument) && $argument == NavigationItem::orderBy('display_order')
+                        ->get(['id', 'master_id', 'name', 'url'])
+                        ->toArray();
+                }
+            )
+        );
+    }
+
+    public function test_happy_case_whe_redis_is_down()
+    {
+        Bus::fake();
+        $spy = Cache::spy();
+        $spy->shouldReceive('lock')
+            ->once()
+            ->andThrow(new \RuntimeException('Redis error'));
+        $spy->shouldReceive()->andPassthru();
+        $response = $this->actingAs($this->user)->putJson(
+            route(
+                'admin.navigation-items.update',
+                ['navigation_item' => $this->item]
+            ),
+            $this->happyCase
+        );
+        $response->assertRedirectToRoute('admin.navigation-items.index');
+        Bus::assertDispatched(RebuildNavigation::class);
     }
 }

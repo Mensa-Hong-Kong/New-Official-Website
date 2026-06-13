@@ -39,6 +39,8 @@ class NavigationItem extends Model
 {
     use HasFactory;
 
+    public const CACHE_KEY = 'global_navigation_items';
+
     protected $fillable = [
         'master_id',
         'name',
