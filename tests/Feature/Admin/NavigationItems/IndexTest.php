@@ -17,7 +17,7 @@ class IndexTest extends TestCase
         $response->assertRedirectToRoute('login');
     }
 
-    public function test_have_no_edit_permission(): void
+    public function test_have_no_edit_navigation_item_permission(): void
     {
         $user = User::factory()->create();
         $user->givePermissionTo(
