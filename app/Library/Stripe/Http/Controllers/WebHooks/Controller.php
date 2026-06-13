@@ -5,7 +5,6 @@ namespace App\Library\Stripe\Http\Controllers\WebHooks;
 use App\Library\Stripe\Http\Middleware\Webhooks\VerifySignature;
 use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\DB;

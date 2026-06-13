@@ -92,7 +92,6 @@ class CustomerDeletedTest extends TestCase
         Event::assertNotDispatched(Created::class);
     }
 
-
     public function test_customer_exist_and_customer_is_user_and_user_is_exists(): void
     {
         Event::fake(Created::class);
