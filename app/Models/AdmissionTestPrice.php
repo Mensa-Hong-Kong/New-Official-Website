@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\Stripe\Prices\SyncAdmissionTest as SyncPrice;
 use App\Library\Stripe\Concerns\Models\HasStripePrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,26 +54,6 @@ class AdmissionTestPrice extends Model
         'start_at' => 'datetime',
         'synced_one_time_type_to_stripe' => 'boolean',
     ];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::created(
-            function (AdmissionTestPrice $product) {
-                SyncPrice::dispatch($product->id);
-            }
-        );
-        static::updating(
-            function (AdmissionTestPrice $price) {
-                if ($price->isDirty('name')) {
-                    $price->synced_one_time_type_to_stripe = false;
-                    SyncPrice::dispatch($price->id);
-                }
-            }
-        );
-    }
 
     public function product(): BelongsTo
     {
