@@ -75,7 +75,7 @@ jobs:
         run: php artisan migrate --env=testing
 
       - name: run test suite
-        run: XDEBUG_MODE=off php artisan test --env=testing
+        run: XDEBUG_MODE=off php artisan test
   lint:
     runs-on: ubuntu-latest
     steps:
