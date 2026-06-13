@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\NavigationItems;
 
+use App\Models\ModulePermission;
 use App\Models\NavigationItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,6 +43,24 @@ class UpdateTest extends TestCase
             $this->happyCase
         );
         $response->assertUnauthorized();
+    }
+
+    public function test_have_no_edit_navigation_item_permission(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(
+            ModulePermission::inRandomOrder()
+                ->whereNot('name', 'Edit:Navigation Item')
+                ->first()
+                ->name
+        );
+        $response = $this->actingAs($user)->putJson(
+            route(
+                'admin.navigation-items.update',
+                ['navigation_item' => $this->item]
+            )
+        );
+        $response->assertForbidden();
     }
 
     public function test_missing_master_id(): void
