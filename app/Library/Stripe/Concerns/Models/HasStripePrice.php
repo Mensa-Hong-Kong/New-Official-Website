@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Collection<int, HasStripeProduct> $product
  *
  * @method \Illuminate\Database\Eloquent\Model update($attributes = [], $options = [])
- *
  * @method static void created(\Closure|string $callback)
  * @method static void updating(\Closure|string $callback)
  */

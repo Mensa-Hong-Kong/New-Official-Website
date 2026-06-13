@@ -2,10 +2,10 @@
 
 namespace App\Library\Stripe\Concerns\Models;
 
-use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Client;
 use App\Library\Stripe\Events\Customer\Synced;
 use App\Library\Stripe\Exceptions\AlreadyCreatedCustomer;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Models\StripeCustomer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;

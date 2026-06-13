@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Jobs;
 
-use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Library\Stripe\Events\Customer\Created;
+use App\Library\Stripe\Jobs\CreateCustomer;
 use App\Models\User;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
